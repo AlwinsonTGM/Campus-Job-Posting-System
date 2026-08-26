@@ -141,7 +141,7 @@ require_once __DIR__ . '/includes/navbar.php';
                 <?php foreach ($featured_jobs as $job): ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="job-card">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
                                 <span class="badge-kld-tag">
                                     <i class="bi bi-tag-fill me-1 text-kld-gold"></i><?= htmlspecialchars($job['category']) ?>
                                 </span>
