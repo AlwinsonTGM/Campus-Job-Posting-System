@@ -1,0 +1,22 @@
+# OS Files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# IDE / Editor Files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Log files
+*.log

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <defs>
+    <linearGradient id="bgGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="80" cy="80" r="80" fill="url(#bgGrad5)"/>
+  <circle cx="80" cy="55" r="30" fill="#fed7aa"/>
+  <!-- Hair (Neat Groomed) -->
+  <path d="M52 48 C54 26, 108 26, 108 48 C104 34, 56 34, 52 48 Z" fill="#172554"/>
+  <!-- Formal Charcoal Suit -->
+  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#334155"/>
+  <!-- White Collared Shirt -->
+  <polygon points="80,105 60,118 70,145 80,130 90,145 100,118" fill="#ffffff"/>
+  <!-- Amber/Gold Striped Tie -->
+  <polygon points="80,115 85,120 83,148 80,154 77,148 75,120" fill="#d97706"/>
+</svg>

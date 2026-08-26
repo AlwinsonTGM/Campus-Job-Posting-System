@@ -1,0 +1,196 @@
+[
+  {
+    "id": 1,
+    "title": "Computer Lab Technical Assistant",
+    "department": "Management Information Systems (MIS)",
+    "category": "Information Technology",
+    "category_id": 1,
+    "employer_id": 4,
+    "employer_name": "Engr. Clara Villanueva",
+    "job_type": "Student Assistant",
+    "location": "IT Building, Computer Lab 301-304",
+    "pay_rate": "₱85.00 / hour",
+    "pay_type": "Hourly",
+    "hours_per_week": "15 - 20 hrs/week",
+    "vacancies": 3,
+    "filled_vacancies": 1,
+    "deadline": "2026-09-15",
+    "status": "active",
+    "created_at": "2026-08-20",
+    "tags": ["Flexible Shift", "Urgent", "Tech Support"],
+    "description": "Assist the MIS team in maintaining student computer laboratories, performing routine hardware/software troubleshooting, monitoring laboratory usage, and assisting students during hands-on classes.",
+    "responsibilities": [
+      "Check PC hardware and peripheral operability before daily lab sessions.",
+      "Assist students and professors with network login, compiler installations, and software tools.",
+      "Maintain cleanliness and enforce lab safety regulations.",
+      "Log hardware faults and escalate critical network disruptions to senior network engineers."
+    ],
+    "qualifications": [
+      "Currently enrolled 2nd to 4th year BSIS, BSCS, or BSIT student.",
+      "General Weighted Average (GWA) of 2.25 or better.",
+      "Basic knowledge in PC troubleshooting, Windows/Linux OS, and local networking.",
+      "Responsible, punctual, and equipped with strong interpersonal skills."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Student Records & Archival Assistant",
+    "department": "Office of the University Registrar",
+    "category": "Administrative & Clerical",
+    "category_id": 3,
+    "employer_id": 3,
+    "employer_name": "Prof. Roberto Hernandez",
+    "job_type": "Student Assistant",
+    "location": "Admin Building, Room 102",
+    "pay_rate": "₱80.00 / hour",
+    "pay_type": "Hourly",
+    "hours_per_week": "10 - 15 hrs/week",
+    "vacancies": 4,
+    "filled_vacancies": 2,
+    "deadline": "2026-09-10",
+    "status": "active",
+    "created_at": "2026-08-21",
+    "tags": ["Part-Time", "Office Work"],
+    "description": "Support the University Registrar in organizing student records, encoding registration documents, sorting physical course binders, and assisting visitors at the information desk.",
+    "responsibilities": [
+      "Scan and index student transcript documents into the digital archive.",
+      "Assist in receiving and sorting incoming student clearance and graduation applications.",
+      "Organize student physical 201 filing cabinets.",
+      "Provide courteous frontline queue direction during peak enrollment periods."
+    ],
+    "qualifications": [
+      "Open to all undergraduate courses (Any Year Level).",
+      "Proficient in Microsoft Excel, Word, and Google Workspace.",
+      "High attention to detail and strong adherence to data privacy and confidentiality.",
+      "Must have at least 3 consecutive free hours during weekdays."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Digital Cataloging & Library Aid",
+    "department": "University Main Library",
+    "category": "Library Services",
+    "category_id": 2,
+    "employer_id": 3,
+    "employer_name": "Ms. Teresa Cruz (Chief Librarian)",
+    "job_type": "Student Assistant",
+    "location": "Main Library Building, 2nd Floor",
+    "pay_rate": "₱80.00 / hour",
+    "pay_type": "Hourly",
+    "hours_per_week": "12 - 18 hrs/week",
+    "vacancies": 2,
+    "filled_vacancies": 0,
+    "deadline": "2026-09-18",
+    "status": "active",
+    "created_at": "2026-08-22",
+    "tags": ["Quiet Environment", "Study Friendly"],
+    "description": "Assist librarians with book circulation, Dewey Decimal sorting, barcode scanning, thesis collection archiving, and patron assistance in the quiet study hub.",
+    "responsibilities": [
+      "Check in and check out library reference books using the barcode circulation scanner.",
+      "Shelve books according to cataloging standards and perform shelf-reading.",
+      "Assist students and faculty in navigating OPAC (Online Public Access Catalog).",
+      "Monitor study areas to ensure a conducive, quiet learning atmosphere."
+    ],
+    "qualifications": [
+      "Bona fide student with at least 1 remaining academic year.",
+      "Diligent, polite, organized, and fond of reading and books.",
+      "Can commit to either morning (8:00 AM - 12:00 PM) or afternoon (1:00 PM - 5:00 PM) shifts."
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Peer Tutor - Linear Algebra & Discrete Math",
+    "department": "Mathematics & Sciences Department",
+    "category": "Academic Peer Tutor",
+    "category_id": 5,
+    "employer_id": 4,
+    "employer_name": "Dr. Antonio Valderama",
+    "job_type": "Peer Tutor",
+    "location": "Student Learning Center, Room 204",
+    "pay_rate": "₱100.00 / hour",
+    "pay_type": "Hourly",
+    "hours_per_week": "8 - 12 hrs/week",
+    "vacancies": 2,
+    "filled_vacancies": 1,
+    "deadline": "2026-09-20",
+    "status": "active",
+    "created_at": "2026-08-23",
+    "tags": ["High Pay", "Academic"],
+    "description": "Provide scheduled one-on-one and small group peer tutoring for 1st and 2nd year students struggling with Linear Algebra, Discrete Mathematics, and Calculus.",
+    "responsibilities": [
+      "Conduct structured 1-hour tutorial sessions according to student bookings.",
+      "Prepare sample problem worksheets and concept explanation summaries.",
+      "Maintain student attendance logs and report progress to the Department Chair.",
+      "Encourage active problem solving and confidence building."
+    ],
+    "qualifications": [
+      "Must have earned a final grade of 1.50 or higher in MATH102 and Discrete Math.",
+      "Patient, articulate, and passionate about teaching math concepts.",
+      "Endorsement letter from a math faculty member is a plus."
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Campus Events AV & Media Technician",
+    "department": "Public Relations & Media Center",
+    "category": "Campus Media & Events",
+    "category_id": 6,
+    "employer_id": 5,
+    "employer_name": "Media Center Supervisor",
+    "job_type": "Student Assistant",
+    "location": "University Auditorium & Media Booth",
+    "pay_rate": "₱90.00 / hour",
+    "pay_type": "Hourly",
+    "hours_per_week": "10 - 20 hrs/week",
+    "vacancies": 3,
+    "filled_vacancies": 0,
+    "deadline": "2026-09-25",
+    "status": "active",
+    "created_at": "2026-08-24",
+    "tags": ["Event-Based", "Hands-on"],
+    "description": "Operate sound systems, wireless microphones, LED projectors, and live stream cameras for institutional convocations, college seminars, and university sports meets.",
+    "responsibilities": [
+      "Set up and test audio/video equipment at least 45 minutes prior to official campus programs.",
+      "Manage mixer board, projector switching, and live stream overlays during events.",
+      "Pack and secure equipment in the technical storage after program completion.",
+      "Assist the campus photographer during major institutional events."
+    ],
+    "qualifications": [
+      "Experience handling audio mixers, DSLR/mirrorless cameras, or OBS software.",
+      "Ability to lift up to 25 lbs of AV equipment.",
+      "Available during occasional Friday afternoons or Saturday morning university events."
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Science & Chemistry Laboratory Assistant",
+    "department": "College of Science & Natural Resources",
+    "category": "Laboratory Assistant",
+    "category_id": 4,
+    "employer_id": 5,
+    "employer_name": "Lab Head Dr. Reyes",
+    "job_type": "Student Assistant",
+    "location": "Science Hall, Chemistry Lab 101",
+    "pay_rate": "₱85.00 / hour",
+    "pay_type": "Hourly",
+    "hours_per_week": "12 - 16 hrs/week",
+    "vacancies": 2,
+    "filled_vacancies": 0,
+    "deadline": "2026-09-30",
+    "status": "active",
+    "created_at": "2026-08-25",
+    "tags": ["Science", "Lab Prep"],
+    "description": "Assist laboratory custodians in preparing glassware, non-hazardous reagent solutions, setting up microscope benches, and conducting equipment sanitation.",
+    "responsibilities": [
+      "Distribute apparatus to students before experiments and inspect returns for breakage.",
+      "Wash and autoclave laboratory glassware following strict chemical hygiene procedures.",
+      "Maintain reagent inventory and log chemical consumption.",
+      "Ensure proper waste segregation and disposal compliance."
+    ],
+    "qualifications": [
+      "Enrolled in a STEM degree program (Chemistry, Biology, Engineering, or Education).",
+      "Passed General Chemistry with high marks.",
+      "Strict compliance with lab safety goggles, lab coat, and chemical handling guidelines."
+    ]
+  }
+]

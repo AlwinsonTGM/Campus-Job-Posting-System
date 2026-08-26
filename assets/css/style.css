@@ -1,0 +1,374 @@
+/* Campus Job Posting System - Academic Blue & Gold Theme */
+:root {
+  --primary-blue: #0f2c59;
+  --primary-blue-hover: #0a1e3f;
+  --secondary-blue: #1e40af;
+  --accent-gold: #f59e0b;
+  --accent-gold-hover: #d97706;
+  --accent-gold-light: #fef3c7;
+  --bg-light: #f8fafc;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --card-border: #e2e8f0;
+  --sidebar-width: 260px;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Navbar Custom */
+.navbar-academic {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 100%);
+  box-shadow: 0 4px 12px rgba(15, 44, 89, 0.15);
+  border-bottom: 3px solid var(--accent-gold);
+}
+
+.navbar-academic .navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-academic .navbar-brand .brand-badge {
+  background-color: var(--accent-gold);
+  color: #0f2c59;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.navbar-academic .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.navbar-academic .nav-link:hover,
+.navbar-academic .nav-link.active {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Academic Blue & Gold Buttons */
+.btn-academic {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  border: 1px solid var(--primary-blue);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-academic:hover {
+  background-color: var(--primary-blue-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(15, 44, 89, 0.25);
+}
+
+.btn-gold {
+  background-color: var(--accent-gold);
+  color: #0f2c59;
+  border: 1px solid var(--accent-gold);
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.btn-gold:hover {
+  background-color: var(--accent-gold-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
+}
+
+.btn-outline-academic {
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.btn-outline-academic:hover {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, rgba(15, 44, 89, 0.95) 0%, rgba(30, 64, 175, 0.92) 100%), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+  color: #ffffff;
+  padding: 5rem 0 4.5rem;
+  border-bottom: 4px solid var(--accent-gold);
+}
+
+.hero-search-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+/* Stat Cards */
+.stat-card {
+  border: none;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-left: 4px solid var(--primary-blue);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+/* Job Cards */
+.job-card {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.job-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(15, 44, 89, 0.08);
+  border-color: var(--secondary-blue);
+}
+
+.job-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background-color: var(--accent-gold-light);
+  color: #92400e;
+}
+
+/* Category Cards */
+.category-card {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.2s ease;
+  height: 100%;
+  text-decoration: none;
+  color: var(--text-dark);
+  display: block;
+}
+
+.category-card:hover {
+  border-color: var(--accent-gold);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15);
+  color: var(--primary-blue);
+}
+
+.category-icon-box {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+/* Developer Profile Cards (About Us) */
+.developer-card {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+}
+
+.developer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(15, 44, 89, 0.12);
+  border-color: var(--primary-blue);
+}
+
+.developer-avatar-wrapper {
+  position: relative;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  padding: 2rem 1rem 1rem;
+  text-align: center;
+}
+
+.developer-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+}
+
+.formal-badge-note {
+  font-size: 0.7rem;
+  background-color: rgba(15, 44, 89, 0.85);
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+/* Password Strength Meter Styling */
+.password-meter-bar {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e2e8f0;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.password-meter-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-weak {
+  width: 30%;
+  background-color: #ef4444;
+}
+
+.strength-medium {
+  width: 65%;
+  background-color: #f59e0b;
+}
+
+.strength-strong {
+  width: 100%;
+  background-color: #10b981;
+}
+
+.req-item {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.req-item.met {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.req-item.unmet {
+  color: #94a3b8;
+}
+
+/* Dashboard Layout */
+.dashboard-sidebar {
+  background: #ffffff;
+  border-right: 1px solid var(--card-border);
+  min-height: calc(100vh - 70px);
+  padding: 1.5rem 1rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  color: var(--text-dark);
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-bottom: 4px;
+  transition: all 0.15s ease;
+}
+
+.sidebar-link:hover {
+  background-color: var(--bg-light);
+  color: var(--primary-blue);
+}
+
+.sidebar-link.active {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+}
+
+.sidebar-link .badge {
+  margin-left: auto;
+}
+
+/* Footer Custom */
+.footer-academic {
+  background-color: #0b1d3a;
+  color: #cbd5e1;
+  border-top: 3px solid var(--accent-gold);
+  padding: 3.5rem 0 1.5rem;
+}
+
+.footer-academic a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-academic a:hover {
+  color: var(--accent-gold);
+}
+
+/* Print Styles for Reports */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .navbar-academic,
+  .footer-academic,
+  .no-print,
+  .btn,
+  .dashboard-sidebar {
+    display: none !important;
+  }
+  .printable-report {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}

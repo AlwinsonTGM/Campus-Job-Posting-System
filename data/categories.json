@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Information Technology",
+    "icon": "bi-laptop",
+    "description": "IT lab maintenance, technical support, network assistance, and campus software support.",
+    "color": "primary",
+    "job_count": 4
+  },
+  {
+    "id": 2,
+    "name": "Library Services",
+    "icon": "bi-book",
+    "description": "Cataloging, book circulation, digital archive management, and student research aid.",
+    "color": "success",
+    "job_count": 3
+  },
+  {
+    "id": 3,
+    "name": "Administrative & Clerical",
+    "icon": "bi-folder2-open",
+    "description": "Office filing, student records processing, encoding, and general department support.",
+    "color": "info",
+    "job_count": 5
+  },
+  {
+    "id": 4,
+    "name": "Laboratory Assistant",
+    "icon": "bi-radioactive",
+    "description": "Science & computer laboratory prep, equipment inventory, and safety compliance.",
+    "color": "warning",
+    "job_count": 2
+  },
+  {
+    "id": 5,
+    "name": "Academic Peer Tutor",
+    "icon": "bi-mortarboard",
+    "description": "Peer mentoring, tutorial sessions in math, programming, sciences, and art.",
+    "color": "danger",
+    "job_count": 3
+  },
+  {
+    "id": 6,
+    "name": "Campus Media & Events",
+    "icon": "bi-camera-reels",
+    "description": "Event coverage, graphic design, campus publications, and AV technical support.",
+    "color": "secondary",
+    "job_count": 2
+  }
+]

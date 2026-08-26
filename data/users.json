@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "name": "Juan Dela Cruz",
+    "email": "student@university.edu.ph",
+    "password": "Password123!",
+    "role": "student",
+    "student_id": "2024-00123",
+    "department": "College of Computer Studies",
+    "course": "BS Information Systems",
+    "year_level": "2nd Year",
+    "phone": "+63 917 123 4567",
+    "status": "active",
+    "created_at": "2026-08-01 08:00:00"
+  },
+  {
+    "id": 2,
+    "name": "Maria Santos",
+    "email": "maria.santos@university.edu.ph",
+    "password": "Password123!",
+    "role": "student",
+    "student_id": "2024-00456",
+    "department": "College of Business & Accountancy",
+    "course": "BS Accountancy",
+    "year_level": "3rd Year",
+    "phone": "+63 928 234 5678",
+    "status": "active",
+    "created_at": "2026-08-05 09:30:00"
+  },
+  {
+    "id": 3,
+    "name": "Prof. Roberto Hernandez",
+    "email": "registrar@university.edu.ph",
+    "password": "Password123!",
+    "role": "employer",
+    "department": "Office of the University Registrar",
+    "office_location": "Admin Building, 1st Floor, Room 102",
+    "contact_person": "Prof. Roberto Hernandez (Registrar Head)",
+    "phone": "(02) 8888-1234 loc 102",
+    "status": "active",
+    "created_at": "2026-08-01 08:00:00"
+  },
+  {
+    "id": 4,
+    "name": "Engr. Clara Villanueva",
+    "email": "itdept@university.edu.ph",
+    "password": "Password123!",
+    "role": "employer",
+    "department": "Management Information Systems (MIS)",
+    "office_location": "Tech Building, 3rd Floor, MIS Center",
+    "contact_person": "Engr. Clara Villanueva (IT Director)",
+    "phone": "(02) 8888-1234 loc 305",
+    "status": "active",
+    "created_at": "2026-08-03 10:15:00"
+  },
+  {
+    "id": 5,
+    "name": "Campus Job System Admin",
+    "email": "admin@university.edu.ph",
+    "password": "Password123!",
+    "role": "admin",
+    "department": "Office of Student Affairs (OSA)",
+    "office_location": "Student Center, 2nd Floor",
+    "phone": "(02) 8888-1234 loc 201",
+    "status": "active",
+    "created_at": "2026-07-15 08:00:00"
+  }
+]
