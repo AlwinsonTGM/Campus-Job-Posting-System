@@ -94,12 +94,12 @@ require_once __DIR__ . '/../includes/navbar.php';
                                     </td>
                                     <td>
                                         <?php if ($app['status'] === 'interview_scheduled' && !empty($app['interview_date'])): ?>
-                                            <div class="small text-primary fw-semibold">
+                                            <div class="small text-kld-green fw-semibold">
                                                 <i class="bi bi-calendar-event me-1"></i> <?= htmlspecialchars($app['interview_date']) ?> (<?= htmlspecialchars($app['interview_time']) ?>)
                                                 <div class="text-muted small">Venue: <?= htmlspecialchars($app['interview_venue']) ?></div>
                                             </div>
                                         <?php elseif ($app['status'] === 'accepted'): ?>
-                                            <span class="small text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Hired for Semester</span>
+                                            <span class="small text-kld-green fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Hired for Semester</span>
                                         <?php elseif (!empty($app['supervisor_notes'])): ?>
                                             <span class="small text-muted text-truncate d-inline-block" style="max-width: 200px;">
                                                 <?= htmlspecialchars($app['supervisor_notes']) ?>
@@ -109,7 +109,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#appModal<?= $app['id'] ?>">
+                                        <button type="button" class="btn btn-sm btn-outline-academic" data-bs-toggle="modal" data-bs-target="#appModal<?= $app['id'] ?>">
                                             <i class="bi bi-eye"></i> View Details
                                         </button>
                                     </td>
@@ -117,9 +117,9 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                                 <!-- Application Detail Modal -->
                                 <div class="modal fade" id="appModal<?= $app['id'] ?>" tabindex="-1" aria-labelledby="appModalLabel<?= $app['id'] ?>" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                                         <div class="modal-content rounded-4 border-0 shadow">
-                                            <div class="modal-header bg-primary text-white">
+                                            <div class="modal-header bg-kld-gradient text-white">
                                                 <h5 class="modal-title fw-bold" id="appModalLabel<?= $app['id'] ?>">
                                                     <i class="bi bi-file-earmark-text me-1 text-warning"></i> Application Record: <?= htmlspecialchars($app['job_title']) ?>
                                                 </h5>
@@ -139,8 +139,8 @@ require_once __DIR__ . '/../includes/navbar.php';
                                                 </div>
 
                                                 <?php if ($app['status'] === 'interview_scheduled' && !empty($app['interview_date'])): ?>
-                                                    <div class="alert alert-info p-3 rounded-3 mb-3">
-                                                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-calendar-check-fill text-info me-1"></i> Interview Notice</h6>
+                                                    <div class="alert alert-warning border border-warning-subtle p-3 rounded-3 mb-3">
+                                                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-calendar-check-fill text-warning me-1"></i> Interview Notice</h6>
                                                         <div class="small text-secondary">
                                                             <strong>Date & Time:</strong> <?= htmlspecialchars($app['interview_date']) ?> at <?= htmlspecialchars($app['interview_time']) ?><br>
                                                             <strong>Location:</strong> <?= htmlspecialchars($app['interview_venue']) ?><br>
@@ -160,7 +160,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                                     <label class="form-label small fw-bold text-muted text-uppercase">Indicated Available Time Slots</label>
                                                     <div class="d-flex flex-wrap gap-1">
                                                         <?php foreach ($app['availability'] as $av): ?>
-                                                            <span class="badge bg-secondary-subtle text-dark border small"><?= htmlspecialchars($av) ?></span>
+                                                            <span class="badge-kld-tag small"><?= htmlspecialchars($av) ?></span>
                                                         <?php endforeach; ?>
                                                     </div>
                                                 </div>
@@ -168,7 +168,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                                 <?php if (!empty($app['supervisor_notes'])): ?>
                                                     <div class="mb-3">
                                                         <label class="form-label small fw-bold text-muted text-uppercase">Supervisor Feedback & Remarks</label>
-                                                        <div class="p-3 bg-light rounded-3 text-dark small border-start border-4 border-primary">
+                                                        <div class="p-3 bg-light rounded-3 text-dark small border-start border-4 border-success">
                                                             <?= htmlspecialchars($app['supervisor_notes']) ?>
                                                         </div>
                                                     </div>

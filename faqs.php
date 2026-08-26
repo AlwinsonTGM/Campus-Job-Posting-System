@@ -40,7 +40,7 @@ $faqs = [
     [
         'category' => 'Employer / Office',
         'q' => 'How can campus departments or offices post new job openings?',
-        'a' => 'Authorized department chairs, office supervisors, and laboratory custodians can register with their official university email (`@university.edu.ph`), navigate to the <a href="employer/create-job.php">Employer Dashboard</a>, and fill out the vacancy requisition form.'
+        'a' => 'Authorized institute deans, office supervisors, and laboratory custodians can register with their official KLD email (`@kld.edu.ph`), navigate to the <a href="employer/create-job.php">Employer Dashboard</a>, and fill out the vacancy requisition form.'
     ],
     [
         'category' => 'Account & Security',
@@ -85,7 +85,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <h2 class="accordion-header" id="heading<?= $index ?>">
                                 <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?> py-3 px-4 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>" aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $index ?>">
                                     <div class="d-flex align-items-center gap-3 w-100 me-3">
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small flex-shrink-0">
+                                        <span class="badge-kld-tag small flex-shrink-0">
                                             Q<?= $index + 1 ?>
                                         </span>
                                         <span class="text-dark"><?= htmlspecialchars($faq['q']) ?></span>
@@ -110,7 +110,7 @@ require_once __DIR__ . '/includes/navbar.php';
 
                 <!-- Still Have Questions Box -->
                 <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 text-center bg-white">
-                    <div class="stat-icon bg-primary text-white mx-auto mb-3">
+                    <div class="stat-icon stat-icon-kld mx-auto mb-3">
                         <i class="bi bi-chat-dots-fill"></i>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">Still need assistance with your application?</h5>

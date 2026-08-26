@@ -9,10 +9,10 @@
   <circle cx="80" cy="55" r="30" fill="#fecdd3"/>
   <!-- Hair (Neat Ponytail / Short Bob) -->
   <path d="M48 55 C48 26, 112 26, 112 55 C108 30, 52 30, 48 55 Z" fill="#292524"/>
-  <!-- Navy Suit Blazer -->
-  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#0f2c59"/>
+  <!-- KLD Green Suit Blazer -->
+  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#0f5132"/>
   <!-- Crisp White Collared Shirt -->
   <polygon points="80,105 60,118 70,145 80,130 90,145 100,118" fill="#ffffff"/>
   <!-- Gold Lapel Pin Badge -->
-  <circle cx="58" cy="125" r="4" fill="#f59e0b"/>
+  <circle cx="58" cy="125" r="4" fill="#eab308"/>
 </svg>

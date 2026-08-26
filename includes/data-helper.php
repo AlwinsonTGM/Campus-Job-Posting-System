@@ -314,8 +314,8 @@ function create_application($data) {
         'student_id' => $user['id'] ?? 1,
         'student_name' => $user['name'] ?? 'Juan Dela Cruz',
         'student_number' => $user['student_id'] ?? '2024-00123',
-        'student_email' => $user['email'] ?? 'student@university.edu.ph',
-        'course' => $user['course'] ?? 'BS Information Systems',
+        'student_email' => $user['email'] ?? 'student@kld.edu.ph',
+        'course' => $user['course'] ?? 'BS Information Systems (BSIS)',
         'year_level' => $user['year_level'] ?? '2nd Year',
         'phone' => $data['phone'] ?? ($user['phone'] ?? '+63 917 123 4567'),
         'cover_letter' => htmlspecialchars($data['cover_letter'] ?? ''),
@@ -378,6 +378,49 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
     return false;
 }
 
+// Official KLD Institutes and Degree Programs
+function get_kld_institutes_and_courses() {
+    return [
+        'Institute of Computing and Digital Innovation (ICDI)' => [
+            'BS Information Systems (BSIS)',
+            'BS Computer Science (BSCS)',
+            'BS Data Science (BSDS)'
+        ],
+        'Institute of Engineering (IE)' => [
+            'BS Civil Engineering (BSCE)'
+        ],
+        'Institute of Nursing (IN)' => [
+            'BS Nursing (BSN)'
+        ],
+        'Institute of Medical Laboratory Science (IMLS)' => [
+            'BS Medical Laboratory Science (BSMLS)'
+        ],
+        'Institute of Midwifery (IM)' => [
+            'BS Midwifery (BSM)'
+        ],
+        'Institute of Science and Mathematics (ISM)' => [
+            'BS Life Sciences (BSLS)'
+        ],
+        'Institute of Behavioral Sciences (IBS)' => [
+            'BS Psychology (BSP)'
+        ],
+        'Institute of Governance and Development Studies (IGDS)' => [
+            'BS Social Work (BSSW)'
+        ]
+    ];
+}
+
+function get_kld_courses_flat() {
+    $institutes = get_kld_institutes_and_courses();
+    $flat = [];
+    foreach ($institutes as $inst => $courses) {
+        foreach ($courses as $c) {
+            $flat[] = $c;
+        }
+    }
+    return $flat;
+}
+
 // Categories
 function get_categories() {
     return $_SESSION['categories'] ?? load_json_file('categories.json');
@@ -407,5 +450,5 @@ function reset_demo_data() {
     $_SESSION['applications'] = load_json_file('applications.json');
     $_SESSION['categories'] = load_json_file('categories.json');
     $_SESSION['app_initialized'] = true;
-    set_flash('info', 'Demo dataset has been reset to default state.');
+    set_flash('info', 'Demo dataset has been reset to default KLD state.');
 }

@@ -9,15 +9,15 @@
             <div class="col-lg-4 col-md-6">
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="bi bi-mortarboard-fill text-warning fs-3"></i>
-                    <h5 class="text-white fw-bold mb-0">Campus Job Posting System</h5>
+                    <h5 class="text-white fw-bold mb-0">KLD CampusJobs</h5>
                 </div>
                 <p class="text-secondary small">
-                    An official campus-focused employment portal connecting enrolled students with approved university departments, administrative offices, laboratories, and peer tutoring opportunities.
+                    An official student assistantship and campus employment portal for <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong>, connecting enrolled students with approved academic institutes, administrative offices, and laboratories.
                 </p>
-                <div class="d-flex gap-3 text-secondary">
+                <div class="d-flex flex-wrap gap-2 text-secondary">
+                    <span class="badge bg-secondary-subtle text-dark border">KLD Green & Gold</span>
                     <span class="badge bg-secondary-subtle text-dark border">Native PHP</span>
                     <span class="badge bg-secondary-subtle text-dark border">Bootstrap 5.3</span>
-                    <span class="badge bg-secondary-subtle text-dark border">Vanilla JS</span>
                 </div>
             </div>
 
@@ -44,24 +44,24 @@
             <div class="col-lg-3 col-md-6">
                 <h6 class="text-white fw-semibold mb-3">Campus Office Support</h6>
                 <p class="text-secondary small mb-2">
-                    <i class="bi bi-geo-alt-fill text-warning me-2"></i> Office of Student Affairs & Services<br>
-                    Student Center Building, 2nd Floor
+                    <i class="bi bi-geo-alt-fill text-warning me-2"></i> Student Affairs & Services Office (SASO)<br>
+                    KLD Main Campus, City of Dasmariñas, Cavite
                 </p>
                 <p class="text-secondary small mb-2">
-                    <i class="bi bi-envelope-fill text-warning me-2"></i> studentaffairs@university.edu.ph
+                    <i class="bi bi-envelope-fill text-warning me-2"></i> saso@kld.edu.ph
                 </p>
                 <p class="text-secondary small mb-0">
-                    <i class="bi bi-telephone-fill text-warning me-2"></i> (02) 8888-1234 loc 201
+                    <i class="bi bi-telephone-fill text-warning me-2"></i> (046) 416-0000 loc 101
                 </p>
             </div>
         </div>
 
-        <div class="border-top border-secondary pt-3 mt-2 d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+        <div class="border-top border-secondary pt-3 mt-2 d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start small text-secondary">
             <div>
-                &copy; <?= date('Y') ?> <strong>Campus Job Posting System</strong>. All rights reserved.
+                &copy; <?= date('Y') ?> <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong>. All rights reserved.
             </div>
             <div class="mt-2 mt-md-0">
-                <span>BSIS 2nd Year Capstone Activity | COAL101 Web Systems & Tech</span>
+                <span>KLD BSIS 2nd Year Midterm Lab Activity | COAL101 Web Systems & Tech</span>
             </div>
         </div>
     </div>

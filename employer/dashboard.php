@@ -26,7 +26,7 @@ require_once __DIR__ . '/../includes/navbar.php';
     <div class="container">
         
         <!-- Welcome Banner -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-4 mb-4 text-white" style="background: linear-gradient(135deg, #0f2c59 0%, #1e40af 100%);">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-4 mb-4 text-white bg-kld-gradient">
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="d-flex align-items-center gap-3 mb-2">
@@ -43,8 +43,8 @@ require_once __DIR__ . '/../includes/navbar.php';
                         <strong>Office Location:</strong> <?= htmlspecialchars($user['office_location'] ?? 'Admin Building Room 102') ?>
                     </p>
                 </div>
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <a href="create-job.php" class="btn btn-gold btn-sm px-3 shadow-sm me-2">
+                <div class="col-md-4 text-center text-md-end mt-3 mt-md-0 d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">
+                    <a href="create-job.php" class="btn btn-gold btn-sm px-3 shadow-sm">
                         <i class="bi bi-plus-circle-fill me-1"></i> Post New Vacancy
                     </a>
                     <a href="applicants.php" class="btn btn-outline-light btn-sm px-3">
@@ -55,15 +55,15 @@ require_once __DIR__ . '/../includes/navbar.php';
         </div>
 
         <!-- Metric KPI Cards -->
-        <div class="row g-3 mb-4">
+        <div class="row g-2 g-md-3 mb-4">
             <div class="col-6 col-lg-3">
-                <div class="stat-card" style="border-left-color: #3b82f6;">
+                <div class="stat-card" style="border-left-color: var(--kld-green-primary);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-muted small fw-semibold text-uppercase">Active Postings</div>
                             <div class="h3 fw-bold text-dark mb-0"><?= $active_jobs_count ?></div>
                         </div>
-                        <div class="stat-icon bg-primary-subtle text-primary">
+                        <div class="stat-icon stat-icon-kld">
                             <i class="bi bi-briefcase-fill"></i>
                         </div>
                     </div>
@@ -71,13 +71,13 @@ require_once __DIR__ . '/../includes/navbar.php';
             </div>
 
             <div class="col-6 col-lg-3">
-                <div class="stat-card" style="border-left-color: #06b6d4;">
+                <div class="stat-card" style="border-left-color: var(--kld-gold);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-muted small fw-semibold text-uppercase">Total Applicants</div>
                             <div class="h3 fw-bold text-dark mb-0"><?= $total_applicants_count ?></div>
                         </div>
-                        <div class="stat-icon bg-info-subtle text-info">
+                        <div class="stat-icon stat-icon-kld-gold">
                             <i class="bi bi-people-fill"></i>
                         </div>
                     </div>
@@ -85,13 +85,13 @@ require_once __DIR__ . '/../includes/navbar.php';
             </div>
 
             <div class="col-6 col-lg-3">
-                <div class="stat-card" style="border-left-color: #f59e0b;">
+                <div class="stat-card" style="border-left-color: var(--kld-gold-accent);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-muted small fw-semibold text-uppercase">Pending Review</div>
                             <div class="h3 fw-bold text-dark mb-0"><?= $pending_reviews_count ?></div>
                         </div>
-                        <div class="stat-icon bg-warning-subtle text-warning">
+                        <div class="stat-icon stat-icon-kld-gold">
                             <i class="bi bi-hourglass-top"></i>
                         </div>
                     </div>
@@ -99,13 +99,13 @@ require_once __DIR__ . '/../includes/navbar.php';
             </div>
 
             <div class="col-6 col-lg-3">
-                <div class="stat-card" style="border-left-color: #10b981;">
+                <div class="stat-card" style="border-left-color: var(--kld-green-primary);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-muted small fw-semibold text-uppercase">Hired SAs</div>
                             <div class="h3 fw-bold text-dark mb-0"><?= $hired_count ?></div>
                         </div>
-                        <div class="stat-icon bg-success-subtle text-success">
+                        <div class="stat-icon stat-icon-kld">
                             <i class="bi bi-person-check-fill"></i>
                         </div>
                     </div>
@@ -117,7 +117,7 @@ require_once __DIR__ . '/../includes/navbar.php';
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
             <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-folder-check text-primary me-2"></i> Department Vacancy Requisitions</h5>
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-folder-check text-kld-green me-2"></i> Department Vacancy Requisitions</h5>
                     <span class="text-muted small">Manage job listings posted by your office</span>
                 </div>
                 <a href="create-job.php" class="btn btn-academic btn-sm">

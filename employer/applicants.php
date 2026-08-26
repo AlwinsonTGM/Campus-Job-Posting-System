@@ -157,9 +157,9 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                                 <!-- Comprehensive Candidate Review Modal -->
                                 <div class="modal fade" id="reviewModal<?= $app['id'] ?>" tabindex="-1" aria-labelledby="reviewLabel<?= $app['id'] ?>" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                                         <div class="modal-content rounded-4 border-0 shadow">
-                                            <div class="modal-header bg-primary text-white">
+                                            <div class="modal-header bg-kld-gradient text-white">
                                                 <h5 class="modal-title fw-bold" id="reviewLabel<?= $app['id'] ?>">
                                                     <i class="bi bi-person-lines-fill me-1 text-warning"></i> Candidate Application: <?= htmlspecialchars($app['student_name']) ?>
                                                 </h5>
@@ -178,7 +178,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                                         </div>
                                                         <div class="col-md-6">
                                                             <span class="text-muted small">Target Position:</span>
-                                                            <div class="fw-bold text-primary"><?= htmlspecialchars($app['job_title']) ?></div>
+                                                            <div class="fw-bold text-kld-green"><?= htmlspecialchars($app['job_title']) ?></div>
                                                             <div class="small text-muted">Department: <?= htmlspecialchars($app['department']) ?></div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -194,7 +194,7 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                                                 <!-- Cover Letter -->
                                                 <div class="mb-4">
-                                                    <h6 class="fw-bold text-dark text-uppercase small"><i class="bi bi-file-text text-primary me-1"></i> Statement of Intent / Cover Letter</h6>
+                                                    <h6 class="fw-bold text-dark text-uppercase small"><i class="bi bi-file-text text-kld-green me-1"></i> Statement of Intent / Cover Letter</h6>
                                                     <div class="p-3 bg-white border rounded-3 text-secondary small lh-lg">
                                                         <?= nl2br(htmlspecialchars($app['cover_letter'])) ?>
                                                     </div>
@@ -202,11 +202,11 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                                                 <!-- Available Shifts -->
                                                 <div class="mb-4">
-                                                    <h6 class="fw-bold text-dark text-uppercase small"><i class="bi bi-calendar3 text-primary me-1"></i> Candidate Shift Availability (Vacant Periods)</h6>
+                                                    <h6 class="fw-bold text-dark text-uppercase small"><i class="bi bi-calendar3 text-kld-green me-1"></i> Candidate Shift Availability (Vacant Periods)</h6>
                                                     <div class="d-flex flex-wrap gap-1">
                                                         <?php if (!empty($app['availability'])): ?>
                                                             <?php foreach ($app['availability'] as $av): ?>
-                                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small"><?= htmlspecialchars($av) ?></span>
+                                                                <span class="badge-kld-tag small"><?= htmlspecialchars($av) ?></span>
                                                             <?php endforeach; ?>
                                                         <?php else: ?>
                                                             <span class="text-muted small">Flexible schedule</span>
@@ -223,13 +223,13 @@ require_once __DIR__ . '/../includes/navbar.php';
                                                             <span class="text-muted small">Official Student Resume & COR</span>
                                                         </div>
                                                     </div>
-                                                    <span class="badge bg-success-subtle text-success small">Verified Enrollment</span>
+                                                    <span class="badge bg-kld-soft text-kld-green border border-success-subtle small">Verified Enrollment</span>
                                                 </div>
 
                                                 <hr>
 
                                                 <!-- Decision Action Form -->
-                                                <h6 class="fw-bold text-dark text-uppercase small mb-3"><i class="bi bi-check2-circle text-primary me-1"></i> Hiring Decision & Status Controls</h6>
+                                                <h6 class="fw-bold text-dark text-uppercase small mb-3"><i class="bi bi-check2-circle text-kld-green me-1"></i> Hiring Decision & Status Controls</h6>
                                                 
                                                 <form action="applicants.php" method="POST">
                                                     <input type="hidden" name="app_id" value="<?= $app['id'] ?>">
@@ -259,7 +259,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                                     </div>
 
                                                     <div class="d-flex flex-wrap gap-2 pt-2">
-                                                        <button type="submit" name="action_type" value="interview_scheduled" class="btn btn-info text-white btn-sm fw-bold">
+                                                        <button type="submit" name="action_type" value="interview_scheduled" class="btn btn-gold btn-sm fw-bold">
                                                             <i class="bi bi-calendar-check me-1"></i> Shortlist & Set Interview
                                                         </button>
 

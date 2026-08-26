@@ -25,7 +25,7 @@ require_once __DIR__ . '/includes/navbar.php';
 
                 <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
                     <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
-                        <div class="stat-icon bg-primary text-white fs-3">
+                        <div class="stat-icon stat-icon-kld fs-3">
                             <i class="bi bi-shield-check"></i>
                         </div>
                         <div>
@@ -36,32 +36,32 @@ require_once __DIR__ . '/includes/navbar.php';
                         </div>
                     </div>
 
-                    <div class="alert alert-light border border-primary-subtle p-3 rounded-3 mb-4">
-                        <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    <div class="alert alert-light border border-success-subtle p-3 rounded-3 mb-4">
+                        <i class="bi bi-info-circle-fill text-kld-green me-2"></i>
                         The <strong>Campus Job Posting System</strong> is committed to safeguarding personal, academic, and sensitive information submitted by students and campus department representatives.
                     </div>
 
                     <div class="privacy-content d-flex flex-column gap-4">
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">1. Scope and Applicability</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">1. Scope and Applicability</h4>
                             <p class="text-secondary">
                                 This policy governs all personal data collected through the online Campus Job Posting Portal from enrolled students seeking student assistantships, student tutors, and campus department personnel evaluating employment applications.
                             </p>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">2. Information We Collect</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">2. Information We Collect</h4>
                             <p class="text-secondary mb-2">We collect only necessary information required to evaluate employment suitability:</p>
                             <ul class="text-secondary">
-                                <li><strong>Personal Identity:</strong> Full name, institutional email address (`@university.edu.ph`), contact phone numbers, and student identification numbers.</li>
-                                <li><strong>Academic Credentials:</strong> Enrolled college, degree program, academic year level, General Weighted Average (GWA), and official Certificate of Registration / Study Load.</li>
+                                <li><strong>Personal Identity:</strong> Full name, institutional email address (`@kld.edu.ph`), contact phone numbers, and student identification numbers.</li>
+                                <li><strong>Academic Credentials:</strong> Enrolled KLD academic institute, degree program (e.g. BSIS, BSCS, BSDS, BSCE, BSN, BSMLS, BSM, BSLS, BSP, BSSW), academic year level, General Weighted Average (GWA), and official Certificate of Registration / Study Load.</li>
                                 <li><strong>Application Files:</strong> Digital resumes, curriculum vitae, statements of interest/cover letters, and weekly class schedule vacant slots.</li>
-                                <li><strong>Employer & Supervisor Data:</strong> Campus office department, official room location, and supervisor institutional contact details.</li>
+                                <li><strong>Employer & Supervisor Data:</strong> KLD campus office department, official room location, and supervisor institutional contact details.</li>
                             </ul>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">3. Purpose of Data Processing</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">3. Purpose of Data Processing</h4>
                             <p class="text-secondary mb-2">Your information is processed strictly for the following legitimate campus purposes:</p>
                             <ol class="text-secondary">
                                 <li>Assessing applicant qualification against posted department requirements.</li>
@@ -72,31 +72,31 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">4. Non-Disclosure & Data Sharing Policy</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">4. Non-Disclosure & Data Sharing Policy</h4>
                             <p class="text-secondary">
-                                Under no circumstances will student resumes or contact records be sold, rented, or transferred to third-party commercial marketing firms. Access is restricted exclusively to authorized university department supervisors, Office of Student Affairs (OSA) administrators, and university accounting officers.
+                                Under no circumstances will student resumes or contact records be sold, rented, or transferred to third-party commercial marketing firms. Access is restricted exclusively to authorized KLD department supervisors, Student Affairs & Services Office (SASO) administrators, and KLD accounting officers.
                             </p>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">5. Data Retention & Storage Security</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">5. Data Retention & Storage Security</h4>
                             <p class="text-secondary">
                                 Application submissions are retained for the duration of the current academic semester and archived in accordance with university document retention schedules. Secure authentication tokens and role-based access control prevent unauthorized viewing of sensitive student files.
                             </p>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">6. Rights of the Data Subject</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">6. Rights of the Data Subject</h4>
                             <p class="text-secondary mb-2">Under Republic Act 10173, students and users are entitled to the following privacy rights:</p>
                             <div class="row g-3 text-secondary small">
                                 <div class="col-md-6">
                                     <div class="p-3 bg-light rounded-2 border">
-                                        <strong><i class="bi bi-eye-fill text-primary me-1"></i> Right to Access:</strong> View all submitted applications and profile records at any time through the student dashboard.
+                                        <strong><i class="bi bi-eye-fill text-kld-green me-1"></i> Right to Access:</strong> View all submitted applications and profile records at any time through the student dashboard.
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="p-3 bg-light rounded-2 border">
-                                        <strong><i class="bi bi-pencil-fill text-warning me-1"></i> Right to Rectify:</strong> Update or correct outdated contact numbers, resume files, and availability matrices.
+                                        <strong><i class="bi bi-pencil-fill text-kld-gold me-1"></i> Right to Rectify:</strong> Update or correct outdated contact numbers, resume files, and availability matrices.
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -106,21 +106,21 @@ require_once __DIR__ . '/includes/navbar.php';
                                 </div>
                                 <div class="col-md-6">
                                     <div class="p-3 bg-light rounded-2 border">
-                                        <strong><i class="bi bi-envelope-exclamation-fill text-info me-1"></i> Right to File Complaints:</strong> Report unauthorized data access to the University Data Protection Officer.
+                                        <strong><i class="bi bi-envelope-exclamation-fill text-kld-green me-1"></i> Right to File Complaints:</strong> Report unauthorized data access to the University Data Protection Officer.
                                     </div>
                                 </div>
                             </div>
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-primary mb-2">7. Data Protection Officer (DPO) Contact</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">7. Data Protection Officer (DPO) Contact</h4>
                             <p class="text-secondary small mb-1">
                                 For inquiries, corrections, or concerns regarding your personal data rights:
                             </p>
                             <div class="bg-light p-3 rounded-2 text-secondary small">
-                                <strong>University Data Protection Office (DPO)</strong><br>
-                                Administration Building, 3rd Floor, Room 312<br>
-                                Email: <code>dataprivacy@university.edu.ph</code> | Direct Line: (02) 8888-1234 loc 312
+                                <strong>Kolehiyo ng Lungsod ng Dasmariñas - Data Protection Office (DPO)</strong><br>
+                                KLD Administration Building, City of Dasmariñas, Cavite<br>
+                                Email: <code>dataprivacy@kld.edu.ph</code> | Direct Line: (046) 416-0000 loc 105
                             </div>
                         </section>
                     </div>

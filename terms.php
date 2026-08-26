@@ -36,37 +36,37 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <div class="terms-content d-flex flex-column gap-4">
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">1. Acceptance of Terms</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">1. Acceptance of Terms</h4>
                             <p class="text-secondary">
-                                By registering for, accessing, or submitting applications through the Campus Job Posting System, you agree to comply with all rules, policies, and directives outlined in this agreement and the official University Student Handbook.
+                                By registering for, accessing, or submitting applications through the KLD Campus Job Posting System, you agree to comply with all rules, policies, and directives outlined in this agreement and the official Kolehiyo ng Lungsod ng Dasmariñas (KLD) Student Handbook.
                             </p>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">2. Student Assistant Eligibility Requirements</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">2. Student Assistant Eligibility Requirements</h4>
                             <p class="text-secondary mb-2">To qualify for campus employment, student applicants must satisfy the following criteria:</p>
                             <ul class="text-secondary">
-                                <li>Must be a currently registered undergraduate or graduate student carrying at least 12 academic units.</li>
+                                <li>Must be a currently registered undergraduate student in any of the 8 KLD Academic Institutes carrying at least 12 academic units.</li>
                                 <li>Must maintain a minimum General Weighted Average (GWA) of <strong>2.50 or better</strong> with no failing grades in the preceding semester.</li>
-                                <li>Must have no active disciplinary offenses or pending cases before the Student Disciplinary Board.</li>
+                                <li>Must have no active disciplinary offenses or pending cases before the KLD Disciplinary Board.</li>
                                 <li>Must present a valid Study Load / Certificate of Registration (COR) during application.</li>
                             </ul>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">3. Work Hour Regulations (20-Hour Weekly Cap)</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">3. Work Hour Regulations (20-Hour Weekly Cap)</h4>
                             <div class="alert alert-warning border-0 p-3 rounded-3 mb-3">
                                 <strong><i class="bi bi-exclamation-triangle-fill me-1"></i> Strict Academic Safeguard:</strong>
                                 Student Assistants are legally restricted to working a maximum of <strong>20 hours per week</strong> during regular instructional terms to ensure employment does not interfere with study hours or lecture attendance.
                             </div>
                             <p class="text-secondary">
-                                Working hours may be expanded up to a maximum of 40 hours per week only during official semester breaks, subject to prior written approval from the Office of Student Affairs.
+                                Working hours may be expanded up to a maximum of 40 hours per week only during official semester breaks, subject to prior written approval from the Student Affairs & Services Office (SASO).
                             </p>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">4. Campus Employer & Supervisor Obligations</h4>
-                            <p class="text-secondary mb-2">Authorized department chairs and office heads agree to:</p>
+                            <h4 class="fw-bold text-kld-green mb-2">4. Campus Employer & Supervisor Obligations</h4>
+                            <p class="text-secondary mb-2">Authorized institute deans and office heads agree to:</p>
                             <ol class="text-secondary">
                                 <li>Provide clear, accurate, and ethical job descriptions and duties.</li>
                                 <li>Adjust duty shifts flexibly during scheduled midterm and final examination weeks.</li>
@@ -76,23 +76,23 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">5. Application Integrity & Code of Conduct</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">5. Application Integrity & Code of Conduct</h4>
                             <p class="text-secondary">
-                                Any falsification of academic grades, forgery of study load documents, or fraudulent logging of Daily Time Records ("ghost attendance") will result in immediate termination of the assistantship contract, forfeiture of unreleased stipends, and referral to the University Disciplinary Tribunal.
+                                Any falsification of academic grades, forgery of study load documents, or fraudulent logging of Daily Time Records ("ghost attendance") will result in immediate termination of the assistantship contract, forfeiture of unreleased stipends, and referral to the KLD Disciplinary Committee.
                             </p>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-primary mb-2">6. Contract Termination & Resignation</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">6. Contract Termination & Resignation</h4>
                             <p class="text-secondary">
                                 A student assistant may resign by submitting a written 1-week notice to their department supervisor. Campus offices reserve the right to terminate an assignment due to persistent tardiness, unexcused absences, or breach of department confidentiality.
                             </p>
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-primary mb-2">7. Inquiries & Oversight</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">7. Inquiries & Oversight</h4>
                             <p class="text-secondary small mb-0">
-                                This portal is administered by the <strong>Office of Student Affairs & Services (OSA)</strong>. For disputes or policy clarifications, visit Room 201, Student Center Building or email <code>studentaffairs@university.edu.ph</code>.
+                                This portal is administered by the <strong>Student Affairs & Services Office (SASO)</strong> at <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong>. For disputes or policy clarifications, visit the SASO Office, KLD Main Campus, City of Dasmariñas, Cavite or email <code>saso@kld.edu.ph</code>.
                             </p>
                         </section>
                     </div>

@@ -4,7 +4,7 @@
  */
 require_once __DIR__ . '/includes/data-helper.php';
 
-$page_title = 'Find On-Campus Jobs & Student Assistantships';
+$page_title = 'Official Student Employment Portal - KLD';
 $all_jobs = get_jobs();
 $categories = get_categories();
 $featured_jobs = array_slice($all_jobs, 0, 6);
@@ -22,29 +22,29 @@ require_once __DIR__ . '/includes/navbar.php';
     <!-- Hero Section -->
     <section class="hero-section text-center text-lg-start">
         <div class="container">
-            <div class="row align-items-center g-5">
+            <div class="row align-items-center g-4 g-lg-5">
                 <div class="col-lg-7">
-                    <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-3">
-                        <i class="bi bi-stars"></i> Official University Job Board
+                    <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-3 d-inline-block">
+                        <i class="bi bi-stars"></i> Official KLD Student Employment Portal
                     </span>
-                    <h1 class="display-4 fw-bold text-white mb-3 lh-sm">
+                    <h1 class="hero-title fw-bold text-white mb-3">
                         Find Purposeful Work <br class="d-none d-md-block">
-                        <span class="text-warning">Right on Campus</span>
+                        <span class="text-warning">at Kolehiyo ng Lungsod ng Dasmariñas</span>
                     </h1>
-                    <p class="lead text-light opacity-90 mb-4 pe-lg-5">
-                        Discover flexible student assistantships, technical lab support, clerical roles, and peer tutoring opportunities tailored around your class schedules.
+                    <p class="lead hero-subtitle text-light opacity-90 mb-4 pe-lg-4">
+                        Discover flexible student assistantships, technical lab support, administrative roles, and peer tutoring opportunities tailored around your KLD class schedules.
                     </p>
 
-                    <div class="d-flex flex-wrap gap-3 mb-4">
-                        <a href="student/jobs.php" class="btn btn-gold btn-lg px-4 shadow">
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-md-3 mb-4">
+                        <a href="student/jobs.php" class="btn btn-gold btn-lg px-3 px-sm-4 shadow">
                             <i class="bi bi-search me-2"></i> Browse All Vacancies
                         </a>
-                        <a href="register.php?role=employer" class="btn btn-outline-light btn-lg px-4">
+                        <a href="register.php?role=employer" class="btn btn-outline-light btn-lg px-3 px-sm-4">
                             <i class="bi bi-building me-2"></i> Post Department Vacancy
                         </a>
                     </div>
 
-                    <div class="d-flex align-items-center gap-4 text-light small">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-2 gap-md-4 text-light small">
                         <div><i class="bi bi-check-circle-fill text-warning me-1"></i> Flexible Shift Adjustments</div>
                         <div><i class="bi bi-check-circle-fill text-warning me-1"></i> Max 20 hrs/week Safe Limit</div>
                         <div><i class="bi bi-check-circle-fill text-warning me-1"></i> Official Certificate of Service</div>
@@ -54,19 +54,19 @@ require_once __DIR__ . '/includes/navbar.php';
                 <!-- Hero Search Widget -->
                 <div class="col-lg-5">
                     <div class="hero-search-card">
-                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-funnel-fill text-primary"></i> Quick Job Search</h5>
+                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-funnel-fill text-kld-green"></i> Quick Job Search</h5>
                         <form action="student/jobs.php" method="GET">
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold text-muted">Keyword or Job Title</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                    <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
                                     <input type="text" name="kw" class="form-control" placeholder="e.g. Lab Assistant, Clerk, Tutor">
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold text-muted">Category / Field</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-grid-fill"></i></span>
+                                    <span class="input-group-text bg-light"><i class="bi bi-grid-fill text-muted"></i></span>
                                     <select name="cat" class="form-select">
                                         <option value="">All Categories</option>
                                         <?php foreach ($categories as $cat): ?>
@@ -78,7 +78,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold text-muted">Campus Department / Office</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
+                                    <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
                                     <input type="text" name="dept" class="form-control" placeholder="e.g. MIS, Library, Registrar">
                                 </div>
                             </div>
@@ -98,25 +98,25 @@ require_once __DIR__ . '/includes/navbar.php';
             <div class="row g-3 text-center">
                 <div class="col-6 col-md-3">
                     <div class="p-3">
-                        <div class="display-6 fw-bold text-primary mb-1"><?= $total_jobs ?></div>
+                        <div class="display-6 fw-bold text-kld-green mb-1"><?= $total_jobs ?></div>
                         <div class="text-muted small fw-semibold text-uppercase">Active Vacancies</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="p-3">
-                        <div class="display-6 fw-bold text-warning mb-1"><?= $total_cats ?></div>
+                        <div class="display-6 fw-bold text-kld-green mb-1"><?= $total_cats ?></div>
                         <div class="text-muted small fw-semibold text-uppercase">Job Categories</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="p-3">
-                        <div class="display-6 fw-bold text-success mb-1">12+</div>
+                        <div class="display-6 fw-bold text-kld-green mb-1">12+</div>
                         <div class="text-muted small fw-semibold text-uppercase">Partner Offices</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="p-3">
-                        <div class="display-6 fw-bold text-info mb-1"><?= $total_apps ?></div>
+                        <div class="display-6 fw-bold text-kld-green mb-1"><?= $total_apps ?></div>
                         <div class="text-muted small fw-semibold text-uppercase">Total Applications</div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ require_once __DIR__ . '/includes/navbar.php';
         <div class="container">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
                 <div>
-                    <span class="text-primary fw-bold small text-uppercase letter-spacing-1">Immediate Openings</span>
+                    <span class="text-kld-green fw-bold small text-uppercase letter-spacing-1">Immediate Openings</span>
                     <h2 class="fw-bold text-dark mb-0">Featured Campus Opportunities</h2>
                 </div>
                 <a href="student/jobs.php" class="btn btn-outline-academic mt-3 mt-md-0">
@@ -142,8 +142,8 @@ require_once __DIR__ . '/includes/navbar.php';
                     <div class="col-lg-4 col-md-6">
                         <div class="job-card">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
-                                    <?= htmlspecialchars($job['category']) ?>
+                                <span class="badge-kld-tag">
+                                    <i class="bi bi-tag-fill me-1 text-kld-gold"></i><?= htmlspecialchars($job['category']) ?>
                                 </span>
                                 <span class="job-tag">
                                     <i class="bi bi-clock-history me-1"></i><?= htmlspecialchars($job['hours_per_week']) ?>
@@ -151,13 +151,13 @@ require_once __DIR__ . '/includes/navbar.php';
                             </div>
 
                             <h5 class="fw-bold text-dark mb-1">
-                                <a href="student/job-details.php?id=<?= $job['id'] ?>" class="text-decoration-none text-dark hover-primary">
+                                <a href="student/job-details.php?id=<?= $job['id'] ?>" class="text-decoration-none text-dark">
                                     <?= htmlspecialchars($job['title']) ?>
                                 </a>
                             </h5>
                             
                             <p class="text-muted small mb-3">
-                                <i class="bi bi-building me-1"></i><?= htmlspecialchars($job['department']) ?>
+                                <i class="bi bi-building me-1 text-kld-green"></i><?= htmlspecialchars($job['department']) ?>
                             </p>
 
                             <p class="text-secondary small mb-3 text-truncate-2">
@@ -167,7 +167,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <div class="border-top pt-3 mt-auto d-flex justify-content-between align-items-center">
                                 <div>
                                     <div class="text-muted small">Hourly Stipend</div>
-                                    <div class="fw-bold text-success"><?= htmlspecialchars($job['pay_rate']) ?></div>
+                                    <div class="fw-bold text-kld-green"><?= htmlspecialchars($job['pay_rate']) ?></div>
                                 </div>
                                 <div class="d-flex gap-2">
                                     <a href="student/job-details.php?id=<?= $job['id'] ?>" class="btn btn-sm btn-outline-secondary">
@@ -189,7 +189,7 @@ require_once __DIR__ . '/includes/navbar.php';
     <section class="py-5 bg-white border-top border-bottom">
         <div class="container">
             <div class="text-center mb-5">
-                <span class="text-primary fw-bold small text-uppercase">Explore by Department</span>
+                <span class="text-kld-green fw-bold small text-uppercase">Explore by Department</span>
                 <h2 class="fw-bold text-dark">Job Categories</h2>
                 <p class="text-muted">Find opportunities matching your skills, academic major, and career interests.</p>
             </div>
@@ -198,13 +198,13 @@ require_once __DIR__ . '/includes/navbar.php';
                 <?php foreach ($categories as $cat): ?>
                     <div class="col-lg-4 col-md-6">
                         <a href="student/jobs.php?cat=<?= urlencode($cat['name']) ?>" class="category-card">
-                            <div class="category-icon-box bg-<?= $cat['color'] ?>-subtle text-<?= $cat['color'] ?>">
+                            <div class="category-icon-box">
                                 <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
                             </div>
                             <h5 class="fw-bold mb-2"><?= htmlspecialchars($cat['name']) ?></h5>
                             <p class="text-muted small mb-3"><?= htmlspecialchars($cat['description']) ?></p>
                             <span class="badge bg-light text-dark border">
-                                <?= $cat['job_count'] ?? 3 ?> Open Positions <i class="bi bi-chevron-right ms-1"></i>
+                                <?= $cat['job_count'] ?? 3 ?> Open Positions <i class="bi bi-chevron-right ms-1 text-kld-gold"></i>
                             </span>
                         </a>
                     </div>
@@ -218,12 +218,12 @@ require_once __DIR__ . '/includes/navbar.php';
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
-                    <span class="text-warning fw-bold small text-uppercase">Student Benefits</span>
+                    <span class="text-kld-green fw-bold small text-uppercase">Student Benefits</span>
                     <h2 class="fw-bold text-dark mb-4">Why Apply for an On-Campus Student Job?</h2>
                     
                     <div class="d-flex gap-3 mb-4">
-                        <div class="stat-icon bg-primary text-white flex-shrink-0">
-                            <i class="bi bi-calendar-check"></i>
+                        <div class="stat-icon stat-icon-kld flex-shrink-0">
+                            <i class="bi bi-calendar-check fs-4"></i>
                         </div>
                         <div>
                             <h5 class="fw-bold mb-1">Class-First Flexible Schedules</h5>
@@ -232,18 +232,18 @@ require_once __DIR__ . '/includes/navbar.php';
                     </div>
 
                     <div class="d-flex gap-3 mb-4">
-                        <div class="stat-icon bg-success text-white flex-shrink-0">
-                            <i class="bi bi-pin-map"></i>
+                        <div class="stat-icon stat-icon-kld flex-shrink-0">
+                            <i class="bi bi-pin-map fs-4"></i>
                         </div>
                         <div>
                             <h5 class="fw-bold mb-1">Zero Commute & Expenses</h5>
-                            <p class="text-muted small mb-0">Work inside university buildings between your lectures without spending extra on transit or meal fares.</p>
+                            <p class="text-muted small mb-0">Work inside KLD campus buildings between your lectures without spending extra on transit or meal fares.</p>
                         </div>
                     </div>
 
                     <div class="d-flex gap-3 mb-4">
-                        <div class="stat-icon bg-warning text-dark flex-shrink-0">
-                            <i class="bi bi-award"></i>
+                        <div class="stat-icon stat-icon-kld flex-shrink-0">
+                            <i class="bi bi-award fs-4"></i>
                         </div>
                         <div>
                             <h5 class="fw-bold mb-1">Valuable Resume Experience & Certificate</h5>
@@ -253,12 +253,12 @@ require_once __DIR__ . '/includes/navbar.php';
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="p-4 p-md-5 bg-primary text-white rounded-4 shadow position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f2c59 0%, #1e3a8a 100%);">
+                    <div class="p-4 p-md-5 text-white rounded-4 shadow position-relative overflow-hidden bg-kld-gradient">
                         <div class="position-relative z-1">
-                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-3">Campus Employers</span>
-                            <h3 class="fw-bold text-white mb-3">Looking to Hire Qualified Student Assistants?</h3>
+                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-3">KLD Campus Offices</span>
+                            <h3 class="fw-bold text-white mb-3">Looking to Hire Qualified KLD Student Assistants?</h3>
                             <p class="text-light opacity-90 mb-4">
-                                Department chairs, administrative heads, and laboratory custodians can post requisitions, evaluate candidate profiles, and organize interviews seamlessly.
+                                Institute deans, administrative department heads, and laboratory custodians can post requisitions, evaluate candidate profiles, and organize interviews seamlessly.
                             </p>
                             <a href="register.php?role=employer" class="btn btn-gold btn-lg px-4">
                                 <i class="bi bi-building-add me-2"></i> Register Campus Office

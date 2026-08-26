@@ -22,10 +22,10 @@ $total_interviews = count(array_filter($all_apps, fn($a) => $a['status'] === 'in
 $departments = [
     'Management Information Systems (MIS)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
     'Office of the University Registrar' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'University Main Library' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'Mathematics & Sciences Department' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'Public Relations & Media Center' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'College of Science & Natural Resources' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'KLD University Library' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Institute of Computing and Digital Innovation (ICDI)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Institute of Nursing & Health Sciences' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Institute of Engineering' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
 ];
 
 foreach ($all_jobs as $j) {
@@ -63,8 +63,8 @@ require_once __DIR__ . '/../includes/navbar.php';
                         <li class="breadcrumb-item active" aria-current="page">Reports & Analytics</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold text-dark mb-0">Campus Employment Analytics Report</h2>
-                <div class="text-muted small">Generated on: <?= date('F d, Y \a\t h:i A') ?> &bull; Term: 1st Semester 2026-2027</div>
+                <h2 class="fw-bold text-dark mb-0">KLD Campus Employment Analytics Report</h2>
+                <div class="text-muted small">Kolehiyo ng Lungsod ng Dasmariñas &bull; Generated: <?= date('F d, Y \a\t h:i A') ?> &bull; Term: 1st Sem 2026-2027</div>
             </div>
             <div class="mt-3 mt-md-0 no-print">
                 <button type="button" onclick="triggerPrintReport()" class="btn btn-academic btn-sm shadow-sm">
@@ -76,33 +76,33 @@ require_once __DIR__ . '/../includes/navbar.php';
         <!-- KPI Summary Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: #3b82f6;">
+                <div class="stat-card" style="border-left-color: var(--kld-green-primary);">
                     <div class="text-muted small fw-semibold text-uppercase">Total Vacancies</div>
-                    <div class="display-6 fw-bold text-primary"><?= $total_jobs ?></div>
+                    <div class="display-6 fw-bold text-kld-green"><?= $total_jobs ?></div>
                     <span class="small text-muted">Across <?= count($departments) ?> departments</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: #f59e0b;">
+                <div class="stat-card" style="border-left-color: var(--kld-gold);">
                     <div class="text-muted small fw-semibold text-uppercase">Applications Filed</div>
-                    <div class="display-6 fw-bold text-warning"><?= $total_apps ?></div>
+                    <div class="display-6 fw-bold text-kld-gold"><?= $total_apps ?></div>
                     <span class="small text-muted">Total student submissions</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: #06b6d4;">
+                <div class="stat-card" style="border-left-color: var(--kld-gold-accent);">
                     <div class="text-muted small fw-semibold text-uppercase">Interviews Held</div>
-                    <div class="display-6 fw-bold text-info"><?= $total_interviews ?></div>
+                    <div class="display-6 fw-bold text-kld-gold"><?= $total_interviews ?></div>
                     <span class="small text-muted">Shortlisted candidates</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: #10b981;">
+                <div class="stat-card" style="border-left-color: var(--kld-green-primary);">
                     <div class="text-muted small fw-semibold text-uppercase">Officially Hired</div>
-                    <div class="display-6 fw-bold text-success"><?= $total_hired ?></div>
+                    <div class="display-6 fw-bold text-kld-green"><?= $total_hired ?></div>
                     <span class="small text-muted">Active Student Assistants</span>
                 </div>
             </div>

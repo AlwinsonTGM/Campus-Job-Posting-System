@@ -61,14 +61,14 @@ require_once __DIR__ . '/includes/navbar.php';
             <div class="col-md-8 col-lg-5">
                 
                 <!-- Quick Demo Switcher Card -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white p-3" style="background: linear-gradient(135deg, #0f2c59 0%, #1e3a8a 100%);">
+                <div class="card border-0 shadow-sm rounded-4 mb-4 text-white p-3 bg-kld-gradient">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="small fw-bold text-warning text-uppercase"><i class="bi bi-lightning-charge-fill"></i> Instant Demo Sign-In</span>
+                        <span class="small fw-bold text-warning text-uppercase"><i class="bi bi-lightning-charge-fill"></i> Instant KLD Demo Sign-In</span>
                         <span class="badge bg-light text-dark small">1-Click Test</span>
                     </div>
                     <p class="small text-light opacity-90 mb-3">Click any button below to instantly populate credentials & test specific roles:</p>
                     <div class="d-flex flex-wrap gap-2">
-                        <button type="button" class="btn btn-sm btn-light text-primary fw-bold" data-demo-role="student">
+                        <button type="button" class="btn btn-sm btn-light text-success fw-bold" data-demo-role="student">
                             <i class="bi bi-mortarboard me-1"></i> Student Demo
                         </button>
                         <button type="button" class="btn btn-sm btn-warning text-dark fw-bold" data-demo-role="employer">
@@ -83,11 +83,11 @@ require_once __DIR__ . '/includes/navbar.php';
                 <!-- Main Login Card -->
                 <div class="card border-0 shadow-sm rounded-4 p-4 p-md-4 bg-white">
                     <div class="text-center mb-4">
-                        <div class="stat-icon bg-primary text-white mx-auto mb-2">
+                        <div class="stat-icon bg-kld-gradient text-white mx-auto mb-2">
                             <i class="bi bi-person-lock fs-4"></i>
                         </div>
                         <h4 class="fw-bold text-dark mb-1">Sign In to Your Account</h4>
-                        <p class="text-muted small mb-0">Access student applications or department job postings</p>
+                        <p class="text-muted small mb-0">Access student applications or KLD department job postings</p>
                     </div>
 
                     <?php if ($error): ?>
@@ -99,17 +99,17 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <form action="login.php" method="POST">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Institutional Email Address</label>
+                            <label class="form-label small fw-semibold text-dark">KLD Institutional Email Address</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
-                                <input type="email" name="email" id="login-email" class="form-control" placeholder="name@university.edu.ph" required>
+                                <input type="email" name="email" id="login-email" class="form-control" placeholder="username@kld.edu.ph" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label class="form-label small fw-semibold text-dark mb-0">Account Password</label>
-                                <a href="forgot-pass.php" class="text-decoration-none small text-primary fw-semibold">Forgot password?</a>
+                                <a href="forgot-pass.php" class="text-decoration-none small text-kld-green fw-semibold">Forgot password?</a>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-key text-muted"></i></span>
@@ -129,7 +129,7 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <div class="border-top pt-3 text-center">
                         <span class="text-muted small">Don't have an account yet?</span>
-                        <a href="register.php" class="text-decoration-none fw-bold text-primary small ms-1">
+                        <a href="register.php" class="text-decoration-none fw-bold text-kld-green small ms-1">
                             Create an Account <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>

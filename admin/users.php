@@ -92,7 +92,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                             <tr>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center gap-2">
-                                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;">
+                                        <div class="bg-kld-soft text-kld-green rounded-circle d-flex align-items-center justify-content-center fw-bold border border-success-subtle" style="width:36px;height:36px;">
                                             <?= strtoupper(substr($u['name'], 0, 1)) ?>
                                         </div>
                                         <div>
@@ -103,11 +103,11 @@ require_once __DIR__ . '/../includes/navbar.php';
                                 </td>
                                 <td>
                                     <?php if ($u['role'] === 'student'): ?>
-                                        <span class="badge bg-primary text-uppercase small">Student</span>
+                                        <span class="badge text-white text-uppercase small" style="background-color: var(--kld-green-primary);">Student</span>
                                     <?php elseif ($u['role'] === 'employer'): ?>
                                         <span class="badge bg-warning text-dark text-uppercase small">Employer</span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger text-uppercase small">Admin</span>
+                                        <span class="badge bg-danger text-white text-uppercase small">Admin</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -121,7 +121,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                     <?= htmlspecialchars($u['phone'] ?? 'Not set') ?>
                                 </td>
                                 <td>
-                                    <span class="badge bg-success-subtle text-success small">Active</span>
+                                    <span class="badge bg-kld-soft text-kld-green border border-success-subtle small">Active</span>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

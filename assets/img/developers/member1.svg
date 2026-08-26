@@ -11,8 +11,8 @@
   <circle cx="80" cy="55" r="30" fill="#fcd34d" opacity="0.3"/>
   <!-- Hair (Neat, Formal) -->
   <path d="M52 50 C52 28, 108 28, 108 50 C108 36, 52 36, 52 50 Z" fill="#1e293b"/>
-  <!-- Formal Suit & Tie -->
-  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#0f2c59"/>
+  <!-- Formal KLD Green Suit & Tie -->
+  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#0f5132"/>
   <!-- White Collared Shirt -->
   <polygon points="80,105 60,118 70,145 80,130 90,145 100,118" fill="#ffffff"/>
   <!-- Gold Formal Tie -->

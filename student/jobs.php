@@ -98,8 +98,8 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <div class="col-lg-4 col-md-6 job-item-card">
                         <div class="job-card">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
-                                    <?= htmlspecialchars($job['category']) ?>
+                                <span class="badge-kld-tag">
+                                    <i class="bi bi-tag-fill me-1 text-kld-gold"></i><?= htmlspecialchars($job['category']) ?>
                                 </span>
                                 <span class="job-tag">
                                     <i class="bi bi-clock me-1"></i><?= htmlspecialchars($job['hours_per_week']) ?>
@@ -107,17 +107,17 @@ require_once __DIR__ . '/../includes/navbar.php';
                             </div>
 
                             <h5 class="fw-bold text-dark mb-1">
-                                <a href="job-details.php?id=<?= $job['id'] ?>" class="text-decoration-none text-dark hover-primary">
+                                <a href="job-details.php?id=<?= $job['id'] ?>" class="text-decoration-none text-dark">
                                     <?= htmlspecialchars($job['title']) ?>
                                 </a>
                             </h5>
                             
                             <p class="text-muted small mb-2">
-                                <i class="bi bi-building me-1"></i><?= htmlspecialchars($job['department']) ?>
+                                <i class="bi bi-building me-1 text-kld-green"></i><?= htmlspecialchars($job['department']) ?>
                             </p>
 
                             <p class="text-secondary small mb-3">
-                                <i class="bi bi-geo-alt me-1 text-danger"></i><?= htmlspecialchars($job['location']) ?>
+                                <i class="bi bi-geo-alt me-1 text-kld-green"></i><?= htmlspecialchars($job['location']) ?>
                             </p>
 
                             <p class="text-secondary small mb-3">
@@ -135,7 +135,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                             <div class="border-top pt-3 mt-auto d-flex justify-content-between align-items-center">
                                 <div>
                                     <div class="text-muted small">Stipend Rate</div>
-                                    <div class="fw-bold text-success"><?= htmlspecialchars($job['pay_rate']) ?></div>
+                                    <div class="fw-bold text-kld-green"><?= htmlspecialchars($job['pay_rate']) ?></div>
                                 </div>
                                 <div class="d-flex gap-2">
                                     <a href="job-details.php?id=<?= $job['id'] ?>" class="btn btn-sm btn-outline-secondary">

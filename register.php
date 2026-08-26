@@ -109,11 +109,11 @@ require_once __DIR__ . '/includes/navbar.php';
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-dark">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" class="form-control" placeholder="Juan Dela Cruz" required>
+                                <input type="text" name="name" class="form-control" placeholder="Juan Dela Cruz" value="<?= htmlspecialchars($name ?? '') ?>" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-dark">Institutional Email <span class="text-danger">*</span></label>
-                                <input type="email" name="email" class="form-control" placeholder="name@university.edu.ph" required>
+                                <label class="form-label small fw-semibold text-dark">KLD Institutional Email <span class="text-danger">*</span></label>
+                                <input type="email" name="email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email ?? '') ?>" required>
                             </div>
                         </div>
 
@@ -121,24 +121,47 @@ require_once __DIR__ . '/includes/navbar.php';
                         <div class="row g-3 mb-3" id="student-fields">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-dark">Student ID Number / Office Code</label>
-                                <input type="text" name="student_id" class="form-control" placeholder="2024-00123">
+                                <input type="text" name="student_id" class="form-control" placeholder="2024-00123" value="<?= htmlspecialchars($student_id ?? '') ?>">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-dark">College / Department</label>
-                                <input type="text" name="department" class="form-control" placeholder="e.g. College of Computer Studies">
+                                <label class="form-label small fw-semibold text-dark">KLD Academic Institute / Office</label>
+                                <select name="department" class="form-select" id="department-select">
+                                    <option value="">Select KLD Institute / Office</option>
+                                    <optgroup label="Academic Institutes">
+                                        <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                            <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($department) && $department === $inst) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                    <optgroup label="Administrative Offices">
+                                        <option value="Office of the University Registrar" <?= (isset($department) && $department === 'Office of the University Registrar') ? 'selected' : '' ?>>Office of the University Registrar</option>
+                                        <option value="Student Affairs & Services Office (SASO)" <?= (isset($department) && $department === 'Student Affairs & Services Office (SASO)') ? 'selected' : '' ?>>Student Affairs & Services Office (SASO)</option>
+                                        <option value="Management Information Systems (MIS)" <?= (isset($department) && $department === 'Management Information Systems (MIS)') ? 'selected' : '' ?>>Management Information Systems (MIS)</option>
+                                        <option value="KLD University Library" <?= (isset($department) && $department === 'KLD University Library') ? 'selected' : '' ?>>KLD University Library</option>
+                                    </optgroup>
+                                </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-dark">Degree Program / Course</label>
-                                <input type="text" name="course" class="form-control" placeholder="e.g. BS Information Systems">
+                                <select name="course" class="form-select" id="course-select">
+                                    <option value="">Select KLD Degree Program</option>
+                                    <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                        <optgroup label="<?= htmlspecialchars($inst) ?>">
+                                            <?php foreach ($courses as $c): ?>
+                                                <option value="<?= htmlspecialchars($c) ?>" <?= (isset($course) && $course === $c) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endforeach; ?>
+                                    <option value="Administrative Staff" <?= (isset($course) && $course === 'Administrative Staff') ? 'selected' : '' ?>>Administrative Staff (Non-Student)</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-dark">Year Level</label>
                                 <select name="year_level" class="form-select">
-                                    <option value="1st Year">1st Year</option>
-                                    <option value="2nd Year" selected>2nd Year</option>
-                                    <option value="3rd Year">3rd Year</option>
-                                    <option value="4th Year">4th Year</option>
-                                    <option value="Graduate / Post-Grad">Graduate / Post-Grad</option>
+                                    <option value="1st Year" <?= (isset($year_level) && $year_level === '1st Year') ? 'selected' : '' ?>>1st Year</option>
+                                    <option value="2nd Year" <?= (!isset($year_level) || $year_level === '2nd Year') ? 'selected' : '' ?>>2nd Year</option>
+                                    <option value="3rd Year" <?= (isset($year_level) && $year_level === '3rd Year') ? 'selected' : '' ?>>3rd Year</option>
+                                    <option value="4th Year" <?= (isset($year_level) && $year_level === '4th Year') ? 'selected' : '' ?>>4th Year</option>
+                                    <option value="Staff / Faculty" <?= (isset($year_level) && $year_level === 'Staff / Faculty') ? 'selected' : '' ?>>Staff / Faculty</option>
                                 </select>
                             </div>
                         </div>
@@ -229,7 +252,7 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <div class="border-top pt-3 text-center">
                         <span class="text-muted small">Already have an account?</span>
-                        <a href="login.php" class="text-decoration-none fw-bold text-primary small ms-1">
+                        <a href="login.php" class="text-decoration-none fw-bold text-kld-green small ms-1">
                             Sign In Here <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>

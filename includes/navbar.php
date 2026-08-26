@@ -5,11 +5,11 @@
 $current_user = get_logged_user();
 $current_script = basename($_SERVER['PHP_SELF']);
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark navbar-academic sticky-top">
+<nav class="navbar navbar-expand-xl navbar-dark navbar-academic sticky-top">
     <div class="container">
         <a class="navbar-brand" href="<?= $base_url ?>index.php">
             <i class="bi bi-mortarboard-fill text-warning fs-4"></i>
-            <span>CampusJobs</span>
+            <span>KLD CampusJobs</span>
             <span class="brand-badge">PORTAL</span>
         </a>
         
@@ -44,14 +44,14 @@ $current_script = basename($_SERVER['PHP_SELF']);
             <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
                 <!-- Quick Demo Role Switcher (For easy testing and presentation) -->
                 <li class="nav-item dropdown">
-                    <button class="btn btn-sm btn-outline-light dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="nav-btn nav-btn-demo dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-lightning-charge-fill text-warning"></i> Demo Switcher
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                         <li><h6 class="dropdown-header"><i class="bi bi-person-badge"></i> Quick 1-Click Role Switch</h6></li>
-                        <li><a class="dropdown-item" href="<?= $base_url ?>login.php?demo=student"><i class="bi bi-mortarboard text-primary me-2"></i> Switch to <strong>Student</strong> (Juan)</a></li>
-                        <li><a class="dropdown-item" href="<?= $base_url ?>login.php?demo=employer"><i class="bi bi-building text-success me-2"></i> Switch to <strong>Employer</strong> (Registrar)</a></li>
-                        <li><a class="dropdown-item" href="<?= $base_url ?>login.php?demo=admin"><i class="bi bi-shield-lock text-danger me-2"></i> Switch to <strong>Admin</strong> (OSA Admin)</a></li>
+                        <li><a class="dropdown-item" href="<?= $base_url ?>login.php?demo=student"><i class="bi bi-mortarboard text-success me-2"></i> Switch to <strong>Student</strong> (Juan Dela Cruz)</a></li>
+                        <li><a class="dropdown-item" href="<?= $base_url ?>login.php?demo=employer"><i class="bi bi-building text-warning me-2"></i> Switch to <strong>Employer</strong> (KLD Registrar)</a></li>
+                        <li><a class="dropdown-item" href="<?= $base_url ?>login.php?demo=admin"><i class="bi bi-shield-lock text-danger me-2"></i> Switch to <strong>Admin</strong> (KLD SASO Admin)</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-muted small" href="<?= $base_url ?>login.php?reset=1"><i class="bi bi-arrow-counterclockwise me-2"></i> Reset Demo Dataset</a></li>
                     </ul>
@@ -60,25 +60,25 @@ $current_script = basename($_SERVER['PHP_SELF']);
                 <?php if ($current_user): ?>
                     <!-- Logged-in User Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="badge bg-warning text-dark text-uppercase"><?= htmlspecialchars($current_user['role']) ?></span>
-                            <span class="fw-semibold"><?= htmlspecialchars($current_user['name']) ?></span>
+                        <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="user-role-badge"><?= htmlspecialchars($current_user['role']) ?></span>
+                            <span class="fw-semibold text-truncate" style="max-width: 150px;"><?= htmlspecialchars($current_user['name']) ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li><h6 class="dropdown-header"><?= htmlspecialchars($current_user['email']) ?></h6></li>
                             <?php if ($current_user['role'] === 'student'): ?>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>student/dashboard.php"><i class="bi bi-speedometer2 me-2 text-primary"></i> Student Dashboard</a></li>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-file-earmark-text me-2 text-info"></i> My Applications</a></li>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>student/jobs.php"><i class="bi bi-search me-2 text-success"></i> Find Vacancies</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>student/dashboard.php"><i class="bi bi-speedometer2 me-2 text-kld-green"></i> Student Dashboard</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-file-earmark-text me-2 text-kld-green"></i> My Applications</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>student/jobs.php"><i class="bi bi-search me-2 text-kld-green"></i> Find Vacancies</a></li>
                             <?php elseif ($current_user['role'] === 'employer'): ?>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>employer/dashboard.php"><i class="bi bi-speedometer2 me-2 text-primary"></i> Office Dashboard</a></li>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>employer/create-job.php"><i class="bi bi-plus-circle me-2 text-success"></i> Post New Job</a></li>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>employer/applicants.php"><i class="bi bi-people me-2 text-info"></i> View Applicants</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>employer/dashboard.php"><i class="bi bi-speedometer2 me-2 text-kld-green"></i> Office Dashboard</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>employer/create-job.php"><i class="bi bi-plus-circle me-2 text-kld-green"></i> Post New Job</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>employer/applicants.php"><i class="bi bi-people me-2 text-kld-green"></i> View Applicants</a></li>
                             <?php elseif ($current_user['role'] === 'admin'): ?>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-speedometer2 me-2 text-primary"></i> Admin Dashboard</a></li>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>admin/categories.php"><i class="bi bi-tags me-2 text-warning"></i> Categories</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-speedometer2 me-2 text-kld-green"></i> Admin Dashboard</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>admin/categories.php"><i class="bi bi-tags me-2 text-kld-gold"></i> Categories</a></li>
                                 <li><a class="dropdown-item" href="<?= $base_url ?>admin/users.php"><i class="bi bi-person-gear me-2 text-danger"></i> User Management</a></li>
-                                <li><a class="dropdown-item" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-bar-chart-line me-2 text-info"></i> Reports & Analytics</a></li>
+                                <li><a class="dropdown-item" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-bar-chart-line me-2 text-kld-green"></i> Reports & Analytics</a></li>
                             <?php endif; ?>
                             <li><a class="dropdown-item" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2 text-secondary"></i> Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -86,16 +86,16 @@ $current_script = basename($_SERVER['PHP_SELF']);
                         </ul>
                     </li>
                 <?php else: ?>
-                    <!-- Guest Links -->
+                    <!-- Guest Links (2-Column Grid on Mobile, Inline on Desktop) -->
                     <li class="nav-item">
-                        <a class="btn btn-outline-light btn-sm px-3" href="<?= $base_url ?>login.php">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-gold btn-sm px-3" href="<?= $base_url ?>register.php">
-                            <i class="bi bi-person-plus me-1"></i> Register
-                        </a>
+                        <div class="nav-guest-row">
+                            <a class="nav-btn nav-btn-signin" href="<?= $base_url ?>login.php">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign In
+                            </a>
+                            <a class="nav-btn nav-btn-register" href="<?= $base_url ?>register.php">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </div>
                     </li>
                 <?php endif; ?>
             </ul>

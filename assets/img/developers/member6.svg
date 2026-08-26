@@ -10,10 +10,10 @@
   <!-- Hair (Neat Bun / Updo) -->
   <path d="M50 56 C50 28, 110 28, 110 56 C105 32, 55 32, 50 56 Z" fill="#0f172a"/>
   <circle cx="80" cy="24" r="12" fill="#0f172a"/>
-  <!-- Dark Navy Formal Blazer -->
-  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#0f2c59"/>
+  <!-- KLD Green Formal Blazer -->
+  <path d="M25 150 C25 105, 135 105, 135 150 Z" fill="#0f5132"/>
   <!-- Silk Inner Blouse -->
-  <polygon points="80,105 60,118 70,145 80,135 90,145 100,118" fill="#e0f2fe"/>
+  <polygon points="80,105 60,118 70,145 80,135 90,145 100,118" fill="#ffffff"/>
   <!-- Gold Brooch Accent -->
-  <circle cx="80" cy="118" r="5" fill="#f59e0b"/>
+  <circle cx="80" cy="118" r="5" fill="#eab308"/>
 </svg>

@@ -37,15 +37,15 @@ require_once __DIR__ . '/../includes/navbar.php';
                     
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 mb-2">
-                                <?= htmlspecialchars($job['category']) ?>
+                            <span class="badge-kld-tag px-3 py-1 mb-2 d-inline-block">
+                                <i class="bi bi-tag-fill me-1 text-kld-gold"></i><?= htmlspecialchars($job['category']) ?>
                             </span>
                             <h2 class="fw-bold text-dark mb-1"><?= htmlspecialchars($job['title']) ?></h2>
                             <p class="text-muted fs-6 mb-0">
-                                <i class="bi bi-building me-1 text-primary"></i> <strong><?= htmlspecialchars($job['department']) ?></strong>
+                                <i class="bi bi-building me-1 text-kld-green"></i> <strong><?= htmlspecialchars($job['department']) ?></strong>
                             </p>
                         </div>
-                        <span class="badge bg-success-subtle text-success fs-6 fw-bold px-3 py-2">
+                        <span class="badge bg-kld-soft text-kld-green border border-success-subtle fs-6 fw-bold px-3 py-2">
                             <?= htmlspecialchars($job['pay_rate']) ?>
                         </span>
                     </div>
@@ -54,7 +54,7 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                     <!-- Overview -->
                     <div class="mb-4">
-                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-card-text text-primary me-2"></i> Role Overview</h5>
+                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-card-text text-kld-green me-2"></i> Role Overview</h5>
                         <p class="text-secondary lh-lg">
                             <?= nl2br(htmlspecialchars($job['description'])) ?>
                         </p>
@@ -63,7 +63,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <!-- Key Responsibilities -->
                     <?php if (!empty($job['responsibilities'])): ?>
                         <div class="mb-4">
-                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-list-check text-primary me-2"></i> Key Duties & Responsibilities</h5>
+                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-list-check text-kld-green me-2"></i> Key Duties & Responsibilities</h5>
                             <ul class="text-secondary d-flex flex-column gap-2">
                                 <?php foreach ($job['responsibilities'] as $resp): ?>
                                     <li><?= htmlspecialchars($resp) ?></li>
@@ -75,7 +75,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <!-- Qualifications -->
                     <?php if (!empty($job['qualifications'])): ?>
                         <div class="mb-4">
-                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-patch-check text-primary me-2"></i> Qualifications & Eligibility</h5>
+                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-patch-check text-kld-green me-2"></i> Qualifications & Eligibility</h5>
                             <ul class="text-secondary d-flex flex-column gap-2">
                                 <?php foreach ($job['qualifications'] as $qual): ?>
                                     <li><?= htmlspecialchars($qual) ?></li>
@@ -84,8 +84,8 @@ require_once __DIR__ . '/../includes/navbar.php';
                         </div>
                     <?php endif; ?>
 
-                    <div class="alert alert-light border border-info-subtle d-flex align-items-center gap-3 p-3 rounded-3 mt-4">
-                        <div class="fs-3 text-info"><i class="bi bi-info-circle-fill"></i></div>
+                    <div class="alert alert-light border border-success-subtle d-flex align-items-center gap-3 p-3 rounded-3 mt-4">
+                        <div class="fs-3 text-kld-green"><i class="bi bi-info-circle-fill"></i></div>
                         <div class="small text-secondary">
                             <strong>Academic-First Policy:</strong> This job has been pre-screened to ensure duty hours will not exceed 20 hours per week during regular class semesters.
                         </div>

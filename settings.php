@@ -119,14 +119,36 @@ require_once __DIR__ . '/includes/navbar.php';
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label small fw-semibold text-dark">Degree Program</label>
-                                    <input type="text" name="course" class="form-control" value="<?= htmlspecialchars($user['course'] ?? '') ?>">
+                                    <select name="course" class="form-select">
+                                        <option value="">Select Degree Program</option>
+                                        <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                            <optgroup label="<?= htmlspecialchars($inst) ?>">
+                                                <?php foreach ($courses as $c): ?>
+                                                    <option value="<?= htmlspecialchars($c) ?>" <?= (isset($user['course']) && ($user['course'] === $c || strpos($c, $user['course']) !== false || strpos($user['course'], $c) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
                         <?php endif; ?>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Department / College</label>
-                            <input type="text" name="department" class="form-control" value="<?= htmlspecialchars($user['department'] ?? '') ?>">
+                            <label class="form-label small fw-semibold text-dark">KLD Academic Institute / Campus Office</label>
+                            <select name="department" class="form-select">
+                                <option value="">Select KLD Institute / Office</option>
+                                <optgroup label="Academic Institutes">
+                                    <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                        <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($user['department']) && ($user['department'] === $inst || strpos($inst, $user['department']) !== false || strpos($user['department'], $inst) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                                <optgroup label="Administrative Offices">
+                                    <option value="Office of the University Registrar" <?= (isset($user['department']) && strpos($user['department'], 'Registrar') !== false) ? 'selected' : '' ?>>Office of the University Registrar</option>
+                                    <option value="Student Affairs & Services Office (SASO)" <?= (isset($user['department']) && (strpos($user['department'], 'Student Affairs') !== false || strpos($user['department'], 'SASO') !== false || strpos($user['department'], 'OSA') !== false)) ? 'selected' : '' ?>>Student Affairs & Services Office (SASO)</option>
+                                    <option value="Management Information Systems (MIS)" <?= (isset($user['department']) && (strpos($user['department'], 'MIS') !== false || strpos($user['department'], 'Management Information') !== false)) ? 'selected' : '' ?>>Management Information Systems (MIS)</option>
+                                    <option value="KLD University Library" <?= (isset($user['department']) && strpos($user['department'], 'Library') !== false) ? 'selected' : '' ?>>KLD University Library</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <div class="mb-4">

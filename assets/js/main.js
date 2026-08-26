@@ -29,13 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!emailInput || !passInput) return;
 
       if (role === 'student') {
-        emailInput.value = 'student@university.edu.ph';
+        emailInput.value = 'student@kld.edu.ph';
         passInput.value = 'Password123!';
       } else if (role === 'employer') {
-        emailInput.value = 'registrar@university.edu.ph';
+        emailInput.value = 'registrar@kld.edu.ph';
         passInput.value = 'Password123!';
       } else if (role === 'admin') {
-        emailInput.value = 'admin@university.edu.ph';
+        emailInput.value = 'admin@kld.edu.ph';
         passInput.value = 'Password123!';
       }
 

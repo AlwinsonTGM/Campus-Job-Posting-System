@@ -1,16 +1,41 @@
-/* Campus Job Posting System - Academic Blue & Gold Theme */
+/* Campus Job Posting System - Kolehiyo ng Lungsod ng Dasmariñas (KLD) Green & Gold Theme */
 :root {
-  --primary-blue: #0f2c59;
-  --primary-blue-hover: #0a1e3f;
-  --secondary-blue: #1e40af;
-  --accent-gold: #f59e0b;
-  --accent-gold-hover: #d97706;
-  --accent-gold-light: #fef3c7;
+  /* Primary KLD Greens */
+  --kld-green-dark: #062c1b;
+  --kld-green-primary: #0f5132;
+  --kld-green-hover: #0a4028;
+  --kld-green-secondary: #14532d;
+  --kld-green-light: #15803d;
+  --kld-green-soft: #ecfdf5;
+
+  /* Vibrant KLD Golds */
+  --kld-gold: #f59e0b;
+  --kld-gold-hover: #d97706;
+  --kld-gold-accent: #eab308;
+  --kld-gold-light: #fef3c7;
+  --kld-gold-text: #92400e;
+
+  /* Backward-compatible Theme Aliases */
+  --primary-blue: var(--kld-green-primary);
+  --primary-blue-hover: var(--kld-green-hover);
+  --secondary-blue: var(--kld-green-light);
+  --accent-gold: var(--kld-gold);
+  --accent-gold-hover: var(--kld-gold-hover);
+  --accent-gold-light: var(--kld-gold-light);
+
+  /* Neutrals & Layout */
   --bg-light: #f8fafc;
   --text-dark: #1e293b;
   --text-muted: #64748b;
   --card-border: #e2e8f0;
   --sidebar-width: 260px;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 body {
@@ -24,13 +49,95 @@ body {
 
 main {
   flex: 1 0 auto;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* KLD Theme Utility Classes */
+.bg-kld-gradient {
+  background: linear-gradient(135deg, var(--kld-green-primary) 0%, var(--kld-green-secondary) 100%) !important;
+}
+
+.text-kld-green {
+  color: var(--kld-green-primary) !important;
+}
+
+.text-kld-gold {
+  color: var(--kld-gold) !important;
+}
+
+.bg-kld-soft {
+  background-color: var(--kld-green-soft) !important;
+}
+
+/* Bootstrap Color Overrides for Complete KLD Visual Harmony */
+.text-primary,
+.text-primary-emphasis {
+  color: var(--kld-green-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--kld-green-primary) !important;
+  color: #ffffff !important;
+}
+
+.bg-primary-subtle {
+  background-color: var(--kld-green-soft) !important;
+  color: var(--kld-green-primary) !important;
+}
+
+.border-primary-subtle {
+  border-color: #a7f3d0 !important;
+}
+
+.btn-primary {
+  background-color: var(--kld-green-primary) !important;
+  border-color: var(--kld-green-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--kld-green-hover) !important;
+  border-color: var(--kld-green-hover) !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-primary {
+  color: var(--kld-green-primary) !important;
+  border-color: var(--kld-green-primary) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-check:checked + .btn-outline-primary {
+  background-color: var(--kld-green-primary) !important;
+  border-color: var(--kld-green-primary) !important;
+  color: #ffffff !important;
+}
+
+.badge.bg-primary {
+  background-color: var(--kld-green-primary) !important;
+  color: #ffffff !important;
+}
+
+.badge-kld-tag {
+  background-color: var(--kld-green-soft) !important;
+  color: var(--kld-green-primary) !important;
+  border: 1px solid #a7f3d0 !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
 }
 
 /* Navbar Custom */
 .navbar-academic {
-  background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 100%);
-  box-shadow: 0 4px 12px rgba(15, 44, 89, 0.15);
-  border-bottom: 3px solid var(--accent-gold);
+  background: linear-gradient(135deg, var(--kld-green-primary) 0%, var(--kld-green-secondary) 100%);
+  box-shadow: 0 4px 12px rgba(15, 81, 50, 0.2);
+  border-bottom: 3px solid var(--kld-gold-accent);
+  width: 100%;
 }
 
 .navbar-academic .navbar-brand {
@@ -39,79 +146,183 @@ main {
   color: #ffffff;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  font-size: 1.15rem;
+  flex-shrink: 0;
 }
 
 .navbar-academic .navbar-brand .brand-badge {
-  background-color: var(--accent-gold);
-  color: #0f2c59;
-  font-size: 0.75rem;
+  background-color: var(--kld-gold-accent);
+  color: var(--kld-green-dark);
+  font-size: 0.7rem;
   font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 2px 7px;
+  border-radius: 5px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .navbar-academic .nav-link {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 500;
-  padding: 0.5rem 0.9rem;
-  border-radius: 6px;
+  font-size: 0.875rem;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 0.65rem;
+  border-radius: 8px;
+  white-space: nowrap;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .navbar-academic .nav-link:hover,
 .navbar-academic .nav-link.active {
   color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Academic Blue & Gold Buttons */
-.btn-academic {
-  background-color: var(--primary-blue);
+/* Unified Header Navigation Buttons (Consistent 38px Height & Sizing) */
+.navbar-academic .nav-btn {
+  height: 38px;
+  min-height: 38px;
+  max-height: 38px;
+  padding: 0 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.navbar-academic .nav-btn-demo {
+  background-color: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  border: 1px solid var(--primary-blue);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.navbar-academic .nav-btn-demo:hover,
+.navbar-academic .nav-btn-demo:focus,
+.navbar-academic .nav-btn-demo.show {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.navbar-academic .nav-btn-signin {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.navbar-academic .nav-btn-signin:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.navbar-academic .nav-btn-register {
+  background-color: var(--kld-gold);
+  color: var(--kld-green-dark);
+  border: 1px solid var(--kld-gold);
+}
+
+.navbar-academic .nav-btn-register:hover {
+  background-color: var(--kld-gold-hover);
+  color: #ffffff;
+  border-color: var(--kld-gold-hover);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+.navbar-academic .nav-guest-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-academic .nav-btn-user {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0 0.75rem 0 0.45rem;
+}
+
+.navbar-academic .nav-btn-user:hover,
+.navbar-academic .nav-btn-user:focus,
+.navbar-academic .nav-btn-user.show {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.navbar-academic .nav-btn-user .user-role-badge {
+  background-color: var(--kld-gold);
+  color: var(--kld-green-dark);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-right: 2px;
+}
+
+/* Academic KLD Green & Gold Buttons */
+.btn-academic {
+  background-color: var(--kld-green-primary);
+  color: #ffffff;
+  border: 1px solid var(--kld-green-primary);
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .btn-academic:hover {
-  background-color: var(--primary-blue-hover);
+  background-color: var(--kld-green-hover);
   color: #ffffff;
-  box-shadow: 0 4px 10px rgba(15, 44, 89, 0.25);
+  box-shadow: 0 4px 10px rgba(15, 81, 50, 0.3);
 }
 
 .btn-gold {
-  background-color: var(--accent-gold);
-  color: #0f2c59;
-  border: 1px solid var(--accent-gold);
+  background-color: var(--kld-gold);
+  color: var(--kld-green-dark);
+  border: 1px solid var(--kld-gold);
   font-weight: 700;
   transition: all 0.2s ease;
 }
 
 .btn-gold:hover {
-  background-color: var(--accent-gold-hover);
+  background-color: var(--kld-gold-hover);
   color: #ffffff;
-  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
 }
 
 .btn-outline-academic {
-  border: 2px solid var(--primary-blue);
-  color: var(--primary-blue);
+  border: 2px solid var(--kld-green-primary);
+  color: var(--kld-green-primary);
   font-weight: 600;
 }
 
 .btn-outline-academic:hover {
-  background-color: var(--primary-blue);
+  background-color: var(--kld-green-primary);
   color: #ffffff;
 }
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, rgba(15, 44, 89, 0.95) 0%, rgba(30, 64, 175, 0.92) 100%), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.95) 0%, rgba(20, 83, 45, 0.92) 100%), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
   color: #ffffff;
   padding: 5rem 0 4.5rem;
-  border-bottom: 4px solid var(--accent-gold);
+  border-bottom: 4px solid var(--kld-gold-accent);
 }
 
 .hero-search-card {
@@ -129,7 +340,7 @@ main {
   padding: 1.25rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border-left: 4px solid var(--primary-blue);
+  border-left: 4px solid var(--kld-green-primary);
 }
 
 .stat-card:hover {
@@ -140,11 +351,23 @@ main {
 .stat-icon {
   width: 48px;
   height: 48px;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
+}
+
+.stat-icon-kld {
+  background-color: var(--kld-green-soft) !important;
+  color: var(--kld-green-primary) !important;
+  border: 1px solid #a7f3d0;
+}
+
+.stat-icon-kld-gold {
+  background-color: var(--kld-gold-light) !important;
+  color: var(--kld-gold-text) !important;
+  border: 1px solid #fde68a;
 }
 
 /* Job Cards */
@@ -162,8 +385,8 @@ main {
 
 .job-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(15, 44, 89, 0.08);
-  border-color: var(--secondary-blue);
+  box-shadow: 0 12px 24px rgba(15, 81, 50, 0.1);
+  border-color: var(--kld-green-light);
 }
 
 .job-tag {
@@ -171,40 +394,52 @@ main {
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 20px;
-  background-color: var(--accent-gold-light);
-  color: #92400e;
+  background-color: var(--kld-gold-light);
+  color: var(--kld-gold-text);
 }
 
 /* Category Cards */
 .category-card {
   background: #ffffff;
   border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 14px;
+  padding: 1.75rem 1.25rem;
   text-align: center;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   height: 100%;
   text-decoration: none;
   color: var(--text-dark);
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .category-card:hover {
-  border-color: var(--accent-gold);
+  border-color: var(--kld-gold-accent);
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15);
-  color: var(--primary-blue);
+  box-shadow: 0 10px 24px rgba(15, 81, 50, 0.12);
+  color: var(--kld-green-primary);
 }
 
 .category-icon-box {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 1rem;
-  border-radius: 14px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.75rem;
+  background-color: var(--kld-green-soft) !important;
+  color: var(--kld-green-primary) !important;
+  border: 1px solid #a7f3d0;
+  transition: all 0.25s ease;
+}
+
+.category-card:hover .category-icon-box {
+  background-color: var(--kld-green-primary) !important;
+  color: var(--kld-gold) !important;
+  transform: scale(1.08);
 }
 
 /* Developer Profile Cards (About Us) */
@@ -220,13 +455,13 @@ main {
 
 .developer-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(15, 44, 89, 0.12);
-  border-color: var(--primary-blue);
+  box-shadow: 0 12px 28px rgba(15, 81, 50, 0.15);
+  border-color: var(--kld-green-primary);
 }
 
 .developer-avatar-wrapper {
   position: relative;
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
   padding: 2rem 1rem 1rem;
   text-align: center;
 }
@@ -243,7 +478,7 @@ main {
 
 .formal-badge-note {
   font-size: 0.7rem;
-  background-color: rgba(15, 44, 89, 0.85);
+  background-color: rgba(15, 81, 50, 0.9);
   color: #ffffff;
   padding: 2px 8px;
   border-radius: 10px;
@@ -320,12 +555,12 @@ main {
 }
 
 .sidebar-link:hover {
-  background-color: var(--bg-light);
-  color: var(--primary-blue);
+  background-color: var(--kld-green-soft);
+  color: var(--kld-green-primary);
 }
 
 .sidebar-link.active {
-  background-color: var(--primary-blue);
+  background-color: var(--kld-green-primary);
   color: #ffffff;
 }
 
@@ -335,9 +570,9 @@ main {
 
 /* Footer Custom */
 .footer-academic {
-  background-color: #0b1d3a;
+  background-color: var(--kld-green-dark);
   color: #cbd5e1;
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--kld-gold-accent);
   padding: 3.5rem 0 1.5rem;
 }
 
@@ -348,7 +583,368 @@ main {
 }
 
 .footer-academic a:hover {
-  color: var(--accent-gold);
+  color: var(--kld-gold);
+}
+
+/* ==========================================================================
+   Comprehensive Responsive System (Mobile, Square Screens & Landscape Phones)
+   ========================================================================== */
+
+/* Fluid Typography */
+.hero-title {
+  font-size: clamp(1.75rem, 4vw + 0.5rem, 3.25rem);
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: clamp(0.925rem, 1.25vw + 0.4rem, 1.15rem);
+}
+
+.section-title {
+  font-size: clamp(1.4rem, 2.5vw + 0.5rem, 2rem);
+}
+
+/* Card & Container Touch Refinements */
+.job-card {
+  word-break: break-word;
+}
+
+.job-card .border-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Table Responsive Touch Scrolling */
+.table-responsive {
+  border-radius: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 81, 50, 0.2);
+  border-radius: 10px;
+}
+
+/* Floating Mobile Navigation Window */
+@media (max-width: 1199.98px) {
+  .navbar-academic {
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    overflow: visible !important;
+  }
+
+  .navbar-academic .container {
+    position: relative;
+  }
+
+  .navbar-academic .navbar-collapse {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 12px;
+    width: 270px;
+    max-width: calc(100vw - 24px);
+    background: rgba(6, 44, 27, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 0.55rem 0.6rem;
+    border-radius: 12px;
+    margin-top: 0;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 1060;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+
+  .navbar-academic .navbar-collapse.collapsing {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 12px;
+    width: 270px;
+    max-width: calc(100vw - 24px);
+    transition: all 0.2s ease;
+  }
+
+  .navbar-academic .navbar-nav.me-auto {
+    margin-bottom: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .navbar-academic .navbar-nav.me-auto .nav-link {
+    height: 30px;
+    font-size: 0.825rem;
+    padding: 0 0.55rem;
+    border-radius: 6px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .navbar-academic .navbar-nav.me-auto .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--kld-gold) !important;
+    font-weight: 600;
+    border-left: 3px solid var(--kld-gold);
+    padding-left: 0.45rem;
+  }
+  
+  .navbar-academic .navbar-nav.ms-auto {
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: stretch !important;
+  }
+
+  .navbar-academic .navbar-nav.ms-auto > .nav-item {
+    width: 100%;
+  }
+
+  .navbar-academic .nav-btn {
+    height: 31px;
+    min-height: 31px;
+    max-height: 31px;
+    font-size: 0.785rem;
+    padding: 0 0.55rem;
+    border-radius: 6px;
+    width: 100%;
+  }
+
+  .navbar-academic .nav-guest-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .navbar-academic .nav-guest-row .nav-btn {
+    justify-content: center;
+  }
+  
+  .navbar-academic .dropdown-menu {
+    background-color: rgba(255, 255, 255, 0.98);
+    border: none;
+    margin-top: 0.25rem;
+    position: static !important;
+    transform: none !important;
+    border-radius: 6px;
+    padding: 0.25rem 0;
+  }
+  
+  .navbar-academic .dropdown-menu .dropdown-item {
+    color: var(--text-dark);
+    padding: 0.3rem 0.65rem;
+    font-size: 0.775rem;
+  }
+}
+
+/* Tablet & Square Viewport Screens (Width <= 991px) */
+@media (max-width: 991.98px) {
+  .hero-section {
+    padding: 3rem 0 2.5rem;
+  }
+  
+  .hero-search-card {
+    margin-top: 1rem;
+    padding: 1.25rem;
+  }
+  
+  .category-card {
+    padding: 1.25rem 0.75rem;
+  }
+  
+  .category-icon-box {
+    width: 54px;
+    height: 54px;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .developer-avatar {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+/* Extra Small & Mobile Portrait (< 576px) */
+@media (max-width: 575.98px) {
+  body {
+    font-size: 0.925rem;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hero-section {
+    padding: 2.25rem 0 2rem;
+  }
+
+  .hero-search-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .btn-lg {
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  .stat-card {
+    padding: 0.85rem;
+  }
+
+  .stat-card .display-6 {
+    font-size: 1.5rem;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .category-icon-box {
+    width: 48px;
+    height: 48px;
+    font-size: 1.35rem;
+    border-radius: 12px;
+  }
+
+  .job-card {
+    padding: 1.15rem;
+  }
+
+  .job-card .border-top {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .job-card .border-top > div:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .job-card .border-top > div:last-child .btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .developer-avatar {
+    width: 95px;
+    height: 95px;
+  }
+
+  .footer-academic {
+    padding: 2.5rem 0 1.25rem;
+    text-align: center;
+  }
+  
+  .footer-academic .d-flex {
+    justify-content: center;
+  }
+}
+
+/* Horizontal / Landscape Phone Screens (@media (max-height: 520px) and (orientation: landscape)) */
+@media (max-height: 520px) and (orientation: landscape) {
+  .navbar-academic {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  .navbar-academic .navbar-brand {
+    font-size: 0.95rem;
+  }
+  
+  .navbar-academic .navbar-brand i {
+    font-size: 1.15rem;
+  }
+  
+  .hero-section {
+    padding: 1.5rem 0 1.25rem;
+  }
+  
+  .hero-title {
+    font-size: 1.65rem;
+    margin-bottom: 0.4rem !important;
+  }
+  
+  .hero-subtitle,
+  .hero-section p.lead {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+  
+  .hero-search-card {
+    padding: 0.85rem;
+  }
+  
+  .hero-search-card .mb-3 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .btn-lg {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Prevent sticky positioning from monopolizing screen height on small landscape viewports */
+  .sticky-top {
+    position: static !important;
+  }
+  
+  /* Ensure Modals are fully scrollable and usable on landscape phones */
+  .modal-dialog {
+    max-height: 92vh;
+    margin: 0.5rem auto;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-body {
+    padding: 1rem !important;
+  }
+  
+  .modal-header,
+  .modal-footer {
+    padding: 0.5rem 1rem !important;
+  }
+}
+
+/* Square Screens Aspect Ratio Adjustments (e.g. Aspect ratio between 0.8 and 1.3, width <= 900px) */
+@media (max-aspect-ratio: 13/10) and (min-aspect-ratio: 8/10) and (max-width: 900px) {
+  .hero-section {
+    padding: 2.5rem 0 2rem;
+  }
+  
+  .hero-search-card {
+    padding: 1.25rem;
+  }
+  
+  .stat-card {
+    padding: 0.9rem;
+  }
+  
+  .category-card {
+    padding: 1.25rem 0.75rem;
+  }
 }
 
 /* Print Styles for Reports */

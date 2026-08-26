@@ -8,7 +8,7 @@
     "employer_id": 4,
     "employer_name": "Engr. Clara Villanueva",
     "job_type": "Student Assistant",
-    "location": "IT Building, Computer Lab 301-304",
+    "location": "KLD ICDI Building, Computer Lab 301-304",
     "pay_rate": "₱85.00 / hour",
     "pay_type": "Hourly",
     "hours_per_week": "15 - 20 hrs/week",
@@ -26,7 +26,7 @@
       "Log hardware faults and escalate critical network disruptions to senior network engineers."
     ],
     "qualifications": [
-      "Currently enrolled 2nd to 4th year BSIS, BSCS, or BSIT student.",
+      "Currently enrolled 2nd to 4th year BSIS, BSCS, or BSDS student.",
       "General Weighted Average (GWA) of 2.25 or better.",
       "Basic knowledge in PC troubleshooting, Windows/Linux OS, and local networking.",
       "Responsible, punctual, and equipped with strong interpersonal skills."
@@ -41,7 +41,7 @@
     "employer_id": 3,
     "employer_name": "Prof. Roberto Hernandez",
     "job_type": "Student Assistant",
-    "location": "Admin Building, Room 102",
+    "location": "KLD Admin Building, Room 102",
     "pay_rate": "₱80.00 / hour",
     "pay_type": "Hourly",
     "hours_per_week": "10 - 15 hrs/week",
@@ -59,7 +59,7 @@
       "Provide courteous frontline queue direction during peak enrollment periods."
     ],
     "qualifications": [
-      "Open to all undergraduate courses (Any Year Level).",
+      "Open to all KLD undergraduate programs (BSIS, BSCS, BSDS, BSCE, BSN, BSMLS, BSM, BSLS, BSP, BSSW).",
       "Proficient in Microsoft Excel, Word, and Google Workspace.",
       "High attention to detail and strong adherence to data privacy and confidentiality.",
       "Must have at least 3 consecutive free hours during weekdays."
@@ -68,13 +68,13 @@
   {
     "id": 3,
     "title": "Digital Cataloging & Library Aid",
-    "department": "University Main Library",
+    "department": "KLD University Library",
     "category": "Library Services",
     "category_id": 2,
     "employer_id": 3,
     "employer_name": "Ms. Teresa Cruz (Chief Librarian)",
     "job_type": "Student Assistant",
-    "location": "Main Library Building, 2nd Floor",
+    "location": "KLD Main Library, 2nd Floor",
     "pay_rate": "₱80.00 / hour",
     "pay_type": "Hourly",
     "hours_per_week": "12 - 18 hrs/week",
@@ -92,7 +92,7 @@
       "Monitor study areas to ensure a conducive, quiet learning atmosphere."
     ],
     "qualifications": [
-      "Bona fide student with at least 1 remaining academic year.",
+      "Bona fide KLD student with at least 1 remaining academic year.",
       "Diligent, polite, organized, and fond of reading and books.",
       "Can commit to either morning (8:00 AM - 12:00 PM) or afternoon (1:00 PM - 5:00 PM) shifts."
     ]
@@ -100,13 +100,13 @@
   {
     "id": 4,
     "title": "Peer Tutor - Linear Algebra & Discrete Math",
-    "department": "Mathematics & Sciences Department",
+    "department": "Institute of Science and Mathematics (ISM)",
     "category": "Academic Peer Tutor",
     "category_id": 5,
     "employer_id": 4,
     "employer_name": "Dr. Antonio Valderama",
     "job_type": "Peer Tutor",
-    "location": "Student Learning Center, Room 204",
+    "location": "KLD Student Learning Center, Room 204",
     "pay_rate": "₱100.00 / hour",
     "pay_type": "Hourly",
     "hours_per_week": "8 - 12 hrs/week",
@@ -124,21 +124,22 @@
       "Encourage active problem solving and confidence building."
     ],
     "qualifications": [
-      "Must have earned a final grade of 1.50 or higher in MATH102 and Discrete Math.",
+      "Currently enrolled in BSCS, BSIS, BSDS, or BSCE.",
+      "Must have earned a final grade of 1.50 or higher in Linear Algebra and Discrete Math.",
       "Patient, articulate, and passionate about teaching math concepts.",
-      "Endorsement letter from a math faculty member is a plus."
+      "Endorsement letter from an ISM faculty member is a plus."
     ]
   },
   {
     "id": 5,
-    "title": "Campus Events AV & Media Technician",
-    "department": "Public Relations & Media Center",
+    "title": "KLD Events AV & Media Assistant",
+    "department": "Student Affairs & Services Office (SASO)",
     "category": "Campus Media & Events",
     "category_id": 6,
     "employer_id": 5,
     "employer_name": "Media Center Supervisor",
     "job_type": "Student Assistant",
-    "location": "University Auditorium & Media Booth",
+    "location": "KLD Gymnasium & Audio-Visual Theater",
     "pay_rate": "₱90.00 / hour",
     "pay_type": "Hourly",
     "hours_per_week": "10 - 20 hrs/week",
@@ -148,7 +149,7 @@
     "status": "active",
     "created_at": "2026-08-24",
     "tags": ["Event-Based", "Hands-on"],
-    "description": "Operate sound systems, wireless microphones, LED projectors, and live stream cameras for institutional convocations, college seminars, and university sports meets.",
+    "description": "Operate sound systems, wireless microphones, LED projectors, and live stream cameras for KLD institutional convocations, institute seminars, and college sports meets.",
     "responsibilities": [
       "Set up and test audio/video equipment at least 45 minutes prior to official campus programs.",
       "Manage mixer board, projector switching, and live stream overlays during events.",
@@ -163,14 +164,14 @@
   },
   {
     "id": 6,
-    "title": "Science & Chemistry Laboratory Assistant",
-    "department": "College of Science & Natural Resources",
+    "title": "Medical & Life Science Laboratory Assistant",
+    "department": "Institute of Medical Laboratory Science (IMLS)",
     "category": "Laboratory Assistant",
     "category_id": 4,
     "employer_id": 5,
     "employer_name": "Lab Head Dr. Reyes",
     "job_type": "Student Assistant",
-    "location": "Science Hall, Chemistry Lab 101",
+    "location": "KLD Allied Health Building, Lab 101",
     "pay_rate": "₱85.00 / hour",
     "pay_type": "Hourly",
     "hours_per_week": "12 - 16 hrs/week",
@@ -188,7 +189,7 @@
       "Ensure proper waste segregation and disposal compliance."
     ],
     "qualifications": [
-      "Enrolled in a STEM degree program (Chemistry, Biology, Engineering, or Education).",
+      "Enrolled in BSMLS, BSN, BSM, or BSLS.",
       "Passed General Chemistry with high marks.",
       "Strict compliance with lab safety goggles, lab coat, and chemical handling guidelines."
     ]

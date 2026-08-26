@@ -73,7 +73,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                 <div class="col-lg-4 col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="stat-icon bg-<?= $cat['color'] ?? 'primary' ?>-subtle text-<?= $cat['color'] ?? 'primary' ?>">
+                            <div class="stat-icon stat-icon-kld">
                                 <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
                             </div>
                             <span class="badge bg-light text-dark border">
@@ -87,7 +87,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                         </p>
 
                         <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
-                            <span class="badge bg-success-subtle text-success small">Active Status</span>
+                            <span class="badge bg-kld-soft text-kld-green border border-success-subtle small">Active Status</span>
                             <a href="../student/jobs.php?cat=<?= urlencode($cat['name']) ?>" class="btn btn-sm btn-outline-secondary">
                                 View Openings <i class="bi bi-arrow-right"></i>
                             </a>
@@ -99,9 +99,9 @@ require_once __DIR__ . '/../includes/navbar.php';
 
         <!-- Add Category Modal -->
         <div class="modal fade" id="newCatModal" tabindex="-1" aria-labelledby="newCatLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header bg-primary text-white">
+                    <div class="modal-header bg-kld-gradient text-white">
                         <h5 class="modal-title fw-bold" id="newCatLabel">
                             <i class="bi bi-tag-fill me-1 text-warning"></i> Add New Job Category
                         </h5>

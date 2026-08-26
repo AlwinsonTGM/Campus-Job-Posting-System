@@ -50,10 +50,10 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <form action="forgot-pass.php" method="POST">
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">Institutional Email Address</label>
+                            <label class="form-label small fw-semibold text-dark">KLD Institutional Email Address</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
-                                <input type="email" name="email" class="form-control py-2" placeholder="name@university.edu.ph" value="<?= htmlspecialchars($email) ?>" required autofocus>
+                                <input type="email" name="email" class="form-control py-2" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email) ?>" required autofocus>
                             </div>
                         </div>
 
@@ -63,7 +63,7 @@ require_once __DIR__ . '/includes/navbar.php';
                     </form>
 
                     <div class="text-center border-top pt-3">
-                        <a href="login.php" class="text-decoration-none small fw-semibold text-primary">
+                        <a href="login.php" class="text-decoration-none small fw-semibold text-kld-green">
                             <i class="bi bi-arrow-left me-1"></i> Return to Sign In
                         </a>
                     </div>
