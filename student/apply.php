@@ -79,7 +79,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                             <i class="bi bi-file-earmark-person-fill"></i>
                         </div>
                         <div>
-                            <span class="badge bg-primary-subtle text-primary border px-2 py-1 small">Student Assistantship Application</span>
+                            <span class="badge bg-primary-subtle text-primary border mb-1 px-3 py-2 small">Student Assistantship Application</span>
                             <h3 class="fw-bold text-dark mb-0"><?= htmlspecialchars($job['title']) ?></h3>
                             <div class="text-muted small"><i class="bi bi-building me-1"></i><?= htmlspecialchars($job['department']) ?> &bull; <strong class="text-success"><?= htmlspecialchars($job['pay_rate']) ?></strong></div>
                         </div>
@@ -95,7 +95,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <form action="apply.php?job_id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data">
                         
                         <!-- Applicant Pre-filled Profile -->
-                        <h6 class="fw-bold text-dark mb-3 text-uppercase small"><i class="bi bi-person-badge text-primary me-1"></i> 1. Applicant Profile (From Account)</h6>
+                        <h6 class="fw-bold text-dark mb-4 text-uppercase small"><i class="bi bi-person-badge text-primary me-1"></i> 1. Applicant Profile (From Account)</h6>
                         <div class="row g-3 p-3 bg-light rounded-3 mb-4 border">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-muted mb-0">Student Full Name</label>
