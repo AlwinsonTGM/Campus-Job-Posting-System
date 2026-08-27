@@ -9,12 +9,12 @@ $page_title = 'About the Development Team';
 // 6 Developer Profiles Configuration
 $team_members = [
     [
-        'name' => 'Member 1 (Project Lead)',
+        'name' => 'Bustamante, Alwinson',
         'role' => 'Lead System Architect & Core Backend',
-        'student_id' => '2024-00101',
-        'section' => 'BSIS 2-A',
-        'email' => 'lead.developer@kld.edu.ph',
-        'image' => 'assets/img/developers/member1.svg',
+        'student_id' => '2025-2-000065',
+        'section' => 'BSIS201',
+        'email' => 'abustamante@kld.edu.ph',
+        'image' => 'assets/img/developers/BUSTAMANTE.jpg',
         'bio' => 'Oversees the end-to-end system architecture, routing logic, modular template structure, and data engine.',
         'tasks' => ['System Routing & State Engine', 'Architecture Blueprint', 'Session Handlers']
     ],
@@ -22,7 +22,7 @@ $team_members = [
         'name' => 'Member 2 (Frontend Lead)',
         'role' => 'Public Suite & Legal Compliance Specialist',
         'student_id' => '2024-00102',
-        'section' => 'BSIS 2-A',
+        'section' => 'BSIS201',
         'email' => 'frontend.lead@kld.edu.ph',
         'image' => 'assets/img/developers/member2.svg',
         'bio' => 'Designs and implements the public interface, responsive landing page, Data Privacy Policy, and Terms of Service.',
@@ -32,19 +32,19 @@ $team_members = [
         'name' => 'Member 3 (Security Specialist)',
         'role' => 'Authentication & Client Validation Engineer',
         'student_id' => '2024-00103',
-        'section' => 'BSIS 2-A',
+        'section' => 'BSIS201',
         'email' => 'security.engineer@kld.edu.ph',
         'image' => 'assets/img/developers/member3.svg',
         'bio' => 'Specializes in user authentication flows, dynamic real-time password strength algorithms, and account security.',
         'tasks' => ['Password Strength Meter JS', 'Multi-Role Login & Register', 'Forgot Password Flow']
     ],
     [
-        'name' => 'Member 4 (Student UX Specialist)',
+        'name' => 'Layco, Andrei Von Breydan',
         'role' => 'Student Portal & Application Flow Engineer',
-        'student_id' => '2024-00104',
-        'section' => 'BSIS 2-A',
-        'email' => 'student.ux@kld.edu.ph',
-        'image' => 'assets/img/developers/member4.svg',
+        'student_id' => '2025-2-000176',
+        'section' => 'BSIS201',
+        'email' => 'avblayco@kld.edu.ph',
+        'image' => 'assets/img/developers/LAYCO.jpg',
         'bio' => 'Crafts the student dashboard, job browsing with live filters, job application modal, and application status tracker.',
         'tasks' => ['Student Dashboard', 'Job Filter & Details', 'My Applications Tracker']
     ],
@@ -52,7 +52,7 @@ $team_members = [
         'name' => 'Member 5 (Employer UX Specialist)',
         'role' => 'Department & Hiring Workflow Engineer',
         'student_id' => '2024-00105',
-        'section' => 'BSIS 2-A',
+        'section' => 'BSIS201',
         'email' => 'employer.ux@kld.edu.ph',
         'image' => 'assets/img/developers/member5.svg',
         'bio' => 'Builds the campus office portal, vacancy posting forms, candidate evaluation drawers, and interview scheduling triggers.',
@@ -62,7 +62,7 @@ $team_members = [
         'name' => 'Member 6 (Admin & QA Specialist)',
         'role' => 'System Administration & QA Lead',
         'student_id' => '2024-00106',
-        'section' => 'BSIS 2-A',
+        'section' => 'BSIS201',
         'email' => 'admin.qa@kld.edu.ph',
         'image' => 'assets/img/developers/member6.svg',
         'bio' => 'Manages administrative category controls, user accounts, printable analytics reports, and cross-browser quality assurance.',
@@ -79,7 +79,7 @@ require_once __DIR__ . '/includes/navbar.php';
         <!-- Page Header -->
         <div class="text-center max-w-700 mx-auto mb-5">
             <span class="badge bg-kld-soft text-kld-green border border-success-subtle px-3 py-2 fw-bold text-uppercase mb-2">
-                <i class="bi bi-code-slash"></i> KLD ICDI &bull; BSIS 2-A Midterm Lab Team
+                <i class="bi bi-code-slash"></i> KLD ICDI &bull; BSIS201 Midterm Lab Team
             </span>
             <h1 class="fw-bold text-dark mb-3">Meet the Development Team</h1>
             <p class="text-muted lead fs-6">
