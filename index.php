@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/data-helper.php';
 $page_title = 'Official Student Employment Portal - KLD';
 $all_jobs = get_jobs();
 $categories = get_categories();
+$departments = get_departments();
 $featured_jobs = array_slice($all_jobs, 0, 6);
 
 // Statistics
@@ -53,39 +54,76 @@ require_once __DIR__ . '/includes/navbar.php';
 
                 <!-- Hero Search Widget -->
                 <div class="col-lg-5">
-                    <div class="hero-search-card">
-                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-funnel-fill text-kld-green"></i> Quick Job Search</h5>
+                    <div class="hero-search-card shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center">
+                                <span class="hero-search-icon-badge me-2">
+                                    <i class="bi bi-funnel-fill text-kld-green"></i>
+                                </span>
+                                Quick Job Search
+                            </h5>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1.5 small fw-semibold">
+                                <i class="bi bi-briefcase-fill me-1"></i> <?= $total_jobs ?> Openings
+                            </span>
+                        </div>
+                        
                         <form action="student/jobs.php" method="GET">
+                            <!-- Single Unified Keyword Field -->
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Keyword or Job Title</label>
+                                <label class="form-label small fw-bold text-secondary text-uppercase tracking-wider">Job Title or Keyword</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
-                                    <input type="text" name="kw" class="form-control" placeholder="e.g. Lab Assistant, Clerk, Tutor">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-kld-green"></i></span>
+                                    <input type="text" name="kw" class="form-control border-start-0 ps-0" placeholder="e.g. Lab Assistant, Clerk, Tutor, Math">
                                 </div>
                             </div>
+                            
+                            <!-- Category Select Dropdown -->
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Category / Field</label>
+                                <label class="form-label small fw-bold text-secondary text-uppercase tracking-wider">Job Category</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-grid-fill text-muted"></i></span>
-                                    <select name="cat" class="form-select">
-                                        <option value="">All Categories</option>
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-grid-fill text-kld-green"></i></span>
+                                    <select name="cat" class="form-select border-start-0 ps-0">
+                                        <option value="">All Categories (<?= $total_cats ?> Fields)</option>
                                         <?php foreach ($categories as $cat): ?>
                                             <option value="<?= htmlspecialchars($cat['name']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>
+                            
+                            <!-- Campus Department Select Dropdown -->
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Campus Department / Office</label>
+                                <label class="form-label small fw-bold text-secondary text-uppercase tracking-wider">Campus Department / Office</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
-                                    <input type="text" name="dept" class="form-control" placeholder="e.g. MIS, Library, Registrar">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-kld-green"></i></span>
+                                    <select name="dept" class="form-select border-start-0 ps-0">
+                                        <option value="">All Departments & Offices</option>
+                                        <?php foreach ($departments as $d): ?>
+                                            <option value="<?= htmlspecialchars($d) ?>"><?= htmlspecialchars($d) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-academic w-100 py-2">
-                                <i class="bi bi-arrow-right-circle me-1"></i> Search Campus Jobs
+                            
+                            <button type="submit" class="btn btn-academic w-100 py-2.5 fw-semibold shadow-sm hero-search-btn">
+                                <i class="bi bi-search me-1.5"></i> Find Campus Positions
                             </button>
                         </form>
+
+                        <!-- Popular Quick Tags -->
+                        <div class="hero-quick-tags mt-3 pt-3 border-top">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Popular Searches:</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1.5">
+                                <a href="student/jobs.php?kw=Tech+Support" class="quick-tag-pill">#Tech Support</a>
+                                <a href="student/jobs.php?kw=Library" class="quick-tag-pill">#Library</a>
+                                <a href="student/jobs.php?kw=Urgent" class="quick-tag-pill">#Urgent</a>
+                                <a href="student/jobs.php?kw=Flexible+Shift" class="quick-tag-pill">#Flexible Shift</a>
+                                <a href="student/jobs.php?kw=Office+Work" class="quick-tag-pill">#Office Work</a>
+                                <a href="student/jobs.php?kw=High+Pay" class="quick-tag-pill">#High Pay</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

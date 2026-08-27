@@ -12,6 +12,7 @@ $dept = $_GET['dept'] ?? null;
 
 $jobs = get_jobs($cat, $kw, $dept);
 $categories = get_categories();
+$departments = get_departments();
 
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
@@ -41,14 +42,14 @@ require_once __DIR__ . '/../includes/navbar.php';
             <form action="jobs.php" method="GET" class="row g-2 align-items-center">
                 <div class="col-lg-4 col-md-6">
                     <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                        <input type="text" name="kw" id="live-job-search" class="form-control" placeholder="Search title, department, skills..." value="<?= htmlspecialchars($kw ?? '') ?>">
+                        <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="kw" id="live-job-search" class="form-control" placeholder="Search title, skills, keywords..." value="<?= htmlspecialchars($kw ?? '') ?>">
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
                     <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="bi bi-grid-fill"></i></span>
+                        <span class="input-group-text bg-light"><i class="bi bi-grid-fill text-muted"></i></span>
                         <select name="cat" class="form-select">
                             <option value="">All Categories</option>
                             <?php foreach ($categories as $c): ?>
@@ -62,13 +63,20 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                 <div class="col-lg-3 col-md-6">
                     <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
-                        <input type="text" name="dept" class="form-control" placeholder="Department (e.g. MIS, Library)" value="<?= htmlspecialchars($dept ?? '') ?>">
+                        <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
+                        <select name="dept" class="form-select">
+                            <option value="">All Departments</option>
+                            <?php foreach ($departments as $d): ?>
+                                <option value="<?= htmlspecialchars($d) ?>" <?= ($dept === $d) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($d) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-md-6 d-flex gap-2">
-                    <button type="submit" class="btn btn-academic w-100">
+                    <button type="submit" class="btn btn-academic w-100 fw-semibold">
                         <i class="bi bi-funnel-fill me-1"></i> Filter
                     </button>
                     <?php if ($kw || $cat || $dept): ?>
@@ -78,6 +86,20 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <?php endif; ?>
                 </div>
             </form>
+
+            <!-- Popular Quick Tags Ribbon -->
+            <div class="d-flex align-items-center flex-wrap gap-1.5 mt-3 pt-2.5 border-top small">
+                <span class="text-muted fw-semibold me-1"><i class="bi bi-lightning-charge-fill text-warning"></i> Quick Filters:</span>
+                <a href="jobs.php?kw=Tech+Support" class="quick-tag-pill <?= ($kw === 'Tech Support') ? 'active' : '' ?>">#Tech Support</a>
+                <a href="jobs.php?kw=Library" class="quick-tag-pill <?= ($kw === 'Library') ? 'active' : '' ?>">#Library</a>
+                <a href="jobs.php?kw=Urgent" class="quick-tag-pill <?= ($kw === 'Urgent') ? 'active' : '' ?>">#Urgent</a>
+                <a href="jobs.php?kw=Flexible+Shift" class="quick-tag-pill <?= ($kw === 'Flexible Shift') ? 'active' : '' ?>">#Flexible Shift</a>
+                <a href="jobs.php?kw=Office+Work" class="quick-tag-pill <?= ($kw === 'Office Work') ? 'active' : '' ?>">#Office Work</a>
+                <a href="jobs.php?kw=High+Pay" class="quick-tag-pill <?= ($kw === 'High Pay') ? 'active' : '' ?>">#High Pay</a>
+                <?php if ($kw || $cat || $dept): ?>
+                    <a href="jobs.php" class="quick-tag-pill text-danger border-danger-subtle ms-auto"><i class="bi bi-trash3 me-1"></i>Reset All</a>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- Job Cards Grid -->

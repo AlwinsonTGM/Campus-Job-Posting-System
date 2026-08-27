@@ -45,7 +45,7 @@
     "icon": "bi-folder2-open",
     "description": "Student 201 records processing, registrar encoding, document sorting, and courteous frontline campus queue assistance.",
     "theme": "kld-green",
-    "badge_tag": "Campus Administration",
+    "badge_tag": "Campus Admin",
     "badge_icon": "bi-building-check",
     "job_count": 5,
     "hourly_range": "₱80.00 / hr",

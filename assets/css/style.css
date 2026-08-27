@@ -360,10 +360,66 @@ main {
 
 .hero-search-card {
   background: #ffffff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  border-top: 4px solid var(--kld-green-primary);
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.hero-search-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--kld-green-soft, #e6f4ea);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.hero-search-btn {
+  background: linear-gradient(135deg, #0f5132 0%, #15803d 100%);
+  border: none;
+  transition: all 0.25s ease;
+}
+
+.hero-search-btn:hover {
+  background: linear-gradient(135deg, #0b3d26 0%, #0f5132 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 81, 50, 0.35) !important;
+}
+
+.quick-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 50rem;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.quick-tag-pill:hover {
+  background-color: var(--kld-green-primary, #0f5132);
+  color: #ffffff !important;
+  border-color: var(--kld-green-primary, #0f5132);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 81, 50, 0.2);
+}
+
+.quick-tag-pill.active {
+  background-color: var(--kld-green-primary, #0f5132);
+  color: #ffffff !important;
+  border-color: var(--kld-green-primary, #0f5132);
+  font-weight: 600;
+}
+
 
 /* Stat Cards */
 .stat-card {
@@ -1293,7 +1349,10 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
+
 
 /* Mobile & Tablet Optimizations for Bento */
 @media (max-width: 991.98px) {

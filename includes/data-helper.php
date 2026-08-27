@@ -433,8 +433,22 @@ function get_kld_courses_flat() {
 
 // Categories
 function get_categories() {
-    $cats = $_SESSION['categories'] ?? load_json_file('categories.json');
+    $cats_json = load_json_file('categories.json');
+    $cats = $_SESSION['categories'] ?? $cats_json;
     $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    
+    // Sync visual badge metadata from categories.json
+    foreach ($cats as $idx => $cat) {
+        foreach ($cats_json as $cj) {
+            if (isset($cj['id']) && isset($cat['id']) && $cj['id'] === $cat['id']) {
+                $cats[$idx]['badge_tag'] = $cj['badge_tag'] ?? ($cat['badge_tag'] ?? '');
+                $cats[$idx]['badge_icon'] = $cj['badge_icon'] ?? ($cat['badge_icon'] ?? '');
+                $cats[$idx]['hourly_range'] = $cj['hourly_range'] ?? ($cat['hourly_range'] ?? '');
+                $cats[$idx]['image'] = $cj['image'] ?? ($cat['image'] ?? '');
+                break;
+            }
+        }
+    }
     
     // Tally active jobs per category
     $counts = [];
@@ -471,6 +485,31 @@ function create_category($data) {
     return $new_id;
 }
 
+// Departments
+function get_departments() {
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    $departments = [
+        'Management Information Systems (MIS)',
+        'Office of the University Registrar',
+        'KLD University Library',
+        'Institute of Science and Mathematics (ISM)',
+        'Student Affairs & Services Office (SASO)',
+        'Institute of Medical Laboratory Science (IMLS)',
+        'Office of Admissions & Scholarships',
+        'Center for Student Publication (The Green Flame)',
+        'Sports Development & Athletics Unit'
+    ];
+
+    foreach ($jobs as $j) {
+        if (!empty($j['department']) && !in_array($j['department'], $departments)) {
+            $departments[] = $j['department'];
+        }
+    }
+
+    sort($departments);
+    return $departments;
+}
+
 // Reset Demo Data helper
 function reset_demo_data() {
     $_SESSION['users'] = load_json_file('users.json');
@@ -480,3 +519,4 @@ function reset_demo_data() {
     $_SESSION['app_initialized'] = true;
     set_flash('info', 'Demo dataset has been reset to default KLD state.');
 }
+
