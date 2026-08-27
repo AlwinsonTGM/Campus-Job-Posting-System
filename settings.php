@@ -146,7 +146,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="alert-paper alert-paper--warning mb-4 reveal-fade-rise">
                         <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                             <div class="d-flex align-items-start gap-3">
-                                <div class="icon-circle icon-circle-sm bg-warning text-dark flex-shrink-0 mt-1">
+                                <div class="icon-circle icon-circle-sm icon-circle-warning flex-shrink-0 mt-1">
                                     <i class="bi bi-hourglass-split fs-5"></i>
                                 </div>
                                 <div>
@@ -173,7 +173,7 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="alert-paper alert-paper--success mb-4 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm bg-success text-white flex-shrink-0">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0">
                                         <i class="bi bi-check-lg fs-5"></i>
                                     </div>
                                     <div>
@@ -194,7 +194,7 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="alert-paper alert-paper--danger mb-4 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                 <div class="d-flex align-items-start gap-3">
-                                    <div class="icon-circle icon-circle-sm bg-danger text-white flex-shrink-0 mt-1">
+                                    <div class="icon-circle icon-circle-sm icon-circle-danger flex-shrink-0 mt-1">
                                         <i class="bi bi-x-lg fs-5"></i>
                                     </div>
                                     <div>
@@ -229,7 +229,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <h3 class="card-paper-title fs-5 mb-0">
                                     <i class="bi bi-person-circle text-accent me-2"></i> Profile &amp; Preferences
                                 </h3>
-                                <span class="pill-badge"><?= ucfirst($user['role'] ?? 'student') ?></span>
+                                <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle"><?= ucfirst($user['role'] ?? 'student') ?></span>
                             </div>
 
                             <form action="settings.php" method="POST" class="form-paper">
@@ -465,8 +465,8 @@ require_once __DIR__ . '/includes/header.php';
         <div class="modal-content rounded-4 border-line shadow-lg">
             <div class="modal-header bg-cream border-bottom border-line py-2 px-3">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="icon-circle icon-circle-sm icon-circle-accent" style="width: 32px; height: 32px; font-size: 14px;">
-                        <i class="bi bi-shield-check text-accent"></i>
+                    <div class="icon-circle icon-circle-sm icon-circle-success" style="width: 32px; height: 32px; font-size: 14px;">
+                        <i class="bi bi-shield-check"></i>
                     </div>
                     <div>
                         <h6 class="modal-title fw-bold text-ink mb-0" id="requestProfileModalLabel">Official Profile Change Request</h6>

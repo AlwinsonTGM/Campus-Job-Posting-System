@@ -159,7 +159,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <span class="small text-muted-custom">
                             Showing <strong><?= count($jobs) ?></strong> verified campus opportunities
                         </span>
-                        <span class="pill-badge" style="font-size: 11px;">
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">
                             <i class="bi bi-clock-history text-accent"></i> Max 20 hrs/week
                         </span>
                     </div>

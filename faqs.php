@@ -139,7 +139,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 aria-expanded="<?= $is_open ? 'true' : 'false' ?>" 
                                                 aria-controls="collapse<?= $idx ?>"
                                             >
-                                                <span class="pill-badge pill-badge-ink flex-shrink-0" style="font-size: 11px; padding: 0.25rem 0.65rem;">
+                                                <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle flex-shrink-0" style="font-size: 11px; padding: 0.25rem 0.65rem;">
                                                     Q<?= $q_num ?>
                                                 </span>
                                                 <span class="fw-bold text-ink fs-6 text-start flex-grow-1">
@@ -156,7 +156,7 @@ require_once __DIR__ . '/includes/header.php';
                                             <div class="accordion-body px-4 py-3 text-muted-custom bg-surface rounded-3 mt-1 border border-line">
                                                 <?php if (!empty($item['category'])): ?>
                                                     <div class="mb-2">
-                                                        <span class="pill-badge pill-badge-ink small" style="font-size: 11px;">
+                                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle small" style="font-size: 11px;">
                                                             <i class="bi bi-tag-fill me-1 text-accent"></i> <?= htmlspecialchars($item['category']) ?>
                                                         </span>
                                                     </div>

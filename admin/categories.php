@@ -82,7 +82,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="col-lg-4 col-md-6">
                             <div class="card-paper p-4 h-100 d-flex flex-column reveal-fade-rise">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="icon-circle icon-circle-accent">
+                                    <div class="icon-circle icon-circle-success">
                                         <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?>"></i>
                                     </div>
                                     <span class="chip">
@@ -96,7 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </p>
 
                                 <div class="mt-auto pt-3 border-top border-line d-flex justify-content-between align-items-center">
-                                    <span class="pill-badge" style="font-size: 11px;">Active Category</span>
+                                    <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">Active Category</span>
                                     <a href="../student/jobs.php?category=<?= urlencode($cat['name']) ?>" class="btn-pill-outline btn-pill-sm">
                                         View Openings &rarr;
                                     </a>
@@ -115,8 +115,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="modal-content rounded-4 border-line shadow-lg">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-accent">
-                                <i class="bi bi-tag-fill text-accent"></i>
+                            <div class="icon-circle icon-circle-sm icon-circle-success">
+                                <i class="bi bi-tag-fill"></i>
                             </div>
                             <div>
                                 <h5 class="modal-title fw-bold text-ink mb-0" id="newCatLabel">Add Job Family Category</h5>

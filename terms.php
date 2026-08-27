@@ -20,7 +20,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="prose">
                     <!-- Page Head & Last Updated Line -->
                     <div class="mb-4 pb-3 border-bottom border-line">
-                        <span class="pill-badge mb-2">
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-2">
                             <i class="bi bi-file-earmark-ruled text-accent"></i> Campus Employment Guidelines
                         </span>
                         <h1 class="page-head-title">Terms of Service &amp; Campus Work Guidelines</h1>
@@ -129,7 +129,7 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-patch-check-fill text-accent fs-5"></i>
                             <strong class="text-ink">11. Certificate of Service &amp; Recommendations</strong>
-                            <span class="pill-badge pill-badge-ink ms-auto small">Official Award</span>
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle ms-auto small">Official Award</span>
                         </div>
                         <p class="small text-muted-custom mb-0">
                             Upon successful completion of an assistantship term with satisfactory ratings, students will receive an official <strong>Certificate of Service</strong> issued by the Student Affairs &amp; Services Office (SASO).

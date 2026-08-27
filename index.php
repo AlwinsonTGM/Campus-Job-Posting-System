@@ -14,7 +14,7 @@ $page_title = 'Empowering Students, Supporting Campus Offices';
 
 // Data from helper
 $categories = get_categories();
-$featured_jobs = get_featured_jobs(5);
+$featured_jobs = array_slice(array_filter(get_all_jobs(), fn($j) => ($j['status'] ?? 'active') === 'active'), 0, 5);
 
 // Key Metrics
 $metric_active_jobs = get_metrics_total_active_jobs();
@@ -233,7 +233,7 @@ require_once __DIR__ . '/includes/header.php';
                                         <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
                                             <i class="bi bi-file-earmark-check-fill fs-4 text-ink"></i>
                                         </div>
-                                        <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 01</span>
+                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle" style="font-size: 11px;">STEP 01</span>
                                     </div>
                                     <h3 class="h4 fw-bold text-ink mb-2">Accreditation & Partnership</h3>
                                     <p class="text-muted-custom small mb-4">
@@ -255,7 +255,7 @@ require_once __DIR__ . '/includes/header.php';
                                         <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
                                             <i class="bi bi-shield-lock-fill fs-4 text-ink"></i>
                                         </div>
-                                        <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 02</span>
+                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle" style="font-size: 11px;">STEP 02</span>
                                     </div>
                                     <h3 class="h4 fw-bold text-ink mb-2">Career Center Vetting</h3>
                                     <p class="text-muted-custom small mb-4">
@@ -277,7 +277,7 @@ require_once __DIR__ . '/includes/header.php';
                                         <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
                                             <i class="bi bi-person-check-fill fs-4 text-ink"></i>
                                         </div>
-                                        <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 03</span>
+                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle" style="font-size: 11px;">STEP 03</span>
                                     </div>
                                     <h3 class="h4 fw-bold text-ink mb-2">Authorized Deployment</h3>
                                     <p class="text-muted-custom small mb-4">
@@ -421,7 +421,7 @@ require_once __DIR__ . '/includes/header.php';
 
                         <div class="row align-items-center g-4 position-relative z-2">
                             <div class="col-lg-4">
-                                <span class="pill-badge pill-badge-ink bg-white text-dark mb-3">
+                                <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-white text-dark mb-3">
                                     <i class="bi bi-bar-chart-fill text-accent"></i> Our Impact
                                 </span>
                                 <h2 class="h1 fw-extrabold text-white mb-2">Together, We're Building Careers</h2>
@@ -489,7 +489,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 </span>
                                             <?php endif; ?>
                                             <?php foreach ($badges as $b): ?>
-                                                <span class="badge-tag-overlay <?= (stripos($b, 'urgent') !== false || stripos($b, 'ojt') !== false) ? 'urgent' : '' ?>">
+                                                <span class="badge-tag-overlay">
                                                     <?= htmlspecialchars($b) ?>
                                                 </span>
                                             <?php endforeach; ?>
@@ -624,7 +624,7 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <div class="position-relative z-2 max-w-640 mx-auto" style="max-width: 620px;">
-                            <span class="pill-badge mb-3">
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
                                 <i class="bi bi-lightning-charge-fill text-accent"></i> TAKE ACTION
                             </span>
                             <h2 class="h1 fw-extrabold text-ink mb-3">Join Us In Shaping Your Future</h2>

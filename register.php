@@ -127,7 +127,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <span class="fw-extrabold text-ink fs-5 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
                             </div>
 
-                            <span class="pill-badge mb-3">
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
                                 <i class="bi bi-person-plus-fill text-accent"></i> New Registration
                             </span>
 
@@ -141,19 +141,19 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Feature List -->
                             <div class="d-flex flex-column gap-3 mb-4">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-search"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Schedule-Friendly On-Campus Vacancies</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-building-check"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Accredited Offices & Enterprise Partners</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-file-earmark-check"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Digital DTR & Stipend Tracking</span>

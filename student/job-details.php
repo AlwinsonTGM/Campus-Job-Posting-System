@@ -124,8 +124,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <!-- Safety & Academic Safeguard Banner -->
                             <div class="card-paper bg-cream p-3 mt-4 border border-line">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
-                                        <i class="bi bi-shield-check text-accent"></i>
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
+                                        <i class="bi bi-shield-check"></i>
                                     </div>
                                     <div class="small text-muted-custom">
                                         <strong class="text-ink">University Vetted & Protected:</strong> This assistantship complies with campus safety regulations, non-hazardous work standards, and strict 20 hrs/week academic term limits.

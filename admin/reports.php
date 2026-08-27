@@ -173,7 +173,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </h3>
                             <p class="text-muted-custom small mb-0">Institutional compliance, vacancy quotas, and hiring ratios</p>
                         </div>
-                        <span class="pill-badge">Term: 1st Sem 2026–2027</span>
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle">Term: 1st Sem 2026–2027</span>
                     </div>
 
                     <div class="table-responsive">

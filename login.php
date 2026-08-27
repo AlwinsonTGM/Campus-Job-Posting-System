@@ -82,7 +82,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <span class="fw-extrabold text-ink fs-5 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
                             </div>
 
-                            <span class="pill-badge mb-3">
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
                                 <i class="bi bi-shield-lock-fill text-accent"></i> Secure Access Portal
                             </span>
 
@@ -96,19 +96,19 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Feature List -->
                             <div class="d-flex flex-column gap-3 mb-4">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-mortarboard-fill"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Verified On-Campus Assistantships</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-clock-history"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Strict 20 hrs/week Academic Safeguards</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-shield-check"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">RA 10173 Data Privacy Compliance</span>

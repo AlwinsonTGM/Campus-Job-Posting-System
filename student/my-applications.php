@@ -106,7 +106,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3 pb-3 border-bottom border-line">
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-1">
-                                            <span class="pill-badge" style="font-size: 11px;">
+                                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">
                                                 #APP-<?= str_pad($app['id'], 4, '0', STR_PAD_LEFT) ?>
                                             </span>
                                             <span class="small text-muted-custom">

@@ -292,8 +292,7 @@ h1, h2, h3, h4, h5, h6,
   color: var(--ink);
 }
 
-/* Badges & Section Pills */
-.pill-badge,
+/* Eyebrow Tags */
 .eyebrow-tag {
   display: inline-flex;
   align-items: center;
@@ -305,12 +304,6 @@ h1, h2, h3, h4, h5, h6,
   font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  border: 1px solid var(--line);
-}
-
-.pill-badge-ink {
-  background-color: var(--surface);
-  color: var(--ink);
   border: 1px solid var(--line);
 }
 
@@ -847,11 +840,6 @@ h1, h2, h3, h4, h5, h6,
   border-radius: var(--radius-pill);
 }
 
-.badge-tag-overlay.urgent {
-  background-color: #ef4444;
-  color: var(--white);
-}
-
 .featured-card-apply-overlay {
   position: absolute;
   bottom: 14px;
@@ -1195,19 +1183,19 @@ h1, h2, h3, h4, h5, h6,
   font-size: 13px !important;
 }
 
-/* 16.4 Icon Circle (Metric Law: 48px, sm 40px) */
+/* 16.4 Icon Circle — Bootstrap-aligned helpers (48px, sm 40px) */
 .icon-circle {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--cream);
-  border: 1px solid var(--line);
-  color: var(--ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
+  background-color: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
 }
 
 .icon-circle-sm {
@@ -1216,16 +1204,28 @@ h1, h2, h3, h4, h5, h6,
   font-size: 16px;
 }
 
-.icon-circle-accent {
-  background-color: var(--accent-soft);
-  border-color: rgba(46, 204, 94, 0.3);
-  color: var(--ink);
+.icon-circle-success {
+  background-color: var(--bs-success-bg-subtle);
+  border-color: var(--bs-success-border-subtle);
+  color: var(--bs-success-text-emphasis);
 }
 
-.icon-circle-ink {
-  background-color: var(--ink);
-  border-color: var(--ink);
-  color: var(--white);
+.icon-circle-warning {
+  background-color: var(--bs-warning-bg-subtle);
+  border-color: var(--bs-warning-border-subtle);
+  color: var(--bs-warning-text-emphasis);
+}
+
+.icon-circle-danger {
+  background-color: var(--bs-danger-bg-subtle);
+  border-color: var(--bs-danger-border-subtle);
+  color: var(--bs-danger-text-emphasis);
+}
+
+.icon-circle-dark {
+  background-color: var(--bs-dark);
+  border-color: var(--bs-dark);
+  color: #fff;
 }
 
 /* 16.5 Card Paper & Card Hover (Metric Law: Radius 24px) */
@@ -1319,21 +1319,6 @@ h1, h2, h3, h4, h5, h6,
   background-color: var(--surface);
   color: var(--ink);
   border: 1px solid var(--line);
-}
-
-.job-card-featured-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink);
-  background-color: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 0.2rem 0.6rem;
-  white-space: nowrap;
 }
 
 .job-card-pay-box {

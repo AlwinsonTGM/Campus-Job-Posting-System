@@ -281,7 +281,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="modal-content rounded-4 border-line shadow-lg overflow-hidden">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4 d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-2 me-auto">
-                            <div class="icon-circle icon-circle-sm icon-circle-accent">
+                            <div class="icon-circle icon-circle-sm icon-circle-success">
                                 <i class="bi bi-file-earmark-pdf-fill text-danger"></i>
                             </div>
                             <div>

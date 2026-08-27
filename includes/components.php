@@ -14,7 +14,7 @@ if (!function_exists('render_page_head')) {
             <div class="page-head-content">
                 <?php if (!empty($eyebrow)): ?>
                     <div class="mb-2">
-                        <span class="pill-badge">
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle">
                             <?= $eyebrow ?>
                         </span>
                     </div>
@@ -119,7 +119,7 @@ if (!function_exists('render_metric')) {
                 <div class="metric-lbl text-truncate"><?= htmlspecialchars($label) ?></div>
                 <div class="metric-val"><?= htmlspecialchars((string)$value) ?></div>
             </div>
-            <div class="icon-circle icon-circle-accent flex-shrink-0">
+            <div class="icon-circle icon-circle-success flex-shrink-0">
                 <i class="bi <?= htmlspecialchars($icon) ?>"></i>
             </div>
         </div>
@@ -179,11 +179,6 @@ if (!function_exists('render_job_card')) {
                         </span>
                     <?php endif; ?>
                 </div>
-                <?php if (!empty($job['featured'])): ?>
-                    <span class="job-card-featured-badge">
-                        <i class="bi bi-star-fill text-warning me-1"></i>Featured
-                    </span>
-                <?php endif; ?>
             </div>
 
             <!-- 2. Job Title and Employer Info -->

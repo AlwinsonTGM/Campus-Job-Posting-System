@@ -682,7 +682,6 @@ function create_job($data) {
         'slots_filled' => 0,
         'deadline' => $data['deadline'] ?? date('Y-m-d', strtotime('+30 days')),
         'status' => 'active',
-        'featured' => false,
         'image' => 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=900&auto=format&fit=crop',
         'created_at' => date('Y-m-d'),
         'tags' => !empty($data['tags']) ? (is_array($data['tags']) ? $data['tags'] : explode(',', $data['tags'])) : [$job_type, $work_setup, $employer_type === 'university_office' ? 'University Office' : 'Approved Partner'],
@@ -995,17 +994,6 @@ function get_metrics_avg_hourly_pay() {
     }
     $avg = round(array_sum($rates) / count($rates));
     return '₱' . $avg;
-}
-
-function get_featured_jobs($limit = 5) {
-    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
-    $featured = array_filter($jobs, function($j) {
-        return !empty($j['featured']) && ($j['status'] ?? 'active') === 'active';
-    });
-    if (empty($featured)) {
-        $featured = $jobs;
-    }
-    return array_slice(array_values($featured), 0, $limit);
 }
 
 // Reset Demo Data helper

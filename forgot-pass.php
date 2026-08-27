@@ -45,7 +45,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <span class="fw-extrabold text-ink fs-5 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
                             </div>
 
-                            <span class="pill-badge mb-3">
+                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
                                 <i class="bi bi-key-fill text-accent"></i> Account Recovery
                             </span>
 
@@ -59,19 +59,19 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Feature List -->
                             <div class="d-flex flex-column gap-3 mb-4">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-shield-lock-fill"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Encrypted Single-Use Reset Token</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-envelope-check-fill"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Delivered Direct to Institutional Inbox</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                    <div class="icon-circle icon-circle-sm icon-circle-success">
                                         <i class="bi bi-headset"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Campus IT Helpdesk Support</span>

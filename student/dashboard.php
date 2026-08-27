@@ -152,7 +152,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php endif; ?>
 
                             <div class="d-flex align-items-center gap-3 mb-4">
-                                <div class="icon-circle icon-circle-accent" style="width: 54px; height: 54px; font-size: 24px;">
+                                <div class="icon-circle icon-circle-success" style="width: 54px; height: 54px; font-size: 24px;">
                                     <?= strtoupper(substr($user['name'] ?? 'S', 0, 1)) ?>
                                 </div>
                                 <div>

@@ -93,8 +93,8 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Developer Photo Specifications Compliance Note -->
                 <div class="card-paper mb-5 bg-cream">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="icon-circle icon-circle-accent">
-                            <i class="bi bi-patch-check-fill text-accent"></i>
+                        <div class="icon-circle icon-circle-success">
+                            <i class="bi bi-patch-check-fill"></i>
                         </div>
                         <div>
                             <h4 class="card-paper-title mb-1">Developer Photo Standards Policy</h4>
@@ -147,7 +147,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="col-lg-6">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="icon-circle icon-circle-accent">
+                                <div class="icon-circle icon-circle-success">
                                     <i class="bi bi-compass"></i>
                                 </div>
                                 <h3 class="card-paper-title mb-0">Our Project Mission</h3>
@@ -171,7 +171,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="col-lg-6">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="icon-circle icon-circle-accent">
+                                <div class="icon-circle icon-circle-success">
                                     <i class="bi bi-stack"></i>
                                 </div>
                                 <h3 class="card-paper-title mb-0">Technical Architecture</h3>

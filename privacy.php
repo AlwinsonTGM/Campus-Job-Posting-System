@@ -21,7 +21,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="prose">
                     <!-- Page Head & Last Updated Line -->
                     <div class="mb-4 pb-3 border-bottom border-line">
-                        <span class="pill-badge mb-2">
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-2">
                             <i class="bi bi-shield-check text-accent"></i> Republic Act No. 10173
                         </span>
                         <h1 class="page-head-title">Data Privacy Policy</h1>
@@ -88,8 +88,8 @@ require_once __DIR__ . '/includes/header.php';
 
                     <div class="card-paper bg-cream p-4 mt-3">
                         <div class="d-flex align-items-center gap-3 mb-2">
-                            <div class="icon-circle icon-circle-ink">
-                                <i class="bi bi-person-badge text-accent"></i>
+                            <div class="icon-circle icon-circle-dark">
+                                <i class="bi bi-person-badge text-white"></i>
                             </div>
                             <div>
                                 <h4 class="card-paper-title mb-0">University Data Protection Office</h4>

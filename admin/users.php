@@ -119,7 +119,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php if ($pending_profile_count > 0): ?>
                     <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3 reveal-fade-rise">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle icon-circle-sm bg-warning text-dark">
+                            <div class="icon-circle icon-circle-sm icon-circle-warning">
                                 <i class="bi bi-person-badge-fill fs-5"></i>
                             </div>
                             <div>
@@ -136,8 +136,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php if ($pending_count > 0): ?>
                     <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle icon-circle-sm icon-circle-accent">
-                                <i class="bi bi-exclamation-circle-fill text-accent"></i>
+                            <div class="icon-circle icon-circle-sm icon-circle-success">
+                                <i class="bi bi-exclamation-circle-fill"></i>
                             </div>
                             <div>
                                 <strong class="text-ink"><?= $pending_count ?> Partner Registration(s) Awaiting Review:</strong>
@@ -319,7 +319,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <tr>
                                             <td class="ps-4" data-label="User Details" style="max-width: 220px;">
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <div class="icon-circle icon-circle-sm icon-circle-accent flex-shrink-0" style="width: 32px; height: 32px; font-size: 13px;">
+                                                    <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0" style="width: 32px; height: 32px; font-size: 13px;">
                                                         <?= strtoupper(substr($u['name'] ?? 'U', 0, 1)) ?>
                                                     </div>
                                                     <div class="min-w-0 flex-grow-1">
@@ -343,7 +343,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                         <span class="chip" style="font-size: 11px;"><i class="bi bi-bank text-accent me-1"></i>Office</span>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <span class="pill-badge" style="font-size: 10px;"><i class="bi bi-shield-lock me-1"></i>Admin</span>
+                                                    <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 10px;"><i class="bi bi-shield-lock me-1"></i>Admin</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td data-label="Organization / Program" style="max-width: 240px;">
@@ -412,7 +412,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="modal-content rounded-4 border-line shadow-lg">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm bg-warning text-dark">
+                            <div class="icon-circle icon-circle-sm icon-circle-warning">
                                 <i class="bi bi-shield-lock-fill"></i>
                             </div>
                             <div>
@@ -593,8 +593,8 @@ require_once __DIR__ . '/../includes/header.php';
                     
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-accent">
-                                <i class="bi bi-patch-check-fill text-accent"></i>
+                            <div class="icon-circle icon-circle-sm icon-circle-success">
+                                <i class="bi bi-patch-check-fill"></i>
                             </div>
                             <div>
                                 <h5 class="modal-title fw-bold text-ink mb-0" id="verifyModalLabel<?= $u['id'] ?>">Permit &amp; MOA Verification</h5>
