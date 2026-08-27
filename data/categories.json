@@ -2,49 +2,116 @@
   {
     "id": 1,
     "name": "Information Technology",
+    "slug": "Information Technology",
     "icon": "bi-laptop",
-    "description": "IT lab maintenance, technical support, network assistance, and campus software support.",
-    "color": "primary",
-    "job_count": 4
+    "description": "IT lab maintenance, technical troubleshooting, network setup, compiler installations, and student workstation support.",
+    "theme": "kld-green",
+    "badge_tag": "Most In-Demand",
+    "badge_icon": "bi-fire",
+    "job_count": 4,
+    "hourly_range": "₱85.00 / hr",
+    "card_type": "hero",
+    "image": "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop",
+    "popular_roles": [
+      "Computer Lab Assistant",
+      "Network Technician",
+      "MIS Helpdesk",
+      "Workstation Support"
+    ]
   },
   {
     "id": 2,
     "name": "Library Services",
+    "slug": "Library Services",
     "icon": "bi-book",
-    "description": "Cataloging, book circulation, digital archive management, and student research aid.",
-    "color": "success",
-    "job_count": 3
+    "description": "Book cataloging, barcode circulation scanning, digital archive indexing, OPAC search assistance, and study hub oversight.",
+    "theme": "kld-green",
+    "badge_tag": "Quiet Study Hub",
+    "badge_icon": "bi-bookmark-star",
+    "job_count": 3,
+    "hourly_range": "₱80.00 / hr",
+    "card_type": "highlight",
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop",
+    "popular_roles": [
+      "Digital Cataloger",
+      "Circulation Desk Aid",
+      "Archive Assistant"
+    ]
   },
   {
     "id": 3,
     "name": "Administrative & Clerical",
+    "slug": "Administrative & Clerical",
     "icon": "bi-folder2-open",
-    "description": "Office filing, student records processing, encoding, and general department support.",
-    "color": "info",
-    "job_count": 5
+    "description": "Student 201 records processing, registrar encoding, document sorting, and courteous frontline campus queue assistance.",
+    "theme": "kld-green",
+    "badge_tag": "Campus Administration",
+    "badge_icon": "bi-building-check",
+    "job_count": 5,
+    "hourly_range": "₱80.00 / hr",
+    "card_type": "standard",
+    "image": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop",
+    "popular_roles": [
+      "Records Clerk",
+      "Data Encoder",
+      "Frontline Desk Aid"
+    ]
   },
   {
     "id": 4,
     "name": "Laboratory Assistant",
+    "slug": "Laboratory Assistant",
     "icon": "bi-radioactive",
-    "description": "Science & computer laboratory prep, equipment inventory, and safety compliance.",
-    "color": "warning",
-    "job_count": 2
+    "description": "Science & medical laboratory apparatus preparation, glassware autoclaving, chemical inventory logging, and safety protocol enforcement.",
+    "theme": "kld-green",
+    "badge_tag": "Science & Health",
+    "badge_icon": "bi-moisture",
+    "job_count": 2,
+    "hourly_range": "₱85.00 / hr",
+    "card_type": "standard",
+    "image": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop",
+    "popular_roles": [
+      "Medical Lab Aid",
+      "Apparatus Prep",
+      "Inventory Custodian"
+    ]
   },
   {
     "id": 5,
     "name": "Academic Peer Tutor",
+    "slug": "Academic Peer Tutor",
     "icon": "bi-mortarboard",
-    "description": "Peer mentoring, tutorial sessions in math, programming, sciences, and art.",
-    "color": "danger",
-    "job_count": 3
+    "description": "1-on-1 and small group academic tutoring in mathematics, coding algorithms, discrete structures, sciences, and exam preparation.",
+    "theme": "kld-green",
+    "badge_tag": "Academic Mentoring",
+    "badge_icon": "bi-award-fill",
+    "job_count": 3,
+    "hourly_range": "₱100.00 / hr",
+    "card_type": "standard",
+    "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+    "popular_roles": [
+      "Math & Calc Tutor",
+      "Programming Mentor",
+      "Peer Coach"
+    ]
   },
   {
     "id": 6,
     "name": "Campus Media & Events",
+    "slug": "Campus Media & Events",
     "icon": "bi-camera-reels",
-    "description": "Event coverage, graphic design, campus publications, and AV technical support.",
-    "color": "secondary",
-    "job_count": 2
+    "description": "Live sound engineering, auditorium lighting, multi-cam live streaming, official photography, and graphic coverage for university events.",
+    "theme": "kld-green",
+    "badge_tag": "Live Event Production",
+    "badge_icon": "bi-broadcast",
+    "job_count": 2,
+    "hourly_range": "₱90.00 / hr",
+    "card_type": "highlight",
+    "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800&auto=format&fit=crop",
+    "popular_roles": [
+      "AV Sound Operator",
+      "Live Stream Crew",
+      "Campus Event Media"
+    ]
   }
 ]

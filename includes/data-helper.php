@@ -166,11 +166,21 @@ function get_jobs($category = null, $keyword = null, $department = null) {
 
     if ($keyword) {
         $kw = strtolower(trim($keyword));
-        $jobs = array_filter($jobs, function($j) use ($kw) {
-            return stripos($j['title'], $kw) !== false || 
-                   stripos($j['department'], $kw) !== false || 
-                   stripos($j['description'], $kw) !== false ||
-                   stripos($j['location'], $kw) !== false;
+        $kw_words = array_filter(explode(' ', $kw), function($w) { return strlen($w) >= 3; });
+        $jobs = array_filter($jobs, function($j) use ($kw, $kw_words) {
+            $tags_str = is_array($j['tags'] ?? null) ? implode(' ', $j['tags']) : ($j['tags'] ?? '');
+            $haystack = strtolower($j['title'] . ' ' . $j['department'] . ' ' . $j['description'] . ' ' . $j['location'] . ' ' . $tags_str . ' ' . ($j['category'] ?? ''));
+            
+            if (stripos($haystack, $kw) !== false) {
+                return true;
+            }
+            
+            foreach ($kw_words as $word) {
+                if (stripos($haystack, $word) !== false) {
+                    return true;
+                }
+            }
+            return false;
         });
     }
 
@@ -423,7 +433,25 @@ function get_kld_courses_flat() {
 
 // Categories
 function get_categories() {
-    return $_SESSION['categories'] ?? load_json_file('categories.json');
+    $cats = $_SESSION['categories'] ?? load_json_file('categories.json');
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    
+    // Tally active jobs per category
+    $counts = [];
+    foreach ($jobs as $j) {
+        if (($j['status'] ?? 'active') === 'active') {
+            $cat_name = $j['category'] ?? '';
+            $counts[$cat_name] = ($counts[$cat_name] ?? 0) + 1;
+        }
+    }
+    
+    foreach ($cats as $idx => $cat) {
+        if (isset($counts[$cat['name']])) {
+            $cats[$idx]['job_count'] = $counts[$cat['name']];
+        }
+    }
+    
+    return $cats;
 }
 
 function create_category($data) {

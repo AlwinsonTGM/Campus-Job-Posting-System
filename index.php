@@ -185,30 +185,381 @@ require_once __DIR__ . '/includes/navbar.php';
         </div>
     </section>
 
-    <!-- Categories Section -->
-    <section class="py-5 bg-white border-top border-bottom">
+    <!-- Categories Bento Grid Section -->
+    <?php
+    $cats_by_id = [];
+    foreach ($categories as $c) {
+        $cats_by_id[$c['id']] = $c;
+    }
+    $it_cat = $cats_by_id[1] ?? ($categories[0] ?? null);
+    $lib_cat = $cats_by_id[2] ?? ($categories[1] ?? null);
+    $admin_cat = $cats_by_id[3] ?? ($categories[2] ?? null);
+    $lab_cat = $cats_by_id[4] ?? ($categories[3] ?? null);
+    $tutor_cat = $cats_by_id[5] ?? ($categories[4] ?? null);
+    $media_cat = $cats_by_id[6] ?? ($categories[5] ?? null);
+    ?>
+    <section class="py-5 bento-section border-top border-bottom">
         <div class="container">
             <div class="text-center mb-5">
-                <span class="text-kld-green fw-bold small text-uppercase">Explore by Department</span>
-                <h2 class="fw-bold text-dark">Job Categories</h2>
-                <p class="text-muted">Find opportunities matching your skills, academic major, and career interests.</p>
+                <span class="badge bento-pill-header px-3 py-2 fw-bold text-uppercase mb-2 d-inline-block">
+                    <i class="bi bi-compass-fill me-1"></i> Interactive Department Explorer
+                </span>
+                <h2 class="fw-bold text-dark mb-2">Explore Opportunities by Campus Field</h2>
+                <p class="text-muted col-lg-7 mx-auto">
+                    Browse specialized assistantships tailored to your institute curriculum. Select any sub-role to filter instant campus openings.
+                </p>
             </div>
 
-            <div class="row g-4">
-                <?php foreach ($categories as $cat): ?>
-                    <div class="col-lg-4 col-md-6">
-                        <a href="student/jobs.php?cat=<?= urlencode($cat['name']) ?>" class="category-card">
-                            <div class="category-icon-box">
-                                <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
+            <div class="bento-grid">
+                <!-- Bento Row 1: Hero Card (IT) + Highlight Card (Library) -->
+                <div class="row g-4 mb-4 align-items-stretch">
+                    <?php if ($it_cat): ?>
+                        <div class="col-lg-7">
+                            <div class="bento-card bento-card-hero bento-card-green-theme">
+                                <div class="row align-items-stretch h-100 g-4">
+                                    <div class="col-md-5 order-1 order-md-2 d-flex flex-column">
+                                        <div class="bento-capsule-img-wrapper" style="min-height: 240px; height: 100%;">
+                                            <img src="<?= htmlspecialchars($it_cat['image'] ?? 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($it_cat['name']) ?>">
+                                            <div class="bento-capsule-overlay"></div>
+                                            <div class="bento-floating-icon text-kld-green">
+                                                <i class="bi bi-laptop"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-7 order-2 order-md-1 d-flex flex-column justify-content-between h-100">
+                                        <div>
+                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                                <span class="bento-pill-badge bento-badge-kld-green">
+                                                    <i class="bi <?= htmlspecialchars($it_cat['badge_icon'] ?? 'bi-fire') ?> text-kld-green"></i> <?= htmlspecialchars($it_cat['badge_tag'] ?? 'Most In-Demand') ?>
+                                                </span>
+                                                <span class="bento-meta-pill text-kld-green fw-bold">
+                                                    <i class="bi bi-cash-stack text-kld-green"></i> <?= htmlspecialchars($it_cat['hourly_range'] ?? '₱85.00 / hr') ?>
+                                                </span>
+                                            </div>
+                                            <h3 class="fw-bold text-dark mb-2">
+                                                <a href="student/jobs.php?cat=<?= urlencode($it_cat['name']) ?>" class="text-decoration-none text-dark">
+                                                    <?= htmlspecialchars($it_cat['name']) ?>
+                                                </a>
+                                            </h3>
+                                            <p class="text-muted small mb-3">
+                                                <?= htmlspecialchars($it_cat['description']) ?>
+                                            </p>
+                                            
+                                            <div class="small fw-semibold text-secondary mb-1">
+                                                <i class="bi bi-stars text-kld-green me-1"></i> Popular Student Roles:
+                                            </div>
+                                            <div class="bento-role-chips">
+                                                <?php foreach (($it_cat['popular_roles'] ?? ['Lab Assistant', 'Tech Support']) as $role): ?>
+                                                    <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($it_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
+                                                        <i class="bi bi-laptop me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
+                                                    </a>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                            <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
+                                                <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $it_cat['job_count'] ?? 4 ?> Vacancies
+                                            </span>
+                                            <a href="student/jobs.php?cat=<?= urlencode($it_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($it_cat['name']) ?> Jobs">
+                                                <i class="bi bi-arrow-up-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <h5 class="fw-bold mb-2"><?= htmlspecialchars($cat['name']) ?></h5>
-                            <p class="text-muted small mb-3"><?= htmlspecialchars($cat['description']) ?></p>
-                            <span class="badge bg-light text-dark border">
-                                <?= $cat['job_count'] ?? 3 ?> Open Positions <i class="bi bi-chevron-right ms-1 text-kld-gold"></i>
-                            </span>
-                        </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($lib_cat): ?>
+                        <div class="col-lg-5">
+                            <div class="bento-card bento-card-green-theme">
+                                <div class="bento-capsule-img-wrapper mb-3" style="height: 165px; min-height: 165px;">
+                                    <img src="<?= htmlspecialchars($lib_cat['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($lib_cat['name']) ?>">
+                                    <div class="bento-capsule-overlay"></div>
+                                    <div class="bento-floating-icon text-kld-green">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                    <span class="bento-pill-badge bento-badge-kld-green">
+                                        <i class="bi <?= htmlspecialchars($lib_cat['badge_icon'] ?? 'bi-bookmark-star') ?> text-kld-green"></i> <?= htmlspecialchars($lib_cat['badge_tag'] ?? 'Quiet Study Hub') ?>
+                                    </span>
+                                    <span class="bento-meta-pill text-kld-green fw-bold"><?= htmlspecialchars($lib_cat['hourly_range'] ?? '₱80.00 / hr') ?></span>
+                                </div>
+
+                                <h4 class="fw-bold text-dark mb-1">
+                                    <a href="student/jobs.php?cat=<?= urlencode($lib_cat['name']) ?>" class="text-decoration-none text-dark">
+                                        <?= htmlspecialchars($lib_cat['name']) ?>
+                                    </a>
+                                </h4>
+                                <p class="text-muted small mb-2">
+                                    <?= htmlspecialchars($lib_cat['description']) ?>
+                                </p>
+
+                                <div class="bento-role-chips">
+                                    <?php foreach (($lib_cat['popular_roles'] ?? ['Cataloger', 'Circulation Aid']) as $role): ?>
+                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($lib_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
+                                            <i class="bi bi-book me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
+                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $lib_cat['job_count'] ?? 3 ?> Vacancies
+                                    </span>
+                                    <a href="student/jobs.php?cat=<?= urlencode($lib_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($lib_cat['name']) ?> Jobs">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Bento Row 2: 3 Visual Category Cards with Capsule Photography & Unified KLD Palette -->
+                <div class="row g-4 mb-4 align-items-stretch">
+                    <!-- Administrative & Clerical -->
+                    <?php if ($admin_cat): ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="bento-card bento-card-green-theme">
+                                <div class="bento-capsule-img-wrapper mb-3" style="height: 150px;">
+                                    <img src="<?= htmlspecialchars($admin_cat['image'] ?? 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($admin_cat['name']) ?>">
+                                    <div class="bento-capsule-overlay"></div>
+                                    <div class="bento-floating-icon text-kld-green">
+                                        <i class="bi <?= htmlspecialchars($admin_cat['icon']) ?>"></i>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="bento-pill-badge bento-badge-kld-green">
+                                        <i class="bi <?= htmlspecialchars($admin_cat['badge_icon'] ?? 'bi-building') ?> text-kld-green"></i> <?= htmlspecialchars($admin_cat['badge_tag'] ?? 'Campus Admin') ?>
+                                    </span>
+                                    <span class="bento-meta-pill fw-bold text-kld-green"><?= htmlspecialchars($admin_cat['hourly_range'] ?? '₱80/hr') ?></span>
+                                </div>
+
+                                <h5 class="fw-bold text-dark mb-1">
+                                    <a href="student/jobs.php?cat=<?= urlencode($admin_cat['name']) ?>" class="text-decoration-none text-dark">
+                                        <?= htmlspecialchars($admin_cat['name']) ?>
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-2">
+                                    <?= htmlspecialchars($admin_cat['description']) ?>
+                                </p>
+
+                                <div class="bento-role-chips">
+                                    <?php foreach (($admin_cat['popular_roles'] ?? ['Records Clerk', 'Data Encoder']) as $role): ?>
+                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($admin_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
+                                            <i class="bi bi-file-earmark-text me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="badge bg-light text-dark border px-2 py-2 fw-semibold small">
+                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $admin_cat['job_count'] ?? 5 ?> Vacancies
+                                    </span>
+                                    <a href="student/jobs.php?cat=<?= urlencode($admin_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($admin_cat['name']) ?>">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Laboratory Assistant -->
+                    <?php if ($lab_cat): ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="bento-card bento-card-green-theme">
+                                <div class="bento-capsule-img-wrapper mb-3" style="height: 150px;">
+                                    <img src="<?= htmlspecialchars($lab_cat['image'] ?? 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($lab_cat['name']) ?>">
+                                    <div class="bento-capsule-overlay"></div>
+                                    <div class="bento-floating-icon text-kld-green">
+                                        <i class="bi <?= htmlspecialchars($lab_cat['icon']) ?>"></i>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="bento-pill-badge bento-badge-kld-green">
+                                        <i class="bi <?= htmlspecialchars($lab_cat['badge_icon'] ?? 'bi-moisture') ?> text-kld-green"></i> <?= htmlspecialchars($lab_cat['badge_tag'] ?? 'Science & Health') ?>
+                                    </span>
+                                    <span class="bento-meta-pill fw-bold text-kld-green"><?= htmlspecialchars($lab_cat['hourly_range'] ?? '₱85/hr') ?></span>
+                                </div>
+
+                                <h5 class="fw-bold text-dark mb-1">
+                                    <a href="student/jobs.php?cat=<?= urlencode($lab_cat['name']) ?>" class="text-decoration-none text-dark">
+                                        <?= htmlspecialchars($lab_cat['name']) ?>
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-2">
+                                    <?= htmlspecialchars($lab_cat['description']) ?>
+                                </p>
+
+                                <div class="bento-role-chips">
+                                    <?php foreach (($lab_cat['popular_roles'] ?? ['Lab Aid', 'Apparatus Prep']) as $role): ?>
+                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($lab_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
+                                            <i class="bi bi-eyedropper me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="badge bg-light text-dark border px-2 py-2 fw-semibold small">
+                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $lab_cat['job_count'] ?? 2 ?> Vacancies
+                                    </span>
+                                    <a href="student/jobs.php?cat=<?= urlencode($lab_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($lab_cat['name']) ?>">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Academic Peer Tutor -->
+                    <?php if ($tutor_cat): ?>
+                        <div class="col-lg-4 col-md-12">
+                            <div class="bento-card bento-card-green-theme">
+                                <div class="bento-capsule-img-wrapper mb-3" style="height: 150px;">
+                                    <img src="<?= htmlspecialchars($tutor_cat['image'] ?? 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($tutor_cat['name']) ?>">
+                                    <div class="bento-capsule-overlay"></div>
+                                    <div class="bento-floating-icon text-kld-green">
+                                        <i class="bi <?= htmlspecialchars($tutor_cat['icon']) ?>"></i>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="bento-pill-badge bento-badge-kld-green">
+                                        <i class="bi <?= htmlspecialchars($tutor_cat['badge_icon'] ?? 'bi-award-fill') ?> text-kld-green"></i> <?= htmlspecialchars($tutor_cat['badge_tag'] ?? 'Academic Mentoring') ?>
+                                    </span>
+                                    <span class="bento-meta-pill fw-bold text-kld-green"><?= htmlspecialchars($tutor_cat['hourly_range'] ?? '₱100/hr') ?></span>
+                                </div>
+
+                                <h5 class="fw-bold text-dark mb-1">
+                                    <a href="student/jobs.php?cat=<?= urlencode($tutor_cat['name']) ?>" class="text-decoration-none text-dark">
+                                        <?= htmlspecialchars($tutor_cat['name']) ?>
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-2">
+                                    <?= htmlspecialchars($tutor_cat['description']) ?>
+                                </p>
+
+                                <div class="bento-role-chips">
+                                    <?php foreach (($tutor_cat['popular_roles'] ?? ['Math Tutor', 'Peer Mentor']) as $role): ?>
+                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($tutor_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
+                                            <i class="bi bi-mortarboard me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="badge bg-light text-dark border px-2 py-2 fw-semibold small">
+                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $tutor_cat['job_count'] ?? 3 ?> Vacancies
+                                    </span>
+                                    <a href="student/jobs.php?cat=<?= urlencode($tutor_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($tutor_cat['name']) ?>">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Bento Row 3: Feature Banner Bento Card (Campus Media & Events) -->
+                <?php if ($media_cat): ?>
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <div class="bento-banner-card bento-card-green-theme">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-lg-5 col-md-5">
+                                        <div class="bento-capsule-img-wrapper" style="min-height: 220px; height: 100%;">
+                                            <img src="<?= htmlspecialchars($media_cat['image'] ?? 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($media_cat['name']) ?>">
+                                            <div class="bento-capsule-overlay"></div>
+                                            <div class="bento-floating-icon text-kld-green">
+                                                <i class="bi bi-camera-reels"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-7 col-md-7 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                                <span class="bento-pill-badge bento-badge-kld-green">
+                                                    <i class="bi <?= htmlspecialchars($media_cat['badge_icon'] ?? 'bi-broadcast') ?> text-kld-green"></i> <?= htmlspecialchars($media_cat['badge_tag'] ?? 'Live Event Production') ?>
+                                                </span>
+                                                <span class="bento-meta-pill">
+                                                    <i class="bi bi-clock-history text-muted"></i> Event-Based Schedules
+                                                </span>
+                                                <span class="bento-meta-pill text-kld-green fw-bold">
+                                                    <?= htmlspecialchars($media_cat['hourly_range'] ?? '₱90.00 / hr') ?>
+                                                </span>
+                                            </div>
+
+                                            <h3 class="fw-bold text-dark mb-2">
+                                                <a href="student/jobs.php?cat=<?= urlencode($media_cat['name']) ?>" class="text-decoration-none text-dark">
+                                                    <?= htmlspecialchars($media_cat['name']) ?>
+                                                </a>
+                                            </h3>
+                                            <p class="text-muted small mb-3">
+                                                <?= htmlspecialchars($media_cat['description']) ?>
+                                            </p>
+
+                                            <div class="bento-role-chips mb-3">
+                                                <?php foreach (($media_cat['popular_roles'] ?? ['AV Operator', 'Live Stream Crew']) as $role): ?>
+                                                    <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($media_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
+                                                        <i class="bi bi-camera-video me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
+                                                    </a>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                            <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
+                                                <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $media_cat['job_count'] ?? 2 ?> Vacancies
+                                            </span>
+                                            <a href="student/jobs.php?cat=<?= urlencode($media_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($media_cat['name']) ?> Jobs">
+                                                <i class="bi bi-arrow-up-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                <?php endforeach; ?>
+                <?php endif; ?>
+
+                <!-- Additional Categories (if added dynamically via Admin) -->
+                <?php 
+                $rendered_ids = [1, 2, 3, 4, 5, 6];
+                $extra_cats = array_filter($categories, function($c) use ($rendered_ids) {
+                    return !in_array($c['id'], $rendered_ids);
+                });
+                if (!empty($extra_cats)): ?>
+                    <div class="row g-4 mt-2">
+                        <?php foreach ($extra_cats as $extra): ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="bento-card bento-card-green-theme">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="bento-floating-icon text-kld-green">
+                                            <i class="bi <?= htmlspecialchars($extra['icon']) ?>"></i>
+                                        </div>
+                                        <span class="bento-pill-badge bento-badge-kld-green">Campus Dept</span>
+                                    </div>
+                                    <h5 class="fw-bold mb-1"><?= htmlspecialchars($extra['name']) ?></h5>
+                                    <p class="text-muted small mb-3"><?= htmlspecialchars($extra['description']) ?></p>
+                                    <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-briefcase-fill text-kld-green me-1"></i><?= $extra['job_count'] ?? 0 ?> Vacancies</span>
+                                        <a href="student/jobs.php?cat=<?= urlencode($extra['name']) ?>" class="bento-arrow-btn">
+                                            <i class="bi bi-arrow-up-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
