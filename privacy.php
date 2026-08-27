@@ -86,7 +86,15 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-kld-green mb-2">6. Rights of the Data Subject</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">6. Code of Conduct & Integrity</h4>
+                            <ul class="text-secondary">
+                                <li>Applicants must submit accurate documents. Uploading fake, falsified, or tampered GWA records, CORs, or personal identity details will cause immediate disqualification and lead to disciplinary action.</li>
+                                <li>Posting off-campus, unapproved, or fraudulent job listings is strictly prohibited.</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h4 class="fw-bold text-kld-green mb-2">7. Rights of the Data Subject</h4>
                             <p class="text-secondary mb-2">Under Republic Act 10173, students and users are entitled to the following privacy rights:</p>
                             <div class="row g-3 text-secondary small">
                                 <div class="col-md-6">
@@ -113,7 +121,7 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">7. Data Protection Officer (DPO) Contact</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">8. Data Protection Officer (DPO) Contact</h4>
                             <p class="text-secondary small mb-1">
                                 For inquiries, corrections, or concerns regarding your personal data rights:
                             </p>

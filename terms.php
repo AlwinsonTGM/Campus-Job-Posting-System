@@ -57,7 +57,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <h4 class="fw-bold text-kld-green mb-2">3. Work Hour Regulations (20-Hour Weekly Cap)</h4>
                             <div class="alert alert-warning border-0 p-3 rounded-3 mb-3">
                                 <strong><i class="bi bi-exclamation-triangle-fill me-1"></i> Strict Academic Safeguard:</strong>
-                                Student Assistants are legally restricted to working a maximum of <b>20 hours per week</b> during regular instructional terms to ensure employment does not interfere with study hours or lecture attendance.
+                                Student Assistants are legally restricted to working a maximum of <strong>20 hours per week</strong> during regular instructional terms to ensure employment does not interfere with study hours or lecture attendance.
                             </div>
                             <p class="text-secondary">
                                 Working hours may be expanded up to a maximum of 40 hours per week only during official semester breaks, subject to prior written approval from the Student Affairs & Services Office (SASO).
@@ -72,10 +72,10 @@ require_once __DIR__ . '/includes/navbar.php';
                             </ul>
                         </section>
 
-                        <section>
+                         <section>
                             <h4 class="fw-bold text-kld-green mb-2">5. Code of Conduct & Integrity</h4>
                             <ul class="text-secondary">
-                                <li>Applicants must submit accurate documents. Uploading fake, falsified, or tampered GWA records, CORs, or personal identity details will cause immediate disqualification and lead to disciplinary action.</li>
+                                <li>Applicants must submit accurate and authentic information. Uploading falsified GWA records, altered CORs, or fake identity details will result in immediate system suspension and disciplinary referral.</li>
                                 <li>Posting off-campus, unapproved, or fraudulent job listings is strictly prohibited.</li>
                             </ul>
                         </section>
@@ -84,47 +84,67 @@ require_once __DIR__ . '/includes/navbar.php';
                             <h4 class="fw-bold text-kld-green mb-2">6. Hiring Units & Department Supervisor Rules</h4>
                             <ul class="text-secondary">
                                 <li>Authorized university departments must provide clear, accurate job descriptions and duties.</li>
-                                <li>Supervisors cannot assign work exceeding the <b>20-hour weekly limit</b> or require duties outside official school policy and schedules.</li>
+                                <li>Supervisors cannot assign work exceeding the <strong>20-hour weekly limit</strong> or require duties outside official school policy and schedules.</li>
                             </ul>
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">7. Non-Disclosure & Data Sharing Policy</h4>
-                            <p class="text-secondary small mb-0">
-                                Under no circumstances will student resumes or contact records be sold, rented, or transferred to third-party commercial marketing firms. Access is restricted exclusively to authorized KLD department supervisors, Student Affairs & Services Office (SASO) administrators, and KLD accounting officers.
-                            </p>
-                        </section>
-                        <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">8. Data Retention & Storage Security</h4>
-                            <p class="text-secondary small mb-0">
-                                Application submissions are retained for the duration of the current academic semester and archived in accordance with university document retention schedules. Secure authentication tokens and role-based access control prevent unauthorized viewing of sensitive student files.
-                            </p>
-                        </section>
-                        <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">9. Rights of the Data Subject</h4>
-                            <p class="text-secondary mb-2">Under Republic Act 10173, students and users are entitled to the following privacy rights:</p>
+                            <h4 class="fw-bold text-kld-green mb-2">7. Application Status & Selection</h4>
                             <ul class="text-secondary">
-                                <li><b>Right to Access:</b> View all submitted applications and profile records at any time through the student dashboard.</li>
-                                <li><b>Right to Reactify:</b> Update or correct outdated contact numbers, resume files, and availability matrices.</li>
-                                <li><b>Right to Erasure / Withdraw:</b> Cancel active job applications or request account deactivation.</li>
-                                <li><b>Right to File to Complaints:</b> Report unauthorized data access to the University Data Protection Officer.</li>
+                                <li>Submitting an <b>application does not guarantee placement</b>. Hiring units retain the authority to review candidates, conduct interviews, and select qualified applicants based on department needs.</li>
+                                <li>The system reserves the right to automatically filter out applications that fail to meet basic eligibility standards.</li>
                             </ul>
                         </section>
-                        <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">10. System Availability & Service Disclaimer</h4>
-                            <p class="text-secondary small mb-0">
-                            The university reserves the right to update system features, modify policies, or conduct maintenance resulting in temporary downtime without prior notice.
-                            </p>
-                        </section>
-                        <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">11. Data Protection Officer (DPO) Contact</h4>
-                            <p class="text-secondary mb-2">For inquiries, corrections, or concerns regarding your personal data rights:</p>
-                            <p class="text-secondary mb-2">Kolehiyo ng Lungsod ng Dasmariñas - Data Protection Office (DPO)
-                            <p class="text-secondary mb-2">KLD Administration Building, City of Dasmariñas, Cavite
-                            <p class="text-secondary mb-2">Email: dataprivacy@kld.edu.ph | Direct Line: (046) 416-0000 loc 105
-                        </section>
-                        
 
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">8. Service Availability & Policy Updates</h4>
+                            <ul class="text-secondary">
+                                <li>The university reserves the right to update system features, modify platform terms, or perform scheduled maintenance resulting in temporary downtime without prior notice. Continued use of the portal after updates constitutes agreement to the modified terms.</li>
+                            </ul>
+                        </section>
+
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">9. Attendance, Daily Time Records (DTR) & Compensation</h4>
+                            <div class="alert alert-warning border-0 p-3 rounded-3 mb-3">
+                                <strong><i class="bi bi-exclamation-triangle-fill me-1"></i> Immediate Termination:</strong>
+                                Submitting false hours or logging shifts not worked constitutes fraud and will result in immediate termination.
+                            </div>
+                            
+                            <ul class="text-secondary">
+                                <li>Employees are required to maintain accurate attendance records and submit Daily Time Records (DTR) as per university policy.</li>
+                                <li>Compensation will be processed according to the university's payroll schedule and applicable labor laws.</li>
+                                <li>Allowances are disbursed on a semi-monthly or monthly schedule via the University Cashier Office or registered student bank/e-wallet accounts.</li>
+                            </ul>
+                        </section>
+
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">10. Performance Evaluations & Work Standards</h4>
+                            <ul class="text-secondary">
+                            <li><i class="bi bi-mortarboard-fill"></i> Student Assistants are expected to maintain professional conduct, fulfill assigned duties, and respect office rules.</li> 
+                            <li><i class="bi bi-briefcase-fill"></i> Hiring supervisors conduct periodic performance evaluations. Poor duty performance or unexcused absences may lead to contract cancellation.</li>
+                            </ul>
+                        </section>
+
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">11. Examination & Academic Priority Safeguard</h4>
+                            <p class="text-secondary mb-2">Academics remain the primary priority. Students are entitled to request temporary shift adjustments or leave during official midterm and final examination weeks without penalty, provided advance notice is given to their supervisor.</p>
+                        </section>
+
+                        <div class="p-3 bg-light rounded-2 border border-success border-opacity-25 shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-patch-check-fill text-kld-green fs-5 me-2"></i>
+                            <strong class="text-dark">12. Certificate of Service & Recommendations</strong>
+                            <span class="badge bg-success bg-opacity-10 text-success ms-auto small">Official Award</span>
+                        </div>
+                            <p class="mb-0 text-secondary small">
+                                Upon successful completion of an assistantship term with satisfactory ratings, 
+                                <strong class="text-dark">students will receive an official Certificate of Service</strong> 
+                                    issued by the Student Affairs & Services Office (SASO).
+                                </p>
+                        </div>
+                    
+
+                        
                     </div>
                 </div>
             </div>
