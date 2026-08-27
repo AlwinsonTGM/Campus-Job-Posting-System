@@ -9,62 +9,62 @@ $page_title = 'About the Development Team';
 // 6 Developer Profiles Configuration
 $team_members = [
     [
-        'name' => 'Member 1 (Project Lead)',
+        'name' => 'Bustamante, Alwinson',
         'role' => 'Lead System Architect & Core Backend',
-        'student_id' => '2024-00101',
-        'section' => 'BSIS 2-A',
-        'email' => 'lead.developer@kld.edu.ph',
-        'image' => 'assets/img/developers/member1.svg',
+        'student_id' => '2025-2-000065',
+        'section' => 'BSIS201',
+        'email' => 'abustamante@kld.edu.ph',
+        'image' => 'assets/img/developers/BUSTAMANTE.jpg',
         'bio' => 'Oversees the end-to-end system architecture, routing logic, modular template structure, and data engine.',
         'tasks' => ['System Routing & State Engine', 'Architecture Blueprint', 'Session Handlers']
     ],
     [
-        'name' => 'Member 2 (Frontend Lead)',
+        'name' => 'Baco, Nico',
         'role' => 'Public Suite & Legal Compliance Specialist',
-        'student_id' => '2024-00102',
-        'section' => 'BSIS 2-A',
-        'email' => 'frontend.lead@kld.edu.ph',
-        'image' => 'assets/img/developers/member2.svg',
+        'student_id' => '2025-2-000032',
+        'section' => 'BSIS201',
+        'email' => 'nbaco@kld.edu.ph',
+        'image' => 'assets/img/developers/BACO.jpg',
         'bio' => 'Designs and implements the public interface, responsive landing page, Data Privacy Policy, and Terms of Service.',
         'tasks' => ['Index & Landing Page', 'Data Privacy (RA 10173)', 'Terms of Service Page']
     ],
     [
-        'name' => 'Member 3 (Security Specialist)',
+        'name' => 'Cruzpe, Julius Robert',
         'role' => 'Authentication & Client Validation Engineer',
-        'student_id' => '2024-00103',
-        'section' => 'BSIS 2-A',
-        'email' => 'security.engineer@kld.edu.ph',
-        'image' => 'assets/img/developers/member3.svg',
+        'student_id' => '2025-2-000091',
+        'section' => 'BSIS201',
+        'email' => 'jrcruzpe@kld.edu.ph',
+        'image' => 'assets/img/developers/CRUZPE.jpg',
         'bio' => 'Specializes in user authentication flows, dynamic real-time password strength algorithms, and account security.',
         'tasks' => ['Password Strength Meter JS', 'Multi-Role Login & Register', 'Forgot Password Flow']
     ],
     [
-        'name' => 'Member 4 (Student UX Specialist)',
+        'name' => 'Layco, Andrei Von Breydan',
         'role' => 'Student Portal & Application Flow Engineer',
-        'student_id' => '2024-00104',
-        'section' => 'BSIS 2-A',
-        'email' => 'student.ux@kld.edu.ph',
-        'image' => 'assets/img/developers/member4.svg',
+        'student_id' => '2025-2-000176',
+        'section' => 'BSIS201',
+        'email' => 'avblayco@kld.edu.ph',
+        'image' => 'assets/img/developers/LAYCO.jpg',
         'bio' => 'Crafts the student dashboard, job browsing with live filters, job application modal, and application status tracker.',
         'tasks' => ['Student Dashboard', 'Job Filter & Details', 'My Applications Tracker']
     ],
     [
-        'name' => 'Member 5 (Employer UX Specialist)',
+        'name' => 'Salognon, Joeven',
         'role' => 'Department & Hiring Workflow Engineer',
-        'student_id' => '2024-00105',
-        'section' => 'BSIS 2-A',
-        'email' => 'employer.ux@kld.edu.ph',
-        'image' => 'assets/img/developers/member5.svg',
+        'student_id' => '2025-2-000269',
+        'section' => 'BSIS201',
+        'email' => 'jsalognon@kld.edu.ph',
+        'image' => 'assets/img/developers/SOLOGNON.jpg',
         'bio' => 'Builds the campus office portal, vacancy posting forms, candidate evaluation drawers, and interview scheduling triggers.',
         'tasks' => ['Employer Dashboard', 'Create & Edit Job Forms', 'Applicant Review Suite']
     ],
     [
-        'name' => 'Member 6 (Admin & QA Specialist)',
+        'name' => 'Jurado, Marl Jordan',
         'role' => 'System Administration & QA Lead',
-        'student_id' => '2024-00106',
-        'section' => 'BSIS 2-A',
-        'email' => 'admin.qa@kld.edu.ph',
-        'image' => 'assets/img/developers/member6.svg',
+        'student_id' => '2025-2-000166',
+        'section' => 'BSIS201',
+        'email' => 'mjjurado@kld.edu.ph',
+        'image' => 'assets/img/developers/JURADO.jpg',
         'bio' => 'Manages administrative category controls, user accounts, printable analytics reports, and cross-browser quality assurance.',
         'tasks' => ['Categories & User Control', 'Printable Analytics Reports', 'Mobile QA & Validation']
     ]
@@ -79,7 +79,7 @@ require_once __DIR__ . '/includes/navbar.php';
         <!-- Page Header -->
         <div class="text-center max-w-700 mx-auto mb-5">
             <span class="badge bg-kld-soft text-kld-green border border-success-subtle px-3 py-2 fw-bold text-uppercase mb-2">
-                <i class="bi bi-code-slash"></i> KLD ICDI &bull; BSIS 2-A Midterm Lab Team
+                <i class="bi bi-code-slash"></i> KLD ICDI &bull; BSIS201 Midterm Lab Team
             </span>
             <h1 class="fw-bold text-dark mb-3">Meet the Development Team</h1>
             <p class="text-muted lead fs-6">
@@ -119,7 +119,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <div class="text-muted small mb-3">
                                 <div><i class="bi bi-person-badge me-1 text-kld-green"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
                                 <div><i class="bi bi-mortarboard me-1 text-kld-green"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
-                                <div class="text-break"><i class="bi bi-envelope me-1 text-kld-green"></i> <?= htmlspecialchars($dev['email']) ?></div>
+                                <div class="text-break"><a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=<?= htmlspecialchars($dev['email']) ?>" id="remove-underline" target="_blank"><i class="bi bi-envelope me-1 text-kld-black" > <?= htmlspecialchars($dev['email']) ?></i></a></div>
                             </div>
 
                             <p class="text-secondary small mb-3 text-start bg-light p-3 rounded-2">
