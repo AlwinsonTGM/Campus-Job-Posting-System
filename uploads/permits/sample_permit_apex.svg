@@ -1,0 +1,35 @@
+﻿<svg xmlns=http://www.w3.org/2000/svg width=700 height=900 viewBox=0 0 700 900>
+  <rect width=700 height=900 fill=#FDFBF7 stroke=#333333 stroke-width=6/>
+  <rect x=20 y=20 width=660 height=860 fill=none stroke=#6E6A61 stroke-width=2 stroke-dasharray=6,4/>
+  <circle cx=350 cy=90 r=40 fill=#2ECC5E fill-opacity=0.15 stroke=#2ECC5E stroke-width=3/>
+  <text x=350 y=98 font-family=Arial, sans-serif font-size=28 font-weight=bold fill=#161616 text-anchor=middle>★ SEC ★</text>
+  <text x=350 y=160 font-family=Georgia, serif font-size=14 font-weight=bold fill=#6E6A61 text-anchor=middle letter-spacing=2>REPUBLIC OF THE PHILIPPINES</text>
+  <text x=350 y=185 font-family=Georgia, serif font-size=20 font-weight=bold fill=#161616 text-anchor=middle>SECURITIES AND EXCHANGE COMMISSION</text>
+  <text x=350 y=208 font-family=Arial, sans-serif font-size=12 fill=#6E6A61 text-anchor=middle>Company Registration Division</text>
+  <line x1=80 y1=230 x2=620 y2=230 stroke=#161616 stroke-width=2/>
+  <text x=350 y=280 font-family=Georgia, serif font-size=24 font-weight=bold fill=#161616 text-anchor=middle>CERTIFICATE OF INCORPORATION</text>
+  <text x=350 y=305 font-family=Arial, sans-serif font-size=13 font-style=italic fill=#6E6A61 text-anchor=middle>&amp; INDUSTRY PARTNERSHIP ACCREDITATION</text>
+  <text x=80 y=360 font-family=Georgia, serif font-size=14 fill=#333333>THIS IS TO CERTIFY THAT</text>
+  <rect x=75 y=375 width=550 height=45 fill=#F1EBDC rx=8/>
+  <text x=350 y=405 font-family=Arial, sans-serif font-size=20 font-weight=bold fill=#161616 text-anchor=middle>APEX ROBOTICS &amp; AUTOMATION PH CORP.</text>
+  <text x=80 y=460 font-family=Georgia, serif font-size=14 fill=#333333>has complied with all statutory requirements under Registration No:</text>
+  <rect x=75 y=480 width=550 height=50 fill=#E8F8EE stroke=#2ECC5E stroke-width=2 rx=8/>
+  <text x=350 y=512 font-family=Courier New, monospace font-size=22 font-weight=bold fill=#161616 text-anchor=middle>SEC-CS2026-098412</text>
+  <text x=80 y=570 font-family=Georgia, serif font-size=14 fill=#333333>Principal Office Location:</text>
+  <text x=80 y=595 font-family=Arial, sans-serif font-size=13 font-weight=bold fill=#161616>4th Floor Innovation Tower, Dasmarinas City, Cavite</text>
+  <text x=80 y=635 font-family=Georgia, serif font-size=14 fill=#333333>Authorized University Liaison:</text>
+  <text x=80 y=660 font-family=Arial, sans-serif font-size=13 font-weight=bold fill=#161616>Engr. Dennis Ramirez (Chief Technology Officer)</text>
+  <g transform=translate(100, 710)>
+    <line x1=0 y1=60 x2=200 y2=60 stroke=#161616 stroke-width=1.5/>
+    <text x=100 y=50 font-family=Arial, sans-serif font-size=18 font-style=italic fill=#161616 text-anchor=middle>Dennis Ramirez</text>
+    <text x=100 y=80 font-family=Arial, sans-serif font-size=11 font-weight=bold fill=#6E6A61 text-anchor=middle>AUTHORIZED SIGNATORY</text>
+  </g>
+  <g transform=translate(430, 690)>
+    <circle cx=90 cy=50 r=45 fill=none stroke=#D9534F stroke-width=3 stroke-dasharray=4,2/>
+    <circle cx=90 cy=50 r=38 fill=none stroke=#D9534F stroke-width=1.5/>
+    <text x=90 y=44 font-family=Arial, sans-serif font-size=9 font-weight=bold fill=#D9534F text-anchor=middle>OFFICIALLY REGISTERED</text>
+    <text x=90 y=58 font-family=Arial, sans-serif font-size=11 font-weight=bold fill=#D9534F text-anchor=middle>★ VERIFIED ★</text>
+    <text x=90 y=70 font-family=Arial, sans-serif font-size=8 fill=#D9534F text-anchor=middle>AUG 2026</text>
+  </g>
+  <text x=350 y=860 font-family=Arial, sans-serif font-size=10 fill=#999999 text-anchor=middle>Official Document Verification Copy - Campus Job Posting System - KLD Career Services</text>
+</svg>

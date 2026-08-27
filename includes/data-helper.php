@@ -29,7 +29,7 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    $current_schema_version = '2.2_approved_employers';
+    $current_schema_version = '2.3_permit_verification';
     if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');
@@ -151,7 +151,55 @@ function quick_login($role, $user_id = null) {
     return null;
 }
 
-function register_user($data) {
+// Helper to handle permit/MOA file uploads
+function save_uploaded_permit($file) {
+    if (!isset($file) || !is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    
+    $permit_dir = dirname(__DIR__) . '/uploads/permits';
+    if (!is_dir($permit_dir)) {
+        @mkdir($permit_dir, 0777, true);
+    }
+
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($file_ext, $allowed_extensions)) {
+        return null;
+    }
+
+    // Limit file size to 10MB
+    if (($file['size'] ?? 0) > 10 * 1024 * 1024) {
+        return null;
+    }
+
+    $safe_name = 'permit_' . time() . '_' . substr(md5(uniqid((string)rand(), true)), 0, 8) . '.' . $file_ext;
+    $target_path = $permit_dir . '/' . $safe_name;
+
+    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+        return 'uploads/permits/' . $safe_name;
+    }
+
+    return null;
+}
+
+function update_employer_verification($id, $status, $notes = '') {
+    $users = $_SESSION['users'] ?? load_json_file('users.json');
+    foreach ($users as $key => $u) {
+        if ($u['id'] == $id) {
+            $users[$key]['verification_status'] = $status;
+            $users[$key]['verification_notes'] = htmlspecialchars($notes);
+            $users[$key]['verified_at'] = date('Y-m-d H:i:s');
+            $_SESSION['users'] = $users;
+            save_json_file('users.json', $users);
+            return true;
+        }
+    }
+    return false;
+}
+
+function register_user($data, $permit_file = null) {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     
     // Check if email exists
@@ -183,7 +231,9 @@ function register_user($data) {
         'phone' => $data['phone'] ?? '',
         'office_location' => $data['office_location'] ?? 'Campus Main Office',
         'accreditation_number' => $accreditation,
+        'permit_file' => $permit_file ?? ($data['permit_file'] ?? null),
         'verification_status' => $verification,
+        'verification_notes' => '',
         'status' => 'active',
         'created_at' => date('Y-m-d H:i:s')
     ];

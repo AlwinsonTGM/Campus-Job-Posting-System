@@ -38,6 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm_password) {
         $error = 'Password and Confirm Password do not match.';
     } else {
+        $permit_file_path = null;
+        if ($role === 'employer' && isset($_FILES['permit_photo']) && ($_FILES['permit_photo']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $permit_file_path = save_uploaded_permit($_FILES['permit_photo']);
+        }
+
         $res = register_user([
             'name' => $name,
             'email' => $email,
@@ -51,12 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'year_level' => $year_level,
             'phone' => $phone,
             'office_location' => $office_location,
-            'accreditation_number' => $accreditation_number
-        ]);
+            'accreditation_number' => $accreditation_number,
+            'permit_file' => $permit_file_path
+        ], $permit_file_path);
 
         if ($res['success']) {
             if ($role === 'employer' && $employer_type === 'approved_partner') {
-                set_flash('success', 'Account registered! Your partner profile is being verified by University Career Services.');
+                set_flash('success', 'Account registered! Your business permit and partner profile will be verified by University Career Services.');
             } else {
                 set_flash('success', 'Account registered successfully! Welcome to the Campus Job Portal.');
             }
@@ -96,7 +102,7 @@ require_once __DIR__ . '/includes/navbar.php';
                         </div>
                     <?php endif; ?>
 
-                    <form action="register.php" method="POST" id="register-form" novalidate>
+                    <form action="register.php" method="POST" id="register-form" enctype="multipart/form-data" novalidate>
                         
                         <!-- Account Role Selector -->
                         <div class="mb-4">
@@ -205,8 +211,18 @@ require_once __DIR__ . '/includes/navbar.php';
                                 <input type="text" name="organization_name" class="form-control" placeholder="e.g. TechVanguard Solutions Inc." value="<?= htmlspecialchars($organization_name ?? '') ?>">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-ink">MOA Reference / Business Permit</label>
-                                <input type="text" name="accreditation_number" class="form-control" placeholder="e.g. MOA-2026-IT004" value="<?= htmlspecialchars($accreditation_number ?? '') ?>">
+                                <label class="form-label small fw-semibold text-ink">MOA Reference / Business Permit / Reg No.</label>
+                                <input type="text" name="accreditation_number" class="form-control" placeholder="e.g. MOA-2026-IT004, SEC, DTI, or TIN" value="<?= htmlspecialchars($accreditation_number ?? '') ?>">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-ink d-flex justify-content-between align-items-center mb-1">
+                                    <span>Business Permit / MOA Document Photo <span class="text-muted-custom fw-normal">(Optional for Manual Review)</span></span>
+                                    <span class="badge bg-cream text-ink border-line border" style="font-size: 11px;">JPG, PNG, PDF</span>
+                                </label>
+                                <input type="file" name="permit_photo" class="form-control" accept="image/*,application/pdf" id="permit-photo-input">
+                                <div class="form-text small text-muted-custom mt-1">
+                                    <i class="bi bi-shield-check text-accent me-1"></i> Upload a clear photo or scan of your business permit, DTI/SEC certificate, or MOA for manual admin verification.
+                                </div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label small fw-semibold text-ink">Office Location / Workplace Address</label>

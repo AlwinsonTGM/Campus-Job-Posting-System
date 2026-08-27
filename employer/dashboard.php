@@ -74,6 +74,25 @@ require_once __DIR__ . '/../includes/navbar.php';
             </div>
         </div>
 
+        <?php if ($is_partner && $ver_status !== 'verified'): ?>
+            <div class="card border-line shadow-sm rounded-4 p-3 mb-4 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-warning text-dark p-2 rounded-circle flex-shrink-0" style="width:44px;height:44px;">
+                        <i class="bi bi-hourglass-split fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <h6 class="fw-bold text-ink mb-0">Business Legitimacy Verification Pending Review</h6>
+                            <span class="badge bg-warning text-dark small">Under Career Services Evaluation</span>
+                        </div>
+                        <p class="text-muted-custom small mb-0 mt-1">
+                            Your registration reference code (<strong><?= htmlspecialchars($accreditation) ?></strong>) <?= !empty($user['permit_file']) ? 'and uploaded permit/certificate photo are' : 'is' ?> currently being manually reviewed by the University Administration. Once approved, your partner badge will update to verified.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Metric KPI Cards -->
         <div class="row g-2 g-md-3 mb-4">
             <div class="col-6 col-lg-3">

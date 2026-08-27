@@ -22,6 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($name)) {
             $error = 'Name cannot be empty.';
         } else {
+            $org_name = trim($_POST['organization_name'] ?? '');
+            $office_loc = trim($_POST['office_location'] ?? '');
+            
             // Update in session and users.json
             $users = $_SESSION['users'] ?? load_json_file('users.json');
             foreach ($users as $k => $u) {
@@ -30,6 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $users[$k]['phone'] = htmlspecialchars($phone);
                     $users[$k]['course'] = htmlspecialchars($course);
                     $users[$k]['department'] = htmlspecialchars($department);
+                    if ($u['role'] === 'employer') {
+                        if (!empty($org_name)) $users[$k]['organization_name'] = htmlspecialchars($org_name);
+                        if (!empty($office_loc)) $users[$k]['office_location'] = htmlspecialchars($office_loc);
+                    }
                     $_SESSION['user'] = $users[$k];
                     break;
                 }
@@ -150,6 +157,22 @@ require_once __DIR__ . '/includes/navbar.php';
                                 </optgroup>
                             </select>
                         </div>
+
+                        <?php if ($user['role'] === 'employer'): ?>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-ink">Company / Department Name</label>
+                                <input type="text" name="organization_name" class="form-control" value="<?= htmlspecialchars($user['organization_name'] ?? ($user['department'] ?? '')) ?>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-ink">Workplace / Office Location</label>
+                                <input type="text" name="office_location" class="form-control" value="<?= htmlspecialchars($user['office_location'] ?? '') ?>" placeholder="e.g. Dasma Tech Park / Campus Main">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-ink">MOA Reference / Business Permit / Reg No.</label>
+                                <input type="text" class="form-control bg-cream" value="<?= htmlspecialchars($user['accreditation_number'] ?? 'INTERNAL') ?>" readonly>
+                                <span class="form-text small text-muted-custom">Official verification identifier recorded with Career Services.</span>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="mb-4">
                             <label class="form-label small fw-semibold text-ink">Contact Phone</label>
