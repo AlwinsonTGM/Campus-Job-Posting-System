@@ -34,7 +34,7 @@ $team_members = [
         'student_id' => '2025-2-000091',
         'section' => 'BSIS201',
         'email' => 'jrcruzpe@kld.edu.ph',
-        'image' => 'assets/img/developers/member3.svg',
+        'image' => 'assets/img/developers/CRUZPE.jpg',
         'bio' => 'Specializes in user authentication flows, dynamic real-time password strength algorithms, and account security.',
         'tasks' => ['Password Strength Meter JS', 'Multi-Role Login & Register', 'Forgot Password Flow']
     ],
@@ -51,10 +51,10 @@ $team_members = [
     [
         'name' => 'Salognon, Joeven',
         'role' => 'Department & Hiring Workflow Engineer',
-        'student_id' => '2024-00105',
+        'student_id' => '2025-2-000269',
         'section' => 'BSIS201',
-        'email' => 'employer.ux@kld.edu.ph',
-        'image' => 'assets/img/developers/member5.svg',
+        'email' => 'jsalognon@kld.edu.ph',
+        'image' => 'assets/img/developers/SOLOGNON.jpg',
         'bio' => 'Builds the campus office portal, vacancy posting forms, candidate evaluation drawers, and interview scheduling triggers.',
         'tasks' => ['Employer Dashboard', 'Create & Edit Job Forms', 'Applicant Review Suite']
     ],
