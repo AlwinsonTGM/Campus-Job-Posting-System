@@ -110,7 +110,7 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Page Head -->
                 <?php
                 render_page_head(
-                    '<i class="bi bi-question-circle-fill text-accent me-1"></i> Knowledge Base &amp; Guidelines',
+                    '',
                     'Frequently Asked Questions',
                     'Have questions about student assistant eligibility, work hour limits, stipend payouts, or application processes? Find answers to the 10 most common questions below.'
                 );

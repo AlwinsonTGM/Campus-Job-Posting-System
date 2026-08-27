@@ -108,7 +108,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </a>
                 ';
                 render_page_head(
-                    '<i class="bi bi-people-fill text-accent me-1"></i> User Directory &amp; Compliance',
+                    '',
                     'Campus User Directory & Roles',
                     'Manage student accounts, academic departments, and approve accredited external partner organizations.',
                     $head_actions
@@ -231,8 +231,8 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="row g-3 align-items-end">
                             <div class="col-md-4">
                                 <label class="form-label" for="search-user">Search User Directory</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <div class="search-input-wrap">
+                                    <i class="bi bi-search text-muted-custom"></i>
                                     <input type="text" name="q" id="search-user" class="form-control" placeholder="Search name, email, MOA, ID..." value="<?= htmlspecialchars($search ?? '') ?>">
                                 </div>
                             </div>
@@ -266,8 +266,9 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-1 d-flex">
-                                <a href="users.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Reset Filters">
+                            <div class="col-md-1">
+                                <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
+                                <a href="users.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </a>
                             </div>

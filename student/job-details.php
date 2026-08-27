@@ -54,12 +54,8 @@ require_once __DIR__ . '/../includes/header.php';
                     </a>
                     
                     <?php
-                    $eyebrow = $is_partner
-                        ? '<i class="bi bi-patch-check-fill text-accent me-1"></i> Approved Campus Partner'
-                        : '<i class="bi bi-bank text-accent me-1"></i> University Department / Laboratory';
-                    
                     render_page_head(
-                        $eyebrow,
+                        '',
                         $job['title'],
                         $org_name . ' • ' . $job['location'] . ' • ' . $job['pay_rate']
                     );
@@ -201,6 +197,33 @@ require_once __DIR__ . '/../includes/header.php';
                                     </div>
                                     <a href="my-applications.php" class="btn-pill-outline btn-pill-sm w-100">
                                         Track Application
+                                    </a>
+                                </div>
+                            <?php elseif ($user && $user['role'] === 'employer'): ?>
+                                <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
+                                    <div class="small fw-bold text-ink mb-1">
+                                        <i class="bi bi-building-check text-accent me-1"></i> Employer Preview Mode
+                                    </div>
+                                    <p class="small text-muted-custom mb-2" style="font-size: 12px;">
+                                        Applications are reserved for students.
+                                    </p>
+                                    <?php if (($job['employer_id'] ?? 0) == $user['id']): ?>
+                                        <a href="../employer/edit-job.php?id=<?= $job['id'] ?>" class="btn-pill btn-pill-sm w-100">
+                                            <i class="bi bi-pencil-square"></i> Edit Requisition
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="../employer/dashboard.php" class="btn-pill-outline btn-pill-sm w-100">
+                                            <i class="bi bi-speedometer2"></i> Employer Dashboard
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            <?php elseif ($user && $user['role'] === 'admin'): ?>
+                                <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
+                                    <div class="small fw-bold text-ink mb-1">
+                                        <i class="bi bi-shield-lock text-accent me-1"></i> Admin Preview Mode
+                                    </div>
+                                    <a href="../admin/reports.php" class="btn-pill-outline btn-pill-sm w-100">
+                                        <i class="bi bi-bar-chart"></i> View Reports
                                     </a>
                                 </div>
                             <?php else: ?>

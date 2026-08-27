@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../includes/data-helper.php';
 require_once __DIR__ . '/../includes/auth-check.php';
 
-// Ensure student auth
+// Ensure student auth - employers and admins cannot apply
 if (!is_logged_in()) {
     set_flash('info', 'Please sign in with your student account to submit an application.');
     header('Location: ../login.php?demo=student');
@@ -14,6 +14,15 @@ if (!is_logged_in()) {
 }
 
 $user = get_logged_user();
+if (($user['role'] ?? '') !== 'student') {
+    set_flash('warning', 'Access Restricted: Only enrolled students can submit job applications. Employer accounts cannot apply for campus vacancies.');
+    if (($user['role'] ?? '') === 'employer') {
+        header('Location: ../employer/dashboard.php');
+    } else {
+        header('Location: ../admin/users.php');
+    }
+    exit;
+}
 $job_id = $_GET['id'] ?? ($_GET['job_id'] ?? null);
 $job = get_job_by_id($job_id);
 
@@ -29,19 +38,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cover_letter = trim($_POST['cover_letter'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $availability = $_POST['availability'] ?? [];
-    $resume_name = $_FILES['resume']['name'] ?? ($user['name'] . '_Resume.pdf');
+    
+    // Handle resume file upload
+    $resume_path = null;
+    if (isset($_FILES['resume']) && ($_FILES['resume']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+        $resume_path = save_uploaded_resume($_FILES['resume']);
+    }
+    
+    $resume_name = $resume_path ? basename($resume_path) : ($user['name'] . '_Resume.pdf');
 
     if (empty($cover_letter)) {
         $error = 'Please provide a brief statement of intent / cover letter.';
-    } elseif (empty($availability)) {
-        $error = 'Please select at least one available weekly shift timeslot in the matrix.';
+    } elseif (empty($availability) || count($availability) === 0) {
+        $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one available weekly timeslot in the matrix.';
     } else {
         $res = create_application([
             'job_id' => $job['id'],
             'cover_letter' => $cover_letter,
             'phone' => $phone,
             'availability' => $availability,
-            'resume_file' => !empty($_FILES['resume']['name']) ? $_FILES['resume']['name'] : ($user['name'] . '_Resume.pdf')
+            'resume_file' => $resume_name
         ]);
 
         if ($res['success']) {
@@ -79,7 +95,7 @@ require_once __DIR__ . '/../includes/header.php';
                     
                     <?php
                     render_page_head(
-                        '<i class="bi bi-file-earmark-person-fill text-accent me-1"></i> Student Assistantship Application',
+                        '',
                         'Apply for ' . $job['title'],
                         $job['department'] . ' • ' . $job['pay_rate'] . ' • ' . ($job['work_setup'] ?? 'On-Campus')
                     );
@@ -161,7 +177,11 @@ require_once __DIR__ . '/../includes/header.php';
                                         Check all weekly time slots when you are free from academic lectures and can perform on-campus duty:
                                     </p>
                                     
-                                    <div class="card-paper p-3 bg-surface border border-line">
+                                    <div class="card-paper p-3 bg-surface border border-line position-relative" id="matrixContainer">
+                                        <div id="availabilityErrorAlert" class="alert-paper alert-paper--danger mb-3" style="display: none;">
+                                            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                                            <span>Candidate Shift Availability cannot be empty. Please select at least one weekly timeslot.</span>
+                                        </div>
                                         <?php render_availability_matrix($default_availability, 'availability[]', false); ?>
                                     </div>
                                 </div>
@@ -201,7 +221,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <!-- Action Buttons -->
                                 <div class="d-flex flex-wrap gap-3 pt-2">
-                                    <button type="submit" class="btn-pill px-4">
+                                    <button type="submit" id="submitAppBtn" class="btn-pill px-4">
                                         <i class="bi bi-send-fill"></i> SUBMIT APPLICATION
                                     </button>
                                     <a href="job-details.php?id=<?= $job['id'] ?>" class="btn-pill-outline">
@@ -222,3 +242,46 @@ require_once __DIR__ . '/../includes/header.php';
         <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form.form-paper');
+    const alertBox = document.getElementById('availabilityErrorAlert');
+    const matrixContainer = document.getElementById('matrixContainer');
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const checkedBoxes = form.querySelectorAll('input[name="availability[]"]:checked');
+            if (checkedBoxes.length === 0) {
+                e.preventDefault();
+                if (alertBox) {
+                    alertBox.style.display = 'flex';
+                }
+                if (matrixContainer) {
+                    matrixContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    matrixContainer.style.borderColor = 'var(--kld-red, #dc3545)';
+                }
+                return false;
+            } else {
+                if (alertBox) {
+                    alertBox.style.display = 'none';
+                }
+                if (matrixContainer) {
+                    matrixContainer.style.borderColor = '';
+                }
+            }
+        });
+
+        // Clear error on checkbox click
+        form.querySelectorAll('input[name="availability[]"]').forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                const checked = form.querySelectorAll('input[name="availability[]"]:checked');
+                if (checked.length > 0) {
+                    if (alertBox) alertBox.style.display = 'none';
+                    if (matrixContainer) matrixContainer.style.borderColor = '';
+                }
+            });
+        });
+    }
+});
+</script>

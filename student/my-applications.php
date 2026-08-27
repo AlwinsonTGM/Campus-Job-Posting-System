@@ -171,9 +171,14 @@ require_once __DIR__ . '/../includes/header.php';
                                     </div>
                                     <div class="col-md-5">
                                         <span class="fw-bold text-ink d-block mb-1">Attached Credentials:</span>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="bi bi-file-earmark-pdf text-accent fs-5"></i>
-                                            <span class="text-ink"><?= htmlspecialchars($app['resume_file'] ?? 'Juan_Dela_Cruz_Resume.pdf') ?></span>
+                                        <div class="d-flex align-items-center justify-content-between p-2 bg-surface rounded-3 border border-line">
+                                            <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
+                                                <span class="text-ink small text-truncate"><?= htmlspecialchars($app['resume_file'] ?? 'Juan_Dela_Cruz_Resume.pdf') ?></span>
+                                            </div>
+                                            <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px; white-space: nowrap;">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i> View PDF
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

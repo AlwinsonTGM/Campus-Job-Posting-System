@@ -77,7 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
                     
                     <?php
                     render_page_head(
-                        '<i class="bi bi-plus-circle-fill text-accent me-1"></i> New Requisition',
+                        '',
                         'Publish a Campus Vacancy',
                         'Deploy an approved student assistantship, library opening, or academic laboratory position.'
                     );

@@ -252,6 +252,39 @@ function save_uploaded_proof($file) {
     return null;
 }
 
+// Helper to handle student Resume / CV document uploads
+function save_uploaded_resume($file) {
+    if (!isset($file) || !is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    
+    $resume_dir = dirname(__DIR__) . '/uploads/resumes';
+    if (!is_dir($resume_dir)) {
+        @mkdir($resume_dir, 0777, true);
+    }
+
+    $allowed_extensions = ['pdf', 'doc', 'docx'];
+    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($file_ext, $allowed_extensions)) {
+        return null;
+    }
+
+    // Limit file size to 10MB
+    if (($file['size'] ?? 0) > 10 * 1024 * 1024) {
+        return null;
+    }
+
+    $safe_name = 'resume_' . time() . '_' . substr(md5(uniqid((string)rand(), true)), 0, 8) . '.' . $file_ext;
+    $target_path = $resume_dir . '/' . $safe_name;
+
+    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+        return 'uploads/resumes/' . $safe_name;
+    }
+
+    return null;
+}
+
 function update_employer_verification($id, $status, $notes = '') {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     foreach ($users as $key => $u) {

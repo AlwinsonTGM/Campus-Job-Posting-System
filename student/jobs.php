@@ -44,7 +44,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <!-- Page Head -->
                 <?php
                 render_page_head(
-                    '<i class="bi bi-briefcase-fill text-accent me-1"></i> Campus Vacancies & Assistantships',
+                    '',
                     'Find On-Campus Jobs & Assistantships',
                     'Browse verified student assistant openings, academic lab assignments, library assistantships, and peer tutoring opportunities.'
                 );
@@ -57,8 +57,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <!-- Keyword Input -->
                             <div class="col-lg-4 col-md-6">
                                 <label class="form-label" for="filter-kw">Search Keywords</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <div class="search-input-wrap">
+                                    <i class="bi bi-search text-muted-custom"></i>
                                     <input 
                                         type="text" 
                                         name="keyword" 
@@ -116,8 +116,9 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
 
                             <!-- Filter Reset Button -->
-                            <div class="col-lg-1 col-md-4 d-flex">
-                                <a href="jobs.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Reset Filters">
+                            <div class="col-lg-1 col-md-4">
+                                <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
+                                <a href="jobs.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </a>
                             </div>

@@ -79,7 +79,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </button>
                     ';
                     render_page_head(
-                        '<i class="bi bi-bar-chart-line-fill text-accent me-1"></i> Institutional Analytics & Placement',
+                        '',
                         'Campus Employment Analytics',
                         'Real-time overview of student job vacancies, application volumes, hiring ratios, and departmental budget compliance.',
                         $actions

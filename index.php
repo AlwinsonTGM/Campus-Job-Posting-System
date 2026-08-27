@@ -37,13 +37,6 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="container-fluid px-lg-5">
                     <div class="row align-items-center py-4 py-lg-5">
                         <div class="col-xl-10 mx-auto text-center">
-                            <!-- Eyebrow Badge -->
-                            <div class="mb-3">
-                                <span class="pill-badge">
-                                    <i class="bi bi-shield-check text-accent"></i> Official Campus & Approved Employer Network
-                                </span>
-                            </div>
-
                             <!-- Giant Two-Line Heading with Inline Rounded Image Pill -->
                             <h1 class="hero-headline mb-4">
                                 Empowering <span class="hero-inline-pill-img"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop" alt="Campus Students"></span> Students,<br class="d-none d-sm-block">
@@ -101,7 +94,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 2: SEARCH WIDGET (#search-widget, bg --cream + faint blobs)
                  ============================================================ -->
-            <section id="search-widget" class="py-5 py-lg-6 bg-cream search-widget-section reveal-fade-rise">
+            <section id="search-widget" class="py-5 py-lg-6 bg-cream search-widget-section border-top border-line reveal-fade-rise">
                 <!-- Faint Background Blobs -->
                 <div class="search-blob search-blob-1"></div>
                 <div class="search-blob search-blob-2"></div>
@@ -110,10 +103,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="search-card">
                         <!-- Card Header -->
                         <div class="text-center mb-4">
-                            <span class="pill-badge mb-2">
-                                <i class="bi bi-funnel-fill text-accent"></i> Multi-Tier Job Discovery
-                            </span>
-                            <h2 class="h3 fw-extrabold text-ink mb-1">Find Student Assistantships & Verified Jobs</h2>
+                            <h2 class="h3 fw-extrabold text-ink mb-1">Find Student Assistantships &amp; Verified Jobs</h2>
                             <p class="text-muted-custom small mb-3">Browse opportunities from campus offices, academic laboratories, and approved industry partners</p>
 
                             <!-- Pay Type Toggle Switch -->
@@ -135,15 +125,15 @@ require_once __DIR__ . '/includes/header.php';
                             <div class="row g-2 mb-3">
                                 <div class="col-md-6">
                                     <label for="search-keyword" class="form-label small fw-bold text-ink mb-1">Keyword Search</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-surface border-line"><i class="bi bi-search text-muted-custom"></i></span>
+                                    <div class="search-input-wrap">
+                                        <i class="bi bi-search text-muted-custom"></i>
                                         <input type="text" id="search-keyword" name="q" class="form-control bg-surface border-line" placeholder="Role title, skill, or department…">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="search-dept" class="form-label small fw-bold text-ink mb-1">Employer / Organization</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-surface border-line"><i class="bi bi-building text-muted-custom"></i></span>
+                                    <div class="search-input-wrap">
+                                        <i class="bi bi-building text-muted-custom"></i>
                                         <select id="search-dept" name="dept" class="form-select bg-surface border-line">
                                             <option value="">All Employers (Offices & Partners)</option>
                                             <optgroup label="University Offices">
@@ -228,10 +218,7 @@ require_once __DIR__ . '/includes/header.php';
             <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="text-center mb-5">
-                        <span class="pill-badge mb-2">
-                            <i class="bi bi-patch-check-fill text-accent"></i> Safe & Vetted Hiring
-                        </span>
-                        <h2 class="h1 fw-extrabold text-ink mb-2">How Approved Employers & Offices Deploy Vacancies</h2>
+                        <h2 class="h1 fw-extrabold text-ink mb-2">How Approved Employers &amp; Offices Deploy Vacancies</h2>
                         <p class="text-muted-custom col-lg-7 mx-auto">
                             Every opportunity on this platform undergoes institutional vetting before publishing, protecting student academic focus, fair compensation, and safe workplaces.
                         </p>
@@ -310,12 +297,9 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 3: JOB CATEGORIES GRID (bg --surface)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface reveal-fade-rise">
+            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="text-center mb-5">
-                        <span class="pill-badge mb-2">
-                            <i class="bi bi-grid-3x3-gap-fill text-accent"></i> Departments
-                        </span>
                         <h2 class="h1 fw-extrabold text-ink mb-2">Where Do You Want To Work?</h2>
                         <p class="text-muted-custom col-lg-6 mx-auto">
                             Explore dynamic student assistantship roles distributed across specialized campus divisions.
@@ -352,9 +336,6 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="container-fluid px-lg-5">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
                         <div>
-                            <span class="pill-badge mb-2">
-                                <i class="bi bi-shield-check text-accent"></i> Why On-Campus
-                            </span>
                             <h2 class="h1 fw-extrabold text-ink mb-0">Study Close, Work Close, Grow Faster</h2>
                         </div>
                         <div class="mt-3 mt-md-0">
@@ -432,7 +413,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 5: KEY METRICS (cycling counters, bg crossfade + arc)
                  ============================================================ -->
-            <section class="py-5 bg-surface reveal-fade-rise">
+            <section class="py-5 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="metrics-section">
                         <!-- Ambient Glowing Arc -->
@@ -474,14 +455,11 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 6: FEATURED JOB POSTINGS (center-mode carousel, bg --surface)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface reveal-fade-rise">
+            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
                         <div>
-                            <span class="pill-badge mb-2">
-                                <i class="bi bi-star-fill text-accent"></i> Top Vacancies
-                            </span>
-                            <h2 class="h1 fw-extrabold text-ink mb-0">Featured Campus & Partner Opportunities</h2>
+                            <h2 class="h1 fw-extrabold text-ink mb-0">Featured Campus &amp; Partner Opportunities</h2>
                         </div>
                         <div class="mt-3 mt-md-0">
                             <a href="student/jobs.php" class="btn-outline-pill">
@@ -575,9 +553,6 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="container-fluid px-lg-5">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
                         <div>
-                            <span class="pill-badge mb-2">
-                                <i class="bi bi-newspaper text-accent"></i> Career Center
-                            </span>
                             <h2 class="h1 fw-extrabold text-ink mb-0">Updates From The Career Center</h2>
                         </div>
                         <div class="mt-3 mt-md-0">
@@ -631,7 +606,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 8: CTA (bg --cream, floating circular campus photos 64–280px)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface reveal-fade-rise">
+            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="cta-section-wrap">
                         <!-- Floating Circular Campus Photos (64–280px) -->

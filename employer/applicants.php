@@ -83,7 +83,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </a>
                 ';
                 render_page_head(
-                    '<i class="bi bi-people-fill text-accent me-1"></i> Applicant Management',
+                    '',
                     'Student Applicant Evaluation Roster',
                     'Review candidate profiles, inspect weekly class schedule availability, and coordinate interview appointments.',
                     $head_actions
@@ -96,8 +96,8 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="row g-3 align-items-end">
                             <div class="col-md-4">
                                 <label class="form-label" for="search-applicant">Search Candidates</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <div class="search-input-wrap">
+                                    <i class="bi bi-search text-muted-custom"></i>
                                     <input type="text" name="q" id="search-applicant" class="form-control" placeholder="Candidate, email, degree..." value="<?= htmlspecialchars($search ?? '') ?>">
                                 </div>
                             </div>
@@ -126,8 +126,9 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-1 d-flex">
-                                <a href="applicants.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Reset Filters">
+                            <div class="col-md-1">
+                                <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
+                                <a href="applicants.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </a>
                             </div>
@@ -186,7 +187,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             </td>
                                             <td data-label="Degree Program">
                                                 <div class="small fw-semibold text-ink"><?= htmlspecialchars($app['course'] ?? 'BS Information Systems') ?></div>
-                                                <span class="chip" style="font-size: 10px;"><?= htmlspecialchars($app['year_level'] ?? '2nd Year') ?></span>
+                                                <div class="small text-muted-custom"><?= htmlspecialchars($app['year_level'] ?? '2nd Year') ?></div>
                                             </td>
                                             <td data-label="Applied Date" class="small text-muted-custom">
                                                 <?= date('M d, Y', strtotime($app['applied_at'])) ?>
@@ -195,9 +196,14 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <?= render_status_badge($app['status']) ?>
                                             </td>
                                             <td class="text-end pe-4" data-label="Actions">
-                                                <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm">
-                                                    <i class="bi bi-clipboard-check"></i> Evaluate Candidate
-                                                </a>
+                                                <div class="d-flex align-items-center justify-content-end gap-1">
+                                                    <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-2" title="View Attached PDF Resume" style="font-size: 11px;">
+                                                        <i class="bi bi-file-earmark-pdf text-danger"></i> Resume
+                                                    </a>
+                                                    <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm py-1 px-3">
+                                                        <i class="bi bi-clipboard-check"></i> Evaluate
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

@@ -17,39 +17,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($action === 'profile') {
         $phone = trim($_POST['phone'] ?? '');
-        $availability = $_POST['availability'] ?? ($user['availability'] ?? []);
+        $availability = $_POST['availability'] ?? [];
 
-        $users = $_SESSION['users'] ?? load_json_file('users.json');
-        foreach ($users as $k => $u) {
-            if ($u['id'] == $user['id']) {
-                $users[$k]['phone'] = htmlspecialchars($phone);
-                $users[$k]['availability'] = $availability;
+        if (($user['role'] ?? '') === 'student' && (empty($availability) || count($availability) === 0)) {
+            $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one weekly timeslot.';
+        } else {
+            $users = $_SESSION['users'] ?? load_json_file('users.json');
+            foreach ($users as $k => $u) {
+                if ($u['id'] == $user['id']) {
+                    $users[$k]['phone'] = htmlspecialchars($phone);
+                    if (($user['role'] ?? '') === 'student') {
+                        $users[$k]['availability'] = $availability;
+                    }
 
-                if ($u['role'] === 'employer') {
-                    $name = trim($_POST['name'] ?? '');
-                    $org_name = trim($_POST['organization_name'] ?? '');
-                    $office_loc = trim($_POST['office_location'] ?? '');
-                    $department = trim($_POST['department'] ?? '');
-                    if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
-                    if (!empty($org_name)) $users[$k]['organization_name'] = htmlspecialchars($org_name);
-                    if (!empty($office_loc)) $users[$k]['office_location'] = htmlspecialchars($office_loc);
-                    if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
-                } elseif ($u['role'] === 'admin') {
-                    $name = trim($_POST['name'] ?? '');
-                    $department = trim($_POST['department'] ?? '');
-                    if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
-                    if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
+                    if ($u['role'] === 'employer') {
+                        $name = trim($_POST['name'] ?? '');
+                        $org_name = trim($_POST['organization_name'] ?? '');
+                        $office_loc = trim($_POST['office_location'] ?? '');
+                        $department = trim($_POST['department'] ?? '');
+                        if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
+                        if (!empty($org_name)) $users[$k]['organization_name'] = htmlspecialchars($org_name);
+                        if (!empty($office_loc)) $users[$k]['office_location'] = htmlspecialchars($office_loc);
+                        if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
+                    } elseif ($u['role'] === 'admin') {
+                        $name = trim($_POST['name'] ?? '');
+                        $department = trim($_POST['department'] ?? '');
+                        if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
+                        if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
+                    }
+                    
+                    $_SESSION['user'] = $users[$k];
+                    break;
                 }
-                
-                $_SESSION['user'] = $users[$k];
-                break;
             }
+            $_SESSION['users'] = $users;
+            save_json_file('users.json', $users);
+            set_flash('success', 'Contact information and weekly availability settings have been updated successfully.');
+            header('Location: settings.php');
+            exit;
         }
-        $_SESSION['users'] = $users;
-        save_json_file('users.json', $users);
-        set_flash('success', 'Contact information and weekly availability settings have been updated successfully.');
-        header('Location: settings.php');
-        exit;
     } elseif ($action === 'request_profile_change') {
         $reason = trim($_POST['reason'] ?? '');
         $proof_path = null;
@@ -121,7 +127,7 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Page Head -->
                 <?php
                 render_page_head(
-                    '<i class="bi bi-gear-fill text-accent me-1"></i> Account Management · ' . ucfirst($user['role'] ?? 'User'),
+                    '',
                     'Profile & Account Settings',
                     'Update your contact details, weekly free shift availability, and security credentials.'
                 );
@@ -291,7 +297,7 @@ require_once __DIR__ . '/includes/header.php';
                                             <div class="col-md-6">
                                                 <div class="p-2 px-3 bg-white rounded-3 border border-line">
                                                     <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Year Level / Standing</span>
-                                                    <span class="chip" style="font-size: 11px;"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
+                                                    <span class="text-ink small fw-semibold"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -341,7 +347,7 @@ require_once __DIR__ . '/includes/header.php';
                                     <div class="mt-4 pt-3 border-top border-line" id="availability">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h4 class="card-paper-title fs-6 mb-0">
-                                                <i class="bi bi-calendar-week text-accent me-2"></i> Weekly Free Shift Availability
+                                                <i class="bi bi-calendar-week text-accent me-2"></i> Weekly Free Shift Availability <span class="text-danger">*</span>
                                             </h4>
                                             <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/wk</span>
                                         </div>
@@ -349,7 +355,11 @@ require_once __DIR__ . '/includes/header.php';
                                             Keep this matrix up to date with your class-free periods so department supervisors can assign duty shifts:
                                         </p>
                                         
-                                        <div class="card-paper p-3 bg-surface border border-line mb-3">
+                                        <div class="card-paper p-3 bg-surface border border-line mb-3" id="settingsMatrixContainer">
+                                            <div id="settingsAvailabilityErrorAlert" class="alert-paper alert-paper--danger mb-3" style="display: none;">
+                                                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                                                <span>Candidate Shift Availability cannot be empty. Please select at least one weekly timeslot.</span>
+                                            </div>
                                             <?php render_availability_matrix($user_availability, 'availability[]', false); ?>
                                         </div>
                                     </div>
@@ -608,5 +618,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bindAgeCalc('settings-birthdate', 'settings-age');
     bindAgeCalc('req-birthdate', 'req-age');
+
+    // Student Shift Availability Validation
+    const profileForm = document.querySelector('form.form-paper input[name="action"][value="profile"]')?.closest('form');
+    const settingsAlertBox = document.getElementById('settingsAvailabilityErrorAlert');
+    const settingsMatrixContainer = document.getElementById('settingsMatrixContainer');
+
+    if (profileForm && settingsMatrixContainer) {
+        profileForm.addEventListener('submit', function(e) {
+            const checkedBoxes = profileForm.querySelectorAll('input[name="availability[]"]:checked');
+            if (checkedBoxes.length === 0) {
+                e.preventDefault();
+                if (settingsAlertBox) {
+                    settingsAlertBox.style.display = 'flex';
+                }
+                settingsMatrixContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                settingsMatrixContainer.style.borderColor = 'var(--kld-red, #dc3545)';
+                return false;
+            } else {
+                if (settingsAlertBox) {
+                    settingsAlertBox.style.display = 'none';
+                }
+                settingsMatrixContainer.style.borderColor = '';
+            }
+        });
+
+        profileForm.querySelectorAll('input[name="availability[]"]').forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                const checked = profileForm.querySelectorAll('input[name="availability[]"]:checked');
+                if (checked.length > 0) {
+                    if (settingsAlertBox) settingsAlertBox.style.display = 'none';
+                    if (settingsMatrixContainer) settingsMatrixContainer.style.borderColor = '';
+                }
+            });
+        });
+    }
 });
 </script>

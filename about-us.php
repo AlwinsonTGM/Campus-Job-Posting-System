@@ -84,9 +84,9 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Page Head -->
                 <?php
                 render_page_head(
-                    '<i class="bi bi-code-slash text-accent me-1"></i> KLD ICDI &bull; BSIS201 Midterm Lab Team',
+                    '',
                     'Meet the Development Team',
-                    'We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the Institute of Computing and Digital Innovation (ICDI) at Kolehiyo ng Lungsod ng Dasmariñas (KLD) who built the KLD Campus Job Posting System for our COAL101: Web Systems and Technologies midterm lab project.'
+                    'We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the Institute of Computing and Digital Innovation (ICDI) at Kolehiyo ng Lungsod ng Dasmariñas (KLD) who built the KLD Campus Job Posting System for our COAL101: Web Systems and Technologies midterm lab project. Together, we designed and engineered an intuitive, secure, and accessible platform that streamlines the student assistantship application and hiring lifecycle across campus offices, featuring weekly schedule availability matching, transparent application pipelines, and role-based workflows.'
                 );
                 ?>
 

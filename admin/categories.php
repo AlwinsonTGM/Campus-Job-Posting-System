@@ -57,7 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </a>
                 ';
                 render_page_head(
-                    '<i class="bi bi-grid-3x3-gap-fill text-accent me-1"></i> System Taxonomies &amp; Classifications',
+                    '',
                     'Job Family Categories',
                     'Organize student assistantship requisitions by institutional domain and discipline family.',
                     $head_actions

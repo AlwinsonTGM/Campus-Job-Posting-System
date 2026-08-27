@@ -67,7 +67,7 @@ require_once __DIR__ . '/../includes/header.php';
                     
                     <?php
                     render_page_head(
-                        '<i class="bi bi-clipboard-check-fill text-accent me-1"></i> Candidate Evaluation & Decision',
+                        '',
                         'Review Applicant: ' . htmlspecialchars($target_app['student_name']),
                         'Vacancy: ' . htmlspecialchars($target_app['job_title']) . ' • Applied on ' . date('F d, Y', strtotime($target_app['applied_at'] ?? 'now'))
                     );
@@ -96,7 +96,8 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
                                 <div class="col-md-6">
                                     <span class="small text-muted-custom d-block mb-1">Degree Program & Standing</span>
-                                    <span class="text-ink"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?> &bull; <span class="badge-status--accepted" style="font-size: 11px;"><?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span></span>
+                                    <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?></span>
+                                    <span class="text-muted-custom">&bull; <?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span>
                                 </div>
                                 <div class="col-md-6">
                                     <span class="small text-muted-custom d-block mb-1">Demographics (Sex & Age)</span>
@@ -142,17 +143,22 @@ require_once __DIR__ . '/../includes/header.php';
                             <h3 class="card-paper-title fs-5 mb-3 pb-2 border-bottom border-line">
                                 <i class="bi bi-paperclip text-accent me-2"></i> 4. Attached Resume & Credentials
                             </h3>
-                            <div class="p-3 bg-surface rounded-4 border border-line d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-3">
-                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-2"></i>
-                                    <div>
-                                        <div class="fw-bold text-ink small"><?= htmlspecialchars($target_app['resume_file'] ?? 'Student_Resume.pdf') ?></div>
-                                        <span class="small text-muted-custom">Official Student Resume & Certificate of Registration</span>
+                            <div class="p-3 bg-surface rounded-4 border border-line d-flex align-items-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-2 flex-shrink-0"></i>
+                                    <div class="text-truncate">
+                                        <div class="fw-bold text-ink small text-truncate"><?= htmlspecialchars($target_app['resume_file'] ?? 'Student_Resume.pdf') ?></div>
+                                        <span class="small text-muted-custom d-block text-truncate">Official Student Resume & Credentials</span>
                                     </div>
                                 </div>
-                                <span class="chip">
-                                    <i class="bi bi-shield-check text-accent"></i> Verified Enrollment
-                                </span>
+                                <div class="d-flex align-items-center flex-nowrap gap-2 flex-shrink-0">
+                                    <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#resumeModal" style="font-size: 12px;">
+                                        <i class="bi bi-eye-fill"></i> View PDF
+                                    </button>
+                                    <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" style="font-size: 12px;" title="Open PDF in new tab">
+                                        <i class="bi bi-box-arrow-up-right"></i> Open Tab
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
@@ -199,17 +205,52 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div class="row g-2 mb-2">
                                         <div class="col-6">
                                             <label class="form-label small mb-1" for="int-date">Interview Date</label>
-                                            <input type="date" name="interview_date" id="int-date" class="form-control" value="<?= htmlspecialchars($target_app['interview_date'] ?? date('Y-m-d', strtotime('+2 days'))) ?>">
+                                            <input type="date" name="interview_date" id="int-date" min="<?= date('Y-m-d') ?>" class="form-control" value="<?= htmlspecialchars($target_app['interview_date'] ?? date('Y-m-d', strtotime('+2 days'))) ?>">
                                         </div>
                                         <div class="col-6">
                                             <label class="form-label small mb-1" for="int-time">Interview Time</label>
-                                            <input type="text" name="interview_time" id="int-time" class="form-control" value="<?= htmlspecialchars($target_app['interview_time'] ?? '10:00 AM') ?>">
+                                            <select name="interview_time" id="int-time" class="form-select">
+                                                <?php
+                                                $standard_times = [
+                                                    '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', 
+                                                    '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+                                                    '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', 
+                                                    '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM'
+                                                ];
+                                                $cur_time = $target_app['interview_time'] ?? '10:00 AM';
+                                                foreach ($standard_times as $t):
+                                                ?>
+                                                    <option value="<?= $t ?>" <?= (strcasecmp($cur_time, $t) === 0) ? 'selected' : '' ?>><?= $t ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label class="form-label small mb-1" for="int-venue">Venue / Room / Google Meet</label>
-                                        <input type="text" name="interview_venue" id="int-venue" class="form-control" value="<?= htmlspecialchars($target_app['interview_venue'] ?? ($user['office_location'] ?? 'Admin Building Room 102')) ?>">
+                                        <label class="form-label small mb-1" for="int-venue">Venue / Room</label>
+                                        <select name="interview_venue" id="int-venue" class="form-select">
+                                            <?php
+                                            $dept_office = $user['office_location'] ?? ($user['department'] ?? 'Campus Main Office');
+                                            $standard_venues = [
+                                                $dept_office,
+                                                'KLD Admin Building, 1st Floor, Room 102 (HR Office)',
+                                                'KLD Tech Building, 3rd Floor, MIS Center',
+                                                'KLD Main Building, 2nd Floor (Dean\'s Conference Room)',
+                                                'KLD Library, Multi-Media Presentation Room',
+                                                'Student Affairs & Services Office (SASO) - Room 204',
+                                                'University Student Pavilion - Meeting Hall B',
+                                                'Online via Google Meet (Video Call Link to be emailed)'
+                                            ];
+                                            $standard_venues = array_unique(array_filter($standard_venues));
+                                            $cur_venue = $target_app['interview_venue'] ?? $dept_office;
+                                            if (!in_array($cur_venue, $standard_venues) && !empty($cur_venue)) {
+                                                array_unshift($standard_venues, $cur_venue);
+                                            }
+                                            foreach ($standard_venues as $v):
+                                            ?>
+                                                <option value="<?= htmlspecialchars($v) ?>" <?= ($cur_venue === $v) ? 'selected' : '' ?>><?= htmlspecialchars($v) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -233,6 +274,34 @@ require_once __DIR__ . '/../includes/header.php';
 
             </div>
         </main>
+
+        <!-- PDF Resume Preview Modal -->
+        <div class="modal fade" id="resumeModal" tabindex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content rounded-4 border-line shadow-lg overflow-hidden">
+                    <div class="modal-header bg-cream border-bottom border-line py-3 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2 me-auto">
+                            <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                <i class="bi bi-file-earmark-pdf-fill text-danger"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-ink mb-0 fs-6" id="resumeModalLabel">Candidate Resume: <?= htmlspecialchars($target_app['student_name']) ?></h5>
+                                <span class="small text-muted-custom" style="font-size: 11.5px;"><?= htmlspecialchars($target_app['resume_file'] ?? 'Student_Resume.pdf') ?></span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 ms-auto">
+                            <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-3 text-nowrap d-inline-flex align-items-center gap-1" style="font-size: 12px;">
+                                <i class="bi bi-box-arrow-up-right"></i> Open in New Tab
+                            </a>
+                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="modal-body p-0 bg-dark position-relative" style="min-height: 580px;">
+                        <iframe src="../view-resume.php?app_id=<?= $target_app['id'] ?>" style="width: 100%; height: 600px; border: none;" title="PDF Resume Viewer"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>

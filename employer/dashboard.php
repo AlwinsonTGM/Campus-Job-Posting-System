@@ -48,7 +48,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </a>
                 ';
                 render_page_head(
-                    '<i class="bi bi-building-fill text-accent me-1"></i> ' . ($is_partner ? 'Approved Campus Partner' : 'University Office') . ' · ' . htmlspecialchars($accreditation),
+                    '',
                     'Welcome back, ' . htmlspecialchars($user['name']),
                     htmlspecialchars($org_name) . ' • Manage active student assistant openings, candidate evaluations, and hiring quotas.',
                     $head_actions

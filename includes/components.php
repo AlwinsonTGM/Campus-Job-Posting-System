@@ -89,7 +89,7 @@ if (!function_exists('render_status_badge')) {
             return '<span class="badge-status--review"><i class="bi bi-search"></i> Under Evaluation</span>';
         }
         if ($raw === 'Interview Scheduled' || $normalized === 'interview_scheduled' || $normalized === 'interview scheduled' || $normalized === 'interview') {
-            return '<span class="badge-status--interview"><i class="bi bi-calendar-event"></i> Interview Scheduled</span>';
+            return '<span class="badge-status--interview">Interview Scheduled</span>';
         }
         if ($raw === 'Accepted / Hired' || $raw === 'Accepted' || $normalized === 'accepted' || $normalized === 'hired' || $normalized === 'accepted / hired') {
             return '<span class="badge-status--accepted"><i class="bi bi-check-circle-fill"></i> Accepted / Hired</span>';
