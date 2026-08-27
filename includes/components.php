@@ -142,38 +142,102 @@ if (!function_exists('render_job_card')) {
         $slots_filled = (int)($job['slots_filled'] ?? 0);
         $pct = ($slots_total > 0) ? round(($slots_filled / $slots_total) * 100) : 0;
         $is_partner = ($job['employer_type'] ?? '') === 'approved_partner';
-        $badges = $job['badges'] ?? [$job['job_type'] ?? 'Student Assistant', $job['work_setup'] ?? 'On-Campus'];
+        
+        // Tags/badges collection without duplicating employer type
+        $raw_badges = $job['badges'] ?? $job['tags'] ?? [$job['job_type'] ?? 'Student Assistant', $job['work_setup'] ?? 'On-Campus'];
+        if (!is_array($raw_badges)) {
+            $raw_badges = explode(',', (string)$raw_badges);
+        }
+        $display_badges = [];
+        foreach ($raw_badges as $b) {
+            $trimmed = trim((string)$b);
+            if (!empty($trimmed) && strcasecmp($trimmed, 'Approved Partner') !== 0 && strcasecmp($trimmed, 'University Office') !== 0) {
+                $display_badges[] = $trimmed;
+            }
+        }
+
+        // Parse pay rate creatively
+        $pay_raw = trim((string)$pay_rate);
+        $pay_amount = $pay_raw;
+        $pay_unit = '';
+        if (preg_match('/^([^\/\b]+?)(?:\s*(?:\/|per)\s*(.+))?$/iu', $pay_raw, $m)) {
+            $pay_amount = trim($m[1]);
+            $pay_unit = isset($m[2]) ? trim($m[2]) : '';
+        }
         ?>
         <div class="card-paper card-hover d-flex flex-column h-100 position-relative">
-            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-                <div class="d-flex flex-wrap gap-1">
+            <!-- 1. Top Header: Partner / Office Chip & Featured Status -->
+            <div class="job-card-top-header d-flex align-items-center justify-content-between mb-3">
+                <div>
                     <?php if ($is_partner): ?>
-                        <span class="chip chip-selectable" style="background-color: var(--ink); color: #fff;">
+                        <span class="job-card-partner-chip job-card-partner-chip--partner">
                             <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
                         </span>
+                    <?php else: ?>
+                        <span class="job-card-partner-chip job-card-partner-chip--office">
+                            <i class="bi bi-bank text-accent"></i> University Office
+                        </span>
                     <?php endif; ?>
-                    <?php foreach ($badges as $b): ?>
-                        <span class="chip"><?= htmlspecialchars($b) ?></span>
+                </div>
+                <?php if (!empty($job['featured'])): ?>
+                    <span class="job-card-featured-badge">
+                        <i class="bi bi-star-fill text-warning me-1"></i>Featured
+                    </span>
+                <?php endif; ?>
+            </div>
+
+            <!-- 2. Job Title and Employer Info -->
+            <div class="job-card-heading mb-3">
+                <h3 class="card-paper-title mb-2">
+                    <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="text-decoration-none text-ink">
+                        <?= htmlspecialchars($title) ?>
+                    </a>
+                </h3>
+
+                <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small">
+                    <span class="d-inline-flex align-items-center gap-1">
+                        <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-building' ?>"></i>
+                        <span class="fw-semibold text-ink"><?= htmlspecialchars($org_name) ?></span>
+                    </span>
+                    <span>&bull;</span>
+                    <span class="d-inline-flex align-items-center gap-1 text-truncate">
+                        <i class="bi bi-geo-alt"></i>
+                        <span><?= htmlspecialchars($location) ?></span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 3. Tags Section -->
+            <?php if (!empty($display_badges)): ?>
+                <div class="job-card-tags d-flex flex-wrap gap-1 mb-3">
+                    <?php foreach ($display_badges as $b): ?>
+                        <span class="chip chip-sm"><?= htmlspecialchars($b) ?></span>
                     <?php endforeach; ?>
                 </div>
-                <span class="badge-status--accepted"><?= htmlspecialchars($pay_rate) ?></span>
+            <?php endif; ?>
+
+            <!-- 4. Creative Pay Rate Box -->
+            <div class="job-card-pay mt-auto mb-3">
+                <div class="job-card-pay-box d-flex align-items-center justify-content-between p-2 px-3">
+                    <div class="d-flex align-items-center gap-2 min-w-0">
+                        <div class="job-card-pay-icon flex-shrink-0">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-1 text-truncate">
+                            <span class="job-card-pay-amount"><?= htmlspecialchars($pay_amount) ?></span>
+                            <?php if (!empty($pay_unit)): ?>
+                                <span class="job-card-pay-unit">/ <?= htmlspecialchars($pay_unit) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <span class="job-card-pay-tag flex-shrink-0">
+                        <i class="bi bi-shield-check text-accent me-1"></i>Verified Rate
+                    </span>
+                </div>
             </div>
 
-            <h3 class="card-paper-title mb-1 mt-1">
-                <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="text-decoration-none text-ink">
-                    <?= htmlspecialchars($title) ?>
-                </a>
-            </h3>
-
-            <div class="d-flex align-items-center gap-1 text-muted-custom small mb-3">
-                <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-building' ?>"></i>
-                <span><?= htmlspecialchars($org_name) ?></span>
-                <span>&bull;</span>
-                <i class="bi bi-geo-alt"></i>
-                <span><?= htmlspecialchars($location) ?></span>
-            </div>
-
-            <div class="mt-auto pt-3 border-top border-line">
+            <!-- 5. Footer: Slots, Progress, Deadline, Actions -->
+            <div class="pt-3 border-top border-line">
                 <div class="d-flex justify-content-between small text-muted-custom mb-1">
                     <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
                     <span class="fw-bold text-ink"><?= $pct ?>%</span>
@@ -183,10 +247,10 @@ if (!function_exists('render_job_card')) {
                 </div>
 
                 <div class="d-flex align-items-center justify-content-between gap-2">
-                    <span class="small text-muted-custom">
+                    <span class="small text-muted-custom text-truncate">
                         <i class="bi bi-calendar-event me-1"></i> <?= htmlspecialchars($deadline) ?>
                     </span>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-shrink-0">
                         <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="btn-pill-outline btn-pill-sm">
                             Details
                         </a>
