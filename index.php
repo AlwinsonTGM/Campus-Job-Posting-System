@@ -40,32 +40,28 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Eyebrow Badge -->
                             <div class="mb-3">
                                 <span class="pill-badge">
-                                    <i class="bi bi-mortarboard-fill text-accent"></i> Official Student Employment Network
+                                    <i class="bi bi-shield-check text-accent"></i> Official Campus & Approved Employer Network
                                 </span>
                             </div>
 
                             <!-- Giant Two-Line Heading with Inline Rounded Image Pill -->
                             <h1 class="hero-headline mb-4">
-                                Empowering
-                                <span class="hero-inline-pill-img">
-                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop" alt="Campus Students">
-                                </span>
-                                Students,<br class="d-none d-sm-block">
-                                Supporting Campus Offices
+                                Empowering <span class="hero-inline-pill-img"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop" alt="Campus Students"></span> Students,<br class="d-none d-sm-block">
+                                Connecting Trusted Employers
                             </h1>
 
                             <!-- Subtitle -->
                             <p class="lead text-muted-custom col-lg-8 mx-auto mb-5">
-                                Discover flexible student assistantships, technical lab support, administrative roles, and peer tutoring opportunities tailored around your class schedules.
+                                Discover on-campus student assistantships in university offices alongside accredited part-time jobs, academic internships (OJT), and project roles from verified partner employers — scheduled flexibly around your classes.
                             </p>
 
                             <!-- CTAs -->
                             <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-5">
                                 <a href="student/jobs.php" class="btn-accent-pill">
-                                    <i class="bi bi-search"></i> FIND A JOB
+                                    <i class="bi bi-search"></i> EXPLORE VACANCIES
                                 </a>
                                 <a href="employer/create-job.php" class="btn-outline-pill">
-                                    POST A VACANCY <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
+                                    FOR EMPLOYERS & OFFICES <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
                                 </a>
                             </div>
                         </div>
@@ -74,21 +70,22 @@ require_once __DIR__ . '/includes/header.php';
                     <!-- Bottom Strip (Partners & Scroll Indicator) -->
                     <div class="hero-partner-strip">
                         <div class="row align-items-center justify-content-between g-3">
-                            <!-- Left: Trusted Campus Partners -->
-                            <div class="col-lg-8 col-md-9">
+                            <!-- Left: Trusted Campus & Industry Partners -->
+                            <div class="col-lg-9 col-md-9">
                                 <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4">
-                                    <span class="eyebrow-badge text-muted-custom">TRUSTED CAMPUS PARTNERS</span>
+                                    <span class="eyebrow-badge text-muted-custom">ACCREDITED OFFICES & PARTNERS</span>
                                     <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 text-ink fw-bold small">
-                                        <span class="partner-logo-item"><i class="bi bi-book text-accent"></i> University Library</span>
-                                        <span class="partner-logo-item"><i class="bi bi-cpu text-accent"></i> IT Services</span>
-                                        <span class="partner-logo-item"><i class="bi bi-building text-accent"></i> Registrar</span>
-                                        <span class="partner-logo-item"><i class="bi bi-people text-accent"></i> Student Affairs</span>
+                                        <span class="partner-logo-item"><i class="bi bi-building text-accent"></i> University Registrar</span>
+                                        <span class="partner-logo-item"><i class="bi bi-cpu text-accent"></i> MIS & Tech Center</span>
+                                        <span class="partner-logo-item"><i class="bi bi-book text-accent"></i> Campus Library</span>
+                                        <span class="partner-logo-item"><i class="bi bi-briefcase text-accent"></i> TechVanguard Solutions</span>
+                                        <span class="partner-logo-item"><i class="bi bi-camera-reels text-accent"></i> Dasma Creative Media</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Right: Scroll Down Indicator -->
-                            <div class="col-lg-4 col-md-3 text-start text-md-end">
+                            <div class="col-lg-3 col-md-3 text-start text-md-end">
                                 <a href="#search-widget" class="text-decoration-none d-inline-flex align-items-center gap-2 text-ink fw-bold small">
                                     <span class="eyebrow-badge">SCROLL DOWN</span>
                                     <span class="btn-circle-icon" style="width: 34px; height: 34px;">
@@ -114,18 +111,18 @@ require_once __DIR__ . '/includes/header.php';
                         <!-- Card Header -->
                         <div class="text-center mb-4">
                             <span class="pill-badge mb-2">
-                                <i class="bi bi-funnel-fill text-accent"></i> Instant Discovery
+                                <i class="bi bi-funnel-fill text-accent"></i> Multi-Tier Job Discovery
                             </span>
-                            <h2 class="h3 fw-extrabold text-ink mb-1">Find Your Campus Job</h2>
-                            <p class="text-muted-custom small mb-3">Filter verified positions by keyword, office, or category</p>
+                            <h2 class="h3 fw-extrabold text-ink mb-1">Find Student Assistantships & Verified Jobs</h2>
+                            <p class="text-muted-custom small mb-3">Browse opportunities from campus offices, academic laboratories, and approved industry partners</p>
 
                             <!-- Pay Type Toggle Switch -->
                             <div class="pay-toggle-wrapper">
-                                <span id="pay-hourly-label" class="pay-toggle-label text-accent">Hourly</span>
+                                <span id="pay-hourly-label" class="pay-toggle-label text-accent">Hourly Pay</span>
                                 <div class="form-check form-switch m-0 p-0 d-inline-flex align-items-center">
                                     <input class="form-check-input ms-0" type="checkbox" role="switch" id="pay-type-toggle" aria-label="Toggle Pay Type">
                                 </div>
-                                <span id="pay-stipend-label" class="pay-toggle-label">Stipend-Based 💚</span>
+                                <span id="pay-stipend-label" class="pay-toggle-label">Monthly Stipend 💚</span>
                             </div>
                         </div>
 
@@ -134,79 +131,178 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Hidden input synced with pay toggle switch -->
                             <input type="hidden" name="pay_type" id="pay-type-hidden" value="Hourly">
 
-                            <!-- Keyword & Department Inputs -->
-                            <div class="mb-3">
-                                <label for="search-keyword" class="form-label small fw-bold text-ink mb-1">Keyword Search</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-surface border-line"><i class="bi bi-search text-muted-custom"></i></span>
-                                    <input type="text" id="search-keyword" name="q" class="form-control bg-surface border-line" placeholder="Job title or office…">
+                            <!-- Keyword & Employer Inputs -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label for="search-keyword" class="form-label small fw-bold text-ink mb-1">Keyword Search</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-surface border-line"><i class="bi bi-search text-muted-custom"></i></span>
+                                        <input type="text" id="search-keyword" name="q" class="form-control bg-surface border-line" placeholder="Role title, skill, or department…">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="search-dept" class="form-label small fw-bold text-ink mb-1">Employer / Organization</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-surface border-line"><i class="bi bi-building text-muted-custom"></i></span>
+                                        <select id="search-dept" name="dept" class="form-select bg-surface border-line">
+                                            <option value="">All Employers (Offices & Partners)</option>
+                                            <optgroup label="University Offices">
+                                                <option value="Management Information Systems (MIS)">Management Information Systems (MIS)</option>
+                                                <option value="Office of the University Registrar">Office of the University Registrar</option>
+                                                <option value="University Library Services">University Library Services</option>
+                                                <option value="Institute of Science and Mathematics (ISM)">Institute of Science and Mathematics (ISM)</option>
+                                                <option value="College of Science & Laboratories">College of Science & Laboratories</option>
+                                            </optgroup>
+                                            <optgroup label="Approved External Partners">
+                                                <option value="TechVanguard Solutions Inc.">TechVanguard Solutions (IT Partner)</option>
+                                                <option value="Dasma Creative Media Studio">Dasma Creative Media (Multimedia)</option>
+                                                <option value="Campus Cafe & Co.">Campus Cafe & Co. (Concessionaire)</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Multi-Select Opportunity Types -->
                             <div class="mb-3">
-                                <label for="search-dept" class="form-label small fw-bold text-ink mb-1">Department / Office</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-surface border-line"><i class="bi bi-building text-muted-custom"></i></span>
-                                    <select id="search-dept" name="dept" class="form-select bg-surface border-line">
-                                        <option value="">Department ▾ (All Offices)</option>
-                                        <?php 
-                                        $departments = [
-                                            'Management Information Systems (MIS)',
-                                            'Office of the University Registrar',
-                                            'University Library Services',
-                                            'Institute of Science and Mathematics (ISM)',
-                                            'College of Science & Laboratories',
-                                            'Athletics & Physical Education Department',
-                                            'Student Affairs & Services Office (SASO)'
-                                        ];
-                                        foreach ($departments as $dept): ?>
-                                            <option value="<?= htmlspecialchars($dept) ?>"><?= htmlspecialchars($dept) ?></option>
-                                        <?php endforeach; ?>
+                                <label class="form-label small fw-bold text-ink mb-2 d-block">Opportunity Type</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Student Assistant" id="chip-sa">
+                                        <label for="chip-sa" class="search-chip-label"><i class="bi bi-mortarboard"></i> Student Assistant (SA)</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Part-Time Job" id="chip-pt">
+                                        <label for="chip-pt" class="search-chip-label"><i class="bi bi-clock"></i> Part-Time Job</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Internship / OJT" id="chip-ojt">
+                                        <label for="chip-ojt" class="search-chip-label"><i class="bi bi-briefcase"></i> Internship / OJT</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Peer Tutor" id="chip-tutor">
+                                        <label for="chip-tutor" class="search-chip-label"><i class="bi bi-person-video3"></i> Peer Tutor</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Employer Type Radio Selection -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-ink mb-1">Employer Classification</label>
+                                    <select name="employer_type" class="form-select bg-surface border-line">
+                                        <option value="">All Verified Classifications</option>
+                                        <option value="university_office">University Academic / Admin Offices Only</option>
+                                        <option value="approved_partner">Approved Industry / Campus Partners Only</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-ink mb-1">Workplace Arrangement</label>
+                                    <select name="work_setup" class="form-select bg-surface border-line">
+                                        <option value="">Any Work Setup</option>
+                                        <option value="On-Campus">On-Campus (University Buildings)</option>
+                                        <option value="Near-Campus">Near-Campus (Partner Offices)</option>
+                                        <option value="Hybrid">Hybrid (Campus + Remote)</option>
+                                        <option value="Remote">Remote / Online</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- 4 Multi-Select Chips -->
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold text-ink mb-2 d-block">Quick Categories</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="category[]" value="IT & Technical Support" id="chip-it">
-                                        <label for="chip-it" class="search-chip-label"><i class="bi bi-laptop"></i> IT Support</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="category[]" value="Library Services" id="chip-lib">
-                                        <label for="chip-lib" class="search-chip-label"><i class="bi bi-book"></i> Library</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="category[]" value="Science & Computer Lab Assistant" id="chip-lab">
-                                        <label for="chip-lab" class="search-chip-label"><i class="bi bi-radioactive"></i> Lab Assistant</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="category[]" value="Peer Tutor" id="chip-tutor">
-                                        <label for="chip-tutor" class="search-chip-label"><i class="bi bi-mortarboard"></i> Peer Tutor</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Work-Study Only Checkbox -->
-                            <div class="form-check mb-4">
-                                <input class="form-check-input border-line" type="checkbox" name="work_study" value="1" id="workStudyCheck">
-                                <label class="form-check-label small text-muted-custom" for="workStudyCheck">
-                                    Work-Study only positions
-                                </label>
-                            </div>
-
                             <!-- Form Action Buttons -->
-                            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between">
+                            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between pt-2">
                                 <button type="submit" class="btn-accent-pill flex-grow-1">
-                                    <i class="bi bi-arrow-right-circle"></i> SEARCH JOBS
+                                    <i class="bi bi-arrow-right-circle"></i> SEARCH OPPORTUNITIES
                                 </button>
                                 <a href="student/jobs.php" class="btn-soft-pill text-center">
-                                    BROWSE ALL
+                                    BROWSE ALL JOBS
                                 </a>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 SECTION 3: HOW IT WORKS & ACCREDITATION PROCESS (bg --surface)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="text-center mb-5">
+                        <span class="pill-badge mb-2">
+                            <i class="bi bi-patch-check-fill text-accent"></i> Safe & Vetted Hiring
+                        </span>
+                        <h2 class="h1 fw-extrabold text-ink mb-2">How Approved Employers & Offices Deploy Vacancies</h2>
+                        <p class="text-muted-custom col-lg-7 mx-auto">
+                            Every opportunity on this platform undergoes institutional vetting before publishing, protecting student academic focus, fair compensation, and safe workplaces.
+                        </p>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Step 1: Institutional Accreditation -->
+                        <div class="col-lg-4">
+                            <div class="why-card h-100">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
+                                            <i class="bi bi-file-earmark-check-fill fs-4 text-ink"></i>
+                                        </div>
+                                        <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 01</span>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Accreditation & Partnership</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        University offices register with departmental authorization. External employers and industry partners submit business registration and formal University Partnership Agreements (MOA).
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line mt-auto">
+                                    <span class="chip-tag"># Verified Credentials</span>
+                                    <span class="chip-tag"># Formal MOA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Vetting & Compliance Audit -->
+                        <div class="col-lg-4">
+                            <div class="why-card h-100">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
+                                            <i class="bi bi-shield-lock-fill fs-4 text-accent"></i>
+                                        </div>
+                                        <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 02</span>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Career Center Vetting</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        The University Career Center audits job descriptions to verify student-safe pay rates, ethical workload scopes, and strict enforcement of the 20-hour weekly maximum during active semesters.
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line mt-auto">
+                                    <span class="chip-tag"># Max 20 hrs/wk Limit</span>
+                                    <span class="chip-tag"># Fair Student Wage</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Authorized Deployment & Direct Tracking -->
+                        <div class="col-lg-4">
+                            <div class="why-card h-100">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
+                                            <i class="bi bi-person-check-fill fs-4 text-ink"></i>
+                                        </div>
+                                        <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 03</span>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Authorized Deployment</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        Only verified accounts deploy live requisitions. Students submit applications securely, schedule interviews with supervisors, and track hiring decisions directly on their student dashboard.
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line mt-auto">
+                                    <span class="chip-tag"># Verified Listings</span>
+                                    <span class="chip-tag"># Direct Status Tracking</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -385,7 +481,7 @@ require_once __DIR__ . '/includes/header.php';
                             <span class="pill-badge mb-2">
                                 <i class="bi bi-star-fill text-accent"></i> Top Vacancies
                             </span>
-                            <h2 class="h1 fw-extrabold text-ink mb-0">Featured Opportunities On Campus</h2>
+                            <h2 class="h1 fw-extrabold text-ink mb-0">Featured Campus & Partner Opportunities</h2>
                         </div>
                         <div class="mt-3 mt-md-0">
                             <a href="student/jobs.php" class="btn-outline-pill">
@@ -401,14 +497,21 @@ require_once __DIR__ . '/includes/header.php';
                                 $slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
                                 $slots_filled = (int)($job['slots_filled'] ?? 0);
                                 $pct = ($slots_total > 0) ? round(($slots_filled / $slots_total) * 100) : 0;
-                                $badges = $job['badges'] ?? ['Student Assistant', 'Flexible Schedule'];
+                                $badges = $job['badges'] ?? [$job['job_type'] ?? 'Student Assistant', $job['work_setup'] ?? 'On-Campus'];
+                                $is_partner = ($job['employer_type'] ?? '') === 'approved_partner';
+                                $org_name = $job['organization_name'] ?? ($job['department'] ?? 'University Department');
                             ?>
                                 <div class="featured-job-card <?= ($idx === 0) ? 'is-active' : '' ?>">
                                     <div class="featured-card-photo-wrap">
                                         <img src="<?= htmlspecialchars($job['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=900&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($job['title']) ?>">
                                         <div class="featured-card-badges">
+                                            <?php if ($is_partner): ?>
+                                                <span class="badge-tag-overlay" style="background-color: var(--ink); color: #fff;">
+                                                    <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
+                                                </span>
+                                            <?php endif; ?>
                                             <?php foreach ($badges as $b): ?>
-                                                <span class="badge-tag-overlay <?= (stripos($b, 'urgent') !== false) ? 'urgent' : '' ?>">
+                                                <span class="badge-tag-overlay <?= (stripos($b, 'urgent') !== false || stripos($b, 'ojt') !== false) ? 'urgent' : '' ?>">
                                                     <?= htmlspecialchars($b) ?>
                                                 </span>
                                             <?php endforeach; ?>
@@ -420,6 +523,14 @@ require_once __DIR__ . '/includes/header.php';
                                         </div>
                                     </div>
                                     <div class="featured-card-body">
+                                        <div class="small fw-semibold text-muted-custom mb-1 d-flex align-items-center gap-1">
+                                            <?php if ($is_partner): ?>
+                                                <i class="bi bi-patch-check-fill text-accent"></i>
+                                            <?php else: ?>
+                                                <i class="bi bi-building text-muted-custom"></i>
+                                            <?php endif; ?>
+                                            <span><?= htmlspecialchars($org_name) ?></span>
+                                        </div>
                                         <h3 class="h5 fw-bold text-ink mb-1" style="font-weight: 700;">
                                             <?= htmlspecialchars($job['title']) ?>
                                         </h3>

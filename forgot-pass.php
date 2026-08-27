@@ -20,28 +20,28 @@ require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-5 bg-light flex-grow-1 d-flex align-items-center">
+<main class="py-5 bg-surface flex-grow-1 d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-7 col-lg-5">
                 
-                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="card border-line shadow-sm rounded-4 p-4 p-md-5 bg-white">
                     <div class="text-center mb-4">
-                        <div class="stat-icon bg-warning text-dark mx-auto mb-3">
+                        <div class="stat-icon bg-accent-soft text-ink mx-auto mb-3">
                             <i class="bi bi-key-fill fs-4"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-1">Forgot Password?</h4>
-                        <p class="text-muted small mb-0">
+                        <h4 class="fw-bold text-ink mb-1">Forgot Password?</h4>
+                        <p class="text-muted-custom small mb-0">
                             Enter your registered email address to receive password reset instructions.
                         </p>
                     </div>
 
                     <?php if ($submitted): ?>
                         <div class="alert alert-success d-flex align-items-start gap-2 mb-4 p-3 rounded-3">
-                            <i class="bi bi-check-circle-fill text-success fs-5 mt-1"></i>
+                            <i class="bi bi-check-circle-fill text-accent fs-5 mt-1"></i>
                             <div>
-                                <strong class="d-block mb-1">Reset Instructions Dispatched!</strong>
-                                <span class="small">
+                                <strong class="d-block mb-1 text-ink">Reset Instructions Dispatched!</strong>
+                                <span class="small text-muted-custom">
                                     If an account is associated with <strong><?= htmlspecialchars($email) ?></strong>, password recovery instructions have been delivered to your inbox.
                                 </span>
                             </div>
@@ -50,20 +50,20 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <form action="forgot-pass.php" method="POST">
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">KLD Institutional Email Address</label>
+                            <label class="form-label small fw-semibold text-ink">Institutional Email Address</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
-                                <input type="email" name="email" class="form-control py-2" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email) ?>" required autofocus>
+                                <span class="input-group-text"><i class="bi bi-envelope text-muted-custom"></i></span>
+                                <input type="email" name="email" class="form-control py-2" placeholder="username@campus-hire.edu" value="<?= htmlspecialchars($email) ?>" required autofocus>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-academic w-100 py-2 fw-semibold mb-3">
-                            <i class="bi bi-send me-1"></i> Send Password Reset Link
+                        <button type="submit" class="btn-accent-pill w-100 py-3 mb-3">
+                            <i class="bi bi-send"></i> SEND PASSWORD RESET LINK
                         </button>
                     </form>
 
-                    <div class="text-center border-top pt-3">
-                        <a href="login.php" class="text-decoration-none small fw-semibold text-kld-green">
+                    <div class="text-center border-top border-line pt-3">
+                        <a href="login.php" class="text-decoration-none small fw-bold text-accent">
                             <i class="bi bi-arrow-left me-1"></i> Return to Sign In
                         </a>
                     </div>

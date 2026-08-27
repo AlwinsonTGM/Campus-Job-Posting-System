@@ -51,7 +51,7 @@ require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<main class="py-4 bg-light flex-grow-1">
+<main class="py-4 bg-surface flex-grow-1">
     <div class="container printable-report">
         
         <!-- Header & Print Actions -->
@@ -63,11 +63,11 @@ require_once __DIR__ . '/../includes/navbar.php';
                         <li class="breadcrumb-item active" aria-current="page">Reports & Analytics</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold text-dark mb-0">KLD Campus Employment Analytics Report</h2>
-                <div class="text-muted small">Kolehiyo ng Lungsod ng Dasmariñas &bull; Generated: <?= date('F d, Y \a\t h:i A') ?> &bull; Term: 1st Sem 2026-2027</div>
+                <h2 class="fw-bold text-ink mb-0">Campus Employment Analytics Report</h2>
+                <div class="text-muted-custom small">Campus Job Posting Network &bull; Generated: <?= date('F d, Y \a\t h:i A') ?> &bull; Term: 1st Sem 2026-2027</div>
             </div>
             <div class="mt-3 mt-md-0 no-print">
-                <button type="button" onclick="triggerPrintReport()" class="btn btn-academic btn-sm shadow-sm">
+                <button type="button" onclick="triggerPrintReport()" class="btn-accent-pill py-2 px-3 shadow-sm">
                     <i class="bi bi-printer-fill me-1"></i> Print / Export Report (PDF)
                 </button>
             </div>
@@ -76,34 +76,34 @@ require_once __DIR__ . '/../includes/navbar.php';
         <!-- KPI Summary Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: var(--kld-green-primary);">
-                    <div class="text-muted small fw-semibold text-uppercase">Total Vacancies</div>
-                    <div class="display-6 fw-bold text-kld-green"><?= $total_jobs ?></div>
-                    <span class="small text-muted">Across <?= count($departments) ?> departments</span>
+                <div class="stat-card">
+                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Total Vacancies</div>
+                    <div class="display-6 fw-bold text-ink my-1"><?= $total_jobs ?></div>
+                    <span class="small text-muted-custom">Across <?= count($departments) ?> departments</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: var(--kld-gold);">
-                    <div class="text-muted small fw-semibold text-uppercase">Applications Filed</div>
-                    <div class="display-6 fw-bold text-kld-gold"><?= $total_apps ?></div>
-                    <span class="small text-muted">Total student submissions</span>
+                <div class="stat-card">
+                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Applications Filed</div>
+                    <div class="display-6 fw-bold text-ink my-1"><?= $total_apps ?></div>
+                    <span class="small text-muted-custom">Total student submissions</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: var(--kld-gold-accent);">
-                    <div class="text-muted small fw-semibold text-uppercase">Interviews Held</div>
-                    <div class="display-6 fw-bold text-kld-gold"><?= $total_interviews ?></div>
-                    <span class="small text-muted">Shortlisted candidates</span>
+                <div class="stat-card">
+                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Interviews Held</div>
+                    <div class="display-6 fw-bold text-ink my-1"><?= $total_interviews ?></div>
+                    <span class="small text-muted-custom">Shortlisted candidates</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="stat-card" style="border-left-color: var(--kld-green-primary);">
-                    <div class="text-muted small fw-semibold text-uppercase">Officially Hired</div>
-                    <div class="display-6 fw-bold text-kld-green"><?= $total_hired ?></div>
-                    <span class="small text-muted">Active Student Assistants</span>
+                <div class="stat-card">
+                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Officially Hired</div>
+                    <div class="display-6 fw-bold text-ink my-1"><?= $total_hired ?></div>
+                    <span class="small text-muted-custom">Active Student Assistants</span>
                 </div>
             </div>
         </div>
@@ -111,8 +111,8 @@ require_once __DIR__ . '/../includes/navbar.php';
         <div class="row g-4 mb-4">
             <!-- Left 6-col: Category Distribution -->
             <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i> Category Demand Breakdown</h5>
+                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
+                    <h5 class="fw-bold text-ink mb-3"><i class="bi bi-pie-chart-fill text-accent me-2"></i> Category Demand Breakdown</h5>
                     
                     <div class="d-flex flex-column gap-3">
                         <?php foreach ($categories as $c): 
@@ -121,11 +121,11 @@ require_once __DIR__ . '/../includes/navbar.php';
                         ?>
                             <div>
                                 <div class="d-flex justify-content-between align-items-center small mb-1">
-                                    <span class="fw-semibold text-dark"><?= htmlspecialchars($c['name']) ?></span>
-                                    <span class="text-muted"><?= $cat_job_count ?> jobs (<?= $pct ?>%)</span>
+                                    <span class="fw-semibold text-ink"><?= htmlspecialchars($c['name']) ?></span>
+                                    <span class="text-muted-custom"><?= $cat_job_count ?> jobs (<?= $pct ?>%)</span>
                                 </div>
-                                <div class="progress" style="height: 10px;">
-                                    <div class="progress-bar bg-<?= $c['color'] ?? 'primary' ?>" role="progressbar" style="width: <?= max(5, $pct) ?>%" aria-valuenow="<?= $pct ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress" style="height: 8px; background-color: var(--line);">
+                                    <div class="progress-bar" role="progressbar" style="width: <?= max(5, $pct) ?>%; background-color: var(--accent);" aria-valuenow="<?= $pct ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -135,25 +135,25 @@ require_once __DIR__ . '/../includes/navbar.php';
 
             <!-- Right 6-col: Key Institutional Highlights -->
             <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-clipboard2-data-fill text-warning me-2"></i> Compliance & Performance Highlights</h5>
+                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
+                    <h5 class="fw-bold text-ink mb-3"><i class="bi bi-clipboard2-data-fill text-accent me-2"></i> Compliance & Performance Highlights</h5>
                     
-                    <ul class="list-group list-group-flush small text-secondary">
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span><i class="bi bi-clock-history text-primary me-2"></i> Maximum Weekly SA Duty Limit Compliance:</span>
-                            <span class="badge bg-success-subtle text-success fw-bold">100% Compliant (&le; 20 hrs/wk)</span>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
+                            <span class="text-muted-custom"><i class="bi bi-clock-history text-accent me-2"></i> Maximum Weekly SA Duty Limit Compliance:</span>
+                            <span class="pill-badge" style="font-size: 11px;">100% Compliant (&le; 20 hrs/wk)</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span><i class="bi bi-shield-check text-info me-2"></i> RA 10173 Data Privacy Audit:</span>
-                            <span class="badge bg-success-subtle text-success fw-bold">Certified Protected</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
+                            <span class="text-muted-custom"><i class="bi bi-shield-check text-accent me-2"></i> RA 10173 Data Privacy Audit:</span>
+                            <span class="pill-badge" style="font-size: 11px;">Certified Protected</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span><i class="bi bi-cash-coin text-warning me-2"></i> Average Hourly Student Stipend:</span>
-                            <span class="fw-bold text-dark">₱85.00 / hour</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
+                            <span class="text-muted-custom"><i class="bi bi-cash-coin text-accent me-2"></i> Average Hourly Student Stipend:</span>
+                            <span class="fw-bold text-ink">₱85.00 / hour</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span><i class="bi bi-building-check text-secondary me-2"></i> Total Active Partner Offices:</span>
-                            <span class="fw-bold text-dark"><?= count($departments) ?> University Offices</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
+                            <span class="text-muted-custom"><i class="bi bi-building-check text-accent me-2"></i> Total Active Partner Offices:</span>
+                            <span class="fw-bold text-ink"><?= count($departments) ?> University Offices</span>
                         </li>
                     </ul>
                 </div>
@@ -161,22 +161,22 @@ require_once __DIR__ . '/../includes/navbar.php';
         </div>
 
         <!-- Department Breakdown Table -->
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
-            <div class="p-4 border-bottom">
-                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-table text-primary me-2"></i> Department Requisition & Hiring Matrix</h5>
-                <span class="text-muted small">Summary of open slots, applicant flow, and placement rate per department</span>
+        <div class="card border-line shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+            <div class="p-4 border-bottom border-line">
+                <h5 class="fw-bold text-ink mb-0"><i class="bi bi-table text-accent me-2"></i> Department Requisition & Hiring Matrix</h5>
+                <span class="text-muted-custom small">Summary of open slots, applicant flow, and placement rate per department</span>
             </div>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead class="bg-cream border-bottom border-line">
                         <tr>
-                            <th class="ps-4">Department / Campus Office</th>
-                            <th>Active Postings</th>
-                            <th>Total Applicants</th>
-                            <th>Hired SAs</th>
-                            <th>Hiring Ratio</th>
-                            <th class="text-end pe-4">Status</th>
+                            <th class="ps-4 text-ink fw-bold">Department / Campus Office</th>
+                            <th class="text-ink fw-bold">Active Postings</th>
+                            <th class="text-ink fw-bold">Total Applicants</th>
+                            <th class="text-ink fw-bold">Hired SAs</th>
+                            <th class="text-ink fw-bold">Hiring Ratio</th>
+                            <th class="text-end pe-4 text-ink fw-bold">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -185,27 +185,27 @@ require_once __DIR__ . '/../includes/navbar.php';
                         ?>
                             <tr>
                                 <td class="ps-4">
-                                    <div class="fw-bold text-dark"><?= htmlspecialchars($dept_name) ?></div>
+                                    <div class="fw-bold text-ink"><?= htmlspecialchars($dept_name) ?></div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle"><?= $stats['jobs'] ?> Openings</span>
+                                    <span class="pill-badge" style="font-size: 11px;"><?= $stats['jobs'] ?> Openings</span>
                                 </td>
                                 <td>
-                                    <span class="fw-semibold"><?= $stats['apps'] ?> candidates</span>
+                                    <span class="fw-semibold text-ink"><?= $stats['apps'] ?> candidates</span>
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-success"><?= $stats['hired'] ?> hired</span>
+                                    <span class="fw-bold text-ink"><?= $stats['hired'] ?> hired</span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                        <div class="progress flex-grow-1" style="height: 6px;">
-                                            <div class="progress-bar bg-success" style="width: <?= $ratio ?>%"></div>
+                                        <div class="progress flex-grow-1" style="height: 6px; background-color: var(--line);">
+                                            <div class="progress-bar" style="width: <?= $ratio ?>%; background-color: var(--accent);"></div>
                                         </div>
-                                        <span class="small text-muted"><?= $ratio ?>%</span>
+                                        <span class="small text-muted-custom"><?= $ratio ?>%</span>
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <span class="badge bg-success-subtle text-success small">Operational</span>
+                                    <span class="pill-badge" style="font-size: 11px;">Operational</span>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -215,7 +215,7 @@ require_once __DIR__ . '/../includes/navbar.php';
         </div>
 
         <!-- Printable Footer Note (Visible during print) -->
-        <div class="d-none d-print-block mt-5 pt-4 border-top text-center small text-muted">
+        <div class="d-none d-print-block mt-5 pt-4 border-top border-line text-center small text-muted-custom">
             <p>Office of Student Affairs & Services &bull; University Academic Center &bull; Generated via Campus Job Posting System</p>
         </div>
 

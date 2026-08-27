@@ -29,7 +29,7 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    $current_schema_version = '2.0_paper_sheet';
+    $current_schema_version = '2.2_approved_employers';
     if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');
@@ -41,6 +41,33 @@ function init_app_data() {
 }
 
 init_app_data();
+
+// Job Type & Employer Type Enums & Helpers
+function get_job_types() {
+    return [
+        'Student Assistant' => 'Student Assistant (On-Campus SA)',
+        'Part-Time Job' => 'Part-Time Job',
+        'Internship / OJT' => 'Internship / OJT (Academic Practicum)',
+        'Peer Tutor' => 'Peer Tutoring & Academic Coach',
+        'Project-Based' => 'Project-Based / Short-Term Gig'
+    ];
+}
+
+function get_employer_types() {
+    return [
+        'university_office' => 'University Academic / Administrative Office',
+        'approved_partner' => 'Approved Industry / Campus Partner'
+    ];
+}
+
+function get_work_setups() {
+    return [
+        'On-Campus' => 'On-Campus (University Premises)',
+        'Near-Campus' => 'Near-Campus (Partner Office)',
+        'Hybrid' => 'Hybrid (Campus + Remote)',
+        'Remote' => 'Remote / Online'
+    ];
+}
 
 // Flash Messages
 function set_flash($type, $message) {
@@ -105,8 +132,16 @@ function login_user($email, $password) {
     return ['success' => false, 'message' => 'No account found with this email address.'];
 }
 
-function quick_login($role) {
+function quick_login($role, $user_id = null) {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
+    if ($user_id) {
+        foreach ($users as $u) {
+            if ($u['id'] == $user_id) {
+                $_SESSION['user'] = $u;
+                return $u;
+            }
+        }
+    }
     foreach ($users as $u) {
         if ($u['role'] === $role) {
             $_SESSION['user'] = $u;
@@ -126,18 +161,29 @@ function register_user($data) {
         }
     }
 
+    $role = $data['role'] ?? 'student';
+    $employer_type = $data['employer_type'] ?? 'university_office';
+    $org_name = $data['organization_name'] ?? ($data['department'] ?? 'Campus Organization');
+    $accreditation = $data['accreditation_number'] ?? ($employer_type === 'university_office' ? 'INTERNAL-UNIV' : 'PENDING-VERIFICATION');
+    $verification = ($employer_type === 'university_office') ? 'verified' : 'pending_approval';
+
     $new_id = count($users) > 0 ? max(array_column($users, 'id')) + 1 : 1;
     $new_user = [
         'id' => $new_id,
         'name' => htmlspecialchars($data['name']),
         'email' => strtolower(trim($data['email'])),
         'password' => $data['password'],
-        'role' => $data['role'] ?? 'student',
+        'role' => $role,
+        'employer_type' => $employer_type,
+        'organization_name' => htmlspecialchars($org_name),
         'student_id' => $data['student_id'] ?? ('2026-' . rand(10000, 99999)),
         'department' => $data['department'] ?? 'General Academics',
         'course' => $data['course'] ?? '',
         'year_level' => $data['year_level'] ?? '1st Year',
         'phone' => $data['phone'] ?? '',
+        'office_location' => $data['office_location'] ?? 'Campus Main Office',
+        'accreditation_number' => $accreditation,
+        'verification_status' => $verification,
         'status' => 'active',
         'created_at' => date('Y-m-d H:i:s')
     ];
@@ -151,7 +197,7 @@ function register_user($data) {
 }
 
 // Jobs Management
-function get_jobs($category = null, $keyword = null, $department = null, $pay_type = null) {
+function get_jobs($category = null, $keyword = null, $department = null, $pay_type = null, $job_type = null, $employer_type = null, $work_setup = null) {
     $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
     
     if ($category) {
@@ -173,9 +219,36 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
         });
     }
 
+    if ($job_type) {
+        $jobs = array_filter($jobs, function($j) use ($job_type) {
+            if (is_array($job_type)) {
+                foreach ($job_type as $jt) {
+                    if (empty($jt)) continue;
+                    if (strcasecmp($j['job_type'] ?? '', $jt) === 0 || stripos($j['job_type'] ?? '', $jt) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return strcasecmp($j['job_type'] ?? '', $job_type) === 0 || stripos($j['job_type'] ?? '', $job_type) !== false;
+        });
+    }
+
+    if ($employer_type) {
+        $jobs = array_filter($jobs, function($j) use ($employer_type) {
+            return ($j['employer_type'] ?? 'university_office') === $employer_type;
+        });
+    }
+
+    if ($work_setup) {
+        $jobs = array_filter($jobs, function($j) use ($work_setup) {
+            return strcasecmp($j['work_setup'] ?? '', $work_setup) === 0;
+        });
+    }
+
     if ($department) {
         $jobs = array_filter($jobs, function($j) use ($department) {
-            return stripos($j['department'] ?? '', $department) !== false;
+            return stripos($j['department'] ?? '', $department) !== false || stripos($j['organization_name'] ?? '', $department) !== false;
         });
     }
 
@@ -190,7 +263,7 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
         $kw_words = array_filter(explode(' ', $kw), function($w) { return strlen($w) >= 3; });
         $jobs = array_filter($jobs, function($j) use ($kw, $kw_words) {
             $tags_str = is_array($j['tags'] ?? null) ? implode(' ', $j['tags']) : ($j['tags'] ?? '');
-            $haystack = strtolower(($j['title'] ?? '') . ' ' . ($j['department'] ?? '') . ' ' . ($j['description'] ?? '') . ' ' . ($j['location'] ?? '') . ' ' . $tags_str . ' ' . ($j['category'] ?? ''));
+            $haystack = strtolower(($j['title'] ?? '') . ' ' . ($j['department'] ?? '') . ' ' . ($j['organization_name'] ?? '') . ' ' . ($j['description'] ?? '') . ' ' . ($j['location'] ?? '') . ' ' . ($j['job_type'] ?? '') . ' ' . $tags_str . ' ' . ($j['category'] ?? ''));
             
             if (stripos($haystack, $kw) !== false) {
                 return true;
@@ -223,25 +296,38 @@ function create_job($data) {
     $new_id = count($jobs) > 0 ? max(array_column($jobs, 'id')) + 1 : 1;
     
     $user = get_logged_user();
+    $employer_type = $user['employer_type'] ?? ($data['employer_type'] ?? 'university_office');
+    $org_name = $user['organization_name'] ?? ($user['department'] ?? ($data['department'] ?? 'Campus Department'));
+    $work_setup = $data['work_setup'] ?? 'On-Campus';
+    $job_type = $data['job_type'] ?? 'Student Assistant';
+
     $new_job = [
         'id' => $new_id,
         'title' => htmlspecialchars($data['title']),
-        'department' => $data['department'] ?? ($user['department'] ?? 'Campus Department'),
+        'department' => $data['department'] ?? $org_name,
+        'organization_name' => $org_name,
         'category' => $data['category'] ?? 'Administrative & Clerical',
         'category_id' => (int)($data['category_id'] ?? 3),
         'employer_id' => $user['id'] ?? 3,
         'employer_name' => $user['name'] ?? 'Office Supervisor',
-        'job_type' => $data['job_type'] ?? 'Student Assistant',
+        'employer_type' => $employer_type,
+        'job_type' => $job_type,
+        'work_setup' => $work_setup,
+        'verified_employer' => true,
         'location' => htmlspecialchars($data['location'] ?? 'Campus Main Office'),
         'pay_rate' => htmlspecialchars($data['pay_rate'] ?? '₱80.00 / hour'),
         'pay_type' => $data['pay_type'] ?? 'Hourly',
         'hours_per_week' => htmlspecialchars($data['hours_per_week'] ?? '10 - 20 hrs/week'),
         'vacancies' => (int)($data['vacancies'] ?? 1),
-        'filled_vacancies' => 0,
+        'slots_total' => (int)($data['vacancies'] ?? 1),
+        'slots_filled' => 0,
         'deadline' => $data['deadline'] ?? date('Y-m-d', strtotime('+30 days')),
         'status' => 'active',
+        'featured' => false,
+        'image' => 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=900&auto=format&fit=crop',
         'created_at' => date('Y-m-d'),
-        'tags' => !empty($data['tags']) ? (is_array($data['tags']) ? $data['tags'] : explode(',', $data['tags'])) : ['Part-Time', 'Campus SA'],
+        'tags' => !empty($data['tags']) ? (is_array($data['tags']) ? $data['tags'] : explode(',', $data['tags'])) : [$job_type, $work_setup, $employer_type === 'university_office' ? 'University Office' : 'Approved Partner'],
+        'badges' => [$job_type, $work_setup],
         'description' => htmlspecialchars($data['description'] ?? ''),
         'responsibilities' => !empty($data['responsibilities']) ? (is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", $data['responsibilities'])))) : [],
         'qualifications' => !empty($data['qualifications']) ? (is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", $data['qualifications'])))) : []
@@ -259,10 +345,13 @@ function update_job($id, $data) {
         if ($j['id'] == $id) {
             $jobs[$key]['title'] = htmlspecialchars($data['title'] ?? $j['title']);
             $jobs[$key]['category'] = $data['category'] ?? $j['category'];
+            $jobs[$key]['job_type'] = $data['job_type'] ?? ($j['job_type'] ?? 'Student Assistant');
+            $jobs[$key]['work_setup'] = $data['work_setup'] ?? ($j['work_setup'] ?? 'On-Campus');
             $jobs[$key]['location'] = htmlspecialchars($data['location'] ?? $j['location']);
             $jobs[$key]['pay_rate'] = htmlspecialchars($data['pay_rate'] ?? $j['pay_rate']);
             $jobs[$key]['hours_per_week'] = htmlspecialchars($data['hours_per_week'] ?? $j['hours_per_week']);
             $jobs[$key]['vacancies'] = (int)($data['vacancies'] ?? $j['vacancies']);
+            $jobs[$key]['slots_total'] = (int)($data['vacancies'] ?? $j['slots_total'] ?? 1);
             $jobs[$key]['deadline'] = $data['deadline'] ?? $j['deadline'];
             $jobs[$key]['status'] = $data['status'] ?? $j['status'];
             $jobs[$key]['description'] = htmlspecialchars($data['description'] ?? $j['description']);

@@ -63,15 +63,17 @@ require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-5">
+<main class="py-5 bg-surface flex-grow-1">
     <div class="container">
         <!-- Page Header -->
         <div class="text-center max-w-700 mx-auto mb-5">
-            <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-2">
-                <i class="bi bi-question-diamond-fill"></i> Help Center
-            </span>
-            <h1 class="fw-bold text-dark mb-3">Frequently Asked Questions</h1>
-            <p class="text-muted lead fs-6">
+            <div class="mb-2">
+                <span class="pill-badge">
+                    <i class="bi bi-question-diamond-fill text-accent"></i> Help Center & FAQs
+                </span>
+            </div>
+            <h1 class="fw-bold text-ink mb-3">Frequently Asked Questions</h1>
+            <p class="text-muted-custom lead fs-6">
                 Have questions about student assistant eligibility, work hour limits, stipend payouts, or application processes? Find answers to the 10 most common questions below.
             </p>
         </div>
@@ -79,27 +81,27 @@ require_once __DIR__ . '/includes/navbar.php';
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <!-- Accordion Container -->
-                <div class="accordion accordion-flush shadow-sm rounded-4 overflow-hidden border" id="faqAccordion">
+                <div class="accordion accordion-flush" id="faqAccordion">
                     <?php foreach ($faqs as $index => $faq): ?>
-                        <div class="accordion-item">
+                        <div class="accordion-item shadow-sm">
                             <h2 class="accordion-header" id="heading<?= $index ?>">
-                                <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?> py-3 px-4 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>" aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $index ?>">
+                                <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?> py-3 px-4 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>" aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $index ?>">
                                     <div class="d-flex align-items-center gap-3 w-100 me-3">
-                                        <span class="badge-kld-tag small flex-shrink-0">
+                                        <span class="pill-badge pill-badge-ink flex-shrink-0" style="font-size: 10px; padding: 0.2rem 0.55rem;">
                                             Q<?= $index + 1 ?>
                                         </span>
-                                        <span class="text-dark"><?= htmlspecialchars($faq['q']) ?></span>
+                                        <span class="text-ink"><?= htmlspecialchars($faq['q']) ?></span>
                                     </div>
                                 </button>
                             </h2>
                             <div id="collapse<?= $index ?>" class="accordion-collapse collapse <?= $index === 0 ? 'show' : '' ?>" aria-labelledby="heading<?= $index ?>" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body px-4 py-3 bg-light text-secondary">
+                                <div class="accordion-body px-4 py-3 bg-surface text-muted-custom">
                                     <div class="mb-2">
-                                        <span class="badge bg-secondary-subtle text-dark small mb-2">
-                                            <i class="bi bi-tag-fill me-1"></i> <?= htmlspecialchars($faq['category']) ?>
+                                        <span class="pill-badge" style="font-size: 10px;">
+                                            <i class="bi bi-tag-fill me-1 text-accent"></i> <?= htmlspecialchars($faq['category']) ?>
                                         </span>
                                     </div>
-                                    <p class="mb-0 fs-6 lh-base">
+                                    <p class="mb-0 fs-6 lh-base text-ink">
                                         <?= $faq['a'] ?>
                                     </p>
                                 </div>
@@ -109,20 +111,20 @@ require_once __DIR__ . '/includes/navbar.php';
                 </div>
 
                 <!-- Still Have Questions Box -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 text-center bg-white">
-                    <div class="stat-icon stat-icon-kld mx-auto mb-3">
+                <div class="card border-line shadow-sm rounded-4 p-4 mt-5 text-center bg-white">
+                    <div class="stat-icon bg-accent-soft text-ink mx-auto mb-3">
                         <i class="bi bi-chat-dots-fill"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2">Still need assistance with your application?</h5>
-                    <p class="text-muted small mb-3">
+                    <h5 class="fw-bold text-ink mb-2">Still need assistance with your application?</h5>
+                    <p class="text-muted-custom small mb-4">
                         Our student services desk and office administrators are ready to help you during regular campus office hours.
                     </p>
-                    <div>
-                        <a href="about-us.php" class="btn btn-outline-academic btn-sm px-4 me-2">
-                            <i class="bi bi-people me-1"></i> Contact Developers
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a href="about-us.php" class="btn-outline-pill">
+                            <i class="bi bi-people"></i> CONTACT DEVELOPERS
                         </a>
-                        <a href="student/jobs.php" class="btn btn-academic btn-sm px-4">
-                            <i class="bi bi-search me-1"></i> Start Browsing Jobs
+                        <a href="student/jobs.php" class="btn-accent-pill">
+                            <i class="bi bi-search"></i> START BROWSING JOBS
                         </a>
                     </div>
                 </div>

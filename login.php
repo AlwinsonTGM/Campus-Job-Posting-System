@@ -55,43 +55,46 @@ require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-5 bg-light flex-grow-1 d-flex align-items-center">
+<main class="py-5 bg-surface flex-grow-1 d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-5">
                 
                 <!-- Quick Demo Switcher Card -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4 text-white p-3 bg-kld-gradient">
+                <div class="card border-line shadow-sm rounded-4 mb-4 text-white p-3 bg-kld-gradient">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="small fw-bold text-warning text-uppercase"><i class="bi bi-lightning-charge-fill"></i> Instant KLD Demo Sign-In</span>
-                        <span class="badge bg-light text-dark small">1-Click Test</span>
+                        <span class="small fw-bold text-accent text-uppercase"><i class="bi bi-lightning-charge-fill"></i> Instant Demo Sign-In</span>
+                        <span class="pill-badge pill-badge-ink" style="font-size: 10px;">1-Click Test</span>
                     </div>
-                    <p class="small text-light opacity-90 mb-3">Click any button below to instantly populate credentials & test specific roles:</p>
+                    <p class="small text-white-50 mb-3">Click any button below to instantly populate credentials & test specific roles:</p>
                     <div class="d-flex flex-wrap gap-2">
-                        <button type="button" class="btn btn-sm btn-light text-success fw-bold" data-demo-role="student">
+                        <button type="button" class="btn btn-sm btn-accent-pill py-1 px-3 fw-bold" data-demo-email="student@kld.edu.ph" style="font-size: 11px;">
                             <i class="bi bi-mortarboard me-1"></i> Student Demo
                         </button>
-                        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold" data-demo-role="employer">
-                            <i class="bi bi-building me-1"></i> Employer Demo
+                        <button type="button" class="btn btn-sm btn-soft-pill py-1 px-3 fw-bold" data-demo-email="registrar@kld.edu.ph" style="font-size: 11px;">
+                            <i class="bi bi-bank me-1"></i> Campus Office Demo
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-light fw-bold" data-demo-role="admin">
+                        <button type="button" class="btn btn-sm btn-accent-pill py-1 px-3 fw-bold" data-demo-email="techvanguard@partner.kld.edu.ph" style="font-size: 11px; background-color: var(--ink); color: #fff; border-color: var(--accent);">
+                            <i class="bi bi-patch-check-fill text-accent me-1"></i> Partner Employer Demo
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-pill py-1 px-3 fw-bold text-white border-white" data-demo-email="admin@kld.edu.ph" style="font-size: 11px;">
                             <i class="bi bi-shield-lock me-1"></i> Admin Demo
                         </button>
                     </div>
                 </div>
 
                 <!-- Main Login Card -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-4 bg-white">
+                <div class="card border-line shadow-sm rounded-4 p-4 p-md-5 bg-white">
                     <div class="text-center mb-4">
-                        <div class="stat-icon bg-kld-gradient text-white mx-auto mb-2">
+                        <div class="stat-icon bg-accent-soft text-ink mx-auto mb-2">
                             <i class="bi bi-person-lock fs-4"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-1">Sign In to Your Account</h4>
-                        <p class="text-muted small mb-0">Access student applications or KLD department job postings</p>
+                        <h4 class="fw-bold text-ink mb-1">Sign In to Your Account</h4>
+                        <p class="text-muted-custom small mb-0">Access student applications or department job postings</p>
                     </div>
 
                     <?php if ($error): ?>
-                        <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-3">
+                        <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-3 rounded-3">
                             <i class="bi bi-exclamation-circle-fill fs-5"></i>
                             <div><?= htmlspecialchars($error) ?></div>
                         </div>
@@ -99,37 +102,37 @@ require_once __DIR__ . '/includes/navbar.php';
 
                     <form action="login.php" method="POST">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">KLD Institutional Email Address</label>
+                            <label class="form-label small fw-semibold text-ink">Institutional Email Address</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
-                                <input type="email" name="email" id="login-email" class="form-control" placeholder="username@kld.edu.ph" required>
+                                <span class="input-group-text"><i class="bi bi-envelope text-muted-custom"></i></span>
+                                <input type="email" name="email" id="login-email" class="form-control" placeholder="username@campus-hire.edu" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label small fw-semibold text-dark mb-0">Account Password</label>
-                                <a href="forgot-pass.php" class="text-decoration-none small text-kld-green fw-semibold">Forgot password?</a>
+                                <label class="form-label small fw-semibold text-ink mb-0">Account Password</label>
+                                <a href="forgot-pass.php" class="text-decoration-none small text-accent fw-bold">Forgot password?</a>
                             </div>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="bi bi-key text-muted"></i></span>
+                                <span class="input-group-text"><i class="bi bi-key text-muted-custom"></i></span>
                                 <input type="password" name="password" id="login-password" class="form-control" placeholder="••••••••" required>
                             </div>
                         </div>
 
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="rememberMe" checked>
-                            <label class="form-check-label small text-muted" for="rememberMe">Remember my login session on this device</label>
+                            <label class="form-check-label small text-muted-custom" for="rememberMe">Remember my login session on this device</label>
                         </div>
 
-                        <button type="submit" class="btn btn-academic w-100 py-2 fw-semibold mb-3">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                        <button type="submit" class="btn-accent-pill w-100 py-3 mb-3">
+                            <i class="bi bi-box-arrow-in-right"></i> SIGN IN TO PORTAL
                         </button>
                     </form>
 
-                    <div class="border-top pt-3 text-center">
-                        <span class="text-muted small">Don't have an account yet?</span>
-                        <a href="register.php" class="text-decoration-none fw-bold text-kld-green small ms-1">
+                    <div class="border-top border-line pt-3 text-center">
+                        <span class="text-muted-custom small">Don't have an account yet?</span>
+                        <a href="register.php" class="text-decoration-none fw-bold text-accent small ms-1">
                             Create an Account <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -139,5 +142,24 @@ require_once __DIR__ . '/includes/navbar.php';
         </div>
     </div>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.getElementById('login-email');
+    const passInput = document.getElementById('login-password');
+    const demoBtns = document.querySelectorAll('[data-demo-email]');
+
+    demoBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const email = this.getAttribute('data-demo-email');
+            if (emailInput && passInput) {
+                emailInput.value = email;
+                passInput.value = 'Password123!';
+                emailInput.focus();
+            }
+        });
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

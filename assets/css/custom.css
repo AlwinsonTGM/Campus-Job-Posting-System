@@ -29,7 +29,7 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
   /* Bootstrap Bridge Overrides */
-  --bs-body-bg: var(--canvas);
+  --bs-body-bg: var(--surface);
   --bs-body-color: var(--ink);
   --bs-font-sans-serif: var(--font-family);
   --bs-border-color: var(--line);
@@ -45,14 +45,14 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  background-color: var(--canvas);
+  background-color: var(--surface);
 }
 
 body {
   font-family: var(--font-family);
   font-weight: 500;
   color: var(--ink);
-  background-color: var(--canvas);
+  background-color: var(--surface);
   line-height: 1.55;
   margin: 0;
   padding: 0;
@@ -385,29 +385,36 @@ h1, h2, h3, h4, h5, h6,
    7. HERO SECTION
    -------------------------------------------------------------------------- */
 .hero-headline {
-  font-size: clamp(2.4rem, 6vw, 4.25rem);
+  font-size: clamp(2.25rem, 5.5vw, 4.25rem);
   font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
   color: var(--ink);
 }
 
 .hero-inline-pill-img {
-  display: inline-block;
-  width: clamp(75px, 9vw, 130px);
-  height: clamp(38px, 4.5vw, 62px);
-  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25em;
+  height: 0.88em;
+  border-radius: 9999px;
   overflow: hidden;
-  vertical-align: middle;
-  margin: 0 0.35rem;
+  vertical-align: -0.08em;
+  margin: 0 0.15em;
   border: 2px solid var(--ink);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  position: relative;
+  top: -0.04em;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .hero-inline-pill-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .hero-partner-strip {

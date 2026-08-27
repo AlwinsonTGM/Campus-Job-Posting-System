@@ -74,26 +74,30 @@ require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-5">
+<main class="py-5 bg-surface flex-grow-1">
     <div class="container">
         <!-- Page Header -->
         <div class="text-center max-w-700 mx-auto mb-5">
-            <span class="badge bg-kld-soft text-kld-green border border-success-subtle px-3 py-2 fw-bold text-uppercase mb-2">
-                <i class="bi bi-code-slash"></i> KLD ICDI &bull; BSIS 2-A Midterm Lab Team
-            </span>
-            <h1 class="fw-bold text-dark mb-3">Meet the Development Team</h1>
-            <p class="text-muted lead fs-6">
-                We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the <strong>Institute of Computing and Digital Innovation (ICDI)</strong> at <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong> who built the <strong>KLD Campus Job Posting System</strong> for our <em>COAL101: Web Systems and Technologies</em> midterm lab project.
+            <div class="mb-2">
+                <span class="pill-badge">
+                    <i class="bi bi-code-slash text-accent"></i> KLD ICDI &bull; BSIS 2-A Midterm Lab Team
+                </span>
+            </div>
+            <h1 class="fw-bold text-ink mb-3">Meet the Development Team</h1>
+            <p class="text-muted-custom lead fs-6">
+                We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the <strong>Institute of Computing and Digital Innovation (ICDI)</strong> at <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong> who built the <strong>Campus Job Posting System</strong> for our <em>COAL101: Web Systems and Technologies</em> midterm lab project.
             </p>
         </div>
 
         <!-- Photo & Professional Standards Banner -->
-        <div class="alert alert-light border border-success-subtle shadow-sm d-flex align-items-center gap-3 mb-5 p-3 rounded-3">
-            <div class="fs-2 text-kld-green"><i class="bi bi-camera-fill"></i></div>
+        <div class="card border-line shadow-sm d-flex flex-row align-items-center gap-3 mb-5 p-3 rounded-4 bg-white">
+            <div class="stat-icon bg-accent-soft text-ink fs-3 ms-2">
+                <i class="bi bi-camera-fill"></i>
+            </div>
             <div>
-                <strong class="d-block text-dark mb-1">Developer Photo Standards Policy</strong>
-                <span class="small text-secondary">
-                    All developer profiles feature formal KLD Green institutional blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories to uphold campus professional standards.
+                <strong class="d-block text-ink mb-1">Developer Photo Standards Policy</strong>
+                <span class="small text-muted-custom">
+                    All developer profiles feature formal institutional blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories to uphold campus professional standards.
                 </span>
             </div>
         </div>
@@ -107,30 +111,30 @@ require_once __DIR__ . '/includes/navbar.php';
                             <img src="<?= $base_url . $dev['image'] ?>" alt="<?= htmlspecialchars($dev['name']) ?>" class="developer-avatar">
                             <div class="mt-2">
                                 <span class="formal-badge-note">
-                                    <i class="bi bi-shield-check me-1 text-warning"></i> KLD Attire Verified
+                                    <i class="bi bi-shield-check me-1 text-accent"></i> Attire Verified
                                 </span>
                             </div>
                         </div>
 
                         <div class="p-4 text-center">
-                            <h5 class="fw-bold text-dark mb-1"><?= htmlspecialchars($dev['name']) ?></h5>
-                            <span class="badge text-white mb-3" style="background-color: var(--kld-green-primary);"><?= htmlspecialchars($dev['role']) ?></span>
+                            <h5 class="fw-bold text-ink mb-1"><?= htmlspecialchars($dev['name']) ?></h5>
+                            <span class="pill-badge pill-badge-ink mb-3"><?= htmlspecialchars($dev['role']) ?></span>
 
-                            <div class="text-muted small mb-3">
-                                <div><i class="bi bi-person-badge me-1 text-kld-green"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
-                                <div><i class="bi bi-mortarboard me-1 text-kld-green"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
-                                <div class="text-break"><i class="bi bi-envelope me-1 text-kld-green"></i> <?= htmlspecialchars($dev['email']) ?></div>
+                            <div class="text-muted-custom small mb-3">
+                                <div><i class="bi bi-person-badge me-1 text-accent"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
+                                <div><i class="bi bi-mortarboard me-1 text-accent"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
+                                <div class="text-break"><i class="bi bi-envelope me-1 text-accent"></i> <?= htmlspecialchars($dev['email']) ?></div>
                             </div>
 
-                            <p class="text-secondary small mb-3 text-start bg-light p-3 rounded-2">
+                            <p class="text-muted-custom small mb-3 text-start bg-cream p-3 rounded-3">
                                 <?= htmlspecialchars($dev['bio']) ?>
                             </p>
 
                             <div class="text-start">
-                                <span class="small fw-bold text-dark d-block mb-1">Key Deliverables:</span>
-                                <ul class="list-unstyled small text-muted mb-0">
+                                <span class="small fw-bold text-ink d-block mb-1">Key Deliverables:</span>
+                                <ul class="list-unstyled small text-muted-custom mb-0">
                                     <?php foreach ($dev['tasks'] as $task): ?>
-                                        <li><i class="bi bi-check2 text-kld-green me-1"></i> <?= htmlspecialchars($task) ?></li>
+                                        <li><i class="bi bi-check2 text-accent me-1"></i> <?= htmlspecialchars($task) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             </div>
@@ -143,19 +147,19 @@ require_once __DIR__ . '/includes/navbar.php';
         <!-- Mission & Tech Stack Section -->
         <div class="row g-4 pt-3">
             <div class="col-lg-6">
-                <div class="card h-100 border-0 shadow-sm p-4 rounded-3">
+                <div class="card h-100 border-line shadow-sm p-4 rounded-4 bg-white">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon stat-icon-kld">
+                        <div class="stat-icon bg-accent-soft text-ink">
                             <i class="bi bi-compass"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-0">Our Project Mission</h4>
+                        <h4 class="fw-bold text-ink mb-0">Our Project Mission</h4>
                     </div>
-                    <p class="text-secondary">
-                        To simplify and digitize the student assistantship application workflow across KLD institutes and offices. By replacing manual paperwork and unorganized bulletin boards with an automated portal, we empower KLD students to gain valuable workplace experience while prioritizing their studies.
+                    <p class="text-muted-custom">
+                        To simplify and digitize the student assistantship application workflow across campus institutes and offices. By replacing manual paperwork and unorganized bulletin boards with an automated portal, we empower students to gain valuable workplace experience while prioritizing their studies.
                     </p>
-                    <hr>
-                    <h6 class="fw-bold text-dark mb-2">Academic Alignment</h6>
-                    <p class="text-muted small mb-0">
+                    <hr class="border-line">
+                    <h6 class="fw-bold text-ink mb-2">Academic Alignment</h6>
+                    <p class="text-muted-custom small mb-0">
                         Course: <strong>COAL101 - Web Systems and Technologies</strong><br>
                         Activity: <strong>Midterm Lab Project</strong><br>
                         Submission Deadline: <strong>September 2, 2026</strong><br>
@@ -165,33 +169,33 @@ require_once __DIR__ . '/includes/navbar.php';
             </div>
 
             <div class="col-lg-6">
-                <div class="card h-100 border-0 shadow-sm p-4 rounded-3">
+                <div class="card h-100 border-line shadow-sm p-4 rounded-4 bg-white">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon stat-icon-kld-gold">
+                        <div class="stat-icon bg-cream text-ink">
                             <i class="bi bi-layers-fill"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-0">Technical Architecture</h4>
+                        <h4 class="fw-bold text-ink mb-0">Technical Architecture</h4>
                     </div>
-                    <p class="text-secondary mb-3">
+                    <p class="text-muted-custom mb-3">
                         Built adhering strictly to the required project stack constraints without external heavy frameworks:
                     </p>
                     
                     <div class="d-flex flex-column gap-2">
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="bi bi-filetype-php text-kld-green me-2 fs-5"></i><strong>Native PHP 8.x</strong></span>
-                            <span class="badge bg-kld-soft text-kld-green border border-success-subtle">Backend & Session State</span>
+                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
+                            <span><i class="bi bi-filetype-php text-accent me-2 fs-5"></i><strong>Native PHP 8.x</strong></span>
+                            <span class="pill-badge">Backend & Session State</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="bi bi-bootstrap-fill text-kld-green me-2 fs-5"></i><strong>Bootstrap 5.3 + Icons</strong></span>
-                            <span class="badge bg-kld-soft text-kld-green border border-success-subtle">Responsive UI & Layout</span>
+                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
+                            <span><i class="bi bi-bootstrap-fill text-accent me-2 fs-5"></i><strong>Bootstrap 5.3 + Icons</strong></span>
+                            <span class="pill-badge">Responsive UI & Layout</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="bi bi-filetype-js text-kld-gold me-2 fs-5"></i><strong>Vanilla JavaScript (ES6)</strong></span>
-                            <span class="badge bg-warning-subtle text-dark border border-warning-subtle">Real-time Password Meter & UI</span>
+                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
+                            <span><i class="bi bi-filetype-js text-ink me-2 fs-5"></i><strong>Vanilla JavaScript (ES6)</strong></span>
+                            <span class="pill-badge">Real-time Meter & UI</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="bi bi-database-slash text-danger me-2 fs-5"></i><strong>JSON + Session Engine</strong></span>
-                            <span class="badge bg-success-subtle text-success">Zero-DB Persistence</span>
+                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
+                            <span><i class="bi bi-database-slash text-ink me-2 fs-5"></i><strong>JSON + Session Engine</strong></span>
+                            <span class="pill-badge">Zero-DB Persistence</span>
                         </div>
                     </div>
                 </div>

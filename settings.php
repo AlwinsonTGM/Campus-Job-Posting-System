@@ -70,7 +70,7 @@ require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-4 bg-light flex-grow-1">
+<main class="py-4 bg-surface flex-grow-1">
     <div class="container">
         
         <nav aria-label="breadcrumb" class="mb-3">
@@ -81,12 +81,12 @@ require_once __DIR__ . '/includes/navbar.php';
         </nav>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold text-dark mb-0">Account Settings</h2>
-            <span class="badge bg-primary text-uppercase"><?= htmlspecialchars($user['role']) ?></span>
+            <h2 class="fw-bold text-ink mb-0">Account Settings</h2>
+            <span class="pill-badge pill-badge-ink text-uppercase"><?= htmlspecialchars($user['role']) ?></span>
         </div>
 
         <?php if ($error): ?>
-            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-4">
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-4 rounded-3">
                 <i class="bi bi-exclamation-circle-fill fs-5"></i>
                 <div><?= htmlspecialchars($error) ?></div>
             </div>
@@ -95,30 +95,30 @@ require_once __DIR__ . '/includes/navbar.php';
         <div class="row g-4">
             <!-- Left 6-col: Personal Profile Settings -->
             <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-circle text-primary me-2"></i> Profile Details</h5>
+                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
+                    <h5 class="fw-bold text-ink mb-3"><i class="bi bi-person-circle text-accent me-2"></i> Profile Details</h5>
                     
                     <form action="settings.php" method="POST">
                         <input type="hidden" name="action" value="profile">
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Institutional Email (Read Only)</label>
-                            <input type="email" class="form-control bg-light" value="<?= htmlspecialchars($user['email']) ?>" readonly>
+                            <label class="form-label small fw-semibold text-ink">Institutional Email (Read Only)</label>
+                            <input type="email" class="form-control bg-cream" value="<?= htmlspecialchars($user['email']) ?>" readonly>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Full Name <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold text-ink">Full Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($user['name']) ?>" required>
                         </div>
 
                         <?php if ($user['role'] === 'student'): ?>
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
-                                    <label class="form-label small fw-semibold text-dark">Student ID</label>
-                                    <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($user['student_id'] ?? '') ?>" readonly>
+                                    <label class="form-label small fw-semibold text-ink">Student ID</label>
+                                    <input type="text" class="form-control bg-cream" value="<?= htmlspecialchars($user['student_id'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small fw-semibold text-dark">Degree Program</label>
+                                    <label class="form-label small fw-semibold text-ink">Degree Program</label>
                                     <select name="course" class="form-select">
                                         <option value="">Select Degree Program</option>
                                         <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
@@ -134,9 +134,9 @@ require_once __DIR__ . '/includes/navbar.php';
                         <?php endif; ?>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">KLD Academic Institute / Campus Office</label>
+                            <label class="form-label small fw-semibold text-ink">Academic Institute / Campus Office</label>
                             <select name="department" class="form-select">
-                                <option value="">Select KLD Institute / Office</option>
+                                <option value="">Select Institute / Office</option>
                                 <optgroup label="Academic Institutes">
                                     <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
                                         <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($user['department']) && ($user['department'] === $inst || strpos($inst, $user['department']) !== false || strpos($user['department'], $inst) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
@@ -152,11 +152,11 @@ require_once __DIR__ . '/includes/navbar.php';
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">Contact Phone</label>
+                            <label class="form-label small fw-semibold text-ink">Contact Phone</label>
                             <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+63 917 123 4567">
                         </div>
 
-                        <button type="submit" class="btn btn-academic btn-sm px-4 fw-semibold">
+                        <button type="submit" class="btn-accent-pill py-2 px-4">
                             <i class="bi bi-save me-1"></i> Update Profile
                         </button>
                     </form>
@@ -165,37 +165,37 @@ require_once __DIR__ . '/includes/navbar.php';
 
             <!-- Right 6-col: Change Password & Preferences -->
             <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock text-warning me-2"></i> Security & Password</h5>
+                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
+                    <h5 class="fw-bold text-ink mb-3"><i class="bi bi-shield-lock text-accent me-2"></i> Security & Password</h5>
                     
                     <form action="settings.php" method="POST">
                         <input type="hidden" name="action" value="password">
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">New Password <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold text-ink">New Password <span class="text-danger">*</span></label>
                             <input type="password" name="new_password" class="form-control" placeholder="Minimum 8 characters" required>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">Confirm New Password <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold text-ink">Confirm New Password <span class="text-danger">*</span></label>
                             <input type="password" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
                         </div>
 
-                        <button type="submit" class="btn btn-outline-academic btn-sm px-4 fw-semibold mb-4">
+                        <button type="submit" class="btn-outline-pill py-2 px-4 mb-4">
                             <i class="bi bi-key me-1"></i> Update Password
                         </button>
                     </form>
 
-                    <hr>
+                    <hr class="border-line">
 
-                    <h6 class="fw-bold text-dark mb-2 small text-uppercase">Notification Preferences</h6>
+                    <h6 class="fw-bold text-ink mb-2 small text-uppercase">Notification Preferences</h6>
                     <div class="form-check form-switch mb-2">
                         <input class="form-check-input" type="checkbox" id="emailNotif" checked>
-                        <label class="form-check-label small text-secondary" for="emailNotif">Receive email updates on application status changes</label>
+                        <label class="form-check-label small text-muted-custom" for="emailNotif">Receive email updates on application status changes</label>
                     </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="smsNotif" checked>
-                        <label class="form-check-label small text-secondary" for="smsNotif">Receive SMS interview reminders</label>
+                        <label class="form-check-label small text-muted-custom" for="smsNotif">Receive SMS interview reminders</label>
                     </div>
                 </div>
             </div>

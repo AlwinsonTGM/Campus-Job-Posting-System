@@ -57,7 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<main class="py-4 bg-light flex-grow-1">
+<main class="py-4 bg-surface flex-grow-1">
     <div class="container">
         
         <nav aria-label="breadcrumb" class="mb-3">
@@ -72,21 +72,21 @@ require_once __DIR__ . '/../includes/navbar.php';
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 
-                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+                <div class="card border-line shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
                     
-                    <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
-                        <div class="stat-icon bg-warning text-dark fs-3">
+                    <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-line">
+                        <div class="stat-icon bg-accent-soft text-ink fs-3">
                             <i class="bi bi-file-earmark-person-fill"></i>
                         </div>
                         <div>
-                            <span class="badge bg-primary-subtle text-primary border px-2 py-1 small">Student Assistantship Application</span>
-                            <h3 class="fw-bold text-dark mb-0"><?= htmlspecialchars($job['title']) ?></h3>
-                            <div class="text-muted small"><i class="bi bi-building me-1"></i><?= htmlspecialchars($job['department']) ?> &bull; <strong class="text-success"><?= htmlspecialchars($job['pay_rate']) ?></strong></div>
+                            <span class="pill-badge mb-1">Student Assistantship Application</span>
+                            <h3 class="fw-bold text-ink mb-0"><?= htmlspecialchars($job['title']) ?></h3>
+                            <div class="text-muted-custom small"><i class="bi bi-building me-1 text-accent"></i><?= htmlspecialchars($job['department']) ?> &bull; <strong class="text-ink"><?= htmlspecialchars($job['pay_rate']) ?></strong></div>
                         </div>
                     </div>
 
                     <?php if ($error): ?>
-                        <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-4">
+                        <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-4 rounded-3">
                             <i class="bi bi-exclamation-circle-fill fs-5"></i>
                             <div><?= htmlspecialchars($error) ?></div>
                         </div>
@@ -95,38 +95,38 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <form action="apply.php?job_id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data">
                         
                         <!-- Applicant Pre-filled Profile -->
-                        <h6 class="fw-bold text-dark mb-3 text-uppercase small"><i class="bi bi-person-badge text-primary me-1"></i> 1. Applicant Profile (From Account)</h6>
-                        <div class="row g-3 p-3 bg-light rounded-3 mb-4 border">
+                        <h6 class="fw-bold text-ink mb-3 text-uppercase small"><i class="bi bi-person-badge text-accent me-1"></i> 1. Applicant Profile (From Account)</h6>
+                        <div class="row g-3 p-3 bg-cream rounded-3 mb-4 border-line border">
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-0">Student Full Name</label>
-                                <div class="fw-bold text-dark"><?= htmlspecialchars($user['name']) ?></div>
+                                <label class="form-label small fw-semibold text-muted-custom mb-0">Student Full Name</label>
+                                <div class="fw-bold text-ink"><?= htmlspecialchars($user['name']) ?></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-0">Student ID Number</label>
-                                <div class="fw-bold text-dark"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></div>
+                                <label class="form-label small fw-semibold text-muted-custom mb-0">Student ID Number</label>
+                                <div class="fw-bold text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-0">Course / Year Level</label>
-                                <div class="text-dark"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?> &bull; <?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></div>
+                                <label class="form-label small fw-semibold text-muted-custom mb-0">Course / Year Level</label>
+                                <div class="text-ink"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?> &bull; <?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-0">Institutional Email</label>
-                                <div class="text-dark"><?= htmlspecialchars($user['email']) ?></div>
+                                <label class="form-label small fw-semibold text-muted-custom mb-0">Institutional Email</label>
+                                <div class="text-ink"><?= htmlspecialchars($user['email']) ?></div>
                             </div>
                         </div>
 
                         <!-- Contact Phone -->
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">Active Contact Number <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold text-ink">Active Contact Number <span class="text-danger">*</span></label>
                             <input type="text" name="phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" required>
-                            <div class="form-text small">Used by department supervisors to SMS interview notices.</div>
+                            <div class="form-text small text-muted-custom">Used by department supervisors to SMS interview notices.</div>
                         </div>
 
                         <!-- Weekly Availability Checklist -->
-                        <h6 class="fw-bold text-dark mb-2 text-uppercase small"><i class="bi bi-calendar-check text-primary me-1"></i> 2. Available Free Class Hours / Shift Timeslots <span class="text-danger">*</span></h6>
-                        <p class="text-muted small mb-2">Check all periods during the week when you are free from classes:</p>
+                        <h6 class="fw-bold text-ink mb-2 text-uppercase small"><i class="bi bi-calendar-check text-accent me-1"></i> 2. Available Free Class Hours / Shift Timeslots <span class="text-danger">*</span></h6>
+                        <p class="text-muted-custom small mb-2">Check all periods during the week when you are free from classes:</p>
                         
-                        <div class="row g-2 mb-4 p-3 bg-light rounded-3 border">
+                        <div class="row g-2 mb-4 p-3 bg-cream rounded-3 border-line border">
                             <?php 
                             $slots = [
                                 'Mon AM (8:00 AM - 12:00 PM)',
@@ -146,7 +146,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                                 <div class="col-md-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="availability[]" value="<?= htmlspecialchars($slot) ?>" id="slot_<?= $idx ?>" <?= $idx < 3 ? 'checked' : '' ?>>
-                                        <label class="form-check-label small text-dark" for="slot_<?= $idx ?>">
+                                        <label class="form-check-label small text-ink" for="slot_<?= $idx ?>">
                                             <?= htmlspecialchars($slot) ?>
                                         </label>
                                     </div>
@@ -156,27 +156,27 @@ require_once __DIR__ . '/../includes/navbar.php';
 
                         <!-- Statement of Intent / Cover Letter -->
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">Statement of Intent / Cover Letter <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold text-ink">Statement of Intent / Cover Letter <span class="text-danger">*</span></label>
                             <textarea name="cover_letter" rows="4" class="form-control" placeholder="Briefly explain why you are interested in this position and how your skills or study load match the department's needs..." required>I am writing to express my eager interest in the <?= htmlspecialchars($job['title']) ?> position. As a <?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?> student, I have the required skills and vacant periods to commit reliably to this role.</textarea>
                         </div>
 
                         <!-- Mock Resume Upload -->
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold text-dark">Upload Updated Resume / Study Load (PDF / DOCX)</label>
+                            <label class="form-label small fw-semibold text-ink">Upload Updated Resume / Study Load (PDF / DOCX)</label>
                             <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
-                            <div class="form-text small">Demo accepts any sample PDF file or uses the default student resume profile.</div>
+                            <div class="form-text small text-muted-custom">Demo accepts any sample PDF file or uses the default student resume profile.</div>
                         </div>
 
-                        <div class="alert alert-light border border-warning-subtle small text-secondary mb-4 p-3 rounded-3">
-                            <i class="bi bi-shield-check text-warning me-1"></i>
+                        <div class="alert alert-light border-line bg-cream small text-muted-custom mb-4 p-3 rounded-3">
+                            <i class="bi bi-shield-check text-accent me-1"></i>
                             By submitting this application, you declare that you satisfy the campus GWA requirements and agree to comply with the 20-hour weekly student assistant work limit.
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-academic py-2 px-4 fw-bold shadow-sm">
-                                <i class="bi bi-send-fill me-1"></i> Submit Application
+                            <button type="submit" class="btn-accent-pill py-2 px-4">
+                                <i class="bi bi-send-fill"></i> SUBMIT APPLICATION
                             </button>
-                            <a href="job-details.php?id=<?= $job['id'] ?>" class="btn btn-outline-secondary py-2 px-3">
+                            <a href="job-details.php?id=<?= $job['id'] ?>" class="btn-outline-pill py-2 px-3">
                                 Cancel
                             </a>
                         </div>
