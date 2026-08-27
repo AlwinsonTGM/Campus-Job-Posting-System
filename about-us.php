@@ -119,7 +119,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <div class="text-muted small mb-3">
                                 <div><i class="bi bi-person-badge me-1 text-kld-green"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
                                 <div><i class="bi bi-mortarboard me-1 text-kld-green"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
-                                <div class="text-break"><i class="bi bi-envelope me-1 text-kld-green"></i> <?= htmlspecialchars($dev['email']) ?></div>
+                                <div class="text-break"><a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=<?= htmlspecialchars($dev['email']) ?>" id="remove-underline" target="_blank"><i class="bi bi-envelope me-1 text-kld-black" > <?= htmlspecialchars($dev['email']) ?></i></a></div>
                             </div>
 
                             <p class="text-secondary small mb-3 text-start bg-light p-3 rounded-2">
