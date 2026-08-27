@@ -88,7 +88,7 @@ require_once __DIR__ . '/../includes/navbar.php';
             </form>
 
             <!-- Popular Quick Tags Ribbon -->
-            <div class="d-flex align-items-center flex-wrap gap-1.5 mt-3 pt-2.5 border-top small">
+            <div class="d-flex align-items-center flex-wrap gap-1.5 mt-3 pt-3 border-top small">
                 <span class="text-muted fw-semibold me-1"><i class="bi bi-lightning-charge-fill text-warning"></i> Quick Filters:</span>
                 <a href="jobs.php?kw=Tech+Support" class="quick-tag-pill <?= ($kw === 'Tech Support') ? 'active' : '' ?>">#Tech Support</a>
                 <a href="jobs.php?kw=Library" class="quick-tag-pill <?= ($kw === 'Library') ? 'active' : '' ?>">#Library</a>
