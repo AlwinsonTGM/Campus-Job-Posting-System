@@ -72,16 +72,9 @@ require_once __DIR__ . '/includes/navbar.php';
                             </ul>
                         </section>
 
-                         <section>
-                            <h4 class="fw-bold text-kld-green mb-2">5. Code of Conduct & Integrity</h4>
-                            <ul class="text-secondary">
-                                <li>Applicants must submit accurate and authentic information. Uploading falsified GWA records, altered CORs, or fake identity details will result in immediate system suspension and disciplinary referral.</li>
-                                <li>Posting off-campus, unapproved, or fraudulent job listings is strictly prohibited.</li>
-                            </ul>
-                        </section>
-
+                         
                         <section>
-                            <h4 class="fw-bold text-kld-green mb-2">6. Hiring Units & Department Supervisor Rules</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">5. Hiring Units & Department Supervisor Rules</h4>
                             <ul class="text-secondary">
                                 <li>Authorized university departments must provide clear, accurate job descriptions and duties.</li>
                                 <li>Supervisors cannot assign work exceeding the <strong>20-hour weekly limit</strong> or require duties outside official school policy and schedules.</li>
@@ -89,7 +82,7 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">7. Application Status & Selection</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">6. Application Status & Selection</h4>
                             <ul class="text-secondary">
                                 <li>Submitting an <b>application does not guarantee placement</b>. Hiring units retain the authority to review candidates, conduct interviews, and select qualified applicants based on department needs.</li>
                                 <li>The system reserves the right to automatically filter out applications that fail to meet basic eligibility standards.</li>
@@ -97,14 +90,14 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">8. Service Availability & Policy Updates</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">7. Service Availability & Policy Updates</h4>
                             <ul class="text-secondary">
                                 <li>The university reserves the right to update system features, modify platform terms, or perform scheduled maintenance resulting in temporary downtime without prior notice. Continued use of the portal after updates constitutes agreement to the modified terms.</li>
                             </ul>
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">9. Attendance, Daily Time Records (DTR) & Compensation</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">8. Attendance, Daily Time Records (DTR) & Compensation</h4>
                             <div class="alert alert-warning border-0 p-3 rounded-3 mb-3">
                                 <strong><i class="bi bi-exclamation-triangle-fill me-1"></i> Immediate Termination:</strong>
                                 Submitting false hours or logging shifts not worked constitutes fraud and will result in immediate termination.
@@ -118,7 +111,7 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">10. Performance Evaluations & Work Standards</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">9. Performance Evaluations & Work Standards</h4>
                             <ul class="text-secondary">
                             <li><i class="bi bi-mortarboard-fill"></i> Student Assistants are expected to maintain professional conduct, fulfill assigned duties, and respect office rules.</li> 
                             <li><i class="bi bi-briefcase-fill"></i> Hiring supervisors conduct periodic performance evaluations. Poor duty performance or unexcused absences may lead to contract cancellation.</li>
@@ -126,14 +119,14 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">11. Examination & Academic Priority Safeguard</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">10. Examination & Academic Priority Safeguard</h4>
                             <p class="text-secondary mb-2">Academics remain the primary priority. Students are entitled to request temporary shift adjustments or leave during official midterm and final examination weeks without penalty, provided advance notice is given to their supervisor.</p>
                         </section>
 
                         <div class="p-3 bg-light rounded-2 border border-success border-opacity-25 shadow-sm">
                         <div class="d-flex align-items-center mb-2">
                             <i class="bi bi-patch-check-fill text-kld-green fs-5 me-2"></i>
-                            <strong class="text-dark">12. Certificate of Service & Recommendations</strong>
+                            <strong class="text-dark">11. Certificate of Service & Recommendations</strong>
                             <span class="badge bg-success bg-opacity-10 text-success ms-auto small">Official Award</span>
                         </div>
                             <p class="mb-0 text-secondary small">
