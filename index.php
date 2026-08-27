@@ -1,625 +1,564 @@
 <?php
 /**
  * Campus Job Posting System - Index / Landing Page
+ * Paper Sheet Redesign (COAL101 Blueprint)
  */
 require_once __DIR__ . '/includes/data-helper.php';
+require_once __DIR__ . '/includes/auth-check.php';
 
-$page_title = 'Official Student Employment Portal - KLD';
-$all_jobs = get_jobs();
+if (!defined('SITE_NAME')) {
+    define('SITE_NAME', 'CAMPUS HIRE');
+}
+
+$page_title = 'Empowering Students, Supporting Campus Offices';
+
+// Data from helper
 $categories = get_categories();
-$featured_jobs = array_slice($all_jobs, 0, 6);
+$featured_jobs = get_featured_jobs(5);
 
-// Statistics
-$total_jobs = count($all_jobs);
-$total_apps = count(get_applications());
-$total_cats = count($categories);
+// Key Metrics
+$metric_active_jobs = get_metrics_total_active_jobs();
+$metric_partnered_offices = get_metrics_partnered_offices();
+$metric_students_hired = get_metrics_students_hired();
+$metric_avg_pay = get_metrics_avg_hourly_pay();
 
 require_once __DIR__ . '/includes/header.php';
-require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main>
-    <!-- Hero Section -->
-    <section class="hero-section text-center text-lg-start">
-        <div class="container">
-            <div class="row align-items-center g-4 g-lg-5">
-                <div class="col-lg-7">
-                    <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-3 d-inline-block">
-                        <i class="bi bi-stars"></i> Official KLD Student Employment Portal
-                    </span>
-                    <h1 class="hero-title fw-bold text-white mb-3">
-                        Find Purposeful Work <br class="d-none d-md-block">
-                        <span class="text-warning">at Kolehiyo ng Lungsod ng Dasmariñas</span>
-                    </h1>
-                    <p class="lead hero-subtitle text-light opacity-90 mb-4 pe-lg-4">
-                        Discover flexible student assistantships, technical lab support, administrative roles, and peer tutoring opportunities tailored around your KLD class schedules.
-                    </p>
+<div class="sheet-perspective-wrapper">
+    <div class="sheet">
+        <?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
-                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-md-3 mb-4">
-                        <a href="student/jobs.php" class="btn btn-gold btn-lg px-3 px-sm-4 shadow">
-                            <i class="bi bi-search me-2"></i> Browse All Vacancies
-                        </a>
-                        <a href="register.php?role=employer" class="btn btn-outline-light btn-lg px-3 px-sm-4">
-                            <i class="bi bi-building me-2"></i> Post Department Vacancy
-                        </a>
-                    </div>
-
-                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-2 gap-md-4 text-light small">
-                        <div><i class="bi bi-check-circle-fill text-warning me-1"></i> Flexible Shift Adjustments</div>
-                        <div><i class="bi bi-check-circle-fill text-warning me-1"></i> Max 20 hrs/week Safe Limit</div>
-                        <div><i class="bi bi-check-circle-fill text-warning me-1"></i> Official Certificate of Service</div>
-                    </div>
-                </div>
-
-                <!-- Hero Search Widget -->
-                <div class="col-lg-5">
-                    <div class="hero-search-card">
-                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-funnel-fill text-kld-green"></i> Quick Job Search</h5>
-                        <form action="student/jobs.php" method="GET">
+        <main>
+            <!-- ============================================================
+                 SECTION 1: HERO (bg --surface)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface position-relative reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="row align-items-center py-4 py-lg-5">
+                        <div class="col-xl-10 mx-auto text-center">
+                            <!-- Eyebrow Badge -->
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Keyword or Job Title</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
-                                    <input type="text" name="kw" class="form-control" placeholder="e.g. Lab Assistant, Clerk, Tutor">
+                                <span class="pill-badge">
+                                    <i class="bi bi-mortarboard-fill text-accent"></i> Official Student Employment Network
+                                </span>
+                            </div>
+
+                            <!-- Giant Two-Line Heading with Inline Rounded Image Pill -->
+                            <h1 class="hero-headline mb-4">
+                                Empowering
+                                <span class="hero-inline-pill-img">
+                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop" alt="Campus Students">
+                                </span>
+                                Students,<br class="d-none d-sm-block">
+                                Supporting Campus Offices
+                            </h1>
+
+                            <!-- Subtitle -->
+                            <p class="lead text-muted-custom col-lg-8 mx-auto mb-5">
+                                Discover flexible student assistantships, technical lab support, administrative roles, and peer tutoring opportunities tailored around your class schedules.
+                            </p>
+
+                            <!-- CTAs -->
+                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-5">
+                                <a href="student/jobs.php" class="btn-accent-pill">
+                                    <i class="bi bi-search"></i> FIND A JOB
+                                </a>
+                                <a href="employer/create-job.php" class="btn-outline-pill">
+                                    POST A VACANCY <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Strip (Partners & Scroll Indicator) -->
+                    <div class="hero-partner-strip">
+                        <div class="row align-items-center justify-content-between g-3">
+                            <!-- Left: Trusted Campus Partners -->
+                            <div class="col-lg-8 col-md-9">
+                                <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4">
+                                    <span class="eyebrow-badge text-muted-custom">TRUSTED CAMPUS PARTNERS</span>
+                                    <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 text-ink fw-bold small">
+                                        <span class="partner-logo-item"><i class="bi bi-book text-accent"></i> University Library</span>
+                                        <span class="partner-logo-item"><i class="bi bi-cpu text-accent"></i> IT Services</span>
+                                        <span class="partner-logo-item"><i class="bi bi-building text-accent"></i> Registrar</span>
+                                        <span class="partner-logo-item"><i class="bi bi-people text-accent"></i> Student Affairs</span>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Right: Scroll Down Indicator -->
+                            <div class="col-lg-4 col-md-3 text-start text-md-end">
+                                <a href="#search-widget" class="text-decoration-none d-inline-flex align-items-center gap-2 text-ink fw-bold small">
+                                    <span class="eyebrow-badge">SCROLL DOWN</span>
+                                    <span class="btn-circle-icon" style="width: 34px; height: 34px;">
+                                        <i class="bi bi-arrow-down"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 SECTION 2: SEARCH WIDGET (#search-widget, bg --cream + faint blobs)
+                 ============================================================ -->
+            <section id="search-widget" class="py-5 py-lg-6 bg-cream search-widget-section reveal-fade-rise">
+                <!-- Faint Background Blobs -->
+                <div class="search-blob search-blob-1"></div>
+                <div class="search-blob search-blob-2"></div>
+
+                <div class="container-fluid px-lg-5 position-relative z-2">
+                    <div class="search-card">
+                        <!-- Card Header -->
+                        <div class="text-center mb-4">
+                            <span class="pill-badge mb-2">
+                                <i class="bi bi-funnel-fill text-accent"></i> Instant Discovery
+                            </span>
+                            <h2 class="h3 fw-extrabold text-ink mb-1">Find Your Campus Job</h2>
+                            <p class="text-muted-custom small mb-3">Filter verified positions by keyword, office, or category</p>
+
+                            <!-- Pay Type Toggle Switch -->
+                            <div class="pay-toggle-wrapper">
+                                <span id="pay-hourly-label" class="pay-toggle-label text-accent">Hourly</span>
+                                <div class="form-check form-switch m-0 p-0 d-inline-flex align-items-center">
+                                    <input class="form-check-input ms-0" type="checkbox" role="switch" id="pay-type-toggle" aria-label="Toggle Pay Type">
+                                </div>
+                                <span id="pay-stipend-label" class="pay-toggle-label">Stipend-Based 💚</span>
+                            </div>
+                        </div>
+
+                        <!-- Search Form (Native GET) -->
+                        <form action="student/jobs.php" method="GET">
+                            <!-- Hidden input synced with pay toggle switch -->
+                            <input type="hidden" name="pay_type" id="pay-type-hidden" value="Hourly">
+
+                            <!-- Keyword & Department Inputs -->
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Category / Field</label>
+                                <label for="search-keyword" class="form-label small fw-bold text-ink mb-1">Keyword Search</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-grid-fill text-muted"></i></span>
-                                    <select name="cat" class="form-select">
-                                        <option value="">All Categories</option>
-                                        <?php foreach ($categories as $cat): ?>
-                                            <option value="<?= htmlspecialchars($cat['name']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                                    <span class="input-group-text bg-surface border-line"><i class="bi bi-search text-muted-custom"></i></span>
+                                    <input type="text" id="search-keyword" name="q" class="form-control bg-surface border-line" placeholder="Job title or office…">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="search-dept" class="form-label small fw-bold text-ink mb-1">Department / Office</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-surface border-line"><i class="bi bi-building text-muted-custom"></i></span>
+                                    <select id="search-dept" name="dept" class="form-select bg-surface border-line">
+                                        <option value="">Department ▾ (All Offices)</option>
+                                        <?php 
+                                        $departments = [
+                                            'Management Information Systems (MIS)',
+                                            'Office of the University Registrar',
+                                            'University Library Services',
+                                            'Institute of Science and Mathematics (ISM)',
+                                            'College of Science & Laboratories',
+                                            'Athletics & Physical Education Department',
+                                            'Student Affairs & Services Office (SASO)'
+                                        ];
+                                        foreach ($departments as $dept): ?>
+                                            <option value="<?= htmlspecialchars($dept) ?>"><?= htmlspecialchars($dept) ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>
+
+                            <!-- 4 Multi-Select Chips -->
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-muted">Campus Department / Office</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
-                                    <input type="text" name="dept" class="form-control" placeholder="e.g. MIS, Library, Registrar">
+                                <label class="form-label small fw-bold text-ink mb-2 d-block">Quick Categories</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="category[]" value="IT & Technical Support" id="chip-it">
+                                        <label for="chip-it" class="search-chip-label"><i class="bi bi-laptop"></i> IT Support</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="category[]" value="Library Services" id="chip-lib">
+                                        <label for="chip-lib" class="search-chip-label"><i class="bi bi-book"></i> Library</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="category[]" value="Science & Computer Lab Assistant" id="chip-lab">
+                                        <label for="chip-lab" class="search-chip-label"><i class="bi bi-radioactive"></i> Lab Assistant</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" class="search-chip-input" name="category[]" value="Peer Tutor" id="chip-tutor">
+                                        <label for="chip-tutor" class="search-chip-label"><i class="bi bi-mortarboard"></i> Peer Tutor</label>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-academic w-100 py-2">
-                                <i class="bi bi-arrow-right-circle me-1"></i> Search Campus Jobs
-                            </button>
+
+                            <!-- Work-Study Only Checkbox -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input border-line" type="checkbox" name="work_study" value="1" id="workStudyCheck">
+                                <label class="form-check-label small text-muted-custom" for="workStudyCheck">
+                                    Work-Study only positions
+                                </label>
+                            </div>
+
+                            <!-- Form Action Buttons -->
+                            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between">
+                                <button type="submit" class="btn-accent-pill flex-grow-1">
+                                    <i class="bi bi-arrow-right-circle"></i> SEARCH JOBS
+                                </button>
+                                <a href="student/jobs.php" class="btn-soft-pill text-center">
+                                    BROWSE ALL
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    <!-- Quick Stats Bar -->
-    <section class="py-4 bg-white border-bottom shadow-sm">
-        <div class="container">
-            <div class="row g-3 text-center">
-                <div class="col-6 col-md-3">
-                    <div class="p-3">
-                        <div class="display-6 fw-bold text-kld-green mb-1"><?= $total_jobs ?></div>
-                        <div class="text-muted small fw-semibold text-uppercase">Active Vacancies</div>
+            <!-- ============================================================
+                 SECTION 3: JOB CATEGORIES GRID (bg --surface)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="text-center mb-5">
+                        <span class="pill-badge mb-2">
+                            <i class="bi bi-grid-3x3-gap-fill text-accent"></i> Departments
+                        </span>
+                        <h2 class="h1 fw-extrabold text-ink mb-2">Where Do You Want To Work?</h2>
+                        <p class="text-muted-custom col-lg-6 mx-auto">
+                            Explore dynamic student assistantship roles distributed across specialized campus divisions.
+                        </p>
                     </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="p-3">
-                        <div class="display-6 fw-bold text-kld-green mb-1"><?= $total_cats ?></div>
-                        <div class="text-muted small fw-semibold text-uppercase">Job Categories</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="p-3">
-                        <div class="display-6 fw-bold text-kld-green mb-1">12+</div>
-                        <div class="text-muted small fw-semibold text-uppercase">Partner Offices</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="p-3">
-                        <div class="display-6 fw-bold text-kld-green mb-1"><?= $total_apps ?></div>
-                        <div class="text-muted small fw-semibold text-uppercase">Total Applications</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Featured Jobs Section -->
-    <section class="py-5">
-        <div class="container">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
-                <div>
-                    <span class="text-kld-green fw-bold small text-uppercase letter-spacing-1">Immediate Openings</span>
-                    <h2 class="fw-bold text-dark mb-0">Featured Campus Opportunities</h2>
-                </div>
-                <a href="student/jobs.php" class="btn btn-outline-academic mt-3 mt-md-0">
-                    View All Jobs (<?= $total_jobs ?>) <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-
-            <div class="row g-4">
-                <?php foreach ($featured_jobs as $job): ?>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="job-card">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-                                <span class="badge-kld-tag">
-                                    <i class="bi bi-tag-fill me-1 text-kld-gold"></i><?= htmlspecialchars($job['category']) ?>
-                                </span>
-                                <span class="job-tag">
-                                    <i class="bi bi-clock-history me-1"></i><?= htmlspecialchars($job['hours_per_week']) ?>
-                                </span>
-                            </div>
-
-                            <h5 class="fw-bold text-dark mb-1">
-                                <a href="student/job-details.php?id=<?= $job['id'] ?>" class="text-decoration-none text-dark">
-                                    <?= htmlspecialchars($job['title']) ?>
+                    <div class="row g-4">
+                        <?php foreach ($categories as $idx => $cat): ?>
+                            <div class="col-6 col-lg-2">
+                                <a href="student/jobs.php?category=<?= htmlspecialchars($cat['id']) ?>" class="category-mini-card">
+                                    <div class="category-mini-arrow">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </div>
+                                    <div class="category-mini-icon-circle">
+                                        <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
+                                    </div>
+                                    <h3 class="h6 fw-bold text-ink mb-1 text-center" style="font-size: 0.875rem;">
+                                        <?= htmlspecialchars($cat['name']) ?>
+                                    </h3>
+                                    <span class="text-muted-custom small mt-auto">
+                                        <?= (int)($cat['job_count'] ?? 0) ?> Openings
+                                    </span>
                                 </a>
-                            </h5>
-                            
-                            <p class="text-muted small mb-3">
-                                <i class="bi bi-building me-1 text-kld-green"></i><?= htmlspecialchars($job['department']) ?>
-                            </p>
-
-                            <p class="text-secondary small mb-3 text-truncate-2">
-                                <?= htmlspecialchars(substr($job['description'], 0, 110)) ?>...
-                            </p>
-
-                            <div class="border-top pt-3 mt-auto d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="text-muted small">Hourly Stipend</div>
-                                    <div class="fw-bold text-kld-green"><?= htmlspecialchars($job['pay_rate']) ?></div>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <a href="student/job-details.php?id=<?= $job['id'] ?>" class="btn btn-sm btn-outline-secondary">
-                                        Details
-                                    </a>
-                                    <a href="student/apply.php?job_id=<?= $job['id'] ?>" class="btn btn-sm btn-academic">
-                                        Apply
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- Categories Bento Grid Section -->
-    <?php
-    $cats_by_id = [];
-    foreach ($categories as $c) {
-        $cats_by_id[$c['id']] = $c;
-    }
-    $it_cat = $cats_by_id[1] ?? ($categories[0] ?? null);
-    $lib_cat = $cats_by_id[2] ?? ($categories[1] ?? null);
-    $admin_cat = $cats_by_id[3] ?? ($categories[2] ?? null);
-    $lab_cat = $cats_by_id[4] ?? ($categories[3] ?? null);
-    $tutor_cat = $cats_by_id[5] ?? ($categories[4] ?? null);
-    $media_cat = $cats_by_id[6] ?? ($categories[5] ?? null);
-    ?>
-    <section class="py-5 bento-section border-top border-bottom">
-        <div class="container">
-            <div class="text-center mb-5">
-                <span class="badge bento-pill-header px-3 py-2 fw-bold text-uppercase mb-2 d-inline-block">
-                    <i class="bi bi-compass-fill me-1"></i> Interactive Department Explorer
-                </span>
-                <h2 class="fw-bold text-dark mb-2">Explore Opportunities by Campus Field</h2>
-                <p class="text-muted col-lg-7 mx-auto">
-                    Browse specialized assistantships tailored to your institute curriculum. Select any sub-role to filter instant campus openings.
-                </p>
-            </div>
-
-            <div class="bento-grid">
-                <!-- Bento Row 1: Hero Card (IT) + Highlight Card (Library) -->
-                <div class="row g-4 mb-4 align-items-stretch">
-                    <?php if ($it_cat): ?>
-                        <div class="col-lg-7">
-                            <div class="bento-card bento-card-hero bento-card-green-theme">
-                                <div class="row align-items-stretch h-100 g-4">
-                                    <div class="col-md-5 order-1 order-md-2 d-flex flex-column">
-                                        <div class="bento-capsule-img-wrapper" style="min-height: 240px; height: 100%;">
-                                            <img src="<?= htmlspecialchars($it_cat['image'] ?? 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($it_cat['name']) ?>">
-                                            <div class="bento-capsule-overlay"></div>
-                                            <div class="bento-floating-icon text-kld-green">
-                                                <i class="bi bi-laptop"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-7 order-2 order-md-1 d-flex flex-column justify-content-between h-100">
-                                        <div>
-                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                                                <span class="bento-pill-badge bento-badge-kld-green">
-                                                    <i class="bi <?= htmlspecialchars($it_cat['badge_icon'] ?? 'bi-fire') ?> text-kld-green"></i> <?= htmlspecialchars($it_cat['badge_tag'] ?? 'Most In-Demand') ?>
-                                                </span>
-                                                <span class="bento-meta-pill text-kld-green fw-bold">
-                                                    <i class="bi bi-cash-stack text-kld-green"></i> <?= htmlspecialchars($it_cat['hourly_range'] ?? '₱85.00 / hr') ?>
-                                                </span>
-                                            </div>
-                                            <h3 class="fw-bold text-dark mb-2">
-                                                <a href="student/jobs.php?cat=<?= urlencode($it_cat['name']) ?>" class="text-decoration-none text-dark">
-                                                    <?= htmlspecialchars($it_cat['name']) ?>
-                                                </a>
-                                            </h3>
-                                            <p class="text-muted small mb-3">
-                                                <?= htmlspecialchars($it_cat['description']) ?>
-                                            </p>
-                                            
-                                            <div class="small fw-semibold text-secondary mb-1">
-                                                <i class="bi bi-stars text-kld-green me-1"></i> Popular Student Roles:
-                                            </div>
-                                            <div class="bento-role-chips">
-                                                <?php foreach (($it_cat['popular_roles'] ?? ['Lab Assistant', 'Tech Support']) as $role): ?>
-                                                    <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($it_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
-                                                        <i class="bi bi-laptop me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
-                                                    </a>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-
-                                        <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                            <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
-                                                <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $it_cat['job_count'] ?? 4 ?> Vacancies
-                                            </span>
-                                            <a href="student/jobs.php?cat=<?= urlencode($it_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($it_cat['name']) ?> Jobs">
-                                                <i class="bi bi-arrow-up-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if ($lib_cat): ?>
-                        <div class="col-lg-5">
-                            <div class="bento-card bento-card-green-theme">
-                                <div class="bento-capsule-img-wrapper mb-3" style="height: 165px; min-height: 165px;">
-                                    <img src="<?= htmlspecialchars($lib_cat['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($lib_cat['name']) ?>">
-                                    <div class="bento-capsule-overlay"></div>
-                                    <div class="bento-floating-icon text-kld-green">
-                                        <i class="bi bi-book"></i>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                                    <span class="bento-pill-badge bento-badge-kld-green">
-                                        <i class="bi <?= htmlspecialchars($lib_cat['badge_icon'] ?? 'bi-bookmark-star') ?> text-kld-green"></i> <?= htmlspecialchars($lib_cat['badge_tag'] ?? 'Quiet Study Hub') ?>
-                                    </span>
-                                    <span class="bento-meta-pill text-kld-green fw-bold"><?= htmlspecialchars($lib_cat['hourly_range'] ?? '₱80.00 / hr') ?></span>
-                                </div>
-
-                                <h4 class="fw-bold text-dark mb-1">
-                                    <a href="student/jobs.php?cat=<?= urlencode($lib_cat['name']) ?>" class="text-decoration-none text-dark">
-                                        <?= htmlspecialchars($lib_cat['name']) ?>
-                                    </a>
-                                </h4>
-                                <p class="text-muted small mb-2">
-                                    <?= htmlspecialchars($lib_cat['description']) ?>
-                                </p>
-
-                                <div class="bento-role-chips">
-                                    <?php foreach (($lib_cat['popular_roles'] ?? ['Cataloger', 'Circulation Aid']) as $role): ?>
-                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($lib_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
-                                            <i class="bi bi-book me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-
-                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                    <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
-                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $lib_cat['job_count'] ?? 3 ?> Vacancies
-                                    </span>
-                                    <a href="student/jobs.php?cat=<?= urlencode($lib_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($lib_cat['name']) ?> Jobs">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Bento Row 2: 3 Visual Category Cards with Capsule Photography & Unified KLD Palette -->
-                <div class="row g-4 mb-4 align-items-stretch">
-                    <!-- Administrative & Clerical -->
-                    <?php if ($admin_cat): ?>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="bento-card bento-card-green-theme">
-                                <div class="bento-capsule-img-wrapper mb-3" style="height: 150px;">
-                                    <img src="<?= htmlspecialchars($admin_cat['image'] ?? 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($admin_cat['name']) ?>">
-                                    <div class="bento-capsule-overlay"></div>
-                                    <div class="bento-floating-icon text-kld-green">
-                                        <i class="bi <?= htmlspecialchars($admin_cat['icon']) ?>"></i>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="bento-pill-badge bento-badge-kld-green">
-                                        <i class="bi <?= htmlspecialchars($admin_cat['badge_icon'] ?? 'bi-building') ?> text-kld-green"></i> <?= htmlspecialchars($admin_cat['badge_tag'] ?? 'Campus Admin') ?>
-                                    </span>
-                                    <span class="bento-meta-pill fw-bold text-kld-green"><?= htmlspecialchars($admin_cat['hourly_range'] ?? '₱80/hr') ?></span>
-                                </div>
-
-                                <h5 class="fw-bold text-dark mb-1">
-                                    <a href="student/jobs.php?cat=<?= urlencode($admin_cat['name']) ?>" class="text-decoration-none text-dark">
-                                        <?= htmlspecialchars($admin_cat['name']) ?>
-                                    </a>
-                                </h5>
-                                <p class="text-muted small mb-2">
-                                    <?= htmlspecialchars($admin_cat['description']) ?>
-                                </p>
-
-                                <div class="bento-role-chips">
-                                    <?php foreach (($admin_cat['popular_roles'] ?? ['Records Clerk', 'Data Encoder']) as $role): ?>
-                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($admin_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
-                                            <i class="bi bi-file-earmark-text me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-
-                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                    <span class="badge bg-light text-dark border px-2 py-2 fw-semibold small">
-                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $admin_cat['job_count'] ?? 5 ?> Vacancies
-                                    </span>
-                                    <a href="student/jobs.php?cat=<?= urlencode($admin_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($admin_cat['name']) ?>">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Laboratory Assistant -->
-                    <?php if ($lab_cat): ?>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="bento-card bento-card-green-theme">
-                                <div class="bento-capsule-img-wrapper mb-3" style="height: 150px;">
-                                    <img src="<?= htmlspecialchars($lab_cat['image'] ?? 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($lab_cat['name']) ?>">
-                                    <div class="bento-capsule-overlay"></div>
-                                    <div class="bento-floating-icon text-kld-green">
-                                        <i class="bi <?= htmlspecialchars($lab_cat['icon']) ?>"></i>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="bento-pill-badge bento-badge-kld-green">
-                                        <i class="bi <?= htmlspecialchars($lab_cat['badge_icon'] ?? 'bi-moisture') ?> text-kld-green"></i> <?= htmlspecialchars($lab_cat['badge_tag'] ?? 'Science & Health') ?>
-                                    </span>
-                                    <span class="bento-meta-pill fw-bold text-kld-green"><?= htmlspecialchars($lab_cat['hourly_range'] ?? '₱85/hr') ?></span>
-                                </div>
-
-                                <h5 class="fw-bold text-dark mb-1">
-                                    <a href="student/jobs.php?cat=<?= urlencode($lab_cat['name']) ?>" class="text-decoration-none text-dark">
-                                        <?= htmlspecialchars($lab_cat['name']) ?>
-                                    </a>
-                                </h5>
-                                <p class="text-muted small mb-2">
-                                    <?= htmlspecialchars($lab_cat['description']) ?>
-                                </p>
-
-                                <div class="bento-role-chips">
-                                    <?php foreach (($lab_cat['popular_roles'] ?? ['Lab Aid', 'Apparatus Prep']) as $role): ?>
-                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($lab_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
-                                            <i class="bi bi-eyedropper me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-
-                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                    <span class="badge bg-light text-dark border px-2 py-2 fw-semibold small">
-                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $lab_cat['job_count'] ?? 2 ?> Vacancies
-                                    </span>
-                                    <a href="student/jobs.php?cat=<?= urlencode($lab_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($lab_cat['name']) ?>">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Academic Peer Tutor -->
-                    <?php if ($tutor_cat): ?>
-                        <div class="col-lg-4 col-md-12">
-                            <div class="bento-card bento-card-green-theme">
-                                <div class="bento-capsule-img-wrapper mb-3" style="height: 150px;">
-                                    <img src="<?= htmlspecialchars($tutor_cat['image'] ?? 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($tutor_cat['name']) ?>">
-                                    <div class="bento-capsule-overlay"></div>
-                                    <div class="bento-floating-icon text-kld-green">
-                                        <i class="bi <?= htmlspecialchars($tutor_cat['icon']) ?>"></i>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="bento-pill-badge bento-badge-kld-green">
-                                        <i class="bi <?= htmlspecialchars($tutor_cat['badge_icon'] ?? 'bi-award-fill') ?> text-kld-green"></i> <?= htmlspecialchars($tutor_cat['badge_tag'] ?? 'Academic Mentoring') ?>
-                                    </span>
-                                    <span class="bento-meta-pill fw-bold text-kld-green"><?= htmlspecialchars($tutor_cat['hourly_range'] ?? '₱100/hr') ?></span>
-                                </div>
-
-                                <h5 class="fw-bold text-dark mb-1">
-                                    <a href="student/jobs.php?cat=<?= urlencode($tutor_cat['name']) ?>" class="text-decoration-none text-dark">
-                                        <?= htmlspecialchars($tutor_cat['name']) ?>
-                                    </a>
-                                </h5>
-                                <p class="text-muted small mb-2">
-                                    <?= htmlspecialchars($tutor_cat['description']) ?>
-                                </p>
-
-                                <div class="bento-role-chips">
-                                    <?php foreach (($tutor_cat['popular_roles'] ?? ['Math Tutor', 'Peer Mentor']) as $role): ?>
-                                        <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($tutor_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
-                                            <i class="bi bi-mortarboard me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-
-                                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                    <span class="badge bg-light text-dark border px-2 py-2 fw-semibold small">
-                                        <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $tutor_cat['job_count'] ?? 3 ?> Vacancies
-                                    </span>
-                                    <a href="student/jobs.php?cat=<?= urlencode($tutor_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($tutor_cat['name']) ?>">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Bento Row 3: Feature Banner Bento Card (Campus Media & Events) -->
-                <?php if ($media_cat): ?>
-                    <div class="row g-4 mb-4">
-                        <div class="col-12">
-                            <div class="bento-banner-card bento-card-green-theme">
-                                <div class="row align-items-center g-4">
-                                    <div class="col-lg-5 col-md-5">
-                                        <div class="bento-capsule-img-wrapper" style="min-height: 220px; height: 100%;">
-                                            <img src="<?= htmlspecialchars($media_cat['image'] ?? 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($media_cat['name']) ?>">
-                                            <div class="bento-capsule-overlay"></div>
-                                            <div class="bento-floating-icon text-kld-green">
-                                                <i class="bi bi-camera-reels"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-7 col-md-7 d-flex flex-column justify-content-between">
-                                        <div>
-                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                                <span class="bento-pill-badge bento-badge-kld-green">
-                                                    <i class="bi <?= htmlspecialchars($media_cat['badge_icon'] ?? 'bi-broadcast') ?> text-kld-green"></i> <?= htmlspecialchars($media_cat['badge_tag'] ?? 'Live Event Production') ?>
-                                                </span>
-                                                <span class="bento-meta-pill">
-                                                    <i class="bi bi-clock-history text-muted"></i> Event-Based Schedules
-                                                </span>
-                                                <span class="bento-meta-pill text-kld-green fw-bold">
-                                                    <?= htmlspecialchars($media_cat['hourly_range'] ?? '₱90.00 / hr') ?>
-                                                </span>
-                                            </div>
-
-                                            <h3 class="fw-bold text-dark mb-2">
-                                                <a href="student/jobs.php?cat=<?= urlencode($media_cat['name']) ?>" class="text-decoration-none text-dark">
-                                                    <?= htmlspecialchars($media_cat['name']) ?>
-                                                </a>
-                                            </h3>
-                                            <p class="text-muted small mb-3">
-                                                <?= htmlspecialchars($media_cat['description']) ?>
-                                            </p>
-
-                                            <div class="bento-role-chips mb-3">
-                                                <?php foreach (($media_cat['popular_roles'] ?? ['AV Operator', 'Live Stream Crew']) as $role): ?>
-                                                    <a href="student/jobs.php?kw=<?= urlencode($role) ?>&cat=<?= urlencode($media_cat['name']) ?>" class="bento-chip" title="Filter by <?= htmlspecialchars($role) ?>">
-                                                        <i class="bi bi-camera-video me-1 text-kld-green small"></i><?= htmlspecialchars($role) ?>
-                                                    </a>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-
-                                        <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                            <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
-                                                <i class="bi bi-briefcase-fill text-kld-green me-1"></i> <?= $media_cat['job_count'] ?? 2 ?> Vacancies
-                                            </span>
-                                            <a href="student/jobs.php?cat=<?= urlencode($media_cat['name']) ?>" class="bento-arrow-btn" title="Explore <?= htmlspecialchars($media_cat['name']) ?> Jobs">
-                                                <i class="bi bi-arrow-up-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Additional Categories (if added dynamically via Admin) -->
-                <?php 
-                $rendered_ids = [1, 2, 3, 4, 5, 6];
-                $extra_cats = array_filter($categories, function($c) use ($rendered_ids) {
-                    return !in_array($c['id'], $rendered_ids);
-                });
-                if (!empty($extra_cats)): ?>
-                    <div class="row g-4 mt-2">
-                        <?php foreach ($extra_cats as $extra): ?>
-                            <div class="col-lg-4 col-md-6">
-                                <div class="bento-card bento-card-green-theme">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <div class="bento-floating-icon text-kld-green">
-                                            <i class="bi <?= htmlspecialchars($extra['icon']) ?>"></i>
-                                        </div>
-                                        <span class="bento-pill-badge bento-badge-kld-green">Campus Dept</span>
-                                    </div>
-                                    <h5 class="fw-bold mb-1"><?= htmlspecialchars($extra['name']) ?></h5>
-                                    <p class="text-muted small mb-3"><?= htmlspecialchars($extra['description']) ?></p>
-                                    <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="badge bg-light text-dark border"><i class="bi bi-briefcase-fill text-kld-green me-1"></i><?= $extra['job_count'] ?? 0 ?> Vacancies</span>
-                                        <a href="student/jobs.php?cat=<?= urlencode($extra['name']) ?>" class="bento-arrow-btn">
-                                            <i class="bi bi-arrow-up-right"></i>
-                                        </a>
-                                    </div>
-                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
+                </div>
+            </section>
 
-    <!-- Why Work on Campus Section -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6">
-                    <span class="text-kld-green fw-bold small text-uppercase">Student Benefits</span>
-                    <h2 class="fw-bold text-dark mb-4">Why Apply for an On-Campus Student Job?</h2>
-                    
-                    <div class="d-flex gap-3 mb-4">
-                        <div class="stat-icon stat-icon-kld flex-shrink-0">
-                            <i class="bi bi-calendar-check fs-4"></i>
-                        </div>
+            <!-- ============================================================
+                 SECTION 4: WHY WORK ON-CAMPUS (3-card services archetype, bg --surface)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
                         <div>
-                            <h5 class="fw-bold mb-1">Class-First Flexible Schedules</h5>
-                            <p class="text-muted small mb-0">Supervisors respect your study timetable. Duty shifts are scheduled during your vacant periods and exam weeks.</p>
+                            <span class="pill-badge mb-2">
+                                <i class="bi bi-shield-check text-accent"></i> Why On-Campus
+                            </span>
+                            <h2 class="h1 fw-extrabold text-ink mb-0">Study Close, Work Close, Grow Faster</h2>
+                        </div>
+                        <div class="mt-3 mt-md-0">
+                            <a href="faqs.php" class="btn-outline-pill">
+                                LEARN MORE <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
+                            </a>
                         </div>
                     </div>
 
-                    <div class="d-flex gap-3 mb-4">
-                        <div class="stat-icon stat-icon-kld flex-shrink-0">
-                            <i class="bi bi-pin-map fs-4"></i>
+                    <div class="row g-4">
+                        <!-- Card 1: Flexible Hours -->
+                        <div class="col-lg-4">
+                            <div class="why-card">
+                                <div>
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3 mb-4" style="width: 56px; height: 56px;">
+                                        <i class="bi bi-clock-history fs-4 text-ink"></i>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Flexible Hours</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        Shifts are adjusted around your class schedule, with a 20-hour weekly cap during regular semesters.
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
+                                    <span class="chip-tag"># Max 20 hrs/wk</span>
+                                    <span class="chip-tag"># Exam-week adjustments</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h5 class="fw-bold mb-1">Zero Commute & Expenses</h5>
-                            <p class="text-muted small mb-0">Work inside KLD campus buildings between your lectures without spending extra on transit or meal fares.</p>
-                        </div>
-                    </div>
 
-                    <div class="d-flex gap-3 mb-4">
-                        <div class="stat-icon stat-icon-kld flex-shrink-0">
-                            <i class="bi bi-award fs-4"></i>
+                        <!-- Card 2: Close To Everything -->
+                        <div class="col-lg-4">
+                            <div class="why-card">
+                                <div>
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3 mb-4" style="width: 56px; height: 56px;">
+                                        <i class="bi bi-geo-alt-fill fs-4 text-ink"></i>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Close To Everything</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        Work minutes from your classes in official, university-certified offices — safe and supervised.
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between pt-3 border-top border-line">
+                                    <div class="d-flex align-items-center gap-1 text-accent fs-6">
+                                        <i class="bi bi-building"></i>
+                                        <i class="bi bi-shield-fill-check"></i>
+                                        <i class="bi bi-award"></i>
+                                    </div>
+                                    <span class="small fw-bold text-ink">Official Campus Certification</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h5 class="fw-bold mb-1">Valuable Resume Experience & Certificate</h5>
-                            <p class="text-muted small mb-0">Earn official Certificates of Service, department supervisor recommendation letters, and real workplace skills.</p>
+
+                        <!-- Card 3: Tuition & Stipend Support -->
+                        <div class="col-lg-4">
+                            <div class="why-card">
+                                <div>
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3 mb-4" style="width: 56px; height: 56px;">
+                                        <i class="bi bi-cash-stack fs-4 text-ink"></i>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Tuition & Stipend Support</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        Earn semi-monthly stipends or hourly pay processed by the University Cashier Office upon signed DTRs.
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
+                                    <span class="chip-tag"># Semi-monthly pay</span>
+                                    <span class="chip-tag"># DTR-based</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="col-lg-6">
-                    <div class="p-4 p-md-5 text-white rounded-4 shadow position-relative overflow-hidden bg-kld-gradient">
-                        <div class="position-relative z-1">
-                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-3">KLD Campus Offices</span>
-                            <h3 class="fw-bold text-white mb-3">Looking to Hire Qualified KLD Student Assistants?</h3>
-                            <p class="text-light opacity-90 mb-4">
-                                Institute deans, administrative department heads, and laboratory custodians can post requisitions, evaluate candidate profiles, and organize interviews seamlessly.
-                            </p>
-                            <a href="register.php?role=employer" class="btn btn-gold btn-lg px-4">
-                                <i class="bi bi-building-add me-2"></i> Register Campus Office
+            <!-- ============================================================
+                 SECTION 5: KEY METRICS (cycling counters, bg crossfade + arc)
+                 ============================================================ -->
+            <section class="py-5 bg-surface reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="metrics-section">
+                        <!-- Ambient Glowing Arc -->
+                        <div class="metrics-arc-glow"></div>
+
+                        <div class="row align-items-center g-4 position-relative z-2">
+                            <div class="col-lg-4">
+                                <span class="pill-badge pill-badge-ink bg-white text-dark mb-3">
+                                    <i class="bi bi-bar-chart-fill text-accent"></i> Our Impact
+                                </span>
+                                <h2 class="h1 fw-extrabold text-white mb-2">Together, We're Building Careers</h2>
+                                <p class="text-white-50 small mb-0">Live data synchronized from active university department requisitions.</p>
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="row g-4 text-center text-sm-start">
+                                    <div class="col-6 col-md-3">
+                                        <div class="metric-counter-number" data-counter-target="<?= $metric_active_jobs ?>"><?= $metric_active_jobs ?></div>
+                                        <div class="metric-counter-label">Total Active Postings</div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="metric-counter-number" data-counter-target="<?= $metric_partnered_offices ?>"><?= $metric_partnered_offices ?></div>
+                                        <div class="metric-counter-label">Partnered Campus Offices</div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="metric-counter-number" data-counter-target="<?= $metric_students_hired ?>"><?= $metric_students_hired ?></div>
+                                        <div class="metric-counter-label">Students Hired to date</div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="metric-counter-number" data-counter-target="<?= preg_replace('/[^\d]/', '', $metric_avg_pay) ?>" data-counter-prefix="₱"><?= htmlspecialchars($metric_avg_pay) ?></div>
+                                        <div class="metric-counter-label">Average Hourly Pay</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 SECTION 6: FEATURED JOB POSTINGS (center-mode carousel, bg --surface)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+                        <div>
+                            <span class="pill-badge mb-2">
+                                <i class="bi bi-star-fill text-accent"></i> Top Vacancies
+                            </span>
+                            <h2 class="h1 fw-extrabold text-ink mb-0">Featured Opportunities On Campus</h2>
+                        </div>
+                        <div class="mt-3 mt-md-0">
+                            <a href="student/jobs.php" class="btn-outline-pill">
+                                VIEW ALL JOBS <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Carousel Viewport -->
+                    <div class="carousel-viewport-container">
+                        <div id="featured-carousel-track" class="carousel-track">
+                            <?php foreach ($featured_jobs as $idx => $job): 
+                                $slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
+                                $slots_filled = (int)($job['slots_filled'] ?? 0);
+                                $pct = ($slots_total > 0) ? round(($slots_filled / $slots_total) * 100) : 0;
+                                $badges = $job['badges'] ?? ['Student Assistant', 'Flexible Schedule'];
+                            ?>
+                                <div class="featured-job-card <?= ($idx === 0) ? 'is-active' : '' ?>">
+                                    <div class="featured-card-photo-wrap">
+                                        <img src="<?= htmlspecialchars($job['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=900&auto=format&fit=crop') ?>" alt="<?= htmlspecialchars($job['title']) ?>">
+                                        <div class="featured-card-badges">
+                                            <?php foreach ($badges as $b): ?>
+                                                <span class="badge-tag-overlay <?= (stripos($b, 'urgent') !== false) ? 'urgent' : '' ?>">
+                                                    <?= htmlspecialchars($b) ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <div class="featured-card-apply-overlay">
+                                            <a href="student/apply.php?id=<?= $job['id'] ?>" class="btn-accent-pill py-1 px-3 small" style="font-size: 0.75rem;">
+                                                APPLY NOW <i class="bi bi-arrow-up-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="featured-card-body">
+                                        <h3 class="h5 fw-bold text-ink mb-1" style="font-weight: 700;">
+                                            <?= htmlspecialchars($job['title']) ?>
+                                        </h3>
+                                        <div class="text-muted-custom small mb-3">
+                                            <?= htmlspecialchars($job['location']) ?> · <strong class="text-ink"><?= htmlspecialchars($job['pay_rate']) ?></strong>
+                                        </div>
+                                        
+                                        <div class="mt-auto">
+                                            <div class="d-flex justify-content-between small text-muted-custom">
+                                                <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
+                                                <span class="fw-bold text-ink"><?= $pct ?>%</span>
+                                            </div>
+                                            <div class="progress-slots-bar">
+                                                <div class="progress-slots-fill" style="width: <?= $pct ?>%;"></div>
+                                            </div>
+                                            <div class="small text-muted-custom mt-2">
+                                                <i class="bi bi-calendar-event me-1"></i> Deadline: <?= htmlspecialchars($job['deadline'] ?? 'Open') ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- Bottom-Right Carousel Navigation Controls (Hidden on Mobile) -->
+                    <div class="d-none d-md-flex justify-content-end gap-2 mt-3">
+                        <button id="carousel-prev-btn" class="carousel-nav-btn" aria-label="Previous Featured Job Slide">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <button id="carousel-next-btn" class="carousel-nav-btn" aria-label="Next Featured Job Slide">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 SECTION 7: CAMPUS UPDATES (staggered news carousel, bg --surface)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
+                        <div>
+                            <span class="pill-badge mb-2">
+                                <i class="bi bi-newspaper text-accent"></i> Career Center
+                            </span>
+                            <h2 class="h1 fw-extrabold text-ink mb-0">Updates From The Career Center</h2>
+                        </div>
+                        <div class="mt-3 mt-md-0">
+                            <a href="about-us.php" class="btn-outline-pill">
+                                SEE ALL <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6 col-lg-3">
+                            <a href="faqs.php" class="update-news-card update-card-offset-1">
+                                <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Spring Career Fair">
+                                <div class="p-3 d-flex flex-column flex-grow-1">
+                                    <span class="eyebrow-badge text-muted-custom mb-1">June 12, 2026</span>
+                                    <h3 class="h6 fw-bold text-ink mb-0">Spring Career Fair Welcomes Over 40 Campus Offices</h3>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <a href="employer/dashboard.php" class="update-news-card update-card-offset-2">
+                                <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Employer Portal">
+                                <div class="p-3 d-flex flex-column flex-grow-1">
+                                    <span class="eyebrow-badge text-muted-custom mb-1">June 5, 2026</span>
+                                    <h3 class="h6 fw-bold text-ink mb-0">Employer Portal Opens to All Departments</h3>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <a href="faqs.php" class="update-news-card update-card-offset-1">
+                                <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Resume Workshop">
+                                <div class="p-3 d-flex flex-column flex-grow-1">
+                                    <span class="eyebrow-badge text-muted-custom mb-1">June 2, 2026</span>
+                                    <h3 class="h6 fw-bold text-ink mb-0">Resume Workshop Helps 200 Students Apply</h3>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <a href="about-us.php" class="update-news-card update-card-offset-2">
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Alumni Mentors">
+                                <div class="p-3 d-flex flex-column flex-grow-1">
+                                    <span class="eyebrow-badge text-muted-custom mb-1">May 29, 2026</span>
+                                    <h3 class="h6 fw-bold text-ink mb-0">Alumni Mentors Inspire the Whole Campus</h3>
+                                </div>
                             </a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-</main>
+            </section>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
+            <!-- ============================================================
+                 SECTION 8: CTA (bg --cream, floating circular campus photos 64–280px)
+                 ============================================================ -->
+            <section class="py-5 py-lg-6 bg-surface reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="cta-section-wrap">
+                        <!-- Floating Circular Campus Photos (64–280px) -->
+                        <div class="floating-photo-circle photo-pos-1">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" alt="Campus Student">
+                        </div>
+                        <div class="floating-photo-circle photo-pos-2">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt="Campus Assistant">
+                        </div>
+                        <div class="floating-photo-circle photo-pos-3">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop" alt="Student Researcher">
+                        </div>
+                        <div class="floating-photo-circle photo-pos-4">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" alt="Peer Tutor">
+                        </div>
+
+                        <div class="position-relative z-2 max-w-640 mx-auto" style="max-width: 620px;">
+                            <span class="pill-badge mb-3">
+                                <i class="bi bi-lightning-charge-fill text-accent"></i> TAKE ACTION
+                            </span>
+                            <h2 class="h1 fw-extrabold text-ink mb-3">Join Us In Shaping Your Future</h2>
+                            <p class="text-muted-custom mb-4">
+                                Gain practical on-campus workplace experience, earn tuition allowances, and expand your university network today.
+                            </p>
+                            <div class="d-flex flex-wrap justify-content-center gap-3">
+                                <a href="register.php" class="btn-accent-pill">
+                                    <i class="bi bi-person-plus-fill"></i> CREATE FREE ACCOUNT
+                                </a>
+                                <a href="about-us.php" class="btn-outline-pill">
+                                    LEARN MORE <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <?php require_once __DIR__ . '/includes/footer.php'; ?>
+    </div>
+</div>

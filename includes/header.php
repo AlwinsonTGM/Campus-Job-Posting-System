@@ -2,8 +2,12 @@
 /**
  * Campus Job Posting System - Shared Header Partial
  */
+if (!defined('SITE_NAME')) {
+    define('SITE_NAME', 'CAMPUS HIRE');
+}
+
 if (!isset($page_title)) {
-    $page_title = 'KLD Campus Job Posting System';
+    $page_title = SITE_NAME . ' — Campus Job Posting System';
 }
 
 // Compute base path relative to current script
@@ -27,7 +31,7 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($page_title) ?> | KLD CampusJobs</title>
+    <title><?= htmlspecialchars($page_title) ?> | <?= htmlspecialchars(SITE_NAME) ?></title>
     
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -35,13 +39,14 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- Google Fonts (Inter / Poppins) -->
+    <!-- Google Fonts (Inter 500-800) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Custom Academic Theme CSS -->
+    <!-- Custom Theme & Paper Sheet CSS -->
     <link rel="stylesheet" href="<?= $base_url ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/custom.css">
 </head>
 <body>
-<div class="d-flex flex-column min-vh-100">
+

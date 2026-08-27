@@ -3,14 +3,16 @@
  * Campus Job Posting System - Job Listings & Search
  */
 require_once __DIR__ . '/../includes/data-helper.php';
+require_once __DIR__ . '/../includes/auth-check.php';
 
 $page_title = 'Browse Campus Vacancies';
 
-$kw = $_GET['kw'] ?? null;
-$cat = $_GET['cat'] ?? null;
+$kw = $_GET['q'] ?? $_GET['kw'] ?? null;
+$cat = $_GET['category'] ?? $_GET['cat'] ?? null;
 $dept = $_GET['dept'] ?? null;
+$pay_type = $_GET['pay_type'] ?? null;
 
-$jobs = get_jobs($cat, $kw, $dept);
+$jobs = get_jobs($cat, $kw, $dept, $pay_type);
 $categories = get_categories();
 
 require_once __DIR__ . '/../includes/header.php';

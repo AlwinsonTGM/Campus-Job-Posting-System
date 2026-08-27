@@ -29,11 +29,13 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    if (!isset($_SESSION['app_initialized'])) {
+    $current_schema_version = '2.0_paper_sheet';
+    if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');
         $_SESSION['applications'] = load_json_file('applications.json');
         $_SESSION['categories'] = load_json_file('categories.json');
+        $_SESSION['schema_version'] = $current_schema_version;
         $_SESSION['app_initialized'] = true;
     }
 }
@@ -149,18 +151,37 @@ function register_user($data) {
 }
 
 // Jobs Management
-function get_jobs($category = null, $keyword = null, $department = null) {
+function get_jobs($category = null, $keyword = null, $department = null, $pay_type = null) {
     $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
     
     if ($category) {
         $jobs = array_filter($jobs, function($j) use ($category) {
-            return strtolower($j['category']) === strtolower($category) || (isset($j['category_id']) && $j['category_id'] == $category);
+            if (is_array($category)) {
+                foreach ($category as $cat_item) {
+                    if (empty($cat_item)) continue;
+                    if (strcasecmp($j['category'] ?? '', $cat_item) === 0 || 
+                        (isset($j['category_id']) && (string)$j['category_id'] === (string)$cat_item) ||
+                        stripos($j['category'] ?? '', $cat_item) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return strcasecmp($j['category'] ?? '', $category) === 0 || 
+                   (isset($j['category_id']) && (string)$j['category_id'] === (string)$category) ||
+                   stripos($j['category'] ?? '', $category) !== false;
         });
     }
 
     if ($department) {
         $jobs = array_filter($jobs, function($j) use ($department) {
-            return stripos($j['department'], $department) !== false;
+            return stripos($j['department'] ?? '', $department) !== false;
+        });
+    }
+
+    if ($pay_type) {
+        $jobs = array_filter($jobs, function($j) use ($pay_type) {
+            return stripos($j['pay_type'] ?? '', $pay_type) !== false || stripos($j['pay_rate'] ?? '', $pay_type) !== false;
         });
     }
 
@@ -169,7 +190,7 @@ function get_jobs($category = null, $keyword = null, $department = null) {
         $kw_words = array_filter(explode(' ', $kw), function($w) { return strlen($w) >= 3; });
         $jobs = array_filter($jobs, function($j) use ($kw, $kw_words) {
             $tags_str = is_array($j['tags'] ?? null) ? implode(' ', $j['tags']) : ($j['tags'] ?? '');
-            $haystack = strtolower($j['title'] . ' ' . $j['department'] . ' ' . $j['description'] . ' ' . $j['location'] . ' ' . $tags_str . ' ' . ($j['category'] ?? ''));
+            $haystack = strtolower(($j['title'] ?? '') . ' ' . ($j['department'] ?? '') . ' ' . ($j['description'] ?? '') . ' ' . ($j['location'] ?? '') . ' ' . $tags_str . ' ' . ($j['category'] ?? ''));
             
             if (stripos($haystack, $kw) !== false) {
                 return true;
@@ -471,6 +492,72 @@ function create_category($data) {
     return $new_id;
 }
 
+// Key Metrics & Summary Functions (for Index & Reports)
+function get_metrics_total_active_jobs() {
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    $today = date('Y-m-d');
+    $active = array_filter($jobs, function($j) use ($today) {
+        $is_active = ($j['status'] ?? 'active') === 'active';
+        $deadline_future = !empty($j['deadline']) ? ($j['deadline'] >= $today) : true;
+        return $is_active && $deadline_future;
+    });
+    return count($active);
+}
+
+function get_metrics_partnered_offices() {
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    $depts = [];
+    foreach ($jobs as $j) {
+        if (!empty($j['department'])) {
+            $dept_clean = trim($j['department']);
+            $depts[$dept_clean] = true;
+        }
+    }
+    return count($depts);
+}
+
+function get_metrics_students_hired() {
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    $total_hired = 0;
+    foreach ($jobs as $j) {
+        $total_hired += (int)($j['slots_filled'] ?? $j['filled_vacancies'] ?? 0);
+    }
+    // Also include accepted applications if any
+    $apps = $_SESSION['applications'] ?? load_json_file('applications.json');
+    $accepted_apps = array_filter($apps, function($a) {
+        return ($a['status'] ?? '') === 'accepted';
+    });
+    return max($total_hired, count($accepted_apps));
+}
+
+function get_metrics_avg_hourly_pay() {
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    $rates = [];
+    foreach ($jobs as $j) {
+        $pay_rate_str = $j['pay_rate'] ?? '';
+        // Extract numeric value from string like "₱85.00 / hour" or "85"
+        if (preg_match('/(\d+(?:\.\d+)?)/', $pay_rate_str, $matches)) {
+            $rates[] = (float)$matches[1];
+        }
+    }
+    if (empty($rates)) {
+        return '₱85';
+    }
+    $avg = round(array_sum($rates) / count($rates));
+    return '₱' . $avg;
+}
+
+function get_featured_jobs($limit = 5) {
+    $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
+    $featured = array_filter($jobs, function($j) {
+        return !empty($j['featured']) && ($j['status'] ?? 'active') === 'active';
+    });
+    if (empty($featured)) {
+        $featured = $jobs;
+    }
+    return array_slice(array_values($featured), 0, $limit);
+}
+
 // Reset Demo Data helper
 function reset_demo_data() {
     $_SESSION['users'] = load_json_file('users.json');
@@ -478,5 +565,6 @@ function reset_demo_data() {
     $_SESSION['applications'] = load_json_file('applications.json');
     $_SESSION['categories'] = load_json_file('categories.json');
     $_SESSION['app_initialized'] = true;
-    set_flash('info', 'Demo dataset has been reset to default KLD state.');
+    set_flash('info', 'Demo dataset has been reset to default campus state.');
 }
+

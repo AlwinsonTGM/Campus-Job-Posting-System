@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "name": "Information Technology",
-    "slug": "Information Technology",
+    "name": "IT & Technical Support",
+    "slug": "it-technical-support",
     "icon": "bi-laptop",
     "description": "IT lab maintenance, technical troubleshooting, network setup, compiler installations, and student workstation support.",
     "theme": "kld-green",
@@ -10,7 +10,6 @@
     "badge_icon": "bi-fire",
     "job_count": 4,
     "hourly_range": "₱85.00 / hr",
-    "card_type": "hero",
     "image": "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop",
     "popular_roles": [
       "Computer Lab Assistant",
@@ -22,7 +21,7 @@
   {
     "id": 2,
     "name": "Library Services",
-    "slug": "Library Services",
+    "slug": "library-services",
     "icon": "bi-book",
     "description": "Book cataloging, barcode circulation scanning, digital archive indexing, OPAC search assistance, and study hub oversight.",
     "theme": "kld-green",
@@ -30,7 +29,6 @@
     "badge_icon": "bi-bookmark-star",
     "job_count": 3,
     "hourly_range": "₱80.00 / hr",
-    "card_type": "highlight",
     "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop",
     "popular_roles": [
       "Digital Cataloger",
@@ -40,16 +38,15 @@
   },
   {
     "id": 3,
-    "name": "Administrative & Clerical",
-    "slug": "Administrative & Clerical",
+    "name": "Administrative Clerk",
+    "slug": "administrative-clerk",
     "icon": "bi-folder2-open",
     "description": "Student 201 records processing, registrar encoding, document sorting, and courteous frontline campus queue assistance.",
     "theme": "kld-green",
-    "badge_tag": "Campus Administration",
+    "badge_tag": "Campus Admin",
     "badge_icon": "bi-building-check",
     "job_count": 5,
     "hourly_range": "₱80.00 / hr",
-    "card_type": "standard",
     "image": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop",
     "popular_roles": [
       "Records Clerk",
@@ -59,8 +56,8 @@
   },
   {
     "id": 4,
-    "name": "Laboratory Assistant",
-    "slug": "Laboratory Assistant",
+    "name": "Science & Computer Lab Assistant",
+    "slug": "science-computer-lab-assistant",
     "icon": "bi-radioactive",
     "description": "Science & medical laboratory apparatus preparation, glassware autoclaving, chemical inventory logging, and safety protocol enforcement.",
     "theme": "kld-green",
@@ -68,7 +65,6 @@
     "badge_icon": "bi-moisture",
     "job_count": 2,
     "hourly_range": "₱85.00 / hr",
-    "card_type": "standard",
     "image": "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop",
     "popular_roles": [
       "Medical Lab Aid",
@@ -78,8 +74,8 @@
   },
   {
     "id": 5,
-    "name": "Academic Peer Tutor",
-    "slug": "Academic Peer Tutor",
+    "name": "Peer Tutor",
+    "slug": "peer-tutor",
     "icon": "bi-mortarboard",
     "description": "1-on-1 and small group academic tutoring in mathematics, coding algorithms, discrete structures, sciences, and exam preparation.",
     "theme": "kld-green",
@@ -87,7 +83,6 @@
     "badge_icon": "bi-award-fill",
     "job_count": 3,
     "hourly_range": "₱100.00 / hr",
-    "card_type": "standard",
     "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
     "popular_roles": [
       "Math & Calc Tutor",
@@ -97,21 +92,20 @@
   },
   {
     "id": 6,
-    "name": "Campus Media & Events",
-    "slug": "Campus Media & Events",
-    "icon": "bi-camera-reels",
-    "description": "Live sound engineering, auditorium lighting, multi-cam live streaming, official photography, and graphic coverage for university events.",
+    "name": "Sports & Athletics Aide",
+    "slug": "sports-athletics-aide",
+    "icon": "bi-trophy",
+    "description": "Gymnasium equipment logistics, scorekeeping, court maintenance, intramural tournament assistance, and athletics facility safety.",
     "theme": "kld-green",
-    "badge_tag": "Live Event Production",
-    "badge_icon": "bi-broadcast",
+    "badge_tag": "Campus Athletics",
+    "badge_icon": "bi-trophy-fill",
     "job_count": 2,
-    "hourly_range": "₱90.00 / hr",
-    "card_type": "highlight",
-    "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800&auto=format&fit=crop",
+    "hourly_range": "₱85.00 / hr",
+    "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop",
     "popular_roles": [
-      "AV Sound Operator",
-      "Live Stream Crew",
-      "Campus Event Media"
+      "Equipment Custodian",
+      "Tournament Scorekeeper",
+      "Court Monitor"
     ]
   }
 ]
