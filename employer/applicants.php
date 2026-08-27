@@ -13,6 +13,7 @@ $page_title = 'Applicant Evaluation Roster';
 $dept = $user['organization_name'] ?? ($user['department'] ?? 'Office of the University Registrar');
 $job_filter = $_GET['job_id'] ?? null;
 $status_filter = $_GET['status'] ?? null;
+$search = trim($_GET['q'] ?? '');
 
 // Handle decision submissions via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
@@ -50,6 +51,15 @@ if ($status_filter) {
     });
 }
 
+if (!empty($search)) {
+    $all_dept_apps = array_filter($all_dept_apps, function($a) use ($search) {
+        return stripos($a['student_name'] ?? '', $search) !== false
+            || stripos($a['student_email'] ?? '', $search) !== false
+            || stripos($a['course'] ?? '', $search) !== false
+            || stripos($a['job_title'] ?? '', $search) !== false;
+    });
+}
+
 $dept_jobs = get_jobs(null, null, ($user['role'] === 'admin' ? null : $dept));
 
 require_once __DIR__ . '/../includes/header.php';
@@ -82,9 +92,17 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Filter Bar -->
                 <div class="card-paper p-4 mb-4">
-                    <form action="applicants.php" method="GET" class="form-paper">
+                    <form action="applicants.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-5">
+                            <div class="col-md-4">
+                                <label class="form-label" for="search-applicant">Search Candidates</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="q" id="search-applicant" class="form-control" placeholder="Candidate, email, degree..." value="<?= htmlspecialchars($search ?? '') ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
                                 <label class="form-label" for="filter-job">Filter by Job Requisition</label>
                                 <select name="job_id" id="filter-job" class="form-select">
                                     <option value="">All Department Openings</option>
@@ -96,7 +114,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <label class="form-label" for="filter-status">Filter by Status</label>
                                 <select name="status" id="filter-status" class="form-select">
                                     <option value="">All Application Stages</option>
@@ -108,22 +126,17 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-2 d-flex gap-2">
-                                <button type="submit" class="btn-pill w-100">
-                                    <i class="bi bi-funnel-fill"></i> Filter
-                                </button>
-                                <?php if ($job_filter || $status_filter): ?>
-                                    <a href="applicants.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0" style="width: 48px; height: 48px;" title="Clear Filters">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </a>
-                                <?php endif; ?>
+                            <div class="col-md-1 d-flex">
+                                <a href="applicants.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Reset Filters">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </a>
                             </div>
                         </div>
                     </form>
                 </div>
 
                 <!-- Applicant Table -->
-                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
+                <div id="filter-results-container" class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
                     <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
                         <div>
                             <h3 class="card-paper-title mb-1">Candidate Submissions</h3>

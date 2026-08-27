@@ -171,12 +171,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <table class="table-paper table-paper-responsive mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="ps-4">Request Ref</th>
-                                        <th>Student Details</th>
-                                        <th>Requested Academic / Identity Changes</th>
-                                        <th>Proof Document</th>
-                                        <th>Status</th>
-                                        <th class="text-end pe-4">Actions</th>
+                                        <th class="ps-4" style="width: 140px;">Request Ref</th>
+                                        <th style="max-width: 240px;">Student Details</th>
+                                        <th style="max-width: 260px;">Target Program</th>
+                                        <th style="width: 130px;">Status</th>
+                                        <th class="text-end pe-4" style="width: 140px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -185,47 +184,36 @@ require_once __DIR__ . '/../includes/header.php';
                                         $proof = $req['proof_file'] ?? '';
                                     ?>
                                         <tr>
-                                            <td class="ps-4" data-label="Request Ref">
+                                            <td class="ps-4 text-nowrap" data-label="Request Ref">
                                                 <span class="font-monospace fw-bold text-ink small">#REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?></span>
                                                 <div class="small text-muted-custom" style="font-size: 11px;"><?= date('M d, Y', strtotime($req['created_at'])) ?></div>
                                             </td>
-                                            <td data-label="Student Details">
-                                                <div class="fw-bold text-ink"><?= htmlspecialchars($req['user_name']) ?></div>
-                                                <div class="small text-muted-custom">
+                                            <td data-label="Student Details" style="max-width: 240px;">
+                                                <div class="fw-bold text-ink text-truncate" title="<?= htmlspecialchars($req['user_name']) ?>"><?= htmlspecialchars($req['user_name']) ?></div>
+                                                <div class="small text-muted-custom text-truncate" style="font-size: 11px;" title="<?= htmlspecialchars($req['user_email']) ?>">
                                                     <span><?= htmlspecialchars($req['student_id'] ?? '') ?></span> &bull; 
                                                     <span><?= htmlspecialchars($req['user_email']) ?></span>
                                                 </div>
                                             </td>
-                                            <td data-label="Requested Changes">
-                                                <div class="small fw-semibold text-ink">
-                                                    <?= htmlspecialchars($req['requested_profile']['course'] ?? '') ?> &bull; 
-                                                    <?= htmlspecialchars($req['requested_profile']['year_level'] ?? '') ?>
+                                            <td data-label="Target Program" style="max-width: 260px;">
+                                                <div class="small fw-semibold text-ink text-truncate" title="<?= htmlspecialchars(($req['requested_profile']['course'] ?? '') . ' • ' . ($req['requested_profile']['year_level'] ?? '')) ?>">
+                                                    <?= htmlspecialchars($req['requested_profile']['course'] ?? '') ?>
                                                 </div>
-                                                <div class="small text-muted-custom" style="font-size: 11.5px;">
-                                                    Sex: <?= htmlspecialchars($req['requested_profile']['sex'] ?? 'Male') ?> &bull; 
-                                                    Age: <?= htmlspecialchars((string)($req['requested_profile']['age'] ?? 20)) ?> yrs
+                                                <div class="small text-muted-custom" style="font-size: 11px;">
+                                                    <span class="fw-semibold text-ink"><?= htmlspecialchars($req['requested_profile']['year_level'] ?? '') ?></span> &bull; <?= htmlspecialchars($req['requested_profile']['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($req['requested_profile']['age'] ?? 20)) ?> yrs
                                                 </div>
                                             </td>
-                                            <td data-label="Proof Document">
-                                                <?php if (!empty($proof)): ?>
-                                                    <a href="../<?= htmlspecialchars($proof) ?>" target="_blank" class="chip active text-decoration-none" style="font-size: 11px;">
-                                                        <i class="bi bi-file-earmark-pdf me-1"></i> <?= htmlspecialchars(basename($proof)) ?>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <span class="small text-muted-custom">No attachment</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td data-label="Status">
+                                            <td data-label="Status" class="text-nowrap">
                                                 <?php if ($req_status === 'approved'): ?>
                                                     <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Approved</span>
                                                 <?php elseif ($req_status === 'rejected'): ?>
                                                     <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Declined</span>
                                                 <?php else: ?>
-                                                    <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
+                                                    <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="text-end pe-4" data-label="Actions">
-                                                <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="modal" data-bs-target="#inspectProfileReqModal<?= $req['id'] ?>">
+                                            <td class="text-end pe-4 text-nowrap" data-label="Actions">
+                                                <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#inspectProfileReqModal<?= $req['id'] ?>">
                                                     <i class="bi bi-eye"></i> Inspect Diff
                                                 </button>
                                             </td>
@@ -239,7 +227,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Filter & Search Bar -->
                 <div class="card-paper p-4 mb-4">
-                    <form action="users.php" method="GET" class="form-paper">
+                    <form action="users.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
                             <div class="col-md-4">
                                 <label class="form-label" for="search-user">Search User Directory</label>
@@ -278,22 +266,17 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-1 d-flex gap-1">
-                                <button type="submit" class="btn-pill w-100 p-0" title="Apply Filter" style="height: 48px;">
-                                    <i class="bi bi-funnel-fill"></i>
-                                </button>
-                                <?php if ($role_filter || $emp_type_filter || $ver_filter || $search): ?>
-                                    <a href="users.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0" style="width: 48px; height: 48px;" title="Reset Filters">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </a>
-                                <?php endif; ?>
+                            <div class="col-md-1 d-flex">
+                                <a href="users.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Reset Filters">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </a>
                             </div>
                         </div>
                     </form>
                 </div>
 
                 <!-- Users Directory Table -->
-                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
+                <div id="filter-results-container" class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
                     <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
                         <div>
                             <h3 class="card-paper-title mb-1">Registered Accounts</h3>
@@ -318,12 +301,12 @@ require_once __DIR__ . '/../includes/header.php';
                             <table class="table-paper table-paper-responsive mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="ps-4">User Details</th>
-                                        <th>Role &amp; Classification</th>
-                                        <th>Organization / Program</th>
-                                        <th>ID / Accreditation Code</th>
-                                        <th>Accreditation Status</th>
-                                        <th class="text-end pe-4">Actions</th>
+                                        <th class="ps-4" style="max-width: 220px;">User Details</th>
+                                        <th style="width: 140px;">Role</th>
+                                        <th style="max-width: 240px;">Organization / Program</th>
+                                        <th style="width: 150px;">ID / Code</th>
+                                        <th style="width: 130px;">Status</th>
+                                        <th class="text-end pe-4" style="width: 140px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -333,14 +316,14 @@ require_once __DIR__ . '/../includes/header.php';
                                         $org = $u['organization_name'] ?? ($u['department'] ?? 'Campus Organization');
                                     ?>
                                         <tr>
-                                            <td class="ps-4" data-label="User Details">
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <div class="icon-circle icon-circle-sm icon-circle-accent flex-shrink-0">
+                                            <td class="ps-4" data-label="User Details" style="max-width: 220px;">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="icon-circle icon-circle-sm icon-circle-accent flex-shrink-0" style="width: 32px; height: 32px; font-size: 13px;">
                                                         <?= strtoupper(substr($u['name'] ?? 'U', 0, 1)) ?>
                                                     </div>
-                                                    <div>
-                                                        <div class="fw-bold text-ink"><?= htmlspecialchars($u['name']) ?></div>
-                                                        <div class="small text-muted-custom">
+                                                    <div class="min-w-0 flex-grow-1">
+                                                        <div class="fw-bold text-ink text-truncate" title="<?= htmlspecialchars($u['name']) ?>"><?= htmlspecialchars($u['name']) ?></div>
+                                                        <div class="small text-muted-custom text-truncate" style="font-size: 11px;" title="<?= htmlspecialchars($u['email']) ?>">
                                                             <span><?= htmlspecialchars($u['email']) ?></span>
                                                             <?php if ($u['role'] === 'student' && (!empty($u['sex']) || !empty($u['age']))): ?>
                                                                 &bull; <span><?= htmlspecialchars($u['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($u['age'] ?? 20)) ?> yrs</span>
@@ -349,58 +332,52 @@ require_once __DIR__ . '/../includes/header.php';
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td data-label="Role & Classification">
+                                            <td data-label="Role" class="text-nowrap">
                                                 <?php if ($u['role'] === 'student'): ?>
-                                                    <span class="chip"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                                                    <span class="chip" style="font-size: 11px;"><i class="bi bi-mortarboard me-1"></i>Student</span>
                                                 <?php elseif ($u['role'] === 'employer'): ?>
                                                     <?php if ($is_partner): ?>
-                                                        <span class="chip active"><i class="bi bi-patch-check-fill text-accent me-1"></i>Approved Partner</span>
+                                                        <span class="chip active" style="font-size: 11px;"><i class="bi bi-patch-check-fill text-accent me-1"></i>Partner</span>
                                                     <?php else: ?>
-                                                        <span class="chip"><i class="bi bi-bank text-accent me-1"></i>Campus Office</span>
+                                                        <span class="chip" style="font-size: 11px;"><i class="bi bi-bank text-accent me-1"></i>Office</span>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <span class="pill-badge" style="font-size: 11px;"><i class="bi bi-shield-lock me-1"></i>Administrator</span>
+                                                    <span class="pill-badge" style="font-size: 10px;"><i class="bi bi-shield-lock me-1"></i>Admin</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td data-label="Organization / Program">
-                                                <div class="small fw-semibold text-ink"><?= htmlspecialchars($org) ?></div>
-                                                <span class="small text-muted-custom">
+                                            <td data-label="Organization / Program" style="max-width: 240px;">
+                                                <div class="small fw-semibold text-ink text-truncate" title="<?= htmlspecialchars($org) ?>"><?= htmlspecialchars($org) ?></div>
+                                                <div class="small text-muted-custom text-truncate" style="font-size: 11px;" title="<?= htmlspecialchars($u['course'] ?? ($u['office_location'] ?? '')) ?>">
                                                     <?= htmlspecialchars($u['course'] ?? ($u['office_location'] ?? '')) ?>
                                                     <?php if ($u['role'] === 'student' && !empty($u['year_level'])): ?>
                                                         &bull; <span class="fw-semibold text-ink"><?= htmlspecialchars($u['year_level']) ?></span>
                                                     <?php endif; ?>
-                                                </span>
+                                                </div>
                                             </td>
-                                            <td data-label="ID / Accreditation">
-                                                <span class="chip" style="font-size: 11px;">
+                                            <td data-label="ID / Code" class="text-nowrap">
+                                                <span class="font-monospace small text-ink fw-semibold" style="font-size: 11.5px;">
                                                     <?= htmlspecialchars($u['accreditation_number'] ?? ($u['student_id'] ?? 'INTERNAL')) ?>
                                                 </span>
                                             </td>
-                                            <td data-label="Accreditation Status">
+                                            <td data-label="Status" class="text-nowrap">
                                                 <?php if ($ver_status === 'verified'): ?>
                                                     <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Verified</span>
                                                 <?php elseif ($ver_status === 'rejected'): ?>
                                                     <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Rejected</span>
                                                 <?php else: ?>
-                                                    <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
+                                                    <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
                                                 <?php endif; ?>
                                             </td>
-                                             <td class="text-end pe-4" data-label="Actions">
-                                                <div class="d-flex align-items-center justify-content-end gap-2">
+                                            <td class="text-end pe-4 text-nowrap" data-label="Actions">
+                                                <div class="d-flex align-items-center justify-content-end gap-1">
                                                     <?php if ($u['role'] === 'employer'): ?>
-                                                        <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="modal" data-bs-target="#verifyModal<?= $u['id'] ?>">
+                                                        <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#verifyModal<?= $u['id'] ?>">
                                                             <i class="bi bi-file-earmark-check"></i> Inspect
                                                         </button>
-                                                        
-                                                        <?php if ($ver_status !== 'verified'): ?>
-                                                            <a href="users.php?approve_id=<?= $u['id'] ?>" class="btn-pill btn-pill-sm" title="Approve Verification">
-                                                                <i class="bi bi-check-lg"></i>
-                                                            </a>
-                                                        <?php endif; ?>
                                                     <?php elseif ($u['role'] === 'student'): ?>
                                                         <?php if (!empty($u['proof_file'])): ?>
-                                                            <a href="../<?= htmlspecialchars($u['proof_file']) ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-decoration-none" title="View Registered COR / Student ID Attachment">
-                                                                <i class="bi bi-file-earmark-check"></i> View Proof
+                                                            <a href="../<?= htmlspecialchars($u['proof_file']) ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-decoration-none py-1 px-2 d-inline-flex align-items-center gap-1" style="font-size: 11.5px;" title="View Registered COR / Student ID Attachment">
+                                                                <i class="bi bi-file-earmark-check text-accent"></i> View Proof
                                                             </a>
                                                         <?php else: ?>
                                                             <span class="small text-muted-custom">Active</span>

@@ -533,6 +533,118 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ------------------------------------------------------------------------
+  // 7. REAL-TIME INSTANT FILTERING & LIVE SEARCH ENGINE
+  // ------------------------------------------------------------------------
+  const autoFilterForms = document.querySelectorAll('.auto-filter-form');
+
+  autoFilterForms.forEach(function (form) {
+    if (form.dataset.realtimeInitialized) return;
+    form.dataset.realtimeInitialized = 'true';
+
+    let debounceTimer = null;
+    let currentAbortController = null;
+
+    function executeLiveFilter() {
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+
+      for (const [key, val] of formData.entries()) {
+        const trimmed = (typeof val === 'string') ? val.trim() : val;
+        if (trimmed !== null && trimmed !== undefined && trimmed !== '') {
+          params.append(key, trimmed);
+        }
+      }
+
+      const actionUrl = form.getAttribute('action') || window.location.pathname;
+      const queryString = params.toString();
+      const targetUrl = actionUrl + (queryString ? '?' + queryString : '');
+
+      // Seamlessly sync browser address bar URL
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', targetUrl);
+      }
+
+      // Cancel any ongoing fetch request
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+      currentAbortController = new AbortController();
+
+      const resultsContainer = document.getElementById('filter-results-container');
+      if (resultsContainer) {
+        resultsContainer.style.transition = 'opacity 0.15s ease';
+        resultsContainer.style.opacity = '0.5';
+      }
+
+      fetch(targetUrl, {
+        signal: currentAbortController.signal,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Filter fetch failed');
+          return res.text();
+        })
+        .then(function (htmlText) {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, 'text/html');
+
+          const newTargetEl = doc.getElementById('filter-results-container');
+          const currentTargetEl = document.getElementById('filter-results-container');
+
+          if (newTargetEl && currentTargetEl) {
+            currentTargetEl.innerHTML = newTargetEl.innerHTML;
+            currentTargetEl.className = newTargetEl.className;
+            currentTargetEl.style.opacity = '1';
+
+            // Also update any count badges outside or in table headers
+            const newCountEl = doc.querySelector('.card-paper-title + .text-muted-custom');
+            const currentCountEl = document.querySelector('.card-paper-title + .text-muted-custom');
+            if (newCountEl && currentCountEl && !currentTargetEl.contains(currentCountEl)) {
+              currentCountEl.innerHTML = newCountEl.innerHTML;
+            }
+
+            // Re-initialize Bootstrap tooltips in new content
+            const tooltips = [].slice.call(currentTargetEl.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltips.forEach(function (el) {
+              new bootstrap.Tooltip(el);
+            });
+          } else {
+            // Fallback: standard navigation
+            window.location.href = targetUrl;
+          }
+        })
+        .catch(function (err) {
+          if (err.name === 'AbortError') return;
+          if (resultsContainer) resultsContainer.style.opacity = '1';
+        });
+    }
+
+    // 1. Instant filter on any dropdown change
+    form.querySelectorAll('select').forEach(function (selectEl) {
+      selectEl.addEventListener('change', function () {
+        clearTimeout(debounceTimer);
+        executeLiveFilter();
+      });
+    });
+
+    // 2. Real-time debounced filter on text search inputs
+    form.querySelectorAll('input[type="text"], input[type="search"]').forEach(function (inputEl) {
+      inputEl.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(executeLiveFilter, 220);
+      });
+
+      inputEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          clearTimeout(debounceTimer);
+          executeLiveFilter();
+        }
+      });
+    });
+  });
+
   // Global Keyboard Shortcut: Ctrl+K / Cmd+K to toggle Spotlight Search
   document.addEventListener('keydown', function (e) {
     if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {

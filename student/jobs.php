@@ -52,7 +52,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Search & Filters Container -->
                 <div class="card-paper mb-4 p-4">
-                    <form action="jobs.php" method="GET" class="form-paper">
+                    <form action="jobs.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
                             <!-- Keyword Input -->
                             <div class="col-lg-4 col-md-6">
@@ -115,11 +115,11 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <!-- Filter Submit -->
-                            <div class="col-lg-1 col-md-4">
-                                <button type="submit" class="btn-pill w-100 p-0" style="height: 48px;" title="Apply Filters" aria-label="Apply Filters">
-                                    <i class="bi bi-funnel-fill"></i>
-                                </button>
+                            <!-- Filter Reset Button -->
+                            <div class="col-lg-1 col-md-4 d-flex">
+                                <a href="jobs.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;" title="Reset Filters">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </a>
                             </div>
                         </div>
 
@@ -151,36 +151,39 @@ require_once __DIR__ . '/../includes/header.php';
                     </form>
                 </div>
 
-                <!-- Results Header Count -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <span class="small text-muted-custom">
-                        Showing <strong><?= count($jobs) ?></strong> verified campus opportunities
-                    </span>
-                    <span class="pill-badge" style="font-size: 11px;">
-                        <i class="bi bi-clock-history text-accent"></i> Max 20 hrs/week
-                    </span>
-                </div>
-
-                <!-- Job Listings Grid -->
-                <?php if (empty($jobs)): ?>
-                    <?php
-                    render_empty_state(
-                        'bi-search',
-                        'No matching opportunities found',
-                        'Try adjusting your search keywords, clearing selected department filters, or resetting filter chips.',
-                        'jobs.php',
-                        'Reset All Filters'
-                    );
-                    ?>
-                <?php else: ?>
-                    <div class="row g-4 mb-5">
-                        <?php foreach ($jobs as $job): ?>
-                            <div class="col-md-6 col-lg-4">
-                                <?php render_job_card($job, '../'); ?>
-                            </div>
-                        <?php endforeach; ?>
+                <!-- Dynamic Filter Results Container -->
+                <div id="filter-results-container">
+                    <!-- Results Header Count -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="small text-muted-custom">
+                            Showing <strong><?= count($jobs) ?></strong> verified campus opportunities
+                        </span>
+                        <span class="pill-badge" style="font-size: 11px;">
+                            <i class="bi bi-clock-history text-accent"></i> Max 20 hrs/week
+                        </span>
                     </div>
-                <?php endif; ?>
+
+                    <!-- Job Listings Grid -->
+                    <?php if (empty($jobs)): ?>
+                        <?php
+                        render_empty_state(
+                            'bi-search',
+                            'No matching opportunities found',
+                            'Try adjusting your search keywords, clearing selected department filters, or resetting filter chips.',
+                            'jobs.php',
+                            'Reset All Filters'
+                        );
+                        ?>
+                    <?php else: ?>
+                        <div class="row g-4 mb-5">
+                            <?php foreach ($jobs as $job): ?>
+                                <div class="col-md-6 col-lg-4">
+                                    <?php render_job_card($job, '../'); ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
 
             </div>
         </main>
