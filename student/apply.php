@@ -121,9 +121,13 @@ require_once __DIR__ . '/../includes/header.php';
                                             <span class="small text-muted-custom d-block mb-1">Enrolled Degree Program</span>
                                             <span class="text-ink"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?></span>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-3">
                                             <span class="small text-muted-custom d-block mb-1">Year Level & Standing</span>
-                                            <span class="text-ink"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?> &bull; Good Standing</span>
+                                            <span class="text-ink"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <span class="small text-muted-custom d-block mb-1">Sex & Age</span>
+                                            <span class="text-ink"><?= htmlspecialchars($user['sex'] ?? 'Male') ?> &bull; <?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20))) ?> yrs</span>
                                         </div>
                                     </div>
                                 </div>

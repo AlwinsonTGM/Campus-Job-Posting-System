@@ -95,13 +95,18 @@ require_once __DIR__ . '/../includes/header.php';
                                     <strong class="text-ink"><?= htmlspecialchars($target_app['student_number'] ?? '2024-00123') ?></strong>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="small text-muted-custom d-block mb-1">Degree Program & Year Level</span>
-                                    <span class="text-ink"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?> &bull; <?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span>
+                                    <span class="small text-muted-custom d-block mb-1">Degree Program & Standing</span>
+                                    <span class="text-ink"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?> &bull; <span class="badge-status--accepted" style="font-size: 11px;"><?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span></span>
                                 </div>
                                 <div class="col-md-6">
+                                    <span class="small text-muted-custom d-block mb-1">Demographics (Sex & Age)</span>
+                                    <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['sex'] ?? 'Male') ?> &bull; <?= htmlspecialchars((string)($target_app['age'] ?? 20)) ?> yrs old</span>
+                                </div>
+                                <div class="col-md-12">
                                     <span class="small text-muted-custom d-block mb-1">Contact Details</span>
-                                    <span class="text-ink"><?= htmlspecialchars($target_app['phone'] ?? '+63 917 555 0192') ?></span>
-                                    <div class="small text-muted-custom"><?= htmlspecialchars($target_app['student_email']) ?></div>
+                                    <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['phone'] ?? '+63 917 555 0192') ?></span>
+                                    <span class="text-muted-custom mx-2">&bull;</span>
+                                    <span class="small text-muted-custom"><?= htmlspecialchars($target_app['student_email']) ?></span>
                                 </div>
                             </div>
                         </div>

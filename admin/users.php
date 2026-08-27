@@ -36,14 +36,39 @@ if (isset($_GET['reject_id'])) {
     }
 }
 
+// Handle student profile change requests
+if (isset($_POST['action']) && $_POST['action'] === 'approve_profile_req') {
+    $req_id = (int)($_POST['req_id'] ?? 0);
+    $notes = trim($_POST['admin_notes'] ?? 'Approved by University Registrar / Administrator');
+    if (approve_profile_request($req_id, $notes)) {
+        set_flash('success', "Student profile change request #{$req_id} approved. Student institutional records updated!");
+        header('Location: users.php');
+        exit;
+    }
+}
+
+if (isset($_POST['action']) && $_POST['action'] === 'reject_profile_req') {
+    $req_id = (int)($_POST['req_id'] ?? 0);
+    $notes = trim($_POST['admin_notes'] ?? 'Submitted proof is invalid, expired, or does not match institutional records.');
+    if (reject_profile_request($req_id, $notes)) {
+        set_flash('warning', "Student profile change request #{$req_id} declined. Student notified.");
+        header('Location: users.php');
+        exit;
+    }
+}
+
 $role_filter = $_GET['role'] ?? null;
 $emp_type_filter = $_GET['emp_type'] ?? null;
 $ver_filter = $_GET['ver_status'] ?? null;
 $search = $_GET['q'] ?? null;
 
-// Count pending verifications
+// Count pending verifications & student requests
 $all_users = $_SESSION['users'] ?? load_json_file('users.json');
 $pending_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+
+$all_profile_requests = get_profile_requests();
+$pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
+$pending_profile_count = count($pending_profile_requests);
 
 if ($role_filter) {
     $users = array_filter($users, fn($u) => $u['role'] === $role_filter);
@@ -90,21 +115,125 @@ require_once __DIR__ . '/../includes/header.php';
                 );
                 ?>
 
-                <!-- Pending Verification Banner (if any) -->
+                <!-- Pending Verification Banners (if any) -->
+                <?php if ($pending_profile_count > 0): ?>
+                    <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3 reveal-fade-rise">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-circle icon-circle-sm bg-warning text-dark">
+                                <i class="bi bi-person-badge-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="text-ink"><?= $pending_profile_count ?> Student Profile Update Request(s) Awaiting Review:</strong>
+                                <span class="small text-muted-custom d-block">Students have submitted COR / Student ID documents requesting updates to their verified academic records.</span>
+                            </div>
+                        </div>
+                        <a href="#student-requests-section" class="btn-pill btn-pill-sm">
+                            Review Student Requests (<?= $pending_profile_count ?>)
+                        </a>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($pending_count > 0): ?>
-                    <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center">
+                    <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3">
                             <div class="icon-circle icon-circle-sm icon-circle-accent">
                                 <i class="bi bi-exclamation-circle-fill text-accent"></i>
                             </div>
                             <div>
                                 <strong class="text-ink"><?= $pending_count ?> Partner Registration(s) Awaiting Review:</strong>
-                                <span class="small text-muted-custom">Business permits and MOA references require manual verification.</span>
+                                <span class="small text-muted-custom d-block">Business permits and MOA references require manual verification.</span>
                             </div>
                         </div>
                         <a href="users.php?ver_status=pending_approval" class="btn-pill btn-pill-sm">
-                            Inspect Pending
+                            Inspect Pending (<?= $pending_count ?>)
                         </a>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Student Profile Verification Requests Queue -->
+                <?php if (!empty($all_profile_requests)): ?>
+                    <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise" id="student-requests-section">
+                        <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface flex-wrap gap-2">
+                            <div>
+                                <h3 class="card-paper-title mb-1">
+                                    <i class="bi bi-shield-check text-accent me-2"></i> Student Profile Change Requests
+                                </h3>
+                                <span class="small text-muted-custom">
+                                    Official requests submitted by students to update locked academic programs, standing, or identity demographics.
+                                </span>
+                            </div>
+                            <?php if ($pending_profile_count > 0): ?>
+                                <span class="badge-status--pending"><?= $pending_profile_count ?> Pending Review</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table-paper table-paper-responsive mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Request Ref</th>
+                                        <th>Student Details</th>
+                                        <th>Requested Academic / Identity Changes</th>
+                                        <th>Proof Document</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($all_profile_requests as $req): 
+                                        $req_status = $req['status'] ?? 'pending';
+                                        $proof = $req['proof_file'] ?? '';
+                                    ?>
+                                        <tr>
+                                            <td class="ps-4" data-label="Request Ref">
+                                                <span class="font-monospace fw-bold text-ink small">#REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?></span>
+                                                <div class="small text-muted-custom" style="font-size: 11px;"><?= date('M d, Y', strtotime($req['created_at'])) ?></div>
+                                            </td>
+                                            <td data-label="Student Details">
+                                                <div class="fw-bold text-ink"><?= htmlspecialchars($req['user_name']) ?></div>
+                                                <div class="small text-muted-custom">
+                                                    <span><?= htmlspecialchars($req['student_id'] ?? '') ?></span> &bull; 
+                                                    <span><?= htmlspecialchars($req['user_email']) ?></span>
+                                                </div>
+                                            </td>
+                                            <td data-label="Requested Changes">
+                                                <div class="small fw-semibold text-ink">
+                                                    <?= htmlspecialchars($req['requested_profile']['course'] ?? '') ?> &bull; 
+                                                    <?= htmlspecialchars($req['requested_profile']['year_level'] ?? '') ?>
+                                                </div>
+                                                <div class="small text-muted-custom" style="font-size: 11.5px;">
+                                                    Sex: <?= htmlspecialchars($req['requested_profile']['sex'] ?? 'Male') ?> &bull; 
+                                                    Age: <?= htmlspecialchars((string)($req['requested_profile']['age'] ?? 20)) ?> yrs
+                                                </div>
+                                            </td>
+                                            <td data-label="Proof Document">
+                                                <?php if (!empty($proof)): ?>
+                                                    <a href="../<?= htmlspecialchars($proof) ?>" target="_blank" class="chip active text-decoration-none" style="font-size: 11px;">
+                                                        <i class="bi bi-file-earmark-pdf me-1"></i> <?= htmlspecialchars(basename($proof)) ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="small text-muted-custom">No attachment</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td data-label="Status">
+                                                <?php if ($req_status === 'approved'): ?>
+                                                    <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Approved</span>
+                                                <?php elseif ($req_status === 'rejected'): ?>
+                                                    <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Declined</span>
+                                                <?php else: ?>
+                                                    <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-end pe-4" data-label="Actions">
+                                                <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="modal" data-bs-target="#inspectProfileReqModal<?= $req['id'] ?>">
+                                                    <i class="bi bi-eye"></i> Inspect Diff
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 <?php endif; ?>
 
@@ -211,7 +340,12 @@ require_once __DIR__ . '/../includes/header.php';
                                                     </div>
                                                     <div>
                                                         <div class="fw-bold text-ink"><?= htmlspecialchars($u['name']) ?></div>
-                                                        <span class="small text-muted-custom"><?= htmlspecialchars($u['email']) ?></span>
+                                                        <div class="small text-muted-custom">
+                                                            <span><?= htmlspecialchars($u['email']) ?></span>
+                                                            <?php if ($u['role'] === 'student' && (!empty($u['sex']) || !empty($u['age']))): ?>
+                                                                &bull; <span><?= htmlspecialchars($u['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($u['age'] ?? 20)) ?> yrs</span>
+                                                            <?php endif; ?>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -230,7 +364,12 @@ require_once __DIR__ . '/../includes/header.php';
                                             </td>
                                             <td data-label="Organization / Program">
                                                 <div class="small fw-semibold text-ink"><?= htmlspecialchars($org) ?></div>
-                                                <span class="small text-muted-custom"><?= htmlspecialchars($u['course'] ?? ($u['office_location'] ?? '')) ?></span>
+                                                <span class="small text-muted-custom">
+                                                    <?= htmlspecialchars($u['course'] ?? ($u['office_location'] ?? '')) ?>
+                                                    <?php if ($u['role'] === 'student' && !empty($u['year_level'])): ?>
+                                                        &bull; <span class="fw-semibold text-ink"><?= htmlspecialchars($u['year_level']) ?></span>
+                                                    <?php endif; ?>
+                                                </span>
                                             </td>
                                             <td data-label="ID / Accreditation">
                                                 <span class="chip" style="font-size: 11px;">
@@ -246,7 +385,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                     <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="text-end pe-4" data-label="Actions">
+                                             <td class="text-end pe-4" data-label="Actions">
                                                 <div class="d-flex align-items-center justify-content-end gap-2">
                                                     <?php if ($u['role'] === 'employer'): ?>
                                                         <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="modal" data-bs-target="#verifyModal<?= $u['id'] ?>">
@@ -257,6 +396,14 @@ require_once __DIR__ . '/../includes/header.php';
                                                             <a href="users.php?approve_id=<?= $u['id'] ?>" class="btn-pill btn-pill-sm" title="Approve Verification">
                                                                 <i class="bi bi-check-lg"></i>
                                                             </a>
+                                                        <?php endif; ?>
+                                                    <?php elseif ($u['role'] === 'student'): ?>
+                                                        <?php if (!empty($u['proof_file'])): ?>
+                                                            <a href="../<?= htmlspecialchars($u['proof_file']) ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-decoration-none" title="View Registered COR / Student ID Attachment">
+                                                                <i class="bi bi-file-earmark-check"></i> View Proof
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="small text-muted-custom">Active</span>
                                                         <?php endif; ?>
                                                     <?php else: ?>
                                                         <span class="small text-muted-custom">Active</span>
@@ -273,6 +420,184 @@ require_once __DIR__ . '/../includes/header.php';
 
             </div>
         </main>
+
+        <!-- Modals for Student Profile Change Requests -->
+        <?php foreach ($all_profile_requests as $req): 
+            $req_status = $req['status'] ?? 'pending';
+            $curr = $req['current_profile'] ?? [];
+            $next = $req['requested_profile'] ?? [];
+            $proof = $req['proof_file'] ?? '';
+            $has_proof = !empty($proof) && file_exists(__DIR__ . '/../' . $proof);
+        ?>
+        <div class="modal fade" id="inspectProfileReqModal<?= $req['id'] ?>" tabindex="-1" aria-labelledby="inspectProfileReqModalLabel<?= $req['id'] ?>" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content rounded-4 border-line shadow-lg">
+                    <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="icon-circle icon-circle-sm bg-warning text-dark">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-ink mb-0" id="inspectProfileReqModalLabel<?= $req['id'] ?>">
+                                    Student Profile Update Request #REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?>
+                                </h5>
+                                <span class="small text-muted-custom">
+                                    <?= htmlspecialchars($req['user_name']) ?> (<?= htmlspecialchars($req['student_id'] ?? '') ?>) &bull; <?= date('M d, Y h:i A', strtotime($req['created_at'])) ?>
+                                </span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-4">
+                        <div class="row g-4">
+                            <!-- Left 7-col: Side-by-Side Diff Table -->
+                            <div class="col-lg-7 border-end-lg border-line">
+                                <h4 class="card-paper-title fs-6 mb-3">
+                                    <i class="bi bi-arrow-left-right text-accent me-2"></i> Current vs. Requested Changes (Diff Comparison)
+                                </h4>
+
+                                <div class="table-responsive mb-3">
+                                    <table class="table-paper mb-0 small">
+                                        <thead>
+                                            <tr>
+                                                <th>Profile Field</th>
+                                                <th>Current Record</th>
+                                                <th>Requested Update</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $fields_to_compare = [
+                                                'name' => 'Full Name',
+                                                'department' => 'Academic Institute',
+                                                'course' => 'Degree Program / Course',
+                                                'year_level' => 'Year Level / Standing',
+                                                'sex' => 'Biological Sex',
+                                                'birthdate' => 'Date of Birth',
+                                                'age' => 'Derived Age'
+                                            ];
+                                            foreach ($fields_to_compare as $f_key => $f_label):
+                                                $curr_val = (string)($curr[$f_key] ?? '');
+                                                $next_val = (string)($next[$f_key] ?? '');
+                                                $is_changed = ($curr_val !== $next_val && !empty($next_val));
+                                            ?>
+                                                <tr class="<?= $is_changed ? 'bg-cream' : '' ?>">
+                                                    <td class="fw-bold text-ink">
+                                                        <?= $f_label ?>
+                                                        <?php if ($is_changed): ?>
+                                                            <span class="badge bg-warning text-dark ms-1" style="font-size: 9px;">MODIFIED</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-muted-custom">
+                                                        <?= htmlspecialchars($curr_val ?: '—') ?>
+                                                    </td>
+                                                    <td class="<?= $is_changed ? 'fw-bold text-accent' : 'text-ink' ?>">
+                                                        <?= htmlspecialchars($next_val ?: '—') ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <?php if (!empty($req['reason'])): ?>
+                                    <div class="p-3 bg-surface rounded-3 border border-line small mb-2">
+                                        <strong class="text-ink d-block mb-1"><i class="bi bi-chat-left-quote text-accent me-1"></i> Student Remarks / Justification:</strong>
+                                        <span class="text-muted-custom">"<?= htmlspecialchars($req['reason']) ?>"</span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (!empty($req['admin_notes'])): ?>
+                                    <div class="p-3 bg-cream rounded-3 border border-line small">
+                                        <strong class="text-ink d-block mb-1"><i class="bi bi-pencil-square text-accent me-1"></i> Admin Resolution Notes:</strong>
+                                        <span class="text-muted-custom"><?= htmlspecialchars($req['admin_notes']) ?></span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Right 5-col: Proof Document Viewer & Actions -->
+                            <div class="col-lg-5">
+                                <h4 class="card-paper-title fs-6 mb-3">
+                                    <i class="bi bi-file-earmark-check text-accent me-2"></i> Supporting Verification Proof
+                                </h4>
+
+                                <?php if ($has_proof): 
+                                    $ext = strtolower(pathinfo($proof, PATHINFO_EXTENSION));
+                                ?>
+                                    <div class="card-paper p-2 text-center bg-surface border border-line mb-3">
+                                        <?php if ($ext === 'pdf'): ?>
+                                            <div class="py-4 text-center">
+                                                <i class="bi bi-file-earmark-pdf fs-1 text-danger d-block mb-2"></i>
+                                                <div class="fw-bold text-ink small">Certificate of Registration (PDF)</div>
+                                                <span class="small text-muted-custom"><?= htmlspecialchars(basename($proof)) ?></span>
+                                            </div>
+                                        <?php else: ?>
+                                            <img src="../<?= htmlspecialchars($proof) ?>" alt="Student Proof Document" class="img-fluid rounded-3 border border-line" style="max-height: 240px; object-fit: contain; width: 100%; background: #ffffff;">
+                                        <?php endif; ?>
+
+                                        <a href="../<?= htmlspecialchars($proof) ?>" target="_blank" class="btn-pill-outline btn-pill-sm w-100 mt-2">
+                                            <i class="bi bi-arrows-fullscreen"></i> View Document in Full Tab
+                                        </a>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="p-4 bg-cream rounded-4 border border-line text-center text-muted-custom mb-3">
+                                        <i class="bi bi-file-earmark-x fs-1 d-block mb-2 text-muted-custom"></i>
+                                        <strong class="text-ink small">No Valid Document Found</strong>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($req_status === 'pending'): ?>
+                                    <div class="p-3 bg-surface rounded-4 border border-line">
+                                        <strong class="text-ink small d-block mb-2"><i class="bi bi-sliders text-accent me-1"></i> Resolve Verification:</strong>
+                                        
+                                        <!-- Approve Form -->
+                                        <form action="users.php" method="POST" class="mb-3">
+                                            <input type="hidden" name="action" value="approve_profile_req">
+                                            <input type="hidden" name="req_id" value="<?= $req['id'] ?>">
+                                            <div class="mb-2">
+                                                <label class="form-label small text-muted-custom" style="font-size: 11px;">Approval Supervisor Notes (Optional)</label>
+                                                <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="e.g. Verified against KLD Enrollment Database 1st Sem 2026-2027">
+                                            </div>
+                                            <button type="submit" class="btn-pill btn-pill-sm w-100" onclick="return confirm('Approve this student profile change? Institutional records will be updated immediately.')">
+                                                <i class="bi bi-check-circle-fill"></i> Approve &amp; Update Official Record
+                                            </button>
+                                        </form>
+
+                                        <!-- Reject Form -->
+                                        <form action="users.php" method="POST">
+                                            <input type="hidden" name="action" value="reject_profile_req">
+                                            <input type="hidden" name="req_id" value="<?= $req['id'] ?>">
+                                            <div class="mb-2">
+                                                <label class="form-label small text-muted-custom" style="font-size: 11px;">Rejection / Revision Reason</label>
+                                                <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="e.g. Unclear COR photo, please re-upload clear copy." required>
+                                            </div>
+                                            <button type="submit" class="btn-pill-outline btn-pill-sm w-100 text-danger border-danger">
+                                                <i class="bi bi-x-circle"></i> Decline Request
+                                            </button>
+                                        </form>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="p-3 bg-cream rounded-4 border border-line text-center">
+                                        <?php if ($req_status === 'approved'): ?>
+                                            <span class="badge-status--accepted fs-6 d-inline-block py-2 px-3"><i class="bi bi-check-circle me-1"></i> Request Approved &amp; Record Updated</span>
+                                        <?php else: ?>
+                                            <span class="badge-status--declined fs-6 d-inline-block py-2 px-3"><i class="bi bi-x-circle me-1"></i> Request Declined</span>
+                                        <?php endif; ?>
+                                        <div class="small text-muted-custom mt-2">Resolved on <?= date('M d, Y h:i A', strtotime($req['resolved_at'] ?? $req['created_at'])) ?></div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-cream border-top border-line py-3 px-4">
+                        <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
 
         <!-- Document Verification Modals for Employer Partners -->
         <?php foreach ($users as $u): 

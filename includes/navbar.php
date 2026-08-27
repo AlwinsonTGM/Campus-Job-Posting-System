@@ -35,26 +35,61 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
         <div class="collapse navbar-collapse" id="navbarMain">
             <!-- Center/Left Navigation Links -->
             <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 gap-xl-2 align-items-lg-center">
-                <li class="nav-item">
-                    <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
-                        FIND JOBS
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= ($current_script === 'dashboard.php' && strpos($_SERVER['REQUEST_URI'] ?? '', 'employer') !== false) ? 'active' : '' ?>" href="<?= $base_url ?>employer/dashboard.php">
-                        FOR EMPLOYERS
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= ($current_script === 'faqs.php') ? 'active' : '' ?>" href="<?= $base_url ?>faqs.php">
-                        FAQs
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= ($current_script === 'about-us.php') ? 'active' : '' ?>" href="<?= $base_url ?>about-us.php">
-                        ABOUT
-                    </a>
-                </li>
+                <?php if ($current_user && ($current_user['role'] ?? '') === 'admin'): 
+                    $nav_pending_count = 0;
+                    if (function_exists('get_profile_requests')) {
+                        $all_pr = get_profile_requests();
+                        $pending_pr = count(array_filter($all_pr, fn($r) => ($r['status'] ?? '') === 'pending'));
+                        $all_u = $_SESSION['users'] ?? (function_exists('load_json_file') ? load_json_file('users.json') : []);
+                        $pending_emp = count(array_filter($all_u, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+                        $nav_pending_count = $pending_pr + $pending_emp;
+                    }
+                ?>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1 <?= ($current_script === 'users.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/users.php">
+                            USERS &amp; VERIFICATION
+                            <?php if ($nav_pending_count > 0): ?>
+                                <span class="badge bg-danger rounded-pill px-2" style="font-size: 10px;"><?= $nav_pending_count ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'reports.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/reports.php">
+                            REPORTS
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'categories.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/categories.php">
+                            CATEGORIES
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
+                            JOBS DIRECTORY
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
+                            FIND JOBS
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'dashboard.php' && strpos($_SERVER['REQUEST_URI'] ?? '', 'employer') !== false) ? 'active' : '' ?>" href="<?= $base_url ?>employer/dashboard.php">
+                            FOR EMPLOYERS
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'faqs.php') ? 'active' : '' ?>" href="<?= $base_url ?>faqs.php">
+                            FAQs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'about-us.php') ? 'active' : '' ?>" href="<?= $base_url ?>about-us.php">
+                            ABOUT
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
 
             <!-- Right Action Items -->
@@ -88,6 +123,10 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/applicants.php"><i class="bi bi-people me-2"></i> View Applicants</a></li>
                             <?php elseif ($current_user['role'] === 'student'): ?>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-folder-check me-2"></i> My Applications</a></li>
+                            <?php elseif ($current_user['role'] === 'admin'): ?>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/users.php"><i class="bi bi-people-fill me-2 text-accent"></i> Users &amp; Verification</a></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/categories.php"><i class="bi bi-grid-fill me-2"></i> Job Categories</a></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-bar-chart-fill me-2"></i> System Reports</a></li>
                             <?php endif; ?>
                             <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2"></i> Settings</a></li>
                             <li><hr class="dropdown-divider"></li>

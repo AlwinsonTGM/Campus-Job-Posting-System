@@ -17,6 +17,8 @@ $pending_count = count(array_filter($my_apps, fn($a) => in_array($a['status'] ??
 $interview_count = count(array_filter($my_apps, fn($a) => in_array($a['status'] ?? '', ['interview_scheduled', 'Interview Scheduled'])));
 $accepted_count = count(array_filter($my_apps, fn($a) => in_array($a['status'] ?? '', ['accepted', 'Accepted / Hired'])));
 
+$pending_profile_req = get_pending_profile_request($user['id'] ?? 0);
+
 // Recommended Jobs (filtered by student course / general assistantships)
 $all_jobs = get_jobs();
 $recommended_jobs = array_slice($all_jobs, 0, 3);
@@ -142,6 +144,13 @@ require_once __DIR__ . '/../includes/header.php';
                                 </a>
                             </div>
 
+                            <?php if ($pending_profile_req): ?>
+                                <div class="p-2 px-3 bg-cream rounded-3 border border-line small d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-ink fw-semibold"><i class="bi bi-hourglass-split text-warning me-1"></i> Profile Update Pending</span>
+                                    <a href="../settings.php" class="small fw-bold text-accent text-decoration-none">View Status</a>
+                                </div>
+                            <?php endif; ?>
+
                             <div class="d-flex align-items-center gap-3 mb-4">
                                 <div class="icon-circle icon-circle-accent" style="width: 54px; height: 54px; font-size: 24px;">
                                     <?= strtoupper(substr($user['name'] ?? 'S', 0, 1)) ?>
@@ -162,8 +171,15 @@ require_once __DIR__ . '/../includes/header.php';
                                     <span class="fw-bold text-ink"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?></span>
                                 </div>
                                 <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
-                                    <span class="text-muted-custom">Year Level:</span>
+                                    <span class="text-muted-custom">Year Level / Standing:</span>
                                     <span class="fw-bold text-ink"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
+                                </div>
+                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                    <span class="text-muted-custom">Demographics:</span>
+                                    <span class="fw-bold text-ink">
+                                        <?= htmlspecialchars($user['sex'] ?? 'Male') ?> &bull; 
+                                        <?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20))) ?> yrs old
+                                    </span>
                                 </div>
                                 <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
                                     <span class="text-muted-custom">Academic Safeguard:</span>

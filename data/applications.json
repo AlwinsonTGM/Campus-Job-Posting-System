@@ -10,6 +10,8 @@
         "student_email": "student@kld.edu.ph",
         "course": "BS Information Systems (BSIS)",
         "year_level": "2nd Year",
+        "sex": "Male",
+        "age": 21,
         "phone": "+63 917 123 4567",
         "cover_letter": "I am eager to apply for the Computer Lab Technical Assistant position. As a 2nd year BS Information Systems student at KLD, I have solid experience troubleshooting PC hardware, setting up local area networks, and installing development environments. I am enthusiastic about supporting fellow KLD students and keeping our laboratories running smoothly.",
         "availability": [
@@ -40,6 +42,8 @@
         "student_email": "student@kld.edu.ph",
         "course": "BS Information Systems (BSIS)",
         "year_level": "2nd Year",
+        "sex": "Male",
+        "age": 21,
         "phone": "+63 917 123 4567",
         "cover_letter": "I would like to offer my clerical and database encoding skills to the Office of the University Registrar at KLD. I am proficient in MS Excel spreadsheets and data archiving.",
         "availability": [
@@ -69,6 +73,8 @@
         "student_email": "maria.santos@kld.edu.ph",
         "course": "BS Computer Science (BSCS)",
         "year_level": "3rd Year",
+        "sex": "Female",
+        "age": 21,
         "phone": "+63 928 234 5678",
         "cover_letter": "I am applying for the Library Aid role. I spend a lot of time in the KLD library, have high attention to detail, and can commit to morning shifts.",
         "availability": [

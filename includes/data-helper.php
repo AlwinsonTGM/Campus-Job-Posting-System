@@ -29,18 +29,53 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    $current_schema_version = '2.3_permit_verification';
+    $current_schema_version = '2.5_profile_verification_workflow';
     if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');
         $_SESSION['applications'] = load_json_file('applications.json');
         $_SESSION['categories'] = load_json_file('categories.json');
+        $_SESSION['profile_requests'] = load_json_file('profile_requests.json');
         $_SESSION['schema_version'] = $current_schema_version;
         $_SESSION['app_initialized'] = true;
     }
 }
 
 init_app_data();
+
+// Year Level / Academic Status & Biological Sex Helpers
+function get_year_levels() {
+    return [
+        '1st Year' => '1st Year (Undergraduate)',
+        '2nd Year' => '2nd Year (Undergraduate)',
+        '3rd Year' => '3rd Year (Undergraduate)',
+        '4th Year' => '4th Year (Undergraduate)',
+        '5th Year' => '5th Year (Undergraduate / Senior)',
+        'Graduate Student' => 'Graduate Student (Master’s / Post-Graduate)',
+        'Alumnus / Graduated' => 'Alumnus / School Graduate'
+    ];
+}
+
+function get_sex_options() {
+    return [
+        'Male' => 'Male',
+        'Female' => 'Female'
+    ];
+}
+
+function calculate_age($birthdate) {
+    if (empty($birthdate)) {
+        return null;
+    }
+    try {
+        $dob = new DateTime($birthdate);
+        $now = new DateTime();
+        $interval = $now->diff($dob);
+        return $interval->y;
+    } catch (Exception $e) {
+        return null;
+    }
+}
 
 // Job Type & Employer Type Enums & Helpers
 function get_job_types() {
@@ -184,6 +219,39 @@ function save_uploaded_permit($file) {
     return null;
 }
 
+// Helper to handle student COR / School ID / PSA proof file uploads
+function save_uploaded_proof($file) {
+    if (!isset($file) || !is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    
+    $proof_dir = dirname(__DIR__) . '/uploads/proofs';
+    if (!is_dir($proof_dir)) {
+        @mkdir($proof_dir, 0777, true);
+    }
+
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($file_ext, $allowed_extensions)) {
+        return null;
+    }
+
+    // Limit file size to 10MB
+    if (($file['size'] ?? 0) > 10 * 1024 * 1024) {
+        return null;
+    }
+
+    $safe_name = 'proof_' . time() . '_' . substr(md5(uniqid((string)rand(), true)), 0, 8) . '.' . $file_ext;
+    $target_path = $proof_dir . '/' . $safe_name;
+
+    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+        return 'uploads/proofs/' . $safe_name;
+    }
+
+    return null;
+}
+
 function update_employer_verification($id, $status, $notes = '') {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     foreach ($users as $key => $u) {
@@ -199,7 +267,7 @@ function update_employer_verification($id, $status, $notes = '') {
     return false;
 }
 
-function register_user($data, $permit_file = null) {
+function register_user($data, $permit_file = null, $proof_file = null) {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     
     // Check if email exists
@@ -213,7 +281,13 @@ function register_user($data, $permit_file = null) {
     $employer_type = $data['employer_type'] ?? 'university_office';
     $org_name = $data['organization_name'] ?? ($data['department'] ?? 'Campus Organization');
     $accreditation = $data['accreditation_number'] ?? ($employer_type === 'university_office' ? 'INTERNAL-UNIV' : 'PENDING-VERIFICATION');
-    $verification = ($employer_type === 'university_office') ? 'verified' : 'pending_approval';
+    $verification = ($employer_type === 'university_office') ? 'verified' : ($role === 'student' ? 'verified' : 'pending_approval');
+
+    $sex = $data['sex'] ?? ($role === 'student' ? 'Male' : '');
+    $birthdate = $data['birthdate'] ?? '';
+    $age = !empty($birthdate) ? calculate_age($birthdate) : ($data['age'] ?? ($role === 'student' ? 20 : null));
+    $year_level = $data['year_level'] ?? '1st Year';
+    $proof_path = $proof_file ?? ($data['proof_file'] ?? null);
 
     $new_id = count($users) > 0 ? max(array_column($users, 'id')) + 1 : 1;
     $new_user = [
@@ -227,11 +301,15 @@ function register_user($data, $permit_file = null) {
         'student_id' => $data['student_id'] ?? ('2026-' . rand(10000, 99999)),
         'department' => $data['department'] ?? 'General Academics',
         'course' => $data['course'] ?? '',
-        'year_level' => $data['year_level'] ?? '1st Year',
+        'year_level' => $year_level,
+        'sex' => $sex,
+        'birthdate' => $birthdate,
+        'age' => $age,
         'phone' => $data['phone'] ?? '',
         'office_location' => $data['office_location'] ?? 'Campus Main Office',
         'accreditation_number' => $accreditation,
         'permit_file' => $permit_file ?? ($data['permit_file'] ?? null),
+        'proof_file' => $proof_path,
         'verification_status' => $verification,
         'verification_notes' => '',
         'status' => 'active',
@@ -244,6 +322,204 @@ function register_user($data, $permit_file = null) {
 
     $_SESSION['user'] = $new_user;
     return ['success' => true, 'user' => $new_user];
+}
+
+// Student Profile Change Request Helpers
+function get_profile_requests($user_id = null, $status = null) {
+    $reqs = $_SESSION['profile_requests'] ?? load_json_file('profile_requests.json');
+    if ($user_id) {
+        $reqs = array_filter($reqs, fn($r) => ($r['user_id'] ?? 0) == $user_id);
+    }
+    if ($status) {
+        $reqs = array_filter($reqs, fn($r) => ($r['status'] ?? '') === $status);
+    }
+    usort($reqs, fn($a, $b) => strtotime($b['created_at'] ?? 'now') - strtotime($a['created_at'] ?? 'now'));
+    return array_values($reqs);
+}
+
+function get_pending_profile_request($user_id) {
+    $reqs = get_profile_requests($user_id, 'pending');
+    return !empty($reqs) ? $reqs[0] : null;
+}
+
+function get_recent_profile_request_notice($user_id) {
+    $reqs = get_profile_requests($user_id);
+    foreach ($reqs as $r) {
+        if (in_array($r['status'] ?? '', ['approved', 'rejected']) && empty($r['dismissed_by_user'])) {
+            return $r;
+        }
+    }
+    return null;
+}
+
+function dismiss_profile_request_notice($user_id) {
+    $reqs = $_SESSION['profile_requests'] ?? load_json_file('profile_requests.json');
+    foreach ($reqs as $k => $r) {
+        if (($r['user_id'] ?? 0) == $user_id && in_array($r['status'] ?? '', ['approved', 'rejected'])) {
+            $reqs[$k]['dismissed_by_user'] = true;
+        }
+    }
+    $_SESSION['profile_requests'] = $reqs;
+    save_json_file('profile_requests.json', $reqs);
+    return true;
+}
+
+function create_profile_request($user_id, $requested_data, $proof_file, $reason = '') {
+    $reqs = $_SESSION['profile_requests'] ?? load_json_file('profile_requests.json');
+    
+    // Check if user already has an active pending request
+    foreach ($reqs as $r) {
+        if (($r['user_id'] ?? 0) == $user_id && ($r['status'] ?? '') === 'pending') {
+            return ['success' => false, 'message' => 'You already have an active profile update request awaiting review.'];
+        }
+    }
+
+    $users = $_SESSION['users'] ?? load_json_file('users.json');
+    $current_user = null;
+    foreach ($users as $u) {
+        if ($u['id'] == $user_id) {
+            $current_user = $u;
+            break;
+        }
+    }
+
+    if (!$current_user) {
+        return ['success' => false, 'message' => 'User account not found.'];
+    }
+
+    $req_birthdate = trim($requested_data['birthdate'] ?? ($current_user['birthdate'] ?? ''));
+    $req_age = !empty($req_birthdate) ? calculate_age($req_birthdate) : (!empty($requested_data['age']) ? (int)$requested_data['age'] : ($current_user['age'] ?? 20));
+
+    $new_id = count($reqs) > 0 ? max(array_column($reqs, 'id')) + 1 : 1;
+    $new_req = [
+        'id' => $new_id,
+        'user_id' => (int)$user_id,
+        'user_name' => $current_user['name'],
+        'user_email' => $current_user['email'],
+        'student_id' => $current_user['student_id'] ?? '2024-00123',
+        'current_profile' => [
+            'name' => $current_user['name'] ?? '',
+            'department' => $current_user['department'] ?? '',
+            'course' => $current_user['course'] ?? '',
+            'year_level' => $current_user['year_level'] ?? '1st Year',
+            'sex' => $current_user['sex'] ?? 'Male',
+            'birthdate' => $current_user['birthdate'] ?? '',
+            'age' => $current_user['age'] ?? 20,
+        ],
+        'requested_profile' => [
+            'name' => htmlspecialchars($requested_data['name'] ?? $current_user['name']),
+            'department' => htmlspecialchars($requested_data['department'] ?? $current_user['department']),
+            'course' => htmlspecialchars($requested_data['course'] ?? $current_user['course']),
+            'year_level' => htmlspecialchars($requested_data['year_level'] ?? $current_user['year_level']),
+            'sex' => htmlspecialchars($requested_data['sex'] ?? ($current_user['sex'] ?? 'Male')),
+            'birthdate' => htmlspecialchars($req_birthdate),
+            'age' => $req_age,
+        ],
+        'proof_file' => $proof_file,
+        'reason' => htmlspecialchars($reason),
+        'status' => 'pending',
+        'admin_notes' => '',
+        'dismissed_by_user' => false,
+        'created_at' => date('Y-m-d H:i:s'),
+        'resolved_at' => null
+    ];
+
+    $reqs[] = $new_req;
+    $_SESSION['profile_requests'] = $reqs;
+    save_json_file('profile_requests.json', $reqs);
+    return ['success' => true, 'request' => $new_req];
+}
+
+function approve_profile_request($request_id, $admin_notes = '') {
+    $reqs = $_SESSION['profile_requests'] ?? load_json_file('profile_requests.json');
+    $target_req = null;
+    $target_idx = null;
+
+    foreach ($reqs as $k => $r) {
+        if ($r['id'] == $request_id) {
+            $target_req = $r;
+            $target_idx = $k;
+            break;
+        }
+    }
+
+    if (!$target_req) {
+        return false;
+    }
+
+    $user_id = $target_req['user_id'];
+    $requested = $target_req['requested_profile'];
+
+    // Apply changes to user profile
+    $users = $_SESSION['users'] ?? load_json_file('users.json');
+    foreach ($users as $uk => $u) {
+        if ($u['id'] == $user_id) {
+            if (!empty($requested['name'])) $users[$uk]['name'] = $requested['name'];
+            if (!empty($requested['department'])) $users[$uk]['department'] = $requested['department'];
+            if (!empty($requested['course'])) $users[$uk]['course'] = $requested['course'];
+            if (!empty($requested['year_level'])) $users[$uk]['year_level'] = $requested['year_level'];
+            if (!empty($requested['sex'])) $users[$uk]['sex'] = $requested['sex'];
+            if (!empty($requested['birthdate'])) $users[$uk]['birthdate'] = $requested['birthdate'];
+            if (!empty($requested['age'])) $users[$uk]['age'] = $requested['age'];
+            if (!empty($target_req['proof_file'])) $users[$uk]['proof_file'] = $target_req['proof_file'];
+            
+            if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $user_id) {
+                $_SESSION['user'] = $users[$uk];
+            }
+            break;
+        }
+    }
+    $_SESSION['users'] = $users;
+    save_json_file('users.json', $users);
+
+    // Update applications of this student to reflect new verified data
+    $apps = $_SESSION['applications'] ?? load_json_file('applications.json');
+    foreach ($apps as $ak => $a) {
+        if (($a['student_id'] ?? 0) == $user_id) {
+            if (!empty($requested['name'])) $apps[$ak]['student_name'] = $requested['name'];
+            if (!empty($requested['course'])) $apps[$ak]['course'] = $requested['course'];
+            if (!empty($requested['year_level'])) $apps[$ak]['year_level'] = $requested['year_level'];
+            if (!empty($requested['sex'])) $apps[$ak]['sex'] = $requested['sex'];
+            if (!empty($requested['age'])) $apps[$ak]['age'] = $requested['age'];
+        }
+    }
+    $_SESSION['applications'] = $apps;
+    save_json_file('applications.json', $apps);
+
+    // Mark request as approved
+    $reqs[$target_idx]['status'] = 'approved';
+    $reqs[$target_idx]['admin_notes'] = htmlspecialchars($admin_notes);
+    $reqs[$target_idx]['resolved_at'] = date('Y-m-d H:i:s');
+    $reqs[$target_idx]['dismissed_by_user'] = false;
+    $_SESSION['profile_requests'] = $reqs;
+    save_json_file('profile_requests.json', $reqs);
+
+    return true;
+}
+
+function reject_profile_request($request_id, $admin_notes = '') {
+    $reqs = $_SESSION['profile_requests'] ?? load_json_file('profile_requests.json');
+    $target_idx = null;
+
+    foreach ($reqs as $k => $r) {
+        if ($r['id'] == $request_id) {
+            $target_idx = $k;
+            break;
+        }
+    }
+
+    if ($target_idx === null) {
+        return false;
+    }
+
+    $reqs[$target_idx]['status'] = 'rejected';
+    $reqs[$target_idx]['admin_notes'] = htmlspecialchars($admin_notes);
+    $reqs[$target_idx]['resolved_at'] = date('Y-m-d H:i:s');
+    $reqs[$target_idx]['dismissed_by_user'] = false;
+    $_SESSION['profile_requests'] = $reqs;
+    save_json_file('profile_requests.json', $reqs);
+
+    return true;
 }
 
 // Jobs Management
@@ -487,6 +763,8 @@ function create_application($data) {
         'student_email' => $user['email'] ?? 'student@kld.edu.ph',
         'course' => $user['course'] ?? 'BS Information Systems (BSIS)',
         'year_level' => $user['year_level'] ?? '2nd Year',
+        'sex' => $user['sex'] ?? 'Male',
+        'age' => $user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20),
         'phone' => $data['phone'] ?? ($user['phone'] ?? '+63 917 123 4567'),
         'cover_letter' => htmlspecialchars($data['cover_letter'] ?? ''),
         'availability' => !empty($data['availability']) ? (is_array($data['availability']) ? $data['availability'] : explode(',', $data['availability'])) : ['Flexible Weekdays'],

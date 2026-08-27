@@ -16,41 +16,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
     if ($action === 'profile') {
-        $name = trim($_POST['name'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
-        $course = trim($_POST['course'] ?? '');
-        $department = trim($_POST['department'] ?? '');
         $availability = $_POST['availability'] ?? ($user['availability'] ?? []);
 
-        if (empty($name)) {
-            $error = 'Full name cannot be empty.';
-        } else {
-            $org_name = trim($_POST['organization_name'] ?? '');
-            $office_loc = trim($_POST['office_location'] ?? '');
-            
-            // Update in session and users.json
-            $users = $_SESSION['users'] ?? load_json_file('users.json');
-            foreach ($users as $k => $u) {
-                if ($u['id'] == $user['id']) {
-                    $users[$k]['name'] = htmlspecialchars($name);
-                    $users[$k]['phone'] = htmlspecialchars($phone);
-                    $users[$k]['course'] = htmlspecialchars($course);
-                    $users[$k]['department'] = htmlspecialchars($department);
-                    $users[$k]['availability'] = $availability;
-                    if ($u['role'] === 'employer') {
-                        if (!empty($org_name)) $users[$k]['organization_name'] = htmlspecialchars($org_name);
-                        if (!empty($office_loc)) $users[$k]['office_location'] = htmlspecialchars($office_loc);
-                    }
-                    $_SESSION['user'] = $users[$k];
-                    break;
+        $users = $_SESSION['users'] ?? load_json_file('users.json');
+        foreach ($users as $k => $u) {
+            if ($u['id'] == $user['id']) {
+                $users[$k]['phone'] = htmlspecialchars($phone);
+                $users[$k]['availability'] = $availability;
+
+                if ($u['role'] === 'employer') {
+                    $name = trim($_POST['name'] ?? '');
+                    $org_name = trim($_POST['organization_name'] ?? '');
+                    $office_loc = trim($_POST['office_location'] ?? '');
+                    $department = trim($_POST['department'] ?? '');
+                    if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
+                    if (!empty($org_name)) $users[$k]['organization_name'] = htmlspecialchars($org_name);
+                    if (!empty($office_loc)) $users[$k]['office_location'] = htmlspecialchars($office_loc);
+                    if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
+                } elseif ($u['role'] === 'admin') {
+                    $name = trim($_POST['name'] ?? '');
+                    $department = trim($_POST['department'] ?? '');
+                    if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
+                    if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
                 }
+                
+                $_SESSION['user'] = $users[$k];
+                break;
             }
-            $_SESSION['users'] = $users;
-            save_json_file('users.json', $users);
-            set_flash('success', 'Profile and shift availability settings have been updated successfully.');
-            header('Location: settings.php');
-            exit;
         }
+        $_SESSION['users'] = $users;
+        save_json_file('users.json', $users);
+        set_flash('success', 'Contact information and weekly availability settings have been updated successfully.');
+        header('Location: settings.php');
+        exit;
+    } elseif ($action === 'request_profile_change') {
+        $reason = trim($_POST['reason'] ?? '');
+        $proof_path = null;
+        if (isset($_FILES['proof_file']) && ($_FILES['proof_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $proof_path = save_uploaded_proof($_FILES['proof_file']);
+        }
+
+        if (!$proof_path) {
+            $error = 'Please attach an official Certificate of Registration (COR), Student ID, or PSA document to verify your request.';
+        } else {
+            $res = create_profile_request($user['id'], $_POST, $proof_path, $reason);
+            if ($res['success']) {
+                set_flash('success', 'Your official profile change request has been submitted to the University Admin / Registrar for review.');
+                header('Location: settings.php');
+                exit;
+            } else {
+                $error = $res['message'];
+            }
+        }
+    } elseif ($action === 'dismiss_notice') {
+        dismiss_profile_request_notice($user['id']);
+        header('Location: settings.php');
+        exit;
     } elseif ($action === 'password') {
         $new_pass = $_POST['new_password'] ?? '';
         $confirm_pass = $_POST['confirm_password'] ?? '';
@@ -83,6 +105,9 @@ $user_availability = $user['availability'] ?? [
     'Fri - Afternoon (1PM–5PM)'
 ];
 
+$pending_req = (($user['role'] ?? '') === 'student') ? get_pending_profile_request($user['id']) : null;
+$recent_notice = (($user['role'] ?? '') === 'student') ? get_recent_profile_request_notice($user['id']) : null;
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -98,7 +123,7 @@ require_once __DIR__ . '/includes/header.php';
                 render_page_head(
                     '<i class="bi bi-gear-fill text-accent me-1"></i> Account Management · ' . ucfirst($user['role'] ?? 'User'),
                     'Profile & Account Settings',
-                    'Update your profile information, free class schedule matrix, and security credentials.'
+                    'Update your contact details, weekly free shift availability, and security credentials.'
                 );
                 ?>
 
@@ -111,13 +136,92 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                 <?php endif; ?>
 
+                <?php if ($pending_req): ?>
+                    <div class="alert-paper alert-paper--warning mb-4 reveal-fade-rise">
+                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="icon-circle icon-circle-sm bg-warning text-dark flex-shrink-0 mt-1">
+                                    <i class="bi bi-hourglass-split fs-5"></i>
+                                </div>
+                                <div>
+                                    <strong class="text-ink fs-6 d-block mb-1">Official Profile Change Request Pending Review</strong>
+                                    <span class="small text-muted-custom">
+                                        Submitted on <?= date('M d, Y h:i A', strtotime($pending_req['created_at'])) ?> &bull; Document: <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($pending_req['proof_file'])) ?></span>
+                                    </span>
+                                    <div class="mt-2 small bg-white p-2 px-3 rounded-3 border border-line text-ink">
+                                        <strong>Requested Updates:</strong>
+                                        <span class="ms-1"><?= htmlspecialchars($pending_req['requested_profile']['course']) ?></span> &bull;
+                                        <span><?= htmlspecialchars($pending_req['requested_profile']['year_level']) ?></span> &bull;
+                                        <span><?= htmlspecialchars($pending_req['requested_profile']['sex']) ?></span>
+                                        <?php if (!empty($pending_req['reason'])): ?>
+                                            <div class="text-muted-custom mt-1"><em>"<?= htmlspecialchars($pending_req['reason']) ?>"</em></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="badge-status--pending flex-shrink-0">Pending Verification</span>
+                        </div>
+                    </div>
+                <?php elseif ($recent_notice): ?>
+                    <?php if ($recent_notice['status'] === 'approved'): ?>
+                        <div class="alert-paper alert-paper--success mb-4 reveal-fade-rise">
+                            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="icon-circle icon-circle-sm bg-success text-white flex-shrink-0">
+                                        <i class="bi bi-check-lg fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-ink d-block">Profile Update Request Approved!</strong>
+                                        <span class="small text-muted-custom">Your institutional profile changes have been verified and applied to your official student record.</span>
+                                        <?php if (!empty($recent_notice['admin_notes'])): ?>
+                                            <div class="small text-ink mt-1"><strong>Admin Notes:</strong> <?= htmlspecialchars($recent_notice['admin_notes']) ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <form action="settings.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="dismiss_notice">
+                                    <button type="submit" class="btn-pill-outline btn-pill-sm">Dismiss</button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php elseif ($recent_notice['status'] === 'rejected'): ?>
+                        <div class="alert-paper alert-paper--danger mb-4 reveal-fade-rise">
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="icon-circle icon-circle-sm bg-danger text-white flex-shrink-0 mt-1">
+                                        <i class="bi bi-x-lg fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-ink d-block mb-1">Profile Update Request Declined</strong>
+                                        <span class="small text-muted-custom">Your submitted verification document did not match institutional records or requires revision.</span>
+                                        <?php if (!empty($recent_notice['admin_notes'])): ?>
+                                            <div class="small text-ink mt-2 bg-white p-2 px-3 rounded-3 border border-line">
+                                                <strong>Feedback from Registrar / Admin:</strong> <?= htmlspecialchars($recent_notice['admin_notes']) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button type="button" class="btn-pill btn-pill-sm" data-bs-toggle="modal" data-bs-target="#requestProfileModal">
+                                        Submit New Proof
+                                    </button>
+                                    <form action="settings.php" method="POST" class="d-inline">
+                                        <input type="hidden" name="action" value="dismiss_notice">
+                                        <button type="submit" class="btn-pill-outline btn-pill-sm">Dismiss</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+
                 <div class="row g-4 mb-5">
-                    <!-- Left 6-col: Personal Profile & Availability -->
+                    <!-- Left 7-col: Personal Profile & Availability -->
                     <div class="col-lg-7">
                         <div class="card-paper p-4 p-md-4 h-100 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
                                 <h3 class="card-paper-title fs-5 mb-0">
-                                    <i class="bi bi-person-circle text-accent me-2"></i> Profile Information
+                                    <i class="bi bi-person-circle text-accent me-2"></i> Profile &amp; Preferences
                                 </h3>
                                 <span class="pill-badge"><?= ucfirst($user['role'] ?? 'student') ?></span>
                             </div>
@@ -131,62 +235,92 @@ require_once __DIR__ . '/includes/header.php';
                                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                         <input type="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" readonly style="background-color: var(--cream);">
                                     </div>
-                                    <span class="small text-muted-custom" style="font-size: 11px;">Primary login email managed by University Registrar / MIS.</span>
+                                    <span class="small text-muted-custom" style="font-size: 11px;">Primary institutional login email managed by University Registrar / MIS.</span>
                                 </div>
 
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="settings-name">Full Name <span class="text-danger">*</span></label>
-                                        <input type="text" name="name" id="settings-name" class="form-control" value="<?= htmlspecialchars($user['name']) ?>" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="settings-phone">Contact Phone</label>
+                                <div class="mb-3">
+                                    <label class="form-label" for="settings-phone">Contact Phone Number <span class="badge-status--accepted ms-1" style="font-size: 10px;">Self-Service</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                                         <input type="text" name="phone" id="settings-phone" class="form-control" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+63 917 123 4567">
                                     </div>
+                                    <span class="small text-muted-custom" style="font-size: 11px;">Used by department supervisors for scheduling interviews and duty dispatch notices.</span>
                                 </div>
 
                                 <?php if (($user['role'] ?? '') === 'student'): ?>
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Student ID Number</label>
-                                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?>" readonly style="background-color: var(--cream);">
+                                    <!-- Institutional & Academic Identity Lock Section -->
+                                    <div class="p-3 bg-cream rounded-4 border border-line mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-shield-lock-fill text-accent fs-5"></i>
+                                                <span class="small fw-bold text-ink">Institutional &amp; Academic Identity Record</span>
+                                            </div>
+                                            <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="modal" data-bs-target="#requestProfileModal" <?= $pending_req ? 'disabled' : '' ?>>
+                                                <i class="bi bi-pencil-square"></i> Request Record Update
+                                            </button>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label" for="settings-course">Degree Program / Course</label>
-                                            <select name="course" id="settings-course" class="form-select">
-                                                <option value="">Select Degree Program</option>
-                                                <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
-                                                    <optgroup label="<?= htmlspecialchars($inst) ?>">
-                                                        <?php foreach ($courses as $c): ?>
-                                                            <option value="<?= htmlspecialchars($c) ?>" <?= (isset($user['course']) && ($user['course'] === $c || strpos($c, $user['course']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
-                                                        <?php endforeach; ?>
-                                                    </optgroup>
-                                                <?php endforeach; ?>
-                                            </select>
+                                        <p class="small text-muted-custom mb-3" style="font-size: 11.5px;">
+                                            To prevent credential misrepresentation in student assistantship assignments, modifications to your institutional records require submitting a valid Certificate of Registration (COR) or ID for administrative verification.
+                                        </p>
+
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Full Name</span>
+                                                    <strong class="text-ink small"><?= htmlspecialchars($user['name']) ?></strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Student ID Number</span>
+                                                    <strong class="text-ink small"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Academic Institute</span>
+                                                    <span class="text-ink small fw-semibold"><?= htmlspecialchars($user['department'] ?? 'Institute of Computing and Digital Innovation (ICDI)') ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Degree Program</span>
+                                                    <span class="text-ink small fw-semibold"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems (BSIS)') ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Year Level / Standing</span>
+                                                    <span class="chip" style="font-size: 11px;"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Sex &amp; Age</span>
+                                                    <span class="text-ink small fw-semibold">
+                                                        <?= htmlspecialchars($user['sex'] ?? 'Male') ?> &bull; 
+                                                        <?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20))) ?> yrs old
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <?php if (!empty($user['proof_file'])): ?>
+                                                <div class="col-12 mt-1">
+                                                    <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-white rounded-3 border border-line small">
+                                                        <span class="text-muted-custom"><i class="bi bi-file-earmark-check text-accent me-1"></i>Verified Attachment on File</span>
+                                                        <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($user['proof_file'])) ?></span>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="mb-3">
-                                    <label class="form-label" for="settings-dept">Academic Institute / Department</label>
-                                    <select name="department" id="settings-dept" class="form-select">
-                                        <option value="">Select Institute / Office</option>
-                                        <optgroup label="Academic Institutes">
-                                            <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
-                                                <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($user['department']) && ($user['department'] === $inst || strpos($inst, $user['department']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
-                                            <?php endforeach; ?>
-                                        </optgroup>
-                                        <optgroup label="Administrative Offices">
-                                            <option value="Office of the University Registrar" <?= (isset($user['department']) && strpos($user['department'], 'Registrar') !== false) ? 'selected' : '' ?>>Office of the University Registrar</option>
-                                            <option value="Student Affairs & Services Office (SASO)" <?= (isset($user['department']) && strpos($user['department'], 'Student Affairs') !== false) ? 'selected' : '' ?>>Student Affairs & Services Office (SASO)</option>
-                                            <option value="Management Information Systems (MIS)" <?= (isset($user['department']) && strpos($user['department'], 'MIS') !== false) ? 'selected' : '' ?>>Management Information Systems (MIS)</option>
-                                            <option value="KLD University Library" <?= (isset($user['department']) && strpos($user['department'], 'Library') !== false) ? 'selected' : '' ?>>KLD University Library</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-
                                 <?php if (($user['role'] ?? '') === 'employer'): ?>
                                     <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="settings-name">Representative Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="name" id="settings-name" class="form-control" value="<?= htmlspecialchars($user['name']) ?>" required>
+                                        </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Company / Office Name</label>
                                             <input type="text" name="organization_name" class="form-control" value="<?= htmlspecialchars($user['organization_name'] ?? ($user['department'] ?? '')) ?>">
@@ -194,6 +328,10 @@ require_once __DIR__ . '/includes/header.php';
                                         <div class="col-md-6">
                                             <label class="form-label">Workplace Location</label>
                                             <input type="text" name="office_location" class="form-control" value="<?= htmlspecialchars($user['office_location'] ?? '') ?>" placeholder="Campus Office / Tech Park">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="settings-dept">Department / Division</label>
+                                            <input type="text" name="department" id="settings-dept" class="form-control" value="<?= htmlspecialchars($user['department'] ?? '') ?>">
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -310,4 +448,165 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </div>
 
+<?php if (($user['role'] ?? '') === 'student'): ?>
+<!-- Student Profile Update Request Modal -->
+<div class="modal fade" id="requestProfileModal" tabindex="-1" aria-labelledby="requestProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-line shadow-lg">
+            <div class="modal-header bg-cream border-bottom border-line py-2 px-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="icon-circle icon-circle-sm icon-circle-accent" style="width: 32px; height: 32px; font-size: 14px;">
+                        <i class="bi bi-shield-check text-accent"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold text-ink mb-0" id="requestProfileModalLabel">Official Profile Change Request</h6>
+                        <span class="small text-muted-custom" style="font-size: 11px;">Update institutional records with official proof document</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="settings.php" method="POST" enctype="multipart/form-data" class="form-paper m-0">
+                <input type="hidden" name="action" value="request_profile_change">
+
+                <div class="modal-body p-3">
+                    <div class="row g-3">
+                        <!-- Left Column: Academic & Identity Fields -->
+                        <div class="col-md-6 border-end-md border-line pe-md-3">
+                            <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
+                                <i class="bi bi-person-lines-fill text-accent me-1"></i> Requested Student Identity
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small mb-1" for="req-name">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="req-name" class="form-control form-control-sm" value="<?= htmlspecialchars($user['name']) ?>" required>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small mb-1" for="req-dept">Academic Institute <span class="text-danger">*</span></label>
+                                <select name="department" id="req-dept" class="form-select form-select-sm" required>
+                                    <option value="">Select Academic Institute</option>
+                                    <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                        <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($user['department']) && ($user['department'] === $inst || strpos($inst, $user['department']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small mb-1" for="req-course">Degree Program / Course <span class="text-danger">*</span></label>
+                                <select name="course" id="req-course" class="form-select form-select-sm" required>
+                                    <option value="">Select Degree Program</option>
+                                    <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                        <optgroup label="<?= htmlspecialchars($inst) ?>">
+                                            <?php foreach ($courses as $c): ?>
+                                                <option value="<?= htmlspecialchars($c) ?>" <?= (isset($user['course']) && ($user['course'] === $c || strpos($c, $user['course']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-7">
+                                    <label class="form-label small mb-1" for="req-year-level">Year Level <span class="text-danger">*</span></label>
+                                    <select name="year_level" id="req-year-level" class="form-select form-select-sm" required>
+                                        <?php foreach (get_year_levels() as $val => $label): ?>
+                                            <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['year_level']) && $user['year_level'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label small mb-1" for="req-sex">Sex <span class="text-danger">*</span></label>
+                                    <select name="sex" id="req-sex" class="form-select form-select-sm" required>
+                                        <?php foreach (get_sex_options() as $val => $label): ?>
+                                            <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['sex']) && $user['sex'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-0">
+                                <div class="col-7">
+                                    <label class="form-label small mb-1" for="req-birthdate">Date of Birth <span class="text-danger">*</span></label>
+                                    <input type="date" name="birthdate" id="req-birthdate" class="form-control form-control-sm" value="<?= htmlspecialchars($user['birthdate'] ?? '') ?>" max="<?= date('Y-m-d', strtotime('-15 years')) ?>" required>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label small mb-1" for="req-age">Age</label>
+                                    <input type="number" name="age" id="req-age" class="form-control form-control-sm" value="<?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : ''))) ?>" readonly style="background-color: var(--cream);">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Document Proof & Justification -->
+                        <div class="col-md-6 ps-md-3 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
+                                    <i class="bi bi-file-earmark-check text-accent me-1"></i> Verification Document &amp; Reason
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-cream rounded-3 border border-line mb-2 small">
+                                    <span class="text-muted-custom" style="font-size: 11px;">Student ID:</span>
+                                    <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1" for="req-proof-file">Proof Attachment (COR / ID / PSA) <span class="text-danger">*</span></label>
+                                    <input type="file" name="proof_file" id="req-proof-file" class="form-control form-control-sm" accept="image/*,application/pdf" required>
+                                    <span class="small text-muted-custom mt-1 d-block" style="font-size: 10.5px;">
+                                        Attach clear PDF or image of your latest COR/ID (Max 10MB).
+                                    </span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1" for="req-reason">Remarks / Justification</label>
+                                    <textarea name="reason" id="req-reason" rows="2" class="form-control form-control-sm" placeholder="e.g. Enrolled in 3rd Year BSIS; attached latest COR."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="p-2 px-3 bg-cream rounded-3 border border-line small text-muted-custom" style="font-size: 11px;">
+                                <i class="bi bi-shield-lock-fill text-accent me-1"></i>
+                                Subject to Admin / Registrar approval before taking effect.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-surface border-top border-line py-2 px-3">
+                    <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-pill btn-pill-sm">
+                        <i class="bi bi-send-fill"></i> Submit Verification
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <script src="assets/js/password-strength.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function bindAgeCalc(dobId, ageId) {
+        const dob = document.getElementById(dobId);
+        const age = document.getElementById(ageId);
+        if (dob && age) {
+            dob.addEventListener('change', function() {
+                if (!this.value) return;
+                const d = new Date(this.value);
+                const now = new Date();
+                let a = now.getFullYear() - d.getFullYear();
+                const m = now.getMonth() - d.getMonth();
+                if (m < 0 || (m === 0 && now.getDate() < d.getDate())) {
+                    a--;
+                }
+                if (a >= 0 && a < 120) {
+                    age.value = a;
+                }
+            });
+        }
+    }
+
+    bindAgeCalc('settings-birthdate', 'settings-age');
+    bindAgeCalc('req-birthdate', 'req-age');
+});
+</script>

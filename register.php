@@ -26,6 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $department = trim($_POST['department'] ?? '');
     $course = trim($_POST['course'] ?? '');
     $year_level = $_POST['year_level'] ?? '1st Year';
+    $sex = $_POST['sex'] ?? 'Male';
+    $birthdate = trim($_POST['birthdate'] ?? '');
+    $age = !empty($birthdate) ? calculate_age($birthdate) : 20;
     $phone = trim($_POST['phone'] ?? '');
     $office_location = trim($_POST['office_location'] ?? '');
     $accreditation_number = trim($_POST['accreditation_number'] ?? '');
@@ -39,40 +42,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Password must contain at least 8 characters.';
     } elseif ($password !== $confirm_password) {
         $error = 'Password and Confirm Password do not match.';
+    } elseif ($role === 'student' && (empty($student_id) || empty($department) || empty($course) || empty($birthdate))) {
+        $error = 'Please complete all student profile fields (Student ID, Institute, Degree Program, and Date of Birth).';
     } else {
         $permit_file_path = null;
         if ($role === 'employer' && isset($_FILES['permit_photo']) && ($_FILES['permit_photo']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
             $permit_file_path = save_uploaded_permit($_FILES['permit_photo']);
         }
 
-        $res = register_user([
-            'name' => $name,
-            'email' => $email,
-            'password' => $password,
-            'role' => $role,
-            'employer_type' => $employer_type,
-            'organization_name' => $organization_name ?: ($department ?: $name),
-            'student_id' => $student_id,
-            'department' => $department ?: ($organization_name ?: 'General'),
-            'course' => $course,
-            'year_level' => $year_level,
-            'phone' => $phone,
-            'office_location' => $office_location,
-            'accreditation_number' => $accreditation_number,
-            'permit_file' => $permit_file_path
-        ], $permit_file_path);
-
-        if ($res['success']) {
-            if ($role === 'employer' && $employer_type === 'approved_partner') {
-                set_flash('success', 'Account registered! Your business permit and partner profile will be reviewed by Career Services.');
-            } else {
-                set_flash('success', 'Account registered successfully! Welcome to Campus Hire.');
+        $proof_file_path = null;
+        if ($role === 'student') {
+            if (isset($_FILES['student_proof']) && ($_FILES['student_proof']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $proof_file_path = save_uploaded_proof($_FILES['student_proof']);
             }
-            if ($role === 'student') header('Location: student/dashboard.php');
-            else header('Location: employer/dashboard.php');
-            exit;
-        } else {
-            $error = $res['message'];
+            if (!$proof_file_path) {
+                $error = 'Please upload a valid Certificate of Registration (COR) or Student ID attachment (PDF, JPG, PNG).';
+            }
+        }
+
+        if (!$error) {
+            $res = register_user([
+                'name' => $name,
+                'email' => $email,
+                'password' => $password,
+                'role' => $role,
+                'employer_type' => $employer_type,
+                'organization_name' => $organization_name ?: ($department ?: $name),
+                'student_id' => $student_id,
+                'department' => $department ?: ($organization_name ?: 'General'),
+                'course' => $course,
+                'year_level' => $year_level,
+                'sex' => $sex,
+                'birthdate' => $birthdate,
+                'age' => $age,
+                'phone' => $phone,
+                'office_location' => $office_location,
+                'accreditation_number' => $accreditation_number,
+                'permit_file' => $permit_file_path,
+                'proof_file' => $proof_file_path
+            ], $permit_file_path, $proof_file_path);
+
+            if ($res['success']) {
+                if ($role === 'employer' && $employer_type === 'approved_partner') {
+                    set_flash('success', 'Account registered! Your business permit and partner profile will be reviewed by Career Services.');
+                } else {
+                    set_flash('success', 'Account registered successfully! Welcome to Campus Hire.');
+                }
+                if ($role === 'student') header('Location: student/dashboard.php');
+                else header('Location: employer/dashboard.php');
+                exit;
+            } else {
+                $error = $res['message'];
+            }
         }
     }
 }
@@ -222,11 +243,11 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Student Specific Fields -->
                             <div class="row g-3 mb-3" id="student-fields">
                                 <div class="col-md-6">
-                                    <label class="form-label" for="student_id">Student ID Number</label>
+                                    <label class="form-label" for="student_id">Student ID Number <span class="text-danger">*</span></label>
                                     <input type="text" name="student_id" id="student_id" class="form-control" placeholder="2024-00123" value="<?= htmlspecialchars($student_id ?? '') ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="department-select">Academic Institute</label>
+                                    <label class="form-label" for="department-select">Academic Institute <span class="text-danger">*</span></label>
                                     <select name="department" class="form-select" id="department-select">
                                         <option value="">Select Institute / Office</option>
                                         <optgroup label="Academic Institutes">
@@ -243,7 +264,7 @@ require_once __DIR__ . '/includes/header.php';
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="course-select">Degree Program / Course</label>
+                                    <label class="form-label" for="course-select">Degree Program / Course <span class="text-danger">*</span></label>
                                     <select name="course" class="form-select" id="course-select">
                                         <option value="">Select Degree Program</option>
                                         <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
@@ -256,13 +277,38 @@ require_once __DIR__ . '/includes/header.php';
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="year_level">Year Level</label>
+                                    <label class="form-label" for="year_level">Year Level / Academic Status <span class="text-danger">*</span></label>
                                     <select name="year_level" id="year_level" class="form-select">
-                                        <option value="1st Year" <?= (isset($year_level) && $year_level === '1st Year') ? 'selected' : '' ?>>1st Year</option>
-                                        <option value="2nd Year" <?= (!isset($year_level) || $year_level === '2nd Year') ? 'selected' : '' ?>>2nd Year</option>
-                                        <option value="3rd Year" <?= (isset($year_level) && $year_level === '3rd Year') ? 'selected' : '' ?>>3rd Year</option>
-                                        <option value="4th Year" <?= (isset($year_level) && $year_level === '4th Year') ? 'selected' : '' ?>>4th Year</option>
+                                        <?php foreach (get_year_levels() as $val => $label): ?>
+                                            <option value="<?= htmlspecialchars($val) ?>" <?= (isset($year_level) && $year_level === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                                        <?php endforeach; ?>
                                     </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reg-sex">Biological Sex <span class="text-danger">*</span></label>
+                                    <select name="sex" id="reg-sex" class="form-select">
+                                        <?php foreach (get_sex_options() as $val => $label): ?>
+                                            <option value="<?= htmlspecialchars($val) ?>" <?= (isset($sex) && $sex === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reg-birthdate">Date of Birth <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                        <input type="date" name="birthdate" id="reg-birthdate" class="form-control" value="<?= htmlspecialchars($birthdate ?? '') ?>" max="<?= date('Y-m-d', strtotime('-15 years')) ?>">
+                                    </div>
+                                    <span class="small text-muted-custom" style="font-size: 11px;">Verification for student eligibility (RA 10173 protected).</span>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="reg-student-proof">Certificate of Registration (COR) / School ID <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-file-earmark-check"></i></span>
+                                        <input type="file" name="student_proof" id="reg-student-proof" class="form-control" accept="image/*,application/pdf">
+                                    </div>
+                                    <span class="small text-muted-custom mt-1 d-block" style="font-size: 11.5px;">
+                                        <i class="bi bi-shield-lock text-accent me-1"></i> Upload your official COR or valid student ID. Your institutional profile will be locked and verified based on this document.
+                                    </span>
                                 </div>
                             </div>
 

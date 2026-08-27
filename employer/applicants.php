@@ -161,7 +161,12 @@ require_once __DIR__ . '/../includes/header.php';
                                         <tr>
                                             <td class="ps-4" data-label="Candidate Profile">
                                                 <div class="fw-bold text-ink"><?= htmlspecialchars($app['student_name']) ?></div>
-                                                <span class="small text-muted-custom"><?= htmlspecialchars($app['student_email']) ?></span>
+                                                <div class="small text-muted-custom">
+                                                    <span><?= htmlspecialchars($app['student_email']) ?></span>
+                                                    <?php if (!empty($app['sex']) || !empty($app['age'])): ?>
+                                                        &bull; <span><?= htmlspecialchars($app['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($app['age'] ?? 20)) ?> yrs</span>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
                                             <td data-label="Target Vacancy">
                                                 <span class="fw-semibold text-ink"><?= htmlspecialchars($app['job_title']) ?></span>
