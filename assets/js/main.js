@@ -3,6 +3,11 @@
  * Signature 3D Tilt Scroll Physics & Paper Sheet Interactions (COAL101)
  */
 
+// Global Print Report Trigger Helper
+window.triggerPrintReport = function () {
+  window.print();
+};
+
 document.addEventListener('DOMContentLoaded', function () {
   // ------------------------------------------------------------------------
   // 1. BOOTSTRAP TOOLTIPS & AUTO-DISMISS ALERTS

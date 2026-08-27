@@ -1,207 +1,166 @@
 <?php
 /**
  * Campus Job Posting System - About Us / Developers Page
+ * Archetype F: Public & Team Showcase (COAL101 Blueprint)
  */
 require_once __DIR__ . '/includes/data-helper.php';
+require_once __DIR__ . '/includes/auth-check.php';
 
-$page_title = 'About the Development Team';
+$page_title = 'Meet the Developers & Project Mission';
 
-// 6 Developer Profiles Configuration
+// 6 Developer Profiles aligned with WBS Table
 $team_members = [
     [
-        'name' => 'Member 1 (Project Lead)',
-        'role' => 'Lead System Architect & Core Backend',
-        'student_id' => '2024-00101',
-        'section' => 'BSIS 2-A',
-        'email' => 'lead.developer@kld.edu.ph',
+        'name' => 'Member 1',
+        'role' => 'Project Lead / Core Architect',
         'image' => 'assets/img/developers/member1.svg',
-        'bio' => 'Oversees the end-to-end system architecture, routing logic, modular template structure, and data engine.',
-        'tasks' => ['System Routing & State Engine', 'Architecture Blueprint', 'Session Handlers']
+        'scope' => 'System flow, auth state management, and core page routing engine.'
     ],
     [
-        'name' => 'Member 2 (Frontend Lead)',
-        'role' => 'Public Suite & Legal Compliance Specialist',
-        'student_id' => '2024-00102',
-        'section' => 'BSIS 2-A',
-        'email' => 'frontend.lead@kld.edu.ph',
+        'name' => 'Member 2',
+        'role' => 'Frontend Lead (Public & Legal Pages)',
         'image' => 'assets/img/developers/member2.svg',
-        'bio' => 'Designs and implements the public interface, responsive landing page, Data Privacy Policy, and Terms of Service.',
-        'tasks' => ['Index & Landing Page', 'Data Privacy (RA 10173)', 'Terms of Service Page']
+        'scope' => 'Index, About Us, Privacy Policy, Terms of Service, and FAQs.'
     ],
     [
-        'name' => 'Member 3 (Security Specialist)',
-        'role' => 'Authentication & Client Validation Engineer',
-        'student_id' => '2024-00103',
-        'section' => 'BSIS 2-A',
-        'email' => 'security.engineer@kld.edu.ph',
+        'name' => 'Member 3',
+        'role' => 'Security & Authentication Specialist',
         'image' => 'assets/img/developers/member3.svg',
-        'bio' => 'Specializes in user authentication flows, dynamic real-time password strength algorithms, and account security.',
-        'tasks' => ['Password Strength Meter JS', 'Multi-Role Login & Register', 'Forgot Password Flow']
+        'scope' => 'Login, Registration with Password Strength Meter, and Forgot Password flow.'
     ],
     [
-        'name' => 'Member 4 (Student UX Specialist)',
-        'role' => 'Student Portal & Application Flow Engineer',
-        'student_id' => '2024-00104',
-        'section' => 'BSIS 2-A',
-        'email' => 'student.ux@kld.edu.ph',
+        'name' => 'Member 4',
+        'role' => 'Student Experience Specialist',
         'image' => 'assets/img/developers/member4.svg',
-        'bio' => 'Crafts the student dashboard, job browsing with live filters, job application modal, and application status tracker.',
-        'tasks' => ['Student Dashboard', 'Job Filter & Details', 'My Applications Tracker']
+        'scope' => 'Student Dashboard, Job Search & Filters, Job Details, and Application Form.'
     ],
     [
-        'name' => 'Member 5 (Employer UX Specialist)',
-        'role' => 'Department & Hiring Workflow Engineer',
-        'student_id' => '2024-00105',
-        'section' => 'BSIS 2-A',
-        'email' => 'employer.ux@kld.edu.ph',
+        'name' => 'Member 5',
+        'role' => 'Employer Experience Specialist',
         'image' => 'assets/img/developers/member5.svg',
-        'bio' => 'Builds the campus office portal, vacancy posting forms, candidate evaluation drawers, and interview scheduling triggers.',
-        'tasks' => ['Employer Dashboard', 'Create & Edit Job Forms', 'Applicant Review Suite']
+        'scope' => 'Employer Dashboard, Create/Edit Job, Applicant Roster, and Review Modal.'
     ],
     [
-        'name' => 'Member 6 (Admin & QA Specialist)',
-        'role' => 'System Administration & QA Lead',
-        'student_id' => '2024-00106',
-        'section' => 'BSIS 2-A',
-        'email' => 'admin.qa@kld.edu.ph',
+        'name' => 'Member 6',
+        'role' => 'Admin & Data Architect',
         'image' => 'assets/img/developers/member6.svg',
-        'bio' => 'Manages administrative category controls, user accounts, printable analytics reports, and cross-browser quality assurance.',
-        'tasks' => ['Categories & User Control', 'Printable Analytics Reports', 'Mobile QA & Validation']
+        'scope' => 'Categories, User Management, PDF/Printable Reports Mock, and JSON datastore.'
     ]
 ];
 
 require_once __DIR__ . '/includes/header.php';
-require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-5 bg-surface flex-grow-1">
-    <div class="container">
-        <!-- Page Header -->
-        <div class="text-center max-w-700 mx-auto mb-5">
-            <div class="mb-2">
-                <span class="pill-badge">
-                    <i class="bi bi-code-slash text-accent"></i> KLD ICDI &bull; BSIS 2-A Midterm Lab Team
-                </span>
-            </div>
-            <h1 class="fw-bold text-ink mb-3">Meet the Development Team</h1>
-            <p class="text-muted-custom lead fs-6">
-                We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the <strong>Institute of Computing and Digital Innovation (ICDI)</strong> at <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong> who built the <strong>Campus Job Posting System</strong> for our <em>COAL101: Web Systems and Technologies</em> midterm lab project.
-            </p>
-        </div>
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
-        <!-- Photo & Professional Standards Banner -->
-        <div class="card border-line shadow-sm d-flex flex-row align-items-center gap-3 mb-5 p-3 rounded-4 bg-white">
-            <div class="stat-icon bg-accent-soft text-ink fs-3 ms-2">
-                <i class="bi bi-camera-fill"></i>
-            </div>
-            <div>
-                <strong class="d-block text-ink mb-1">Developer Photo Standards Policy</strong>
-                <span class="small text-muted-custom">
-                    All developer profiles feature formal institutional blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories to uphold campus professional standards.
-                </span>
-            </div>
-        </div>
+        <main class="py-5">
+            <div class="container-paper">
+                <!-- Page Head -->
+                <?php
+                render_page_head(
+                    '<i class="bi bi-code-slash text-accent me-1"></i> COAL101 Web Systems & Technologies · 6-Member Team',
+                    'Meet the Development Team',
+                    'We are BSIS / IT students modernizing campus employment, connecting student talent with university offices and accredited campus partners.'
+                );
+                ?>
 
-        <!-- 6 Developer Cards Grid -->
-        <div class="row g-4 mb-5" id="team">
-            <?php foreach ($team_members as $index => $dev): ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="developer-card">
-                        <div class="developer-avatar-wrapper">
-                            <img src="<?= $base_url . $dev['image'] ?>" alt="<?= htmlspecialchars($dev['name']) ?>" class="developer-avatar">
-                            <div class="mt-2">
-                                <span class="formal-badge-note">
-                                    <i class="bi bi-shield-check me-1 text-accent"></i> Attire Verified
+                <!-- Developer Photo Specifications Compliance Note -->
+                <!-- Developer Photo Specifications: Clean, high-resolution 1:1 square portrait; Formal/Semi-formal campus attire (blazer/collared shirt); Plain or neutral background; Strictly no accessories (no sunglasses, caps, headphones, or stickers) -->
+                <div class="card-paper mb-5 bg-cream">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle icon-circle-accent">
+                            <i class="bi bi-patch-check-fill text-accent"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-paper-title mb-1">Developer Photo & Attire Compliance Policy</h4>
+                            <p class="text-muted-custom small mb-0">
+                                In accordance with COAL101 specifications, all developer profiles feature formal campus attire against neutral backgrounds with strictly no accessories to maintain institutional standards.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6 Developer Cards Grid -->
+                <div class="row g-4 mb-5" id="developers">
+                    <?php foreach ($team_members as $dev): ?>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="dev-card reveal-fade-rise">
+                                <img src="<?= $base_url . $dev['image'] ?>" alt="<?= htmlspecialchars($dev['name']) ?>" class="dev-card-photo">
+                                <h3 class="dev-card-name"><?= htmlspecialchars($dev['name']) ?></h3>
+                                <span class="pill-badge pill-badge-ink mb-3"><?= htmlspecialchars($dev['role']) ?></span>
+                                <p class="dev-card-scope"><?= htmlspecialchars($dev['scope']) ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Mission & Vision and Tech Stack -->
+                <div class="row g-4 pt-2">
+                    <!-- Project Mission & Vision -->
+                    <div class="col-lg-6">
+                        <div class="card-paper h-100 reveal-fade-rise">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="icon-circle icon-circle-accent">
+                                    <i class="bi bi-compass"></i>
+                                </div>
+                                <h3 class="card-paper-title mb-0">Mission & Vision</h3>
+                            </div>
+                            <p class="text-muted-custom mb-3">
+                                Our goal as BSIS and IT students is to modernize and streamline student employment on campus. We replace fragmented paper notices with a unified, transparent digital portal that protects student study hours while empowering university departments to recruit qualified student assistants.
+                            </p>
+                            <div class="p-3 bg-cream rounded-3 border border-line">
+                                <span class="d-block small fw-bold text-ink mb-1">COAL101 Project Alignment</span>
+                                <span class="small text-muted-custom">
+                                    Final Term Web Systems & Technologies Deliverable &bull; Target Sprint: 7 Days (Deadline: September 2, 2026)
                                 </span>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="p-4 text-center">
-                            <h5 class="fw-bold text-ink mb-1"><?= htmlspecialchars($dev['name']) ?></h5>
-                            <span class="pill-badge pill-badge-ink mb-3"><?= htmlspecialchars($dev['role']) ?></span>
-
-                            <div class="text-muted-custom small mb-3">
-                                <div><i class="bi bi-person-badge me-1 text-accent"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
-                                <div><i class="bi bi-mortarboard me-1 text-accent"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
-                                <div class="text-break"><i class="bi bi-envelope me-1 text-accent"></i> <?= htmlspecialchars($dev['email']) ?></div>
+                    <!-- Tech Stack Showcase -->
+                    <div class="col-lg-6">
+                        <div class="card-paper h-100 reveal-fade-rise">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="icon-circle icon-circle-accent">
+                                    <i class="bi bi-stack"></i>
+                                </div>
+                                <h3 class="card-paper-title mb-0">Tech Stack Showcase</h3>
                             </div>
-
-                            <p class="text-muted-custom small mb-3 text-start bg-cream p-3 rounded-3">
-                                <?= htmlspecialchars($dev['bio']) ?>
+                            <p class="text-muted-custom mb-3">
+                                Built strictly using lightweight native technologies without external heavy frameworks or database engines:
                             </p>
-
-                            <div class="text-start">
-                                <span class="small fw-bold text-ink d-block mb-1">Key Deliverables:</span>
-                                <ul class="list-unstyled small text-muted-custom mb-0">
-                                    <?php foreach ($dev['tasks'] as $task): ?>
-                                        <li><i class="bi bi-check2 text-accent me-1"></i> <?= htmlspecialchars($task) ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
+                            
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="chip chip-selectable p-2 px-3">
+                                    <i class="bi bi-filetype-php text-accent fs-5"></i>
+                                    <strong>PHP 8 Native</strong> — Routing & Sessions
+                                </span>
+                                <span class="chip chip-selectable p-2 px-3">
+                                    <i class="bi bi-bootstrap-fill text-accent fs-5"></i>
+                                    <strong>Bootstrap 5.3</strong> — Responsive Grid
+                                </span>
+                                <span class="chip chip-selectable p-2 px-3">
+                                    <i class="bi bi-filetype-html text-accent fs-5"></i>
+                                    <strong>HTML5 / CSS3</strong> — Design Law Tokens
+                                </span>
+                                <span class="chip chip-selectable p-2 px-3">
+                                    <i class="bi bi-filetype-js text-accent fs-5"></i>
+                                    <strong>JavaScript (ES6)</strong> — Dynamic Meter & UI
+                                </span>
+                                <span class="chip chip-selectable p-2 px-3">
+                                    <i class="bi bi-database-slash text-accent fs-5"></i>
+                                    <strong>JSON Datastore</strong> — Zero-DB Persistence
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
 
-        <!-- Mission & Tech Stack Section -->
-        <div class="row g-4 pt-3">
-            <div class="col-lg-6">
-                <div class="card h-100 border-line shadow-sm p-4 rounded-4 bg-white">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon bg-accent-soft text-ink">
-                            <i class="bi bi-compass"></i>
-                        </div>
-                        <h4 class="fw-bold text-ink mb-0">Our Project Mission</h4>
-                    </div>
-                    <p class="text-muted-custom">
-                        To simplify and digitize the student assistantship application workflow across campus institutes and offices. By replacing manual paperwork and unorganized bulletin boards with an automated portal, we empower students to gain valuable workplace experience while prioritizing their studies.
-                    </p>
-                    <hr class="border-line">
-                    <h6 class="fw-bold text-ink mb-2">Academic Alignment</h6>
-                    <p class="text-muted-custom small mb-0">
-                        Course: <strong>COAL101 - Web Systems and Technologies</strong><br>
-                        Activity: <strong>Midterm Lab Project</strong><br>
-                        Submission Deadline: <strong>September 2, 2026</strong><br>
-                        Institution: <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong>
-                    </p>
-                </div>
             </div>
+        </main>
 
-            <div class="col-lg-6">
-                <div class="card h-100 border-line shadow-sm p-4 rounded-4 bg-white">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon bg-cream text-ink">
-                            <i class="bi bi-layers-fill"></i>
-                        </div>
-                        <h4 class="fw-bold text-ink mb-0">Technical Architecture</h4>
-                    </div>
-                    <p class="text-muted-custom mb-3">
-                        Built adhering strictly to the required project stack constraints without external heavy frameworks:
-                    </p>
-                    
-                    <div class="d-flex flex-column gap-2">
-                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
-                            <span><i class="bi bi-filetype-php text-accent me-2 fs-5"></i><strong>Native PHP 8.x</strong></span>
-                            <span class="pill-badge">Backend & Session State</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
-                            <span><i class="bi bi-bootstrap-fill text-accent me-2 fs-5"></i><strong>Bootstrap 5.3 + Icons</strong></span>
-                            <span class="pill-badge">Responsive UI & Layout</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
-                            <span><i class="bi bi-filetype-js text-ink me-2 fs-5"></i><strong>Vanilla JavaScript (ES6)</strong></span>
-                            <span class="pill-badge">Real-time Meter & UI</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 px-3 bg-cream rounded-3">
-                            <span><i class="bi bi-database-slash text-ink me-2 fs-5"></i><strong>JSON + Session Engine</strong></span>
-                            <span class="pill-badge">Zero-DB Persistence</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </div>
-</main>
-
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
+</div>

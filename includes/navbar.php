@@ -109,22 +109,8 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
 </nav>
 
 <!-- Flash Message Container -->
-<?php $flash = get_flash(); if ($flash): ?>
-<div class="container-fluid px-4 mt-3">
-    <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
-        <div class="d-flex align-items-center gap-2">
-            <?php if ($flash['type'] === 'success'): ?>
-                <i class="bi bi-check-circle-fill text-success fs-5"></i>
-            <?php elseif ($flash['type'] === 'danger'): ?>
-                <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
-            <?php elseif ($flash['type'] === 'warning'): ?>
-                <i class="bi bi-exclamation-circle-fill text-warning fs-5"></i>
-            <?php else: ?>
-                <i class="bi bi-info-circle-fill text-info fs-5"></i>
-            <?php endif; ?>
-            <div class="fw-semibold"><?= htmlspecialchars($flash['message']) ?></div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+<?php if (isset($_SESSION['flash'])): ?>
+<div class="container-paper mt-3">
+    <?php render_flash(); ?>
 </div>
 <?php endif; ?>

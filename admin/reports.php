@@ -1,8 +1,10 @@
 <?php
 /**
  * Campus Job Posting System - Admin Reports & Analytics
+ * Archetype G: Admin Analytics & Printable Report (COAL101 Blueprint)
  */
 require_once __DIR__ . '/../includes/data-helper.php';
+require_once __DIR__ . '/../includes/auth-check.php';
 
 require_auth(['admin', 'employer']);
 $user = get_logged_user();
@@ -20,206 +22,245 @@ $total_interviews = count(array_filter($all_apps, fn($a) => $a['status'] === 'in
 
 // Department aggregations
 $departments = [
-    'Management Information Systems (MIS)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'Office of the University Registrar' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'KLD University Library' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'Institute of Computing and Digital Innovation (ICDI)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'Institute of Nursing & Health Sciences' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
-    'Institute of Engineering' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Management Information Systems (MIS)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 6],
+    'Office of the University Registrar' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 8],
+    'KLD University Library' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 5],
+    'Institute of Computing and Digital Innovation (ICDI)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 10],
+    'Institute of Nursing & Health Sciences' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4],
+    'Institute of Engineering' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 6],
 ];
 
 foreach ($all_jobs as $j) {
-    $dept_name = $j['department'];
+    $dept_name = $j['department'] ?? 'General';
     if (!isset($departments[$dept_name])) {
-        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0];
+        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4];
     }
     $departments[$dept_name]['jobs']++;
 }
 
 foreach ($all_apps as $a) {
-    $dept_name = $a['department'];
+    $dept_name = $a['department'] ?? 'General';
     if (!isset($departments[$dept_name])) {
-        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0];
+        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4];
     }
     $departments[$dept_name]['apps']++;
-    if ($a['status'] === 'accepted') {
+    if (($a['status'] ?? '') === 'accepted') {
         $departments[$dept_name]['hired']++;
     }
 }
 
 require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<main class="py-4 bg-surface flex-grow-1">
-    <div class="container printable-report">
-        
-        <!-- Header & Print Actions -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-            <div>
-                <nav aria-label="breadcrumb" class="no-print">
-                    <ol class="breadcrumb mb-1">
-                        <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Reports & Analytics</li>
-                    </ol>
-                </nav>
-                <h2 class="fw-bold text-ink mb-0">Campus Employment Analytics Report</h2>
-                <div class="text-muted-custom small">Campus Job Posting Network &bull; Generated: <?= date('F d, Y \a\t h:i A') ?> &bull; Term: 1st Sem 2026-2027</div>
-            </div>
-            <div class="mt-3 mt-md-0 no-print">
-                <button type="button" onclick="triggerPrintReport()" class="btn-accent-pill py-2 px-3 shadow-sm">
-                    <i class="bi bi-printer-fill me-1"></i> Print / Export Report (PDF)
-                </button>
-            </div>
-        </div>
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/../includes/navbar.php'; ?>
 
-        <!-- KPI Summary Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Total Vacancies</div>
-                    <div class="display-6 fw-bold text-ink my-1"><?= $total_jobs ?></div>
-                    <span class="small text-muted-custom">Across <?= count($departments) ?> departments</span>
+        <main class="py-5">
+            <div class="container-paper printable-report">
+                
+                <!-- Printable Institution Header (Shown ONLY on print) -->
+                <div class="d-none d-print-block text-center pb-4 mb-4 border-bottom border-line">
+                    <h2 class="h3 fw-bold text-ink mb-1">KOLEHIYO NG LUNGSOD NG DASMARIÑAS</h2>
+                    <h3 class="h5 fw-semibold text-muted-custom mb-1">Campus Job Posting & Student Assistantship System</h3>
+                    <p class="small text-muted-custom mb-0">Official Institutional Analytics & Placement Report &bull; Academic Year 2026–2027</p>
+                    <p class="small text-muted-custom mb-0">Generated: <?= date('F d, Y \a\t h:i A') ?> by <?= htmlspecialchars($user['name'] ?? 'Administrator') ?></p>
                 </div>
-            </div>
 
-            <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Applications Filed</div>
-                    <div class="display-6 fw-bold text-ink my-1"><?= $total_apps ?></div>
-                    <span class="small text-muted-custom">Total student submissions</span>
+                <!-- Page Head (Interactive view) -->
+                <div class="no-print">
+                    <?php
+                    $actions = '
+                        <button type="button" onclick="window.print()" class="btn-pill">
+                            <i class="bi bi-printer-fill"></i> Print Report
+                        </button>
+                        <button type="button" onclick="window.print()" class="btn-pill-outline">
+                            <i class="bi bi-file-earmark-pdf-fill"></i> Export PDF
+                        </button>
+                    ';
+                    render_page_head(
+                        '<i class="bi bi-bar-chart-line-fill text-accent me-1"></i> Institutional Analytics & Placement',
+                        'Campus Employment Analytics',
+                        'Real-time overview of student job vacancies, application volumes, hiring ratios, and departmental budget compliance.',
+                        $actions
+                    );
+                    ?>
                 </div>
-            </div>
 
-            <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Interviews Held</div>
-                    <div class="display-6 fw-bold text-ink my-1"><?= $total_interviews ?></div>
-                    <span class="small text-muted-custom">Shortlisted candidates</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-3">
-                <div class="stat-card">
-                    <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Officially Hired</div>
-                    <div class="display-6 fw-bold text-ink my-1"><?= $total_hired ?></div>
-                    <span class="small text-muted-custom">Active Student Assistants</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-            <!-- Left 6-col: Category Distribution -->
-            <div class="col-lg-6">
-                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-ink mb-3"><i class="bi bi-pie-chart-fill text-accent me-2"></i> Category Demand Breakdown</h5>
-                    
-                    <div class="d-flex flex-column gap-3">
-                        <?php foreach ($categories as $c): 
-                            $cat_job_count = count(array_filter($all_jobs, fn($j) => $j['category'] === $c['name']));
-                            $pct = $total_jobs > 0 ? round(($cat_job_count / $total_jobs) * 100) : 0;
-                        ?>
-                            <div>
-                                <div class="d-flex justify-content-between align-items-center small mb-1">
-                                    <span class="fw-semibold text-ink"><?= htmlspecialchars($c['name']) ?></span>
-                                    <span class="text-muted-custom"><?= $cat_job_count ?> jobs (<?= $pct ?>%)</span>
-                                </div>
-                                <div class="progress" style="height: 8px; background-color: var(--line);">
-                                    <div class="progress-bar" role="progressbar" style="width: <?= max(5, $pct) ?>%; background-color: var(--accent);" aria-valuenow="<?= $pct ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <!-- 4 KPI Metrics Row -->
+                <div class="row g-3 mb-5">
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($total_jobs, 'Total Vacancies', 'bi-briefcase-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($total_apps, 'Applications Filed', 'bi-send-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($total_interviews, 'Interviews Held', 'bi-calendar-check-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($total_hired, 'Officially Hired', 'bi-person-check-fill'); ?>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right 6-col: Key Institutional Highlights -->
-            <div class="col-lg-6">
-                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-ink mb-3"><i class="bi bi-clipboard2-data-fill text-accent me-2"></i> Compliance & Performance Highlights</h5>
-                    
-                    <ul class="list-group list-group-flush small">
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
-                            <span class="text-muted-custom"><i class="bi bi-clock-history text-accent me-2"></i> Maximum Weekly SA Duty Limit Compliance:</span>
-                            <span class="pill-badge" style="font-size: 11px;">100% Compliant (&le; 20 hrs/wk)</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
-                            <span class="text-muted-custom"><i class="bi bi-shield-check text-accent me-2"></i> RA 10173 Data Privacy Audit:</span>
-                            <span class="pill-badge" style="font-size: 11px;">Certified Protected</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
-                            <span class="text-muted-custom"><i class="bi bi-cash-coin text-accent me-2"></i> Average Hourly Student Stipend:</span>
-                            <span class="fw-bold text-ink">₱85.00 / hour</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-line">
-                            <span class="text-muted-custom"><i class="bi bi-building-check text-accent me-2"></i> Total Active Partner Offices:</span>
-                            <span class="fw-bold text-ink"><?= count($departments) ?> University Offices</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                <!-- 3 Pure-CSS Bar Chart Blocks per Archetype G Spec -->
+                <div class="row g-4 mb-5">
+                    <!-- Chart 1: Most In-Demand Categories -->
+                    <div class="col-lg-6">
+                        <div class="card-paper h-100 reveal-fade-rise">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-line">
+                                <h3 class="card-paper-title mb-0">
+                                    <i class="bi bi-pie-chart-fill text-accent me-2"></i> Most In-Demand Categories
+                                </h3>
+                                <span class="chip"><?= count($categories) ?> Categories</span>
+                            </div>
 
-        <!-- Department Breakdown Table -->
-        <div class="card border-line shadow-sm rounded-4 overflow-hidden bg-white mb-4">
-            <div class="p-4 border-bottom border-line">
-                <h5 class="fw-bold text-ink mb-0"><i class="bi bi-table text-accent me-2"></i> Department Requisition & Hiring Matrix</h5>
-                <span class="text-muted-custom small">Summary of open slots, applicant flow, and placement rate per department</span>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-cream border-bottom border-line">
-                        <tr>
-                            <th class="ps-4 text-ink fw-bold">Department / Campus Office</th>
-                            <th class="text-ink fw-bold">Active Postings</th>
-                            <th class="text-ink fw-bold">Total Applicants</th>
-                            <th class="text-ink fw-bold">Hired SAs</th>
-                            <th class="text-ink fw-bold">Hiring Ratio</th>
-                            <th class="text-end pe-4 text-ink fw-bold">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($departments as $dept_name => $stats): 
-                            $ratio = $stats['apps'] > 0 ? round(($stats['hired'] / $stats['apps']) * 100) : 0;
-                        ?>
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold text-ink"><?= htmlspecialchars($dept_name) ?></div>
-                                </td>
-                                <td>
-                                    <span class="pill-badge" style="font-size: 11px;"><?= $stats['jobs'] ?> Openings</span>
-                                </td>
-                                <td>
-                                    <span class="fw-semibold text-ink"><?= $stats['apps'] ?> candidates</span>
-                                </td>
-                                <td>
-                                    <span class="fw-bold text-ink"><?= $stats['hired'] ?> hired</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="progress flex-grow-1" style="height: 6px; background-color: var(--line);">
-                                            <div class="progress-bar" style="width: <?= $ratio ?>%; background-color: var(--accent);"></div>
+                            <div class="bar-chart">
+                                <?php foreach ($categories as $c): 
+                                    $cat_job_count = count(array_filter($all_jobs, fn($j) => ($j['category'] ?? '') === $c['name']));
+                                    $pct = $total_jobs > 0 ? round(($cat_job_count / $total_jobs) * 100) : 0;
+                                ?>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-header">
+                                            <span><?= htmlspecialchars($c['name']) ?></span>
+                                            <span class="text-muted-custom"><?= $cat_job_count ?> openings (<?= $pct ?>%)</span>
                                         </div>
-                                        <span class="small text-muted-custom"><?= $ratio ?>%</span>
+                                        <div class="bar-chart-track">
+                                            <div class="bar-chart-fill" style="width: <?= $pct ?>%;"></div>
+                                        </div>
                                     </div>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <span class="pill-badge" style="font-size: 11px;">Operational</span>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Applications Per College / Department -->
+                    <div class="col-lg-6">
+                        <div class="card-paper h-100 reveal-fade-rise">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-line">
+                                <h3 class="card-paper-title mb-0">
+                                    <i class="bi bi-building text-accent me-2"></i> Applications Per Department
+                                </h3>
+                                <span class="chip"><?= $total_apps ?> Total Submissions</span>
+                            </div>
+
+                            <div class="bar-chart">
+                                <?php foreach ($departments as $dept_name => $stats): 
+                                    $dept_apps_count = $stats['apps'];
+                                    $pct = $total_apps > 0 ? round(($dept_apps_count / $total_apps) * 100) : 0;
+                                ?>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-header">
+                                            <span><?= htmlspecialchars($dept_name) ?></span>
+                                            <span class="text-muted-custom"><?= $dept_apps_count ?> applicants (<?= $pct ?>%)</span>
+                                        </div>
+                                        <div class="bar-chart-track">
+                                            <div class="bar-chart-fill" style="width: <?= $pct ?>%;"></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Department Hiring Quotas vs Filled Positions Table -->
+                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
+                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
+                        <div>
+                            <h3 class="card-paper-title mb-1">
+                                <i class="bi bi-table text-accent me-2"></i> Department Hiring Quotas vs Filled Positions
+                            </h3>
+                            <p class="text-muted-custom small mb-0">Institutional compliance, vacancy quotas, and hiring ratios</p>
+                        </div>
+                        <span class="pill-badge">Term: 1st Sem 2026–2027</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table-paper table-paper-responsive mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Department / Campus Office</th>
+                                    <th>Active Postings</th>
+                                    <th>Total Applicants</th>
+                                    <th>Hiring Quota</th>
+                                    <th>Filled Positions</th>
+                                    <th>Placement Ratio</th>
+                                    <th class="text-end pe-4">Compliance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($departments as $dept_name => $stats): 
+                                    $ratio = $stats['apps'] > 0 ? round(($stats['hired'] / $stats['apps']) * 100) : 0;
+                                    $quota = $stats['quota'] ?? 6;
+                                    $filled = $stats['hired'];
+                                    $quota_pct = round(($filled / max(1, $quota)) * 100);
+                                ?>
+                                    <tr>
+                                        <td class="ps-4" data-label="Department">
+                                            <strong class="text-ink"><?= htmlspecialchars($dept_name) ?></strong>
+                                        </td>
+                                        <td data-label="Active Postings">
+                                            <span class="chip"><?= $stats['jobs'] ?> Openings</span>
+                                        </td>
+                                        <td data-label="Total Applicants">
+                                            <span class="fw-semibold text-ink"><?= $stats['apps'] ?> candidates</span>
+                                        </td>
+                                        <td data-label="Hiring Quota">
+                                            <span class="text-muted-custom"><?= $quota ?> slots</span>
+                                        </td>
+                                        <td data-label="Filled Positions">
+                                            <span class="badge-status--accepted"><?= $filled ?> / <?= $quota ?></span>
+                                        </td>
+                                        <td data-label="Placement Ratio">
+                                            <div class="d-flex align-items-center gap-2" style="min-width: 120px;">
+                                                <div class="progress-paper flex-grow-1">
+                                                    <div class="progress-paper-bar" style="width: <?= min(100, $quota_pct) ?>%;"></div>
+                                                </div>
+                                                <span class="small text-muted-custom"><?= $quota_pct ?>%</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end pe-4" data-label="Compliance">
+                                            <span class="badge-status--accepted">100% Compliant</span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Printable Signatures & Legal Note (Visible ONLY when printing) -->
+                <div class="d-none d-print-block mt-4 pt-2 border-top border-line" style="page-break-inside: avoid; break-inside: avoid;">
+                    <div class="row pt-3 text-center">
+                        <div class="col-4">
+                            <div class="border-bottom border-dark pb-3 mb-2" style="height: 36px;"></div>
+                            <strong class="d-block small text-ink">Prepared By:</strong>
+                            <span class="small text-muted-custom" style="font-size: 11px;">University Career Services</span>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-bottom border-dark pb-3 mb-2" style="height: 36px;"></div>
+                            <strong class="d-block small text-ink">Verified By:</strong>
+                            <span class="small text-muted-custom" style="font-size: 11px;">Dean of Student Affairs</span>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-bottom border-dark pb-3 mb-2" style="height: 36px;"></div>
+                            <strong class="d-block small text-ink">Noted By:</strong>
+                            <span class="small text-muted-custom" style="font-size: 11px;">VP for Academic Affairs</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </div>
+        </main>
 
-        <!-- Printable Footer Note (Visible during print) -->
-        <div class="d-none d-print-block mt-5 pt-4 border-top border-line text-center small text-muted-custom">
-            <p>Office of Student Affairs & Services &bull; University Academic Center &bull; Generated via Campus Job Posting System</p>
-        </div>
-
+        <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>
-</main>
+</div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<script>
+// Print Report fallback function
+function triggerPrintReport() {
+    window.print();
+}
+</script>

@@ -1,12 +1,14 @@
 <?php
 /**
  * Campus Job Posting System - Admin Category Management
+ * Archetype B/C: Category Taxonomy Grid (COAL101 Blueprint)
  */
 require_once __DIR__ . '/../includes/data-helper.php';
+require_once __DIR__ . '/../includes/auth-check.php';
 
 require_auth(['admin']);
 $user = get_logged_user();
-$page_title = 'Category Management';
+$page_title = 'Job Family Category Taxonomy';
 
 $error = null;
 
@@ -25,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'icon' => $icon,
             'color' => $color
         ]);
-        set_flash('success', "New category '{$name}' created successfully.");
+        set_flash('success', "New category '{$name}' was created successfully.");
         header('Location: categories.php');
         exit;
     }
@@ -35,117 +37,133 @@ $categories = get_categories();
 $all_jobs = get_jobs();
 
 require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<main class="py-4 bg-surface flex-grow-1">
-    <div class="container">
-        
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-1">
-                        <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
-                        <li class="breadcrumb-item"><a href="reports.php">Admin Control</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Categories</li>
-                    </ol>
-                </nav>
-                <h2 class="fw-bold text-ink mb-0">Job Categories Management</h2>
-            </div>
-            <div class="mt-2 mt-md-0">
-                <button type="button" class="btn-accent-pill py-2 px-3" data-bs-toggle="modal" data-bs-target="#newCatModal">
-                    <i class="bi bi-plus-circle me-1"></i> Add New Category
-                </button>
-            </div>
-        </div>
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/../includes/navbar.php'; ?>
 
-        <?php if ($error): ?>
-            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-4 rounded-3">
-                <i class="bi bi-exclamation-circle-fill fs-5"></i>
-                <div><?= htmlspecialchars($error) ?></div>
-            </div>
-        <?php endif; ?>
+        <main class="py-5">
+            <div class="container-paper">
+                
+                <!-- Page Head -->
+                <?php
+                $head_actions = '
+                    <button type="button" class="btn-pill" data-bs-toggle="modal" data-bs-target="#newCatModal">
+                        <i class="bi bi-plus-circle-fill"></i> Add Category
+                    </button>
+                    <a href="reports.php" class="btn-pill-outline">
+                        <i class="bi bi-bar-chart-fill"></i> Analytics
+                    </a>
+                ';
+                render_page_head(
+                    '<i class="bi bi-grid-3x3-gap-fill text-accent me-1"></i> System Taxonomies &amp; Classifications',
+                    'Job Family Categories',
+                    'Organize student assistantship requisitions by institutional domain and discipline family.',
+                    $head_actions
+                );
+                ?>
 
-        <div class="row g-4">
-            <?php foreach ($categories as $cat): 
-                $cat_jobs = array_filter($all_jobs, fn($j) => $j['category'] === $cat['name']);
-            ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="stat-icon bg-accent-soft text-ink">
-                                <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
-                            </div>
-                            <span class="chip-tag" style="font-size: 11px;">
-                                <?= count($cat_jobs) ?> Vacancies
-                            </span>
-                        </div>
-
-                        <h5 class="fw-bold text-ink mb-2"><?= htmlspecialchars($cat['name']) ?></h5>
-                        <p class="text-muted-custom small mb-3">
-                            <?= htmlspecialchars($cat['description']) ?>
-                        </p>
-
-                        <div class="mt-auto border-top border-line pt-3 d-flex justify-content-between align-items-center">
-                            <span class="pill-badge" style="font-size: 11px;">Active Status</span>
-                            <a href="../student/jobs.php?cat=<?= urlencode($cat['name']) ?>" class="btn-outline-pill py-1 px-3" style="font-size: 12px;">
-                                View Openings <i class="bi bi-arrow-right"></i>
-                            </a>
+                <?php if ($error): ?>
+                    <div class="alert-paper alert-paper--danger mb-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
+                            <div class="small fw-semibold text-ink"><?= htmlspecialchars($error) ?></div>
                         </div>
                     </div>
+                <?php endif; ?>
+
+                <!-- Category Cards Grid -->
+                <div class="row g-4 mb-5">
+                    <?php foreach ($categories as $cat): 
+                        $cat_jobs = array_filter($all_jobs, fn($j) => ($j['category'] ?? '') === $cat['name']);
+                        $count = count($cat_jobs);
+                    ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card-paper p-4 h-100 d-flex flex-column reveal-fade-rise">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="icon-circle icon-circle-accent">
+                                        <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?>"></i>
+                                    </div>
+                                    <span class="chip">
+                                        <?= $count ?> <?= $count === 1 ? 'Vacancy' : 'Vacancies' ?>
+                                    </span>
+                                </div>
+
+                                <h3 class="card-paper-title fs-5 mb-2"><?= htmlspecialchars($cat['name']) ?></h3>
+                                <p class="text-muted-custom small mb-4 flex-grow-1">
+                                    <?= htmlspecialchars($cat['description'] ?? 'Campus assistantships and internships under this discipline.') ?>
+                                </p>
+
+                                <div class="mt-auto pt-3 border-top border-line d-flex justify-content-between align-items-center">
+                                    <span class="pill-badge" style="font-size: 11px;">Active Category</span>
+                                    <a href="../student/jobs.php?category=<?= urlencode($cat['name']) ?>" class="btn-pill-outline btn-pill-sm">
+                                        View Openings &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach; ?>
-        </div>
+
+            </div>
+        </main>
 
         <!-- Add Category Modal -->
         <div class="modal fade" id="newCatModal" tabindex="-1" aria-labelledby="newCatLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-line shadow-lg">
-                    <div class="modal-header bg-kld-gradient text-white">
-                        <h5 class="modal-title fw-bold" id="newCatLabel">
-                            <i class="bi bi-tag-fill me-1 text-accent"></i> Add New Job Category
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="icon-circle icon-circle-sm icon-circle-accent">
+                                <i class="bi bi-tag-fill text-accent"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-ink mb-0" id="newCatLabel">Add Job Family Category</h5>
+                                <span class="small text-muted-custom">Define a new category taxonomy</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="categories.php" method="POST">
-                        <div class="modal-body p-4 bg-surface">
+
+                    <form action="categories.php" method="POST" class="form-paper">
+                        <div class="modal-body p-4">
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold text-ink">Category Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" class="form-control" placeholder="e.g. Health & Wellness Services" required>
+                                <label class="form-label" for="cat-name">Category Title <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="cat-name" class="form-control" placeholder="e.g. Health & Clinical Services" required>
                             </div>
 
-                            <div class="row g-2 mb-3">
+                            <div class="row g-3 mb-3">
                                 <div class="col-6">
-                                    <label class="form-label small fw-semibold text-ink">Bootstrap Icon Class</label>
-                                    <input type="text" name="icon" class="form-control" value="bi-briefcase" placeholder="bi-heart-pulse">
+                                    <label class="form-label" for="cat-icon">Bootstrap Icon Class</label>
+                                    <input type="text" name="icon" id="cat-icon" class="form-control" value="bi-briefcase" placeholder="bi-heart-pulse">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small fw-semibold text-ink">Accent Color</label>
-                                    <select name="color" class="form-select">
-                                        <option value="primary">Primary (Blue)</option>
-                                        <option value="success">Success (Green)</option>
-                                        <option value="warning">Warning (Gold)</option>
-                                        <option value="info">Info (Cyan)</option>
-                                        <option value="danger">Danger (Red)</option>
+                                    <label class="form-label" for="cat-color">Color Theme</label>
+                                    <select name="color" id="cat-color" class="form-select">
+                                        <option value="primary">Accent Gold</option>
+                                        <option value="success">Success Green</option>
+                                        <option value="info">Review Blue</option>
+                                        <option value="warning">Warning Yellow</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label small fw-semibold text-ink">Description</label>
-                                <textarea name="description" rows="3" class="form-control" placeholder="Brief summary of duties under this job family..."></textarea>
+                            <div class="mb-2">
+                                <label class="form-label" for="cat-desc">Description</label>
+                                <textarea name="description" id="cat-desc" rows="3" class="form-control" placeholder="Brief summary of assistantship duties under this taxonomy..."></textarea>
                             </div>
                         </div>
-                        <div class="modal-footer bg-cream border-top border-line">
-                            <button type="submit" class="btn-accent-pill py-2 px-4">Create Category</button>
-                            <button type="button" class="btn-soft-pill py-2 px-3" data-bs-dismiss="modal">Cancel</button>
+
+                        <div class="modal-footer bg-cream border-top border-line py-3 px-4">
+                            <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn-pill btn-pill-sm">Create Category</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
+        <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>
-</main>
-
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+</div>

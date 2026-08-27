@@ -1,6 +1,28 @@
 /**
- * Campus Job Posting System - Real-time JavaScript Password Strength Validator
+ * Campus Job Posting System - Password Strength Engine & Validation (COAL101)
+ * Real-time 4-Stage Strength Scoring & Criteria Checklist
  */
+
+// Global Toggle Password Visibility Helper
+window.togglePasswordVisibility = function (inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (input) {
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (icon) {
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+      }
+    } else {
+      input.type = 'password';
+      if (icon) {
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+      }
+    }
+  }
+};
 
 document.addEventListener('DOMContentLoaded', function () {
   const passwordInput = document.getElementById('password');
@@ -9,15 +31,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const strengthText = document.getElementById('password-strength-text');
   const registerForm = document.getElementById('register-form');
 
-  // Requirement items
+  // Requirement elements
   const reqLength = document.getElementById('req-length');
   const reqLower = document.getElementById('req-lower');
   const reqUpper = document.getElementById('req-upper');
   const reqNumber = document.getElementById('req-number');
   const reqSpecial = document.getElementById('req-special');
   const confirmFeedback = document.getElementById('confirm-feedback');
-
-  if (!passwordInput || !meterFill) return;
 
   function updateRequirement(element, isMet) {
     if (!element) return;
@@ -42,12 +62,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function evaluatePasswordStrength(password) {
-    if (!password) {
+    if (!password || password.length === 0) {
       resetRequirements();
-      return { score: 0, checks: { length: false, lower: false, upper: false, number: false, special: false } };
+      return { score: 0, count: 0 };
     }
 
-    let score = 0;
     const checks = {
       length: password.length >= 8,
       lower: /[a-z]/.test(password),
@@ -56,25 +75,24 @@ document.addEventListener('DOMContentLoaded', function () {
       special: /[^A-Za-z0-9]/.test(password)
     };
 
-    // Update UI Checklists if they exist
     if (reqLength) updateRequirement(reqLength, checks.length);
     if (reqLower) updateRequirement(reqLower, checks.lower);
     if (reqUpper) updateRequirement(reqUpper, checks.upper);
     if (reqNumber) updateRequirement(reqNumber, checks.number);
     if (reqSpecial) updateRequirement(reqSpecial, checks.special);
 
-    // Calculate score
-    if (checks.length) score += 20;
-    if (password.length >= 12) score += 10;
-    if (checks.lower) score += 20;
-    if (checks.upper) score += 20;
-    if (checks.number) score += 15;
-    if (checks.special) score += 15;
+    let count = 0;
+    if (checks.length) count++;
+    if (checks.lower) count++;
+    if (checks.upper) count++;
+    if (checks.number) count++;
+    if (checks.special) count++;
 
-    return { score, checks };
+    return { count, checks };
   }
 
   function handlePasswordInput() {
+    if (!meterFill) return;
     const val = passwordInput.value;
     if (!val || val.length === 0) {
       meterFill.className = 'password-meter-fill';
@@ -87,39 +105,39 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const { score } = evaluatePasswordStrength(val);
+    const { count } = evaluatePasswordStrength(val);
 
-    if (score < 50) {
+    if (count <= 2) {
       meterFill.className = 'password-meter-fill strength-weak';
-      meterFill.style.width = '30%';
       if (strengthText) {
         strengthText.innerHTML = '<span class="text-danger fw-bold small"><i class="bi bi-shield-x"></i> Weak password</span>';
       }
-    } else if (score < 80) {
-      meterFill.className = 'password-meter-fill strength-medium';
-      meterFill.style.width = '65%';
+    } else if (count === 3) {
+      meterFill.className = 'password-meter-fill strength-fair';
       if (strengthText) {
-        strengthText.innerHTML = '<span class="text-warning fw-bold small"><i class="bi bi-shield-slash"></i> Moderate password</span>';
+        strengthText.innerHTML = '<span class="fw-bold small" style="color: #d97706;"><i class="bi bi-shield-slash"></i> Fair password</span>';
+      }
+    } else if (count === 4) {
+      meterFill.className = 'password-meter-fill strength-good';
+      if (strengthText) {
+        strengthText.innerHTML = '<span class="fw-bold small" style="color: #2563eb;"><i class="bi bi-shield-check"></i> Good password</span>';
       }
     } else {
       meterFill.className = 'password-meter-fill strength-strong';
-      meterFill.style.width = '100%';
       if (strengthText) {
-        strengthText.innerHTML = '<span class="text-accent fw-bold small"><i class="bi bi-shield-check"></i> Strong password!</span>';
+        strengthText.innerHTML = '<span class="text-accent fw-bold small"><i class="bi bi-patch-check-fill text-accent"></i> Strong password!</span>';
       }
     }
 
     validatePasswordMatch();
   }
 
-  passwordInput.addEventListener('input', handlePasswordInput);
-
   function validatePasswordMatch() {
-    if (!confirmPasswordInput) return true;
+    if (!confirmPasswordInput || !passwordInput) return true;
     const pVal = passwordInput.value;
     const cpVal = confirmPasswordInput.value;
 
-    if (!cpVal || !pVal) {
+    if (!cpVal) {
       confirmPasswordInput.classList.remove('is-valid', 'is-invalid');
       if (confirmFeedback) confirmFeedback.innerHTML = '';
       return false;
@@ -129,19 +147,23 @@ document.addEventListener('DOMContentLoaded', function () {
       confirmPasswordInput.classList.remove('is-invalid');
       confirmPasswordInput.classList.add('is-valid');
       if (confirmFeedback) {
-        confirmFeedback.className = 'valid-feedback d-block';
-        confirmFeedback.innerHTML = '<i class="bi bi-check-circle"></i> Passwords match perfectly.';
+        confirmFeedback.className = 'valid-feedback d-block small';
+        confirmFeedback.innerHTML = '<i class="bi bi-check-circle-fill text-accent"></i> Passwords match.';
       }
       return true;
     } else {
       confirmPasswordInput.classList.remove('is-valid');
       confirmPasswordInput.classList.add('is-invalid');
       if (confirmFeedback) {
-        confirmFeedback.className = 'invalid-feedback d-block';
-        confirmFeedback.innerHTML = '<i class="bi bi-x-circle"></i> Passwords do not match.';
+        confirmFeedback.className = 'invalid-feedback d-block small';
+        confirmFeedback.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i> Passwords do not match.';
       }
       return false;
     }
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener('input', handlePasswordInput);
   }
 
   if (confirmPasswordInput) {
@@ -150,29 +172,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (registerForm) {
     registerForm.addEventListener('submit', function (e) {
-      const pVal = passwordInput.value;
-      const { score } = evaluatePasswordStrength(pVal);
+      const pVal = passwordInput ? passwordInput.value : '';
+      const { count } = evaluatePasswordStrength(pVal);
 
-      if (score < 50) {
+      if (count < 2) {
         e.preventDefault();
-        alert('Please choose a stronger password before continuing.');
-        passwordInput.focus();
+        alert('Please choose a stronger password (at least 8 characters with numbers or uppercase letters).');
+        if (passwordInput) passwordInput.focus();
         return false;
       }
 
       if (confirmPasswordInput && !validatePasswordMatch()) {
         e.preventDefault();
-        alert('Passwords do not match. Please recheck your confirm password entry.');
+        alert('Passwords do not match. Please verify your confirm password entry.');
         confirmPasswordInput.focus();
         return false;
       }
     });
   }
 
-  // Initial validation state
-  if (passwordInput.value) {
+  // Initial check
+  if (passwordInput && passwordInput.value) {
     handlePasswordInput();
-  } else {
-    resetRequirements();
   }
 });

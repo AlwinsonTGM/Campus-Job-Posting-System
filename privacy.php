@@ -1,133 +1,119 @@
 <?php
 /**
  * Campus Job Posting System - Data Privacy Policy
+ * Archetype F: Prose (COAL101 Blueprint)
  * Compliant with Philippine Republic Act No. 10173 (Data Privacy Act of 2012)
  */
 require_once __DIR__ . '/includes/data-helper.php';
+require_once __DIR__ . '/includes/auth-check.php';
 
-$page_title = 'Data Privacy Policy';
+$page_title = 'Data Privacy Policy (RA 10173)';
 
 require_once __DIR__ . '/includes/header.php';
-require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<main class="py-5 bg-surface flex-grow-1">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <!-- Page Breadcrumb & Header -->
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Data Privacy Policy</li>
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/includes/navbar.php'; ?>
+
+        <main class="py-5">
+            <div class="container-paper">
+                <div class="prose">
+                    <!-- Page Head & Last Updated Line -->
+                    <div class="mb-4 pb-3 border-bottom border-line">
+                        <span class="pill-badge mb-2">
+                            <i class="bi bi-shield-check text-accent"></i> Republic Act No. 10173
+                        </span>
+                        <h1 class="page-head-title">Data Privacy Policy</h1>
+                        <p class="text-muted-custom small mb-0">
+                            <strong>Last updated:</strong> August 27, 2026 &bull; Official Compliance Statement
+                        </p>
+                    </div>
+
+                    <!-- Policy Introduction -->
+                    <p class="lead text-muted-custom">
+                        The Campus Job Posting System is committed to safeguarding personal, academic, and sensitive information submitted by students and campus department representatives in strict compliance with the <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong> of the Philippines.
+                    </p>
+
+                    <!-- Section 1: Collected Information -->
+                    <h2 class="h4">1. Collected Information</h2>
+                    <p>
+                        We collect and process only the minimum necessary information required to assess eligibility for campus student assistantships and office staffing requisitions:
+                    </p>
+                    <ul>
+                        <li><strong>Student Identification:</strong> Student ID Number, Full Legal Name, and Institutional Email (<code>@university.edu.ph</code>).</li>
+                        <li><strong>Academic Information:</strong> Enrolled Course/Degree Program, Academic Year Level, and Academic Standing.</li>
+                        <li><strong>Application Credentials:</strong> Digital Resume / Curriculum Vitae, statements of interest, and Cover Letters.</li>
+                        <li><strong>Schedule Availability:</strong> Class schedule timetable and weekly vacant shift hours.</li>
+                    </ul>
+
+                    <!-- Section 2: Purpose of Collection -->
+                    <h2 class="h4">2. Purpose of Collection</h2>
+                    <p>
+                        All collected personal data is processed strictly for the following legitimate university recruitment objectives:
+                    </p>
+                    <ol>
+                        <li>Evaluating student eligibility for on-campus student assistantships and laboratory assignments.</li>
+                        <li>Facilitating recruitment matching between campus academic offices, administrative divisions, and accredited partner employers.</li>
+                        <li>Scheduling technical interviews and coordinating student work shifts to prevent conflict with lecture hours.</li>
+                        <li>Submitting verified Daily Time Records (DTR) for student stipend and tuition allowance processing.</li>
                     </ol>
-                </nav>
 
-                <div class="card border-line shadow-sm rounded-4 p-4 p-md-5 bg-white">
-                    <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-line">
-                        <div class="stat-icon bg-accent-soft text-ink fs-3">
-                            <i class="bi bi-shield-check"></i>
+                    <!-- Section 3: Data Protection & Mock Session Lifecycle -->
+                    <h2 class="h4">3. Data Protection & Mock Session Lifecycle</h2>
+                    <p>
+                        Under no circumstances will student resumes, contact numbers, or academic credentials be sold, shared, or disclosed to third-party commercial marketing firms. Access is restricted exclusively to authorized university department supervisors, campus hiring managers, and Career Services administrators.
+                    </p>
+                    <p>
+                        Within this prototype platform environment, runtime state is managed securely via encrypted PHP Session lifecycles (<code>$_SESSION</code>) and structured JSON datastores (<code>data/*.json</code>) without permanent external database exposure.
+                    </p>
+
+                    <!-- Section 4: Rights of the Data Subject -->
+                    <h2 class="h4">4. Rights of the Data Subject</h2>
+                    <p>
+                        In accordance with Republic Act No. 10173, student applicants and registered employers retain full statutory rights over their personal information:
+                    </p>
+                    <ul>
+                        <li><strong>Right to Access:</strong> View all active application submissions and recorded profile data directly on the Student Dashboard.</li>
+                        <li><strong>Right to Rectification:</strong> Request corrections or updates to inaccurate contact numbers or uploaded documents.</li>
+                        <li><strong>Right to Erasure / Withdrawal:</strong> Withdraw submitted job applications at any time while the status remains <em>Pending Review</em>.</li>
+                        <li><strong>Right to Object:</strong> Withhold non-mandatory demographic details without compromising baseline assistantship evaluation.</li>
+                    </ul>
+
+                    <!-- Section 5: Data Protection Officer Contact -->
+                    <h2 class="h4">5. Data Protection Officer (DPO) Contact Block</h2>
+                    <p>
+                        For inquiries, concerns, or requests regarding the processing of your personal data under RA 10173, you may contact the designated University Data Protection Officer:
+                    </p>
+
+                    <div class="card-paper bg-cream p-4 mt-3">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <div class="icon-circle icon-circle-ink">
+                                <i class="bi bi-person-badge text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="card-paper-title mb-0">University Data Protection Office</h4>
+                                <span class="small text-muted-custom">Campus Career Services & Compliance Division</span>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="fw-bold text-ink mb-1">Data Privacy Policy</h2>
-                            <p class="text-muted-custom small mb-0">
-                                In Compliance with Republic Act No. 10173 (Philippine Data Privacy Act of 2012) | Last Updated: August 2026
-                            </p>
+                        <hr class="border-line my-2">
+                        <div class="small text-muted-custom d-flex flex-column gap-1">
+                            <div><i class="bi bi-geo-alt text-accent me-2"></i><strong>Location:</strong> Room 201, Student Affairs & Administration Building</div>
+                            <div><i class="bi bi-envelope text-accent me-2"></i><strong>Official Email:</strong> dataprivacy@campus-hire.edu</div>
+                            <div><i class="bi bi-telephone text-accent me-2"></i><strong>Campus Trunkline:</strong> (02) 8920-1000 loc. 105</div>
                         </div>
                     </div>
 
-                    <div class="alert alert-light border-line bg-cream p-3 rounded-3 mb-4 text-ink">
-                        <i class="bi bi-info-circle-fill text-accent me-2"></i>
-                        The <strong>Campus Job Posting System</strong> is committed to safeguarding personal, academic, and sensitive information submitted by students and campus department representatives.
-                    </div>
-
-                    <div class="privacy-content d-flex flex-column gap-4">
-                        <section>
-                            <h4 class="fw-bold text-ink mb-2">1. Scope and Applicability</h4>
-                            <p class="text-muted-custom">
-                                This policy governs all personal data collected through the online Campus Job Posting Portal from enrolled students seeking student assistantships, student tutors, and campus department personnel evaluating employment applications.
-                            </p>
-                        </section>
-
-                        <section>
-                            <h4 class="fw-bold text-ink mb-2">2. Information We Collect</h4>
-                            <p class="text-muted-custom mb-2">We collect only necessary information required to evaluate employment suitability:</p>
-                            <ul class="text-muted-custom">
-                                <li><strong>Personal Identity:</strong> Full name, institutional email address, contact phone numbers, and student identification numbers.</li>
-                                <li><strong>Academic Credentials:</strong> Enrolled academic institute, degree program, academic year level, General Weighted Average (GWA), and official Certificate of Registration / Study Load.</li>
-                                <li><strong>Application Files:</strong> Digital resumes, curriculum vitae, statements of interest/cover letters, and weekly class schedule vacant slots.</li>
-                                <li><strong>Employer & Supervisor Data:</strong> Campus office department, official room location, and supervisor institutional contact details.</li>
-                            </ul>
-                        </section>
-
-                        <section>
-                            <h4 class="fw-bold text-ink mb-2">3. Purpose of Data Processing</h4>
-                            <p class="text-muted-custom mb-2">Your information is processed strictly for the following legitimate campus purposes:</p>
-                            <ol class="text-muted-custom">
-                                <li>Assessing applicant qualification against posted department requirements.</li>
-                                <li>Scheduling technical interviews and coordinating duty shift timetables that do not conflict with lecture hours.</li>
-                                <li>Transmitting verified Daily Time Records (DTR) and payroll documents to the University Cashier and Accounting Office.</li>
-                                <li>Maintaining official university records of completed student assistantship certificates.</li>
-                            </ol>
-                        </section>
-
-                        <section>
-                            <h4 class="fw-bold text-ink mb-2">4. Non-Disclosure & Data Sharing Policy</h4>
-                            <p class="text-muted-custom">
-                                Under no circumstances will student resumes or contact records be sold, rented, or transferred to third-party commercial marketing firms. Access is restricted exclusively to authorized campus department supervisors, Student Affairs administrators, and accounting officers.
-                            </p>
-                        </section>
-
-                        <section>
-                            <h4 class="fw-bold text-ink mb-2">5. Data Retention & Storage Security</h4>
-                            <p class="text-muted-custom">
-                                Application submissions are retained for the duration of the current academic semester and archived in accordance with university document retention schedules. Secure authentication tokens and role-based access control prevent unauthorized viewing of sensitive student files.
-                            </p>
-                        </section>
-
-                        <section>
-                            <h4 class="fw-bold text-ink mb-2">6. Rights of the Data Subject</h4>
-                            <p class="text-muted-custom mb-2">Under Republic Act 10173, students and users are entitled to the following privacy rights:</p>
-                            <div class="row g-3 text-muted-custom small">
-                                <div class="col-md-6">
-                                    <div class="p-3 bg-surface rounded-3 border-line border">
-                                        <strong class="text-ink"><i class="bi bi-eye-fill text-accent me-1"></i> Right to Access:</strong> View all submitted applications and profile records at any time through the student dashboard.
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="p-3 bg-surface rounded-3 border-line border">
-                                        <strong class="text-ink"><i class="bi bi-pencil-fill text-ink me-1"></i> Right to Rectify:</strong> Update or correct outdated contact numbers, resume files, and availability matrices.
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="p-3 bg-surface rounded-3 border-line border">
-                                        <strong class="text-ink"><i class="bi bi-trash-fill text-danger me-1"></i> Right to Erasure / Withdraw:</strong> Cancel active job applications or request account deactivation.
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="p-3 bg-surface rounded-3 border-line border">
-                                        <strong class="text-ink"><i class="bi bi-envelope-exclamation-fill text-accent me-1"></i> Right to File Complaints:</strong> Report unauthorized data access to the University Data Protection Officer.
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="border-top border-line pt-4">
-                            <h4 class="fw-bold text-ink mb-2">7. Data Protection Officer (DPO) Contact</h4>
-                            <p class="text-muted-custom small mb-1">
-                                For inquiries, corrections, or concerns regarding your personal data rights:
-                            </p>
-                            <div class="bg-surface p-3 rounded-3 border-line border text-muted-custom small">
-                                <strong class="text-ink">Campus Job Posting Network - Data Protection Office (DPO)</strong><br>
-                                University Administration Building, Room 201<br>
-                                Email: <code>dataprivacy@campus-hire.edu</code> | Direct Line: (02) 8920-1000 loc 105
-                            </div>
-                        </section>
+                    <!-- Return CTA -->
+                    <div class="pt-4 mt-4 border-top border-line text-center">
+                        <a href="index.php" class="btn-pill-outline">
+                            <i class="bi bi-arrow-left"></i> Return to Home
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</main>
+        </main>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
+        <?php require_once __DIR__ . '/includes/footer.php'; ?>
+    </div>
+</div>

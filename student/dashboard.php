@@ -1,208 +1,219 @@
 <?php
 /**
  * Campus Job Posting System - Student Dashboard
+ * Archetype B: Student Dashboard & Application Hub (COAL101 Blueprint)
  */
 require_once __DIR__ . '/../includes/data-helper.php';
+require_once __DIR__ . '/../includes/auth-check.php';
 
 require_auth(['student', 'admin']);
 $user = get_logged_user();
-$page_title = 'Student Dashboard';
+$page_title = 'Student Dashboard & Application Portal';
 
-// Student applications
-$my_apps = get_applications($user['id']);
+// Applications for current student
+$my_apps = get_applications($user['id'] ?? 0);
 $total_applied = count($my_apps);
-$pending_count = count(array_filter($my_apps, fn($a) => $a['status'] === 'pending'));
-$interview_count = count(array_filter($my_apps, fn($a) => $a['status'] === 'interview_scheduled'));
-$accepted_count = count(array_filter($my_apps, fn($a) => $a['status'] === 'accepted'));
+$pending_count = count(array_filter($my_apps, fn($a) => in_array($a['status'] ?? '', ['pending', 'Pending Review', 'under_review', 'Under Evaluation'])));
+$interview_count = count(array_filter($my_apps, fn($a) => in_array($a['status'] ?? '', ['interview_scheduled', 'Interview Scheduled'])));
+$accepted_count = count(array_filter($my_apps, fn($a) => in_array($a['status'] ?? '', ['accepted', 'Accepted / Hired'])));
 
-// Recommended jobs
+// Recommended Jobs (filtered by student course / general assistantships)
 $all_jobs = get_jobs();
-$recommended_jobs = array_slice($all_jobs, 0, 4);
+$recommended_jobs = array_slice($all_jobs, 0, 3);
 
 require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<main class="py-4 bg-surface flex-grow-1">
-    <div class="container">
-        
-        <!-- Welcome Banner -->
-        <div class="card border-line shadow-sm rounded-4 p-4 p-md-4 mb-4 text-white bg-kld-gradient">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="bg-accent-soft text-ink p-2 rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                            <i class="bi bi-mortarboard-fill fs-4"></i>
-                        </div>
-                        <div>
-                            <span class="pill-badge pill-badge-ink text-uppercase small">Student Portal</span>
-                            <h3 class="fw-bold text-white mb-0 mt-1">Welcome back, <?= htmlspecialchars($user['name']) ?>!</h3>
-                        </div>
-                    </div>
-                    <p class="text-white-50 mb-0 small">
-                        <strong>Student ID:</strong> <?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?> &bull; 
-                        <strong>Course:</strong> <?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?> &bull; 
-                        <strong>Year:</strong> <?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?>
-                    </p>
-                </div>
-                <div class="col-md-4 text-center text-md-end mt-3 mt-md-0 d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">
-                    <a href="jobs.php" class="btn-accent-pill py-2 px-3 shadow-sm">
-                        <i class="bi bi-search me-1"></i> BROWSE OPENINGS
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/../includes/navbar.php'; ?>
+
+        <main class="py-5">
+            <div class="container-paper">
+                
+                <!-- Page Head with Quick Actions -->
+                <?php
+                $head_actions = '
+                    <a href="jobs.php" class="btn-pill">
+                        <i class="bi bi-search"></i> Browse Vacancies
                     </a>
-                    <a href="my-applications.php" class="btn-outline-pill py-2 px-3 text-white border-white">
-                        <i class="bi bi-folder2-open me-1"></i> MY APPLICATIONS
+                    <a href="my-applications.php" class="btn-pill-outline">
+                        <i class="bi bi-folder2-open"></i> My Applications (' . $total_applied . ')
                     </a>
-                </div>
-            </div>
-        </div>
+                ';
+                render_page_head(
+                    '<i class="bi bi-mortarboard-fill text-accent me-1"></i> Student Career Portal · ' . htmlspecialchars($user['course'] ?? 'BSIS'),
+                    'Welcome back, ' . htmlspecialchars($user['name']),
+                    'Track your assistantship evaluation status, review upcoming interview schedules, and explore vacancies matching your availability.',
+                    $head_actions
+                );
+                ?>
 
-        <!-- Metric KPI Cards -->
-        <div class="row g-2 g-md-3 mb-4">
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Total Applied</div>
-                            <div class="h3 fw-bold text-ink mb-0"><?= $total_applied ?></div>
-                        </div>
-                        <div class="stat-icon bg-accent-soft text-ink">
-                            <i class="bi bi-send-fill"></i>
-                        </div>
+                <!-- 4 KPI Metrics -->
+                <div class="row g-3 mb-5">
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($total_applied, 'Applications Filed', 'bi-send-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($pending_count, 'In Review', 'bi-hourglass-split'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($interview_count, 'Interviews Scheduled', 'bi-calendar-event-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($accepted_count, 'Accepted / Hired', 'bi-check-circle-fill'); ?>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Pending Review</div>
-                            <div class="h3 fw-bold text-ink mb-0"><?= $pending_count ?></div>
-                        </div>
-                        <div class="stat-icon bg-cream text-ink">
-                            <i class="bi bi-hourglass-split"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="row g-4 mb-5">
+                    <!-- Left: Recent Applications Stream -->
+                    <div class="col-lg-7">
+                        <div class="card-paper h-100 reveal-fade-rise">
+                            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
+                                <h3 class="card-paper-title mb-0">
+                                    <i class="bi bi-clock-history text-accent me-2"></i> Active Application Status
+                                </h3>
+                                <a href="my-applications.php" class="text-ink fw-bold small text-decoration-none">
+                                    View All <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
 
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Interviews</div>
-                            <div class="h3 fw-bold text-ink mb-0"><?= $interview_count ?></div>
-                        </div>
-                        <div class="stat-icon bg-cream text-ink">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            <?php if (empty($my_apps)): ?>
+                                <?php
+                                render_empty_state(
+                                    'bi-inbox',
+                                    'No Active Applications',
+                                    'You have not submitted any assistantship applications yet. Browse open campus vacancies to get started.',
+                                    'jobs.php',
+                                    'Find Open Opportunities'
+                                );
+                                ?>
+                            <?php else: ?>
+                                <div class="d-flex flex-column gap-3">
+                                    <?php foreach (array_slice($my_apps, 0, 3) as $app): ?>
+                                        <div class="p-3 bg-surface rounded-4 border border-line">
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                                <div>
+                                                    <h4 class="card-paper-title fs-6 mb-1">
+                                                        <?= htmlspecialchars($app['job_title']) ?>
+                                                    </h4>
+                                                    <span class="small text-muted-custom">
+                                                        <i class="bi bi-building me-1 text-accent"></i><?= htmlspecialchars($app['department']) ?>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <?= render_status_badge($app['status']) ?>
+                                                </div>
+                                            </div>
 
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted-custom small fw-semibold text-uppercase" style="font-size: 11px;">Accepted / Hired</div>
-                            <div class="h3 fw-bold text-ink mb-0"><?= $accepted_count ?></div>
-                        </div>
-                        <div class="stat-icon bg-accent-soft text-ink">
-                            <i class="bi bi-check-circle-fill text-accent"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                            <?php if (in_array($app['status'], ['interview_scheduled', 'Interview Scheduled']) && !empty($app['interview_date'])): ?>
+                                                <div class="p-3 bg-cream rounded-3 border border-line small text-ink mb-2">
+                                                    <div class="d-flex align-items-center gap-2 fw-bold mb-1">
+                                                        <i class="bi bi-calendar-check-fill text-accent"></i>
+                                                        <span>Interview Invitation</span>
+                                                    </div>
+                                                    <div><strong>Schedule:</strong> <?= htmlspecialchars($app['interview_date']) ?> at <?= htmlspecialchars($app['interview_time']) ?></div>
+                                                    <div><strong>Venue:</strong> <?= htmlspecialchars($app['interview_venue']) ?></div>
+                                                </div>
+                                            <?php endif; ?>
 
-        <div class="row g-4">
-            <!-- Left Column: Active Applications Status Timeline -->
-            <div class="col-lg-7">
-                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-ink mb-0"><i class="bi bi-clock-history text-accent me-2"></i> Active Applications</h5>
-                        <a href="my-applications.php" class="text-decoration-none small fw-bold text-accent">View All <i class="bi bi-chevron-right"></i></a>
-                    </div>
-
-                    <?php if (empty($my_apps)): ?>
-                        <div class="text-center py-5 text-muted-custom">
-                            <i class="bi bi-inbox fs-1 d-block mb-2 text-accent"></i>
-                            <p class="mb-3">You have not submitted any job applications yet.</p>
-                            <a href="jobs.php" class="btn-accent-pill">Find a Campus Vacancy</a>
-                        </div>
-                    <?php else: ?>
-                        <div class="d-flex flex-column gap-3">
-                            <?php foreach (array_slice($my_apps, 0, 3) as $app): ?>
-                                <div class="p-3 rounded-3 border-line border bg-surface">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h6 class="fw-bold text-ink mb-1"><?= htmlspecialchars($app['job_title']) ?></h6>
-                                            <span class="text-muted-custom small"><i class="bi bi-building me-1 text-accent"></i><?= htmlspecialchars($app['department']) ?></span>
+                                            <div class="d-flex justify-content-between align-items-center pt-2 border-top border-line small text-muted-custom">
+                                                <span>Applied: <?= date('M d, Y', strtotime($app['applied_at'])) ?></span>
+                                                <a href="my-applications.php" class="text-ink fw-bold text-decoration-none">
+                                                    Track Details &rarr;
+                                                </a>
+                                            </div>
                                         </div>
-                                        <?php
-                                        $badge_pill = match($app['status']) {
-                                            'accepted' => 'pill-badge',
-                                            'rejected' => 'pill-badge pill-badge-ink',
-                                            'interview_scheduled' => 'pill-badge',
-                                            default => 'chip-tag'
-                                        };
-                                        ?>
-                                        <span class="<?= $badge_pill ?>" style="font-size: 11px;">
-                                            <?= htmlspecialchars($app['status_label']) ?>
-                                        </span>
-                                    </div>
-
-                                    <?php if ($app['status'] === 'interview_scheduled' && !empty($app['interview_date'])): ?>
-                                        <div class="p-2 bg-cream border-line border rounded-3 small mb-2 text-ink">
-                                            <i class="bi bi-calendar-check text-accent me-1"></i>
-                                            <strong>Interview:</strong> <?= htmlspecialchars($app['interview_date']) ?> at <?= htmlspecialchars($app['interview_time']) ?> &bull; 
-                                            <em>Venue: <?= htmlspecialchars($app['interview_venue']) ?></em>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <div class="d-flex justify-content-between align-items-center small text-muted-custom pt-2 border-top border-line">
-                                        <span>Applied: <?= date('M d, Y', strtotime($app['applied_at'])) ?></span>
-                                        <a href="my-applications.php" class="text-decoration-none fw-bold text-accent">Track Details &rarr;</a>
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Right Column: Recommended Job Vacancies -->
-            <div class="col-lg-5">
-                <div class="card border-line shadow-sm rounded-4 p-4 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-ink mb-0"><i class="bi bi-stars text-accent me-2"></i> Recommended Jobs</h5>
-                        <a href="jobs.php" class="text-decoration-none small fw-bold text-accent">Explore &rarr;</a>
                     </div>
 
-                    <div class="d-flex flex-column gap-3">
+                    <!-- Right: Student Profile & Schedule Card -->
+                    <div class="col-lg-5">
+                        <div class="card-paper h-100 reveal-fade-rise">
+                            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
+                                <h3 class="card-paper-title mb-0">
+                                    <i class="bi bi-person-badge text-accent me-2"></i> Student Profile
+                                </h3>
+                                <a href="../settings.php" class="text-ink fw-bold small text-decoration-none">
+                                    Edit Profile <i class="bi bi-gear"></i>
+                                </a>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="icon-circle icon-circle-accent" style="width: 54px; height: 54px; font-size: 24px;">
+                                    <?= strtoupper(substr($user['name'] ?? 'S', 0, 1)) ?>
+                                </div>
+                                <div>
+                                    <h4 class="card-paper-title fs-5 mb-0"><?= htmlspecialchars($user['name']) ?></h4>
+                                    <span class="small text-muted-custom"><?= htmlspecialchars($user['email']) ?></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column gap-2 mb-4">
+                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                    <span class="text-muted-custom">Student ID:</span>
+                                    <span class="fw-bold text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></span>
+                                </div>
+                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                    <span class="text-muted-custom">Degree Program:</span>
+                                    <span class="fw-bold text-ink"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?></span>
+                                </div>
+                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                    <span class="text-muted-custom">Year Level:</span>
+                                    <span class="fw-bold text-ink"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
+                                </div>
+                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                    <span class="text-muted-custom">Academic Safeguard:</span>
+                                    <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/week</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-surface rounded-4 border border-line">
+                                <div class="d-flex align-items-center gap-2 mb-1 text-ink fw-bold small">
+                                    <i class="bi bi-calendar-week text-accent"></i>
+                                    <span>Weekly Availability Matrix</span>
+                                </div>
+                                <p class="small text-muted-custom mb-2" style="font-size: 12px;">
+                                    Keep your vacant time slots updated so campus offices can schedule duty hours around your lectures.
+                                </p>
+                                <a href="../settings.php#availability" class="btn-pill-outline btn-pill-sm w-100 text-center">
+                                    Update Shift Availability
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommended Opportunities Section -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
+                        <div>
+                            <h3 class="card-paper-title mb-1">
+                                <i class="bi bi-stars text-accent me-2"></i> Recommended Campus Opportunities
+                            </h3>
+                            <p class="text-muted-custom small mb-0">Verified assistantships and lab roles aligned with your course and student profile</p>
+                        </div>
+                        <a href="jobs.php" class="btn-pill-outline btn-pill-sm">
+                            View All (<?= count($all_jobs) ?>)
+                        </a>
+                    </div>
+
+                    <div class="row g-4">
                         <?php foreach ($recommended_jobs as $job): ?>
-                            <div class="p-3 rounded-3 border-line border bg-surface">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <h6 class="fw-bold mb-0">
-                                        <a href="job-details.php?id=<?= $job['id'] ?>" class="text-decoration-none text-ink">
-                                            <?= htmlspecialchars($job['title']) ?>
-                                        </a>
-                                    </h6>
-                                    <span class="pill-badge" style="font-size: 11px;"><?= htmlspecialchars($job['pay_rate']) ?></span>
-                                </div>
-                                <div class="text-muted-custom small mb-2"><?= htmlspecialchars($job['department']) ?></div>
-                                <div class="d-flex justify-content-between align-items-center small">
-                                    <span class="text-muted-custom"><i class="bi bi-clock me-1 text-accent"></i><?= htmlspecialchars($job['hours_per_week']) ?></span>
-                                    <a href="apply.php?job_id=<?= $job['id'] ?>" class="btn-outline-pill py-1 px-3" style="font-size: 11px;">Apply</a>
-                                </div>
+                            <div class="col-md-6 col-lg-4">
+                                <?php render_job_card($job, '../'); ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
+
             </div>
-        </div>
+        </main>
 
+        <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>
-</main>
-
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+</div>

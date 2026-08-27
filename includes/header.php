@@ -2,6 +2,8 @@
 /**
  * Campus Job Posting System - Shared Header Partial
  */
+require_once __DIR__ . '/components.php';
+
 if (!defined('SITE_NAME')) {
     define('SITE_NAME', 'CAMPUS HIRE');
 }
