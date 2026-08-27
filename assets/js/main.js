@@ -125,59 +125,201 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ------------------------------------------------------------------------
-  // 5. FEATURED JOBS CAROUSEL (Center-Mode Engine)
+  // 5. FEATURED JOBS CAROUSEL (Truly Unlimited Endless / Infinite Loop Engine)
   // ------------------------------------------------------------------------
   const carouselTrack = document.getElementById('featured-carousel-track');
   const btnPrev = document.getElementById('carousel-prev-btn');
   const btnNext = document.getElementById('carousel-next-btn');
 
   if (carouselTrack && btnPrev && btnNext) {
-    const cards = carouselTrack.querySelectorAll('.featured-job-card');
-    let currentIndex = 0;
-    const totalCards = cards.length;
+    const originalCards = Array.from(carouselTrack.querySelectorAll('.featured-job-card'));
+    const totalOriginals = originalCards.length;
 
-    function updateCarousel() {
-      if (window.innerWidth < 768) {
-        carouselTrack.style.transform = 'none';
-        cards.forEach((c) => c.classList.add('is-active'));
-        return;
+    if (totalOriginals > 0) {
+      // 3 sets before and 3 sets after provides ample buffer on all screen sizes
+      const repeatCount = Math.max(3, Math.ceil(12 / totalOriginals));
+      const prependClonesCount = repeatCount * totalOriginals;
+
+      // Create prepended clones
+      const prependFragment = document.createDocumentFragment();
+      for (let r = 0; r < repeatCount; r++) {
+        originalCards.forEach((card) => {
+          const clone = card.cloneNode(true);
+          clone.classList.add('is-clone');
+          clone.classList.remove('is-active');
+          clone.setAttribute('aria-hidden', 'true');
+          clone.querySelectorAll('a, button, input').forEach((el) => el.setAttribute('tabindex', '-1'));
+          prependFragment.appendChild(clone);
+        });
+      }
+      carouselTrack.insertBefore(prependFragment, carouselTrack.firstChild);
+
+      // Create appended clones
+      const appendFragment = document.createDocumentFragment();
+      for (let r = 0; r < repeatCount; r++) {
+        originalCards.forEach((card) => {
+          const clone = card.cloneNode(true);
+          clone.classList.add('is-clone');
+          clone.classList.remove('is-active');
+          clone.setAttribute('aria-hidden', 'true');
+          clone.querySelectorAll('a, button, input').forEach((el) => el.setAttribute('tabindex', '-1'));
+          appendFragment.appendChild(clone);
+        });
+      }
+      carouselTrack.appendChild(appendFragment);
+
+      const allCards = Array.from(carouselTrack.querySelectorAll('.featured-job-card'));
+      let currentIndex = prependClonesCount; // Start at first original card
+      let currentActiveCard = allCards[currentIndex] || null;
+
+      function getMetrics() {
+        const firstCard = carouselTrack.querySelector('.featured-job-card');
+        const cardWidth = firstCard ? firstCard.offsetWidth : 380;
+        const style = window.getComputedStyle(carouselTrack);
+        const gap = parseFloat(style.columnGap || style.gap) || 24;
+        return { cardWidth, gap, step: cardWidth + gap };
       }
 
-      cards.forEach(function (card, idx) {
-        if (idx === currentIndex) {
-          card.classList.add('is-active');
-        } else {
-          card.classList.remove('is-active');
+      function getOffsetForIndex(index) {
+        const { cardWidth, step } = getMetrics();
+        const containerWidth = carouselTrack.parentElement.offsetWidth;
+        return (containerWidth / 2) - (cardWidth / 2) - (index * step);
+      }
+
+      function getCurrentTranslateX() {
+        const style = window.getComputedStyle(carouselTrack);
+        const transform = style.transform || style.webkitTransform;
+        if (!transform || transform === 'none') {
+          return getOffsetForIndex(currentIndex);
         }
+        const matrix = transform.match(/^matrix\((.+)\)$/);
+        if (matrix) {
+          const values = matrix[1].split(', ');
+          return parseFloat(values[4]) || getOffsetForIndex(currentIndex);
+        }
+        const matrix3d = transform.match(/^matrix3d\((.+)\)$/);
+        if (matrix3d) {
+          const values = matrix3d[1].split(', ');
+          return parseFloat(values[12]) || getOffsetForIndex(currentIndex);
+        }
+        return getOffsetForIndex(currentIndex);
+      }
+
+      function updateActiveClasses(index) {
+        if (currentActiveCard) {
+          currentActiveCard.classList.remove('is-active');
+        }
+        currentActiveCard = allCards[index] || null;
+        if (currentActiveCard) {
+          currentActiveCard.classList.add('is-active');
+        }
+      }
+
+      function moveTo(index, withTransition) {
+        if (window.innerWidth < 768) {
+          carouselTrack.style.transform = 'none';
+          carouselTrack.style.transition = 'none';
+          originalCards.forEach((c) => c.classList.add('is-active'));
+          return;
+        }
+
+        if (withTransition) {
+          carouselTrack.style.transition = 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)';
+        } else {
+          carouselTrack.style.transition = 'none';
+        }
+
+        const offset = getOffsetForIndex(index);
+        carouselTrack.style.transform = `translateX(${offset}px)`;
+        updateActiveClasses(index);
+      }
+
+      function normalizeRestingPosition() {
+        if (currentIndex >= prependClonesCount + totalOriginals || currentIndex < prependClonesCount) {
+          const offsetFromBase = currentIndex - prependClonesCount;
+          const normalized = ((offsetFromBase % totalOriginals) + totalOriginals) % totalOriginals;
+          const newIndex = prependClonesCount + normalized;
+
+          if (newIndex !== currentIndex) {
+            carouselTrack.style.transition = 'none';
+            currentIndex = newIndex;
+            const offset = getOffsetForIndex(currentIndex);
+            carouselTrack.style.transform = `translateX(${offset}px)`;
+            updateActiveClasses(currentIndex);
+            void carouselTrack.offsetWidth; // Force reflow
+          }
+        }
+      }
+
+      // Seamlessly normalize resting coordinates when motion stops
+      carouselTrack.addEventListener('transitionend', function (e) {
+        if (e.target !== carouselTrack || e.propertyName !== 'transform') return;
+        normalizeRestingPosition();
       });
 
-      // Calculate translation to keep active card centered in viewport
-      const cardWidth = 380;
-      const gap = 24;
-      const containerWidth = carouselTrack.parentElement.offsetWidth;
-      const offset = (containerWidth / 2) - (cardWidth / 2) - (currentIndex * (cardWidth + gap));
-      
-      carouselTrack.style.transform = `translateX(${offset}px)`;
+      function handleNext(e) {
+        if (e) e.preventDefault();
+        if (window.innerWidth < 768) return;
+
+        const { step } = getMetrics();
+        const cycleWidth = totalOriginals * step;
+
+        // In-flight wrap: if spamming past base cycle, shift mid-flight coordinates by 1 cycle
+        if (currentIndex >= prependClonesCount + totalOriginals) {
+          const currentX = getCurrentTranslateX();
+          const wrappedX = currentX + cycleWidth;
+          carouselTrack.style.transition = 'none';
+          carouselTrack.style.transform = `translateX(${wrappedX}px)`;
+          currentIndex -= totalOriginals;
+          updateActiveClasses(currentIndex);
+          void carouselTrack.offsetWidth; // Force synchronous browser style application
+        }
+
+        currentIndex++;
+        moveTo(currentIndex, true);
+      }
+
+      function handlePrev(e) {
+        if (e) e.preventDefault();
+        if (window.innerWidth < 768) return;
+
+        const { step } = getMetrics();
+        const cycleWidth = totalOriginals * step;
+
+        // In-flight wrap: if spamming before base cycle, shift mid-flight coordinates by 1 cycle
+        if (currentIndex < prependClonesCount) {
+          const currentX = getCurrentTranslateX();
+          const wrappedX = currentX - cycleWidth;
+          carouselTrack.style.transition = 'none';
+          carouselTrack.style.transform = `translateX(${wrappedX}px)`;
+          currentIndex += totalOriginals;
+          updateActiveClasses(currentIndex);
+          void carouselTrack.offsetWidth; // Force synchronous browser style application
+        }
+
+        currentIndex--;
+        moveTo(currentIndex, true);
+      }
+
+      btnNext.addEventListener('click', handleNext);
+      btnPrev.addEventListener('click', handlePrev);
+
+      // Initial position
+      moveTo(currentIndex, false);
+
+      // Debounced resize listener
+      let resizeTimer = null;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          moveTo(currentIndex, false);
+        }, 80);
+      }, { passive: true });
+
+      // Window load listener (ensures proper positioning after fonts & images load)
+      window.addEventListener('load', function () {
+        moveTo(currentIndex, false);
+      });
     }
-
-    btnNext.addEventListener('click', function () {
-      currentIndex = (currentIndex + 1) % totalCards;
-      updateCarousel();
-    });
-
-    btnPrev.addEventListener('click', function () {
-      currentIndex = (currentIndex - 1 + totalCards) % totalCards;
-      updateCarousel();
-    });
-
-    // Initial setup
-    updateCarousel();
-
-    // Debounced resize listener
-    let resizeTimer = null;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(updateCarousel, 100);
-    }, { passive: true });
   }
 });

@@ -19,7 +19,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!passwordInput || !meterFill) return;
 
+  function updateRequirement(element, isMet) {
+    if (!element) return;
+    const icon = element.querySelector('i');
+    if (isMet) {
+      element.classList.add('met');
+      element.classList.remove('unmet');
+      if (icon) icon.className = 'bi bi-check-circle-fill text-accent';
+    } else {
+      element.classList.remove('met');
+      element.classList.add('unmet');
+      if (icon) icon.className = 'bi bi-circle text-muted-custom';
+    }
+  }
+
+  function resetRequirements() {
+    if (reqLength) updateRequirement(reqLength, false);
+    if (reqLower) updateRequirement(reqLower, false);
+    if (reqUpper) updateRequirement(reqUpper, false);
+    if (reqNumber) updateRequirement(reqNumber, false);
+    if (reqSpecial) updateRequirement(reqSpecial, false);
+  }
+
   function evaluatePasswordStrength(password) {
+    if (!password) {
+      resetRequirements();
+      return { score: 0, checks: { length: false, lower: false, upper: false, number: false, special: false } };
+    }
+
     let score = 0;
     const checks = {
       length: password.length >= 8,
@@ -47,25 +74,16 @@ document.addEventListener('DOMContentLoaded', function () {
     return { score, checks };
   }
 
-  function updateRequirement(element, isMet) {
-    const icon = element.querySelector('i');
-    if (isMet) {
-      element.classList.add('met');
-      element.classList.remove('unmet');
-      if (icon) icon.className = 'bi bi-check-circle-fill text-success';
-    } else {
-      element.classList.remove('met');
-      element.classList.add('unmet');
-      if (icon) icon.className = 'bi bi-circle text-muted';
-    }
-  }
-
-  passwordInput.addEventListener('input', function () {
+  function handlePasswordInput() {
     const val = passwordInput.value;
-    if (!val) {
+    if (!val || val.length === 0) {
       meterFill.className = 'password-meter-fill';
       meterFill.style.width = '0%';
-      if (strengthText) strengthText.innerHTML = '<span class="text-muted small">Enter password to see strength</span>';
+      if (strengthText) {
+        strengthText.innerHTML = '<span class="text-muted-custom small">Enter password to see strength</span>';
+      }
+      resetRequirements();
+      validatePasswordMatch();
       return;
     }
 
@@ -74,26 +92,34 @@ document.addEventListener('DOMContentLoaded', function () {
     if (score < 50) {
       meterFill.className = 'password-meter-fill strength-weak';
       meterFill.style.width = '30%';
-      if (strengthText) strengthText.innerHTML = '<span class="text-danger fw-bold small"><i class="bi bi-shield-x"></i> Weak password</span>';
+      if (strengthText) {
+        strengthText.innerHTML = '<span class="text-danger fw-bold small"><i class="bi bi-shield-x"></i> Weak password</span>';
+      }
     } else if (score < 80) {
       meterFill.className = 'password-meter-fill strength-medium';
       meterFill.style.width = '65%';
-      if (strengthText) strengthText.innerHTML = '<span class="text-warning fw-bold small"><i class="bi bi-shield-slash"></i> Moderate password</span>';
+      if (strengthText) {
+        strengthText.innerHTML = '<span class="text-warning fw-bold small"><i class="bi bi-shield-slash"></i> Moderate password</span>';
+      }
     } else {
       meterFill.className = 'password-meter-fill strength-strong';
       meterFill.style.width = '100%';
-      if (strengthText) strengthText.innerHTML = '<span class="text-success fw-bold small"><i class="bi bi-shield-check"></i> Strong password!</span>';
+      if (strengthText) {
+        strengthText.innerHTML = '<span class="text-accent fw-bold small"><i class="bi bi-shield-check"></i> Strong password!</span>';
+      }
     }
 
     validatePasswordMatch();
-  });
+  }
+
+  passwordInput.addEventListener('input', handlePasswordInput);
 
   function validatePasswordMatch() {
     if (!confirmPasswordInput) return true;
     const pVal = passwordInput.value;
     const cpVal = confirmPasswordInput.value;
 
-    if (!cpVal) {
+    if (!cpVal || !pVal) {
       confirmPasswordInput.classList.remove('is-valid', 'is-invalid');
       if (confirmFeedback) confirmFeedback.innerHTML = '';
       return false;
@@ -141,5 +167,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return false;
       }
     });
+  }
+
+  // Initial validation state
+  if (passwordInput.value) {
+    handlePasswordInput();
+  } else {
+    resetRequirements();
   }
 });
