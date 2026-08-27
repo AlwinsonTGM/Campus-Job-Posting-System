@@ -19,21 +19,21 @@ $team_members = [
         'tasks' => ['System Routing & State Engine', 'Architecture Blueprint', 'Session Handlers']
     ],
     [
-        'name' => 'Member 2 (Frontend Lead)',
+        'name' => 'Baco, Nico',
         'role' => 'Public Suite & Legal Compliance Specialist',
-        'student_id' => '2024-00102',
+        'student_id' => '2025-2-000032',
         'section' => 'BSIS201',
-        'email' => 'frontend.lead@kld.edu.ph',
-        'image' => 'assets/img/developers/member2.svg',
+        'email' => 'nbaco@kld.edu.ph',
+        'image' => 'assets/img/developers/BACO.jpg',
         'bio' => 'Designs and implements the public interface, responsive landing page, Data Privacy Policy, and Terms of Service.',
         'tasks' => ['Index & Landing Page', 'Data Privacy (RA 10173)', 'Terms of Service Page']
     ],
     [
-        'name' => 'Member 3 (Security Specialist)',
+        'name' => 'Cruzpe, Julius Robert',
         'role' => 'Authentication & Client Validation Engineer',
-        'student_id' => '2024-00103',
+        'student_id' => '2025-2-000091',
         'section' => 'BSIS201',
-        'email' => 'security.engineer@kld.edu.ph',
+        'email' => 'jrcruzpe@kld.edu.ph',
         'image' => 'assets/img/developers/member3.svg',
         'bio' => 'Specializes in user authentication flows, dynamic real-time password strength algorithms, and account security.',
         'tasks' => ['Password Strength Meter JS', 'Multi-Role Login & Register', 'Forgot Password Flow']
@@ -49,7 +49,7 @@ $team_members = [
         'tasks' => ['Student Dashboard', 'Job Filter & Details', 'My Applications Tracker']
     ],
     [
-        'name' => 'Member 5 (Employer UX Specialist)',
+        'name' => 'Salognon, Joeven',
         'role' => 'Department & Hiring Workflow Engineer',
         'student_id' => '2024-00105',
         'section' => 'BSIS201',
@@ -59,12 +59,12 @@ $team_members = [
         'tasks' => ['Employer Dashboard', 'Create & Edit Job Forms', 'Applicant Review Suite']
     ],
     [
-        'name' => 'Member 6 (Admin & QA Specialist)',
+        'name' => 'Jurado, Marl Jordan',
         'role' => 'System Administration & QA Lead',
-        'student_id' => '2024-00106',
+        'student_id' => '2025-2-000166',
         'section' => 'BSIS201',
-        'email' => 'admin.qa@kld.edu.ph',
-        'image' => 'assets/img/developers/member6.svg',
+        'email' => 'mjjurado@kld.edu.ph',
+        'image' => 'assets/img/developers/JURADO.jpg',
         'bio' => 'Manages administrative category controls, user accounts, printable analytics reports, and cross-browser quality assurance.',
         'tasks' => ['Categories & User Control', 'Printable Analytics Reports', 'Mobile QA & Validation']
     ]
