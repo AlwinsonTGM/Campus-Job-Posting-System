@@ -18,30 +18,30 @@ $current_script = basename($_SERVER['PHP_SELF']);
         </button>
         
         <div class="collapse navbar-collapse" id="navbarMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav me-auto mb-2 mb-xl-0 gap-1 gap-xl-2 align-items-stretch align-items-xl-center">
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_script === 'index.php' ? 'active' : '' ?>" href="<?= $base_url ?>index.php">
+                    <a class="nav-link <?= $current_script === 'index.php' ? 'active' : '' ?>" <?= $current_script === 'index.php' ? 'aria-current="page"' : '' ?> href="<?= $base_url ?>index.php">
                         <i class="bi bi-house-door me-1"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_script === 'jobs.php' ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
+                    <a class="nav-link <?= $current_script === 'jobs.php' ? 'active' : '' ?>" <?= $current_script === 'jobs.php' ? 'aria-current="page"' : '' ?> href="<?= $base_url ?>student/jobs.php">
                         <i class="bi bi-briefcase me-1"></i> Browse Jobs
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_script === 'faqs.php' ? 'active' : '' ?>" href="<?= $base_url ?>faqs.php">
+                    <a class="nav-link <?= $current_script === 'faqs.php' ? 'active' : '' ?>" <?= $current_script === 'faqs.php' ? 'aria-current="page"' : '' ?> href="<?= $base_url ?>faqs.php">
                         <i class="bi bi-question-circle me-1"></i> FAQs
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_script === 'about-us.php' ? 'active' : '' ?>" href="<?= $base_url ?>about-us.php">
+                    <a class="nav-link <?= $current_script === 'about-us.php' ? 'active' : '' ?>" <?= $current_script === 'about-us.php' ? 'aria-current="page"' : '' ?> href="<?= $base_url ?>about-us.php">
                         <i class="bi bi-people me-1"></i> About Us
                     </a>
                 </li>
             </ul>
 
-            <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+            <ul class="navbar-nav ms-auto align-items-stretch align-items-xl-center gap-2">
                 <!-- Quick Demo Role Switcher (For easy testing and presentation) -->
                 <li class="nav-item dropdown">
                     <button class="nav-btn nav-btn-demo dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

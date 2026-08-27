@@ -153,6 +153,11 @@ main {
   gap: 8px;
   font-size: 1.15rem;
   flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-academic .navbar-brand:hover {
+  opacity: 0.95;
 }
 
 .navbar-academic .navbar-brand .brand-badge {
@@ -166,25 +171,41 @@ main {
   letter-spacing: 0.5px;
 }
 
+.navbar-academic .navbar-nav.me-auto {
+  display: flex;
+  align-items: center;
+}
+
 .navbar-academic .nav-link {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 0.88) !important;
   font-weight: 500;
   font-size: 0.875rem;
   height: 38px;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 0 0.65rem;
+  gap: 6px;
+  padding: 0 0.85rem;
   border-radius: 8px;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
 }
 
-.navbar-academic .nav-link:hover,
+.navbar-academic .nav-link:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
 .navbar-academic .nav-link.active {
   color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.15);
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-academic .nav-link.active:hover {
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Unified Header Navigation Buttons (Consistent 38px Height & Sizing) */
@@ -205,8 +226,12 @@ main {
   text-decoration: none;
   cursor: pointer;
   box-sizing: border-box;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+}
+
+.navbar-academic .nav-btn:hover {
+  transform: translateY(-1px);
 }
 
 .navbar-academic .nav-btn-demo {
@@ -221,6 +246,7 @@ main {
   background-color: rgba(255, 255, 255, 0.22);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .navbar-academic .nav-btn-signin {
@@ -230,22 +256,24 @@ main {
 }
 
 .navbar-academic .nav-btn-signin:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.16);
   color: #ffffff;
   border-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .navbar-academic .nav-btn-register {
   background-color: var(--kld-gold);
   color: var(--kld-green-dark);
   border: 1px solid var(--kld-gold);
+  font-weight: 700;
 }
 
 .navbar-academic .nav-btn-register:hover {
   background-color: var(--kld-gold-hover);
   color: #ffffff;
   border-color: var(--kld-gold-hover);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.38);
 }
 
 .navbar-academic .nav-guest-row {
@@ -267,6 +295,7 @@ main {
   background-color: rgba(255, 255, 255, 0.22);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .navbar-academic .nav-btn-user .user-role-badge {
@@ -374,23 +403,53 @@ main {
   border: 1px solid #fde68a;
 }
 
+/* Form Input Polish */
+.form-control,
+.form-select {
+  border-radius: 8px;
+  border-color: #cbd5e1;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--kld-green-primary) !important;
+  box-shadow: 0 0 0 0.25rem rgba(15, 81, 50, 0.15) !important;
+}
+
+.input-group-text {
+  border-radius: 8px;
+  border-color: #cbd5e1;
+}
+
 /* Job Cards */
 .job-card {
   background: #ffffff;
   border: 1px solid var(--card-border);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 1.5rem;
-  transition: all 0.25s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .job-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(15, 81, 50, 0.1);
-  border-color: var(--kld-green-light);
+  box-shadow: 0 14px 28px rgba(15, 81, 50, 0.12);
+  border-color: #a7f3d0;
+}
+
+.job-card .btn-academic,
+.job-card .btn-outline-secondary {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.job-card:hover .btn-academic {
+  box-shadow: 0 4px 10px rgba(15, 81, 50, 0.25);
+  transform: translateY(-1px);
 }
 
 .job-tag {
@@ -658,13 +717,13 @@ main {
     position: absolute;
     top: calc(100% + 8px);
     right: 12px;
-    width: 270px;
+    width: 290px;
     max-width: calc(100vw - 24px);
-    background: rgba(6, 44, 27, 0.97);
+    background: rgba(6, 44, 27, 0.98);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    padding: 0.55rem 0.6rem;
-    border-radius: 12px;
+    padding: 0.75rem 0.8rem;
+    border-radius: 14px;
     margin-top: 0;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -677,7 +736,7 @@ main {
     position: absolute;
     top: calc(100% + 8px);
     right: 12px;
-    width: 270px;
+    width: 290px;
     max-width: calc(100vw - 24px);
     transition: all 0.2s ease;
   }
@@ -686,33 +745,36 @@ main {
     margin-bottom: 0 !important;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
+    align-items: stretch !important;
   }
 
   .navbar-academic .navbar-nav.me-auto .nav-link {
-    height: 30px;
-    font-size: 0.825rem;
-    padding: 0 0.55rem;
-    border-radius: 6px;
+    height: 38px;
+    font-size: 0.85rem;
+    padding: 0 0.75rem;
+    border-radius: 8px;
     width: 100%;
     justify-content: flex-start;
+    transform: none !important;
   }
 
   .navbar-academic .navbar-nav.me-auto .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--kld-gold) !important;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
     font-weight: 600;
-    border-left: 3px solid var(--kld-gold);
-    padding-left: 0.45rem;
+    border-left: 3.5px solid var(--kld-gold);
+    box-shadow: none;
+    padding-left: 0.65rem;
   }
   
   .navbar-academic .navbar-nav.ms-auto {
-    margin-top: 0.35rem;
-    padding-top: 0.35rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.45rem;
     align-items: stretch !important;
   }
 
@@ -721,19 +783,20 @@ main {
   }
 
   .navbar-academic .nav-btn {
-    height: 31px;
-    min-height: 31px;
-    max-height: 31px;
-    font-size: 0.785rem;
-    padding: 0 0.55rem;
-    border-radius: 6px;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    font-size: 0.825rem;
+    padding: 0 0.75rem;
+    border-radius: 8px;
     width: 100%;
+    transform: none !important;
   }
 
   .navbar-academic .nav-guest-row {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 6px !important;
+    gap: 8px !important;
     width: 100% !important;
   }
 
@@ -744,17 +807,17 @@ main {
   .navbar-academic .dropdown-menu {
     background-color: rgba(255, 255, 255, 0.98);
     border: none;
-    margin-top: 0.25rem;
+    margin-top: 0.35rem;
     position: static !important;
     transform: none !important;
-    border-radius: 6px;
-    padding: 0.25rem 0;
+    border-radius: 8px;
+    padding: 0.35rem 0;
   }
   
   .navbar-academic .dropdown-menu .dropdown-item {
     color: var(--text-dark);
-    padding: 0.3rem 0.65rem;
-    font-size: 0.775rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
   }
 }
 
