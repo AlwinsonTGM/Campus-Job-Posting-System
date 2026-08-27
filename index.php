@@ -122,7 +122,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <div class="form-check form-switch m-0 p-0 d-inline-flex align-items-center">
                                     <input class="form-check-input ms-0" type="checkbox" role="switch" id="pay-type-toggle" aria-label="Toggle Pay Type">
                                 </div>
-                                <span id="pay-stipend-label" class="pay-toggle-label">Monthly Stipend 💚</span>
+                                <span id="pay-stipend-label" class="pay-toggle-label">Monthly Stipend</span>
                             </div>
                         </div>
 
@@ -266,7 +266,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <div>
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
-                                            <i class="bi bi-shield-lock-fill fs-4 text-accent"></i>
+                                            <i class="bi bi-shield-lock-fill fs-4 text-ink"></i>
                                         </div>
                                         <span class="pill-badge pill-badge-ink" style="font-size: 11px;">STEP 02</span>
                                     </div>

@@ -660,4 +660,39 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
+
+  // Auto-expand FAQ Accordion from URL Hash (e.g., #faq-2 or #work-limits)
+  function handleFaqHash() {
+    if (!window.location.hash) return;
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) return;
+    const targetEl = document.getElementById(hash);
+    if (targetEl) {
+      let collapseEl = targetEl.classList.contains('accordion-collapse')
+        ? targetEl
+        : targetEl.querySelector('.accordion-collapse');
+      
+      if (!collapseEl && targetEl.closest('.accordion-item')) {
+        collapseEl = targetEl.closest('.accordion-item').querySelector('.accordion-collapse');
+      }
+
+      if (collapseEl && !collapseEl.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+          const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+          bsCollapse.show();
+        } else {
+          collapseEl.classList.add('show');
+        }
+      }
+
+      // Smoothly scroll to target
+      setTimeout(function () {
+        const itemToScroll = targetEl.closest('.accordion-item') || targetEl;
+        itemToScroll.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
+    }
+  }
+
+  handleFaqHash();
+  window.addEventListener('hashchange', handleFaqHash);
 });

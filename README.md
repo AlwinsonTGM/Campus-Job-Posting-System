@@ -9,10 +9,10 @@ A university-centric web application connecting students with on-campus employme
 - **Admin**: Manage categories, monitor platform activity, and generate reports.
 - **Authentication**: Role-based access control (Student, Employer, Admin) with password strength validation.
 
-## ??? Tech Stack
+## 🛠️ Tech Stack
 
-- **Backend**: Native PHP (JSON file-based storage)
-- **Frontend**: Bootstrap 5, Vanilla JavaScript, HTML5/CSS3
+- **Backend & Templating**: Native PHP (JSON file-based storage)
+- **Frontend & Styling**: Bootstrap 5, Custom CSS3, Vanilla JavaScript (ES6)
 - **Tunneling / Deployment**: Cloudflare Tunnel integration for live preview
 
 ## ?? Getting Started

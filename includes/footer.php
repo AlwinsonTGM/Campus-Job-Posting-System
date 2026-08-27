@@ -27,10 +27,10 @@ if (!defined('SITE_NAME')) {
                 </p>
                 <!-- Social Icon Circles -->
                 <div class="d-flex gap-2">
-                    <a href="#" class="social-circle-link" aria-label="Facebook" title="Facebook"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="social-circle-link" aria-label="Twitter" title="Twitter"><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="social-circle-link" aria-label="LinkedIn" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                    <a href="#" class="social-circle-link" aria-label="GitHub" title="GitHub"><i class="bi bi-github"></i></a>
+                    <a href="https://www.facebook.com/alwinson.bustamante" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="Facebook" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="https://x.com/alwinson1000" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="X (formerly Twitter)" title="X (formerly Twitter)"><i class="bi bi-twitter-x"></i></a>
+                    <a href="https://www.linkedin.com/in/AlwinsonTGM" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="LinkedIn" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="https://github.com/AlwinsonTGM" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="GitHub" title="GitHub"><i class="bi bi-github"></i></a>
                 </div>
             </div>
 
@@ -52,7 +52,7 @@ if (!defined('SITE_NAME')) {
                 <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
                     <li><a href="<?= $base_url ?>privacy.php">Data Privacy Policy (RA 10173)</a></li>
                     <li><a href="<?= $base_url ?>terms.php">Terms of Service</a></li>
-                    <li><a href="<?= $base_url ?>faqs.php#work-limits">20-Hour Work Regulations</a></li>
+                    <li><a href="<?= $base_url ?>faqs.php?open=2#faq-2">20-Hour Work Regulations</a></li>
                     <li><a href="<?= $base_url ?>about-us.php#developers">COAL101 Dev Team</a></li>
                 </ul>
             </div>

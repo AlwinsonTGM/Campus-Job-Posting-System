@@ -74,7 +74,7 @@
   5. **Member 5 (Frontend & Flow Specialist — Employer Module):** Employer Dashboard, Create/Edit Job, Applicant Roster, Review Modal.
   6. **Member 6 (Admin & Data Architect — Mock Datastore & Reports):** Categories, User Management, PDF/Printable Reports Mock, JSON/Session datastore handler.
 * **Mission & Vision Statement:** Our goal as BSIS / IT students to modernize student employment on campus.
-* **Tech Stack Showcase:** Interactive badges for PHP 8, Bootstrap 5.3, HTML5/CSS3, JavaScript ES6.
+* **Tech Stack Showcase:** Interactive badges for Native PHP 8, Bootstrap 5.3, Custom CSS3, JavaScript ES6, and JSON Datastore.
 
 ---
 
