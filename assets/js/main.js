@@ -327,4 +327,225 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   }
+
+  // ------------------------------------------------------------------------
+  // 6. GLOBAL FLOATING SPOTLIGHT SEARCH MODAL ENGINE
+  // ------------------------------------------------------------------------
+  const spotlightModalEl = document.getElementById('globalSearchModal');
+  if (spotlightModalEl) {
+    const baseUrl = spotlightModalEl.getAttribute('data-base-url') || '';
+    const searchInput = document.getElementById('spotlightSearchInput');
+    const searchForm = document.getElementById('spotlightSearchForm');
+    const clearBtn = document.getElementById('spotlightClearBtn');
+    const resultsContainer = document.getElementById('spotlightResultsList');
+    const loadingEl = document.getElementById('spotlightLoading');
+    const emptyStateEl = document.getElementById('spotlightEmptyState');
+    const resultCountEl = document.getElementById('spotlightResultCount');
+    const fullSearchLink = document.getElementById('spotlightFullSearchLink');
+    const filterChips = spotlightModalEl.querySelectorAll('.spotlight-chip');
+
+    let activeFilterType = '';
+    let activeFilterVal = '';
+    let searchDebounceTimer = null;
+    let currentAbortController = null;
+
+    // Helper: Escape HTML strings
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Perform Fetch Query
+    function executeSpotlightSearch() {
+      const query = (searchInput ? searchInput.value : '').trim();
+
+      // Toggle clear button
+      if (clearBtn) {
+        if (query.length > 0) {
+          clearBtn.classList.remove('d-none');
+        } else {
+          clearBtn.classList.add('d-none');
+        }
+      }
+
+      // Update Full Results Page link
+      if (fullSearchLink) {
+        let fullUrl = `${baseUrl}student/jobs.php`;
+        const params = [];
+        if (query) params.push(`keyword=${encodeURIComponent(query)}`);
+        if (activeFilterType === 'job_type' && activeFilterVal) params.push(`job_type=${encodeURIComponent(activeFilterVal)}`);
+        if (activeFilterType === 'work_setup' && activeFilterVal) params.push(`work_setup=${encodeURIComponent(activeFilterVal)}`);
+        if (params.length > 0) fullUrl += '?' + params.join('&');
+        fullSearchLink.href = fullUrl;
+      }
+
+      // Cancel any ongoing fetch request
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+      currentAbortController = new AbortController();
+
+      // Show loader
+      if (loadingEl) loadingEl.classList.remove('d-none');
+      if (emptyStateEl) emptyStateEl.classList.add('d-none');
+
+      let apiUrl = `${baseUrl}api/search-jobs.php?limit=8`;
+      if (query) apiUrl += `&q=${encodeURIComponent(query)}`;
+      if (activeFilterType === 'job_type' && activeFilterVal) apiUrl += `&job_type=${encodeURIComponent(activeFilterVal)}`;
+      if (activeFilterType === 'work_setup' && activeFilterVal) apiUrl += `&work_setup=${encodeURIComponent(activeFilterVal)}`;
+
+      fetch(apiUrl, { signal: currentAbortController.signal })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Search failed');
+          return res.json();
+        })
+        .then(function (data) {
+          if (loadingEl) loadingEl.classList.add('d-none');
+
+          const results = data.results || [];
+          const total = data.total || 0;
+
+          if (resultCountEl) {
+            if (query) {
+              resultCountEl.innerHTML = `Found <strong class="text-ink">${total}</strong> matching vacancies`;
+            } else {
+              resultCountEl.innerHTML = `Showing <strong class="text-ink">${results.length}</strong> top opportunities`;
+            }
+          }
+
+          if (results.length === 0) {
+            if (resultsContainer) resultsContainer.innerHTML = '';
+            if (emptyStateEl) emptyStateEl.classList.remove('d-none');
+            return;
+          }
+
+          if (emptyStateEl) emptyStateEl.classList.add('d-none');
+
+          let html = '';
+          results.forEach(function (job) {
+            const jobDetailsUrl = `${baseUrl}student/job-details.php?id=${job.id}`;
+            const applyUrl = `${baseUrl}student/apply.php?id=${job.id}`;
+            const isPartnerBadge = job.is_partner
+              ? `<span class="badge-tag-overlay p-1 px-2 small me-1" style="background-color: var(--ink); color: #fff; font-size: 10px;"><i class="bi bi-patch-check-fill text-accent"></i> Partner</span>`
+              : '';
+
+            html += `
+              <div class="spotlight-job-item">
+                <a href="${jobDetailsUrl}" class="d-flex align-items-center gap-3 text-decoration-none text-ink flex-grow-1 min-w-0">
+                  <img src="${escapeHtml(job.image)}" alt="${escapeHtml(job.title)}" class="spotlight-job-thumb">
+                  <div class="min-w-0">
+                    <div class="d-flex align-items-center gap-1 mb-1">
+                      ${isPartnerBadge}
+                      <span class="spotlight-job-meta fw-semibold text-truncate d-inline-block" style="max-width: 280px;">
+                        ${escapeHtml(job.organization_name || job.department)}
+                      </span>
+                    </div>
+                    <div class="spotlight-job-title text-truncate">${escapeHtml(job.title)}</div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
+                      <span class="badge bg-cream text-ink border border-line small py-1 px-2" style="font-size: 11px; font-weight: 600;">
+                        ${escapeHtml(job.pay_rate)}
+                      </span>
+                      <span class="badge bg-surface text-muted-custom border border-line small py-1 px-2" style="font-size: 11px;">
+                        <i class="bi bi-geo-alt text-accent me-1"></i>${escapeHtml(job.work_setup)}
+                      </span>
+                      <span class="badge bg-surface text-muted-custom border border-line small py-1 px-2 d-none d-sm-inline-block" style="font-size: 11px;">
+                        ${escapeHtml(job.job_type)}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+                <div class="spotlight-job-action flex-shrink-0 d-flex align-items-center gap-2">
+                  <a href="${applyUrl}" class="btn-accent-pill py-1 px-3 small" style="font-size: 0.75rem; white-space: nowrap;">
+                    Apply <i class="bi bi-arrow-up-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+            `;
+          });
+
+          if (resultsContainer) {
+            resultsContainer.innerHTML = html;
+          }
+        })
+        .catch(function (err) {
+          if (err.name === 'AbortError') return; // Ignore aborted fetch
+          if (loadingEl) loadingEl.classList.add('d-none');
+          if (resultsContainer) {
+            resultsContainer.innerHTML = `
+              <div class="alert alert-paper alert-paper--warning p-3 text-center small">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i> Unable to load live results. <a href="${baseUrl}student/jobs.php" class="fw-bold text-ink">Browse all jobs</a>
+              </div>
+            `;
+          }
+        });
+    }
+
+    // Debounced input handler
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(executeSpotlightSearch, 180);
+      });
+    }
+
+    // Clear Button Action
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.focus();
+        }
+        executeSpotlightSearch();
+      });
+    }
+
+    // Filter Chips Click
+    filterChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        filterChips.forEach(function (c) { c.classList.remove('active'); });
+        this.classList.add('active');
+        activeFilterType = this.getAttribute('data-filter-type') || '';
+        activeFilterVal = this.getAttribute('data-filter-val') || '';
+        executeSpotlightSearch();
+      });
+    });
+
+    // Form Submit handling (directs to student/jobs.php)
+    if (searchForm) {
+      searchForm.addEventListener('submit', function (e) {
+        // Let standard GET submit carry keyword to student/jobs.php
+      });
+    }
+
+    // Modal Events: Autofocus on open & pre-load default opportunities instantly
+    spotlightModalEl.addEventListener('show.bs.modal', function () {
+      executeSpotlightSearch();
+    });
+    spotlightModalEl.addEventListener('shown.bs.modal', function () {
+      if (searchInput) {
+        searchInput.focus();
+      }
+    });
+  }
+
+  // Global Keyboard Shortcut: Ctrl+K / Cmd+K to toggle Spotlight Search
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      const modalEl = document.getElementById('globalSearchModal');
+      if (modalEl && typeof bootstrap !== 'undefined') {
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        if (modalEl.classList.contains('show')) {
+          bsModal.hide();
+        } else {
+          bsModal.show();
+        }
+      }
+    }
+  });
 });

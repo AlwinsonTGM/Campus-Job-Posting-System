@@ -64,7 +64,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <?php render_metric($total_applicants_count, 'Total Applicants', 'bi-people-fill'); ?>
                     </div>
                     <div class="col-6 col-lg-3">
-                        <?php render_metric($interview_count, 'Shortlisted / Interviewing', 'bi-calendar-event-fill'); ?>
+                        <?php render_metric($interview_count, 'Interviews Scheduled', 'bi-calendar-event-fill'); ?>
                     </div>
                     <div class="col-6 col-lg-3">
                         <?php render_metric($hired_count, 'Officially Appointed', 'bi-person-check-fill'); ?>

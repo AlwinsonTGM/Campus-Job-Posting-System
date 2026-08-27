@@ -59,10 +59,10 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
 
             <!-- Right Action Items -->
             <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-                <!-- Circular Search-Icon Button (Scrolls to #search-widget) -->
-                <a href="<?= ($current_script === 'index.php') ? '#search-widget' : $base_url . 'index.php#search-widget' ?>" class="btn-circle-icon" title="Search Campus Jobs" aria-label="Search Jobs">
+                <!-- Circular Search-Icon Button (Opens Floating Spotlight Modal) -->
+                <button type="button" class="btn-circle-icon" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
                     <i class="bi bi-search"></i>
-                </a>
+                </button>
 
                 <?php if ($current_user): ?>
                     <!-- Logged-in: Dashboard link + Avatar chip -->

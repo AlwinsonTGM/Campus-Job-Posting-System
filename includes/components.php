@@ -114,12 +114,12 @@ if (!function_exists('render_metric')) {
      */
     function render_metric($value, $label, $icon = 'bi-bar-chart-fill') {
         ?>
-        <div class="metric">
-            <div>
-                <div class="metric-lbl"><?= htmlspecialchars($label) ?></div>
+        <div class="metric h-100">
+            <div class="d-flex flex-column justify-content-center min-w-0">
+                <div class="metric-lbl text-truncate"><?= htmlspecialchars($label) ?></div>
                 <div class="metric-val"><?= htmlspecialchars((string)$value) ?></div>
             </div>
-            <div class="icon-circle icon-circle-accent">
+            <div class="icon-circle icon-circle-accent flex-shrink-0">
                 <i class="bi <?= htmlspecialchars($icon) ?>"></i>
             </div>
         </div>

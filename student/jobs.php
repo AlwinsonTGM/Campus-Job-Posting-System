@@ -115,16 +115,11 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <!-- Filter Submit & Reset -->
-                            <div class="col-lg-1 col-md-4 d-flex gap-2">
-                                <button type="submit" class="btn-pill w-100 p-0" title="Apply Filters">
+                            <!-- Filter Submit -->
+                            <div class="col-lg-1 col-md-4">
+                                <button type="submit" class="btn-pill w-100 p-0" style="height: 48px;" title="Apply Filters" aria-label="Apply Filters">
                                     <i class="bi bi-funnel-fill"></i>
                                 </button>
-                                <?php if ($keyword || $category || $department || $job_type || $work_setup || $pay_type || $employer_type): ?>
-                                    <a href="jobs.php" class="btn-pill-outline btn-pill-sm p-0 flex-shrink-0" style="width: 48px; height: 48px;" title="Reset Filters">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </a>
-                                <?php endif; ?>
                             </div>
                         </div>
 
