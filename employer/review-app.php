@@ -26,6 +26,12 @@ if (!$target_app) {
     exit;
 }
 
+if (!can_review_application($target_app, $user)) {
+    set_flash('danger', 'Unauthorized: Candidate application belongs to another department.');
+    header('Location: applicants.php');
+    exit;
+}
+
 $job = get_job_by_id($target_app['job_id'] ?? 0);
 
 // Handle status update POST

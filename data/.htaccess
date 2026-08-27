@@ -1,0 +1,13 @@
+# Campus Job Posting System - Datastore Security Lockdown
+# Deny all direct web/HTTP access to flat-file JSON datastores and backups
+
+<IfModule mod_authz_core.c>
+    # Apache 2.4+ Directive
+    Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    # Apache 2.2 / Legacy Directive
+    Order deny,allow
+    Deny from all
+</IfModule>

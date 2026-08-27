@@ -152,6 +152,185 @@ function require_auth($allowed_roles = []) {
     }
 }
 
+// CSRF Protection Helpers
+if (!function_exists('generate_csrf_token')) {
+    function generate_csrf_token() {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+}
+
+if (!function_exists('verify_csrf_token')) {
+    function verify_csrf_token($token) {
+        if (empty($_SESSION['csrf_token']) || empty($token) || !is_string($token)) {
+            return false;
+        }
+        return hash_equals($_SESSION['csrf_token'], $token);
+    }
+}
+
+if (!function_exists('validate_csrf_token')) {
+    function validate_csrf_token($token) {
+        return verify_csrf_token($token);
+    }
+}
+
+// Authorization Helpers
+/**
+ * Check if a user has authorization to manage / edit a job requisition.
+ * 
+ * @param array|int|string $job_or_id Job array or Job ID
+ * @param array|null $user User array (defaults to get_logged_user())
+ * @return bool
+ */
+function can_manage_job($job_or_id, $user = null) {
+    if ($user === null) {
+        $user = get_logged_user();
+    }
+    if (!$user) {
+        return false;
+    }
+    if (($user['role'] ?? '') === 'admin') {
+        return true;
+    }
+    if (($user['role'] ?? '') !== 'employer') {
+        return false;
+    }
+
+    $job = is_array($job_or_id) ? $job_or_id : get_job_by_id($job_or_id);
+    if (!$job) {
+        return false;
+    }
+
+    if (isset($job['employer_id']) && (int)$job['employer_id'] === (int)($user['id'] ?? 0)) {
+        return true;
+    }
+
+    $user_org = trim($user['organization_name'] ?? '');
+    $user_dept = trim($user['department'] ?? '');
+    $job_dept = trim($job['department'] ?? '');
+    $job_org = trim($job['organization_name'] ?? '');
+
+    if (!empty($job_dept)) {
+        if (!empty($user_dept) && strcasecmp($job_dept, $user_dept) === 0) {
+            return true;
+        }
+        if (!empty($user_org) && strcasecmp($job_dept, $user_org) === 0) {
+            return true;
+        }
+    }
+
+    if (!empty($job_org)) {
+        if (!empty($user_dept) && strcasecmp($job_org, $user_dept) === 0) {
+            return true;
+        }
+        if (!empty($user_org) && strcasecmp($job_org, $user_org) === 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Check if a user has authorization to review or update candidate application status.
+ * 
+ * @param array|int|string $app_or_id Application array or Application ID
+ * @param array|null $user User array (defaults to get_logged_user())
+ * @return bool
+ */
+function can_review_application($app_or_id, $user = null) {
+    if ($user === null) {
+        $user = get_logged_user();
+    }
+    if (!$user) {
+        return false;
+    }
+    if (($user['role'] ?? '') === 'admin') {
+        return true;
+    }
+    if (($user['role'] ?? '') !== 'employer') {
+        return false;
+    }
+
+    $app = is_array($app_or_id) ? $app_or_id : get_application_by_id($app_or_id);
+    if (!$app) {
+        return false;
+    }
+
+    $job = get_job_by_id($app['job_id'] ?? 0);
+    if ($job && can_manage_job($job, $user)) {
+        return true;
+    }
+
+    $user_org = trim($user['organization_name'] ?? '');
+    $user_dept = trim($user['department'] ?? '');
+    $app_dept = trim($app['department'] ?? '');
+
+    if (!empty($app_dept)) {
+        if (!empty($user_org) && strcasecmp($app_dept, $user_org) === 0) {
+            return true;
+        }
+        if (!empty($user_dept) && strcasecmp($app_dept, $user_dept) === 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Check if a user has authorization to view a student resume / personal details.
+ * 
+ * @param array|int|string|null $app Application array or ID (if accessing via app_id)
+ * @param int|string|null $student_user_id Target student user ID (if accessing via user_id)
+ * @param array|null $user Requesting user (defaults to get_logged_user())
+ * @return bool
+ */
+function can_view_student_resume($app = null, $student_user_id = null, $user = null) {
+    if ($user === null) {
+        $user = get_logged_user();
+    }
+    if (!$user) {
+        return false;
+    }
+    if (($user['role'] ?? '') === 'admin') {
+        return true;
+    }
+
+    if (($user['role'] ?? '') === 'student') {
+        if ($app !== null) {
+            $target_app = is_array($app) ? $app : get_application_by_id($app);
+            return $target_app && isset($target_app['student_id']) && (int)$target_app['student_id'] === (int)($user['id'] ?? 0);
+        }
+        if ($student_user_id !== null) {
+            return (int)$student_user_id === (int)($user['id'] ?? 0);
+        }
+        return true;
+    }
+
+    if (($user['role'] ?? '') === 'employer') {
+        if ($app !== null) {
+            return can_review_application($app, $user);
+        }
+        if ($student_user_id !== null) {
+            $apps = $_SESSION['applications'] ?? load_json_file('applications.json');
+            foreach ($apps as $a) {
+                if (isset($a['student_id']) && (int)$a['student_id'] === (int)$student_user_id) {
+                    if (can_review_application($a, $user)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    return false;
+}
+
 // User Actions
 function login_user($email, $password) {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
@@ -313,8 +492,21 @@ function register_user($data, $permit_file = null, $proof_file = null) {
     $role = $data['role'] ?? 'student';
     $employer_type = $data['employer_type'] ?? 'university_office';
     $org_name = $data['organization_name'] ?? ($data['department'] ?? 'Campus Organization');
-    $accreditation = $data['accreditation_number'] ?? ($employer_type === 'university_office' ? 'INTERNAL-UNIV' : 'PENDING-VERIFICATION');
-    $verification = ($employer_type === 'university_office') ? 'verified' : ($role === 'student' ? 'verified' : 'pending_approval');
+    
+    $is_kld_email = (bool)preg_match('/@kld\.edu\.ph$/i', $data['email'] ?? '');
+    
+    if ($role === 'employer') {
+        if ($employer_type === 'university_office' && $is_kld_email) {
+            $verification = 'verified';
+            $accreditation = 'INTERNAL-UNIV';
+        } else {
+            $verification = 'pending_approval';
+            $accreditation = $data['accreditation_number'] ?? 'PENDING-VERIFICATION';
+        }
+    } else {
+        $verification = 'verified';
+        $accreditation = 'STUDENT-INTERNAL';
+    }
 
     $sex = $data['sex'] ?? ($role === 'student' ? 'Male' : '');
     $birthdate = $data['birthdate'] ?? '';

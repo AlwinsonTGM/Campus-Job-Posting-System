@@ -27,13 +27,17 @@ if ($app_id) {
             break;
         }
     }
-}
 
-if ($app) {
-    if ($current_user['role'] === 'student' && ($app['student_id'] ?? 0) != $current_user['id']) {
+    if (!$app) {
+        http_response_code(404);
+        die('The specified student application could not be found.');
+    }
+
+    if (!can_view_student_resume($app, null, $current_user)) {
+        http_response_code(403);
         die('Access Denied: You are not authorized to view this candidate credential.');
     }
-    
+
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     foreach ($users as $u) {
         if ($u['id'] == ($app['student_id'] ?? 0) || $u['email'] === ($app['student_email'] ?? '')) {
@@ -42,6 +46,15 @@ if ($app) {
         }
     }
 } elseif ($user_id) {
+    if (!can_view_student_resume(null, $user_id, $current_user)) {
+        http_response_code(403);
+        if (($current_user['role'] ?? '') === 'employer') {
+            die('Access Denied: You are not authorized to view this candidate credential.');
+        } else {
+            die('Access Denied: You are not authorized to inspect other student records.');
+        }
+    }
+
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     foreach ($users as $u) {
         if ($u['id'] == $user_id) {
@@ -49,6 +62,11 @@ if ($app) {
             $resume_filename = ($u['name'] ?? 'Student') . '_Resume.pdf';
             break;
         }
+    }
+
+    if (!$target_student) {
+        http_response_code(404);
+        die('Student record not found.');
     }
 } else {
     $target_student = $current_user;
@@ -107,7 +125,7 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
 <head>
     <meta charset=UTF-8>
     <meta name=viewport content=width=device-width, initial-scale=1.0>
-    <title><?= htmlspecialchars() ?> - Official Student Resume (KLD)</title>
+    <title><?= htmlspecialchars($student_name) ?> - Official Student Resume (KLD)</title>
     <link rel=preconnect href=https://fonts.googleapis.com>
     <link rel=preconnect href=https://fonts.gstatic.com crossorigin>
     <link href=https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap rel=stylesheet>

@@ -17,6 +17,12 @@ if (!$job) {
     exit;
 }
 
+if (!can_manage_job($job, $user)) {
+    set_flash('danger', 'Unauthorized: You can only edit requisitions posted by your office.');
+    header('Location: dashboard.php');
+    exit;
+}
+
 $categories = get_categories();
 $job_types = get_job_types();
 $work_setups = get_work_setups();

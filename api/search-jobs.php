@@ -8,11 +8,21 @@ header('X-Content-Type-Options: nosniff');
 
 require_once __DIR__ . '/../includes/data-helper.php';
 
-$query = trim($_GET['q'] ?? $_GET['keyword'] ?? '');
-$job_type = trim($_GET['job_type'] ?? '');
-$department = trim($_GET['department'] ?? '');
-$work_setup = trim($_GET['work_setup'] ?? '');
-$limit = isset($_GET['limit']) ? max(1, min(20, (int)$_GET['limit'])) : 8;
+// Safely parse and guard query parameters against non-string/array types (PHP 8.2 compatibility)
+$raw_q = $_GET['q'] ?? $_GET['keyword'] ?? '';
+$query = is_string($raw_q) ? trim($raw_q) : '';
+
+$raw_job_type = $_GET['job_type'] ?? '';
+$job_type = is_string($raw_job_type) ? trim($raw_job_type) : '';
+
+$raw_department = $_GET['department'] ?? '';
+$department = is_string($raw_department) ? trim($raw_department) : '';
+
+$raw_work_setup = $_GET['work_setup'] ?? '';
+$work_setup = is_string($raw_work_setup) ? trim($raw_work_setup) : '';
+
+$raw_limit = $_GET['limit'] ?? null;
+$limit = (is_scalar($raw_limit) && is_numeric($raw_limit)) ? max(1, min(20, (int)$raw_limit)) : 8;
 
 // Fetch filtered jobs using existing system data-helper
 $jobs = get_jobs(
@@ -55,6 +65,7 @@ echo json_encode([
     'query' => $query,
     'total' => $total_matches,
     'count' => count($formatted_results),
-    'results' => $formatted_results
+    'results' => $formatted_results,
+    'jobs' => $formatted_results
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 exit;

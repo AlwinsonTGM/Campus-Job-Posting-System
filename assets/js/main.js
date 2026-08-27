@@ -696,3 +696,64 @@ document.addEventListener('DOMContentLoaded', function () {
   handleFaqHash();
   window.addEventListener('hashchange', handleFaqHash);
 });
+
+// ------------------------------------------------------------------------
+// GLOBAL DOUBLE-SUBMIT PREVENTION & SPINNER ENGINE
+// ------------------------------------------------------------------------
+document.addEventListener('submit', function (e) {
+  const form = e.target;
+  if (!form || !(form instanceof HTMLFormElement)) return;
+
+  // Only intercept state-mutating POST forms
+  const method = (form.getAttribute('method') || 'GET').toUpperCase();
+  if (method !== 'POST') return;
+
+  // Respect HTML5 form validation (do not block if invalid inputs exist)
+  if (form.checkValidity && !form.checkValidity()) return;
+
+  // If a custom validator (e.g. shift matrix in apply.php) cancelled submit, abort
+  if (e.defaultPrevented) return;
+
+  // If form is already actively submitting, block duplicate submission
+  if (form.dataset.submitting === 'true') {
+    e.preventDefault();
+    return false;
+  }
+
+  // Mark form as actively submitting
+  form.dataset.submitting = 'true';
+
+  // Disable submit buttons asynchronously on the next tick so the clicked button's
+  // name and value are preserved in standard form serialization
+  const submitBtns = form.querySelectorAll('button[type="submit"], button:not([type]), input[type="submit"]');
+  submitBtns.forEach(function (btn) {
+    btn.classList.add('disabled', 'btn-submitting');
+    btn.setAttribute('aria-disabled', 'true');
+    setTimeout(function () {
+      btn.disabled = true;
+    }, 20);
+  });
+
+  // Safety fallback: re-enable after 8 seconds if server response or navigation is delayed
+  setTimeout(function () {
+    form.dataset.submitting = 'false';
+    submitBtns.forEach(function (btn) {
+      btn.classList.remove('disabled', 'btn-submitting');
+      btn.removeAttribute('aria-disabled');
+      btn.disabled = false;
+    });
+  }, 8000);
+}, false);
+
+// Reset submitting lock on bfcache restore (browser back button)
+window.addEventListener('pageshow', function (event) {
+  document.querySelectorAll('form[data-submitting="true"]').forEach(function (form) {
+    form.dataset.submitting = 'false';
+    form.querySelectorAll('button[type="submit"], button:not([type]), input[type="submit"]').forEach(function (btn) {
+      btn.classList.remove('disabled', 'btn-submitting');
+      btn.removeAttribute('aria-disabled');
+      btn.disabled = false;
+    });
+  });
+});
+

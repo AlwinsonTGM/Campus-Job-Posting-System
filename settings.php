@@ -80,19 +80,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: settings.php');
         exit;
     } elseif ($action === 'password') {
+        $current_pass = $_POST['current_password'] ?? '';
         $new_pass = $_POST['new_password'] ?? '';
         $confirm_pass = $_POST['confirm_password'] ?? '';
 
-        if (strlen($new_pass) < 8) {
+        $stored_pass = $user['password'] ?? '';
+        $is_current_valid = ($stored_pass === $current_pass) || 
+                            (!empty($stored_pass) && password_verify($current_pass, $stored_pass));
+
+        if (empty($current_pass)) {
+            $error = 'Please enter your current password to confirm your identity.';
+        } elseif (!$is_current_valid) {
+            $error = 'The current password you entered is incorrect.';
+        } elseif (strlen($new_pass) < 8) {
             $error = 'New password must contain at least 8 characters.';
         } elseif ($new_pass !== $confirm_pass) {
             $error = 'New password and confirm password do not match.';
         } else {
+            $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
             $users = $_SESSION['users'] ?? load_json_file('users.json');
             foreach ($users as $k => $u) {
                 if ($u['id'] == $user['id']) {
-                    $users[$k]['password'] = $new_pass;
-                    $_SESSION['user']['password'] = $new_pass;
+                    $users[$k]['password'] = $hashed_password;
+                    $_SESSION['user']['password'] = $hashed_password;
                     break;
                 }
             }
@@ -385,6 +395,17 @@ require_once __DIR__ . '/includes/header.php';
 
                             <form action="settings.php" method="POST" class="form-paper" id="register-form">
                                 <input type="hidden" name="action" value="password">
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="current_password">Current Password <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+                                        <input type="password" name="current_password" id="current_password" class="form-control" placeholder="Enter existing password" required>
+                                        <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('current_password', 'toggle-cur-pw')" aria-label="Toggle current password visibility">
+                                            <i class="bi bi-eye" id="toggle-cur-pw"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                                 <div class="mb-3">
                                     <label class="form-label" for="password">New Password <span class="text-danger">*</span></label>

@@ -14,7 +14,7 @@ $page_title = 'Empowering Students, Supporting Campus Offices';
 
 // Data from helper
 $categories = get_categories();
-$featured_jobs = array_slice(array_filter(get_all_jobs(), fn($j) => ($j['status'] ?? 'active') === 'active'), 0, 5);
+$featured_jobs = array_slice(array_filter(get_jobs(), fn($j) => ($j['status'] ?? 'active') === 'active'), 0, 5);
 
 // Key Metrics
 $metric_active_jobs = get_metrics_total_active_jobs();

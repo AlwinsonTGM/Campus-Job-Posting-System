@@ -12,48 +12,59 @@ $page_title = 'User Directory & Partner Verification';
 
 $users = $_SESSION['users'] ?? load_json_file('users.json');
 
-// Handle verification approval and rejection actions
-if (isset($_GET['approve_id'])) {
-    $approve_id = (int)$_GET['approve_id'];
-    if (update_employer_verification($approve_id, 'verified')) {
-        $u_name = '';
-        foreach ($_SESSION['users'] as $u) {
-            if ($u['id'] == $approve_id) { $u_name = $u['name']; break; }
+// Reject any deprecated GET-based mutation attempts
+if (isset($_GET['approve_id']) || isset($_GET['reject_id'])) {
+    set_flash('danger', 'Invalid request method. Verification actions require a secure POST submission.');
+    header('Location: users.php');
+    exit;
+}
+
+// Handle POST actions with CSRF token verification
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    $csrf_token = $_POST['csrf_token'] ?? '';
+
+    if (!verify_csrf_token($csrf_token)) {
+        set_flash('danger', 'Security validation failed: Invalid or expired security token. Please try again.');
+        header('Location: users.php');
+        exit;
+    }
+
+    if ($action === 'approve_employer') {
+        $approve_id = (int)($_POST['id'] ?? 0);
+        if (update_employer_verification($approve_id, 'verified')) {
+            $u_name = '';
+            foreach ($_SESSION['users'] as $u) {
+                if ($u['id'] == $approve_id) { $u_name = $u['name']; break; }
+            }
+            set_flash('success', "Partner employer '{$u_name}' has been officially verified!");
+            header('Location: users.php');
+            exit;
         }
-        set_flash('success', "Partner employer '{$u_name}' has been officially verified!");
-        header('Location: users.php');
-        exit;
-    }
-}
-
-if (isset($_GET['reject_id'])) {
-    $reject_id = (int)$_GET['reject_id'];
-    $notes = trim($_GET['notes'] ?? 'Permit documentation did not match or requires re-submission.');
-    if (update_employer_verification($reject_id, 'rejected', $notes)) {
-        set_flash('warning', "Partner employer registration has been marked as rejected / revision requested.");
-        header('Location: users.php');
-        exit;
-    }
-}
-
-// Handle student profile change requests
-if (isset($_POST['action']) && $_POST['action'] === 'approve_profile_req') {
-    $req_id = (int)($_POST['req_id'] ?? 0);
-    $notes = trim($_POST['admin_notes'] ?? 'Approved by University Registrar / Administrator');
-    if (approve_profile_request($req_id, $notes)) {
-        set_flash('success', "Student profile change request #{$req_id} approved. Student institutional records updated!");
-        header('Location: users.php');
-        exit;
-    }
-}
-
-if (isset($_POST['action']) && $_POST['action'] === 'reject_profile_req') {
-    $req_id = (int)($_POST['req_id'] ?? 0);
-    $notes = trim($_POST['admin_notes'] ?? 'Submitted proof is invalid, expired, or does not match institutional records.');
-    if (reject_profile_request($req_id, $notes)) {
-        set_flash('warning', "Student profile change request #{$req_id} declined. Student notified.");
-        header('Location: users.php');
-        exit;
+    } elseif ($action === 'reject_employer') {
+        $reject_id = (int)($_POST['id'] ?? 0);
+        $notes = trim($_POST['notes'] ?? 'Permit documentation did not match or requires re-submission.');
+        if (update_employer_verification($reject_id, 'rejected', $notes)) {
+            set_flash('warning', "Partner employer registration has been marked as rejected / revision requested.");
+            header('Location: users.php');
+            exit;
+        }
+    } elseif ($action === 'approve_profile_req') {
+        $req_id = (int)($_POST['req_id'] ?? 0);
+        $notes = trim($_POST['admin_notes'] ?? 'Approved by University Registrar / Administrator');
+        if (approve_profile_request($req_id, $notes)) {
+            set_flash('success', "Student profile change request #{$req_id} approved. Student institutional records updated!");
+            header('Location: users.php');
+            exit;
+        }
+    } elseif ($action === 'reject_profile_req') {
+        $req_id = (int)($_POST['req_id'] ?? 0);
+        $notes = trim($_POST['admin_notes'] ?? 'Submitted proof is invalid, expired, or does not match institutional records.');
+        if (reject_profile_request($req_id, $notes)) {
+            set_flash('warning', "Student profile change request #{$req_id} declined. Student notified.");
+            header('Location: users.php');
+            exit;
+        }
     }
 }
 
@@ -533,6 +544,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <form action="users.php" method="POST" class="mb-3">
                                             <input type="hidden" name="action" value="approve_profile_req">
                                             <input type="hidden" name="req_id" value="<?= $req['id'] ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                             <div class="mb-2">
                                                 <label class="form-label small text-muted-custom" style="font-size: 11px;">Approval Supervisor Notes (Optional)</label>
                                                 <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="e.g. Verified against KLD Enrollment Database 1st Sem 2026-2027">
@@ -546,6 +558,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <form action="users.php" method="POST">
                                             <input type="hidden" name="action" value="reject_profile_req">
                                             <input type="hidden" name="req_id" value="<?= $req['id'] ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                             <div class="mb-2">
                                                 <label class="form-label small text-muted-custom" style="font-size: 11px;">Rejection / Revision Reason</label>
                                                 <input type="text" name="admin_notes" class="form-control form-control-sm" placeholder="e.g. Unclear COR photo, please re-upload clear copy." required>
@@ -688,16 +701,32 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <?php if ($ver_status !== 'verified'): ?>
-                                <a href="users.php?reject_id=<?= $u['id'] ?>" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Reject this employer registration?')">
-                                    <i class="bi bi-x-circle"></i> Reject
-                                </a>
-                                <a href="users.php?approve_id=<?= $u['id'] ?>" class="btn-pill btn-pill-sm">
-                                    <i class="bi bi-check-circle-fill"></i> Approve &amp; Verify
-                                </a>
+                                <form action="users.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="reject_employer">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Reject this employer registration?')">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                </form>
+                                <form action="users.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="approve_employer">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <button type="submit" class="btn-pill btn-pill-sm">
+                                        <i class="bi bi-check-circle-fill"></i> Approve &amp; Verify
+                                    </button>
+                                </form>
                             <?php else: ?>
-                                <a href="users.php?reject_id=<?= $u['id'] ?>&notes=Revoked+by+admin" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Revoke verification for this partner?')">
-                                    <i class="bi bi-arrow-counterclockwise"></i> Revoke
-                                </a>
+                                <form action="users.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="reject_employer">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="notes" value="Revoked by admin">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Revoke verification for this partner?')">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Revoke
+                                    </button>
+                                </form>
                             <?php endif; ?>
                             <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Close</button>
                         </div>

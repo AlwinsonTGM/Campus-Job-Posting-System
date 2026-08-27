@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please fill in all mandatory fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please provide a valid email address.';
+    } elseif ($role === 'employer' && $employer_type === 'university_office' && !preg_match('/@kld\.edu\.ph$/i', $email)) {
+        $error = 'University Office accounts must use an official @kld.edu.ph institutional email address. External partners must select "Industry Partner".';
     } elseif (strlen($password) < 8) {
         $error = 'Password must contain at least 8 characters.';
     } elseif ($password !== $confirm_password) {

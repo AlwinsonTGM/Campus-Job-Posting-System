@@ -21,6 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
     $action_type = $_POST['action_type'];
     $notes = trim($_POST['supervisor_notes'] ?? '');
 
+    $target_app = get_application_by_id($app_id);
+    if (!$target_app || !can_review_application($target_app, $user)) {
+        set_flash('danger', 'Unauthorized: Cannot modify candidate applications from another department.');
+        header('Location: applicants.php' . ($job_filter ? "?job_id={$job_filter}" : ''));
+        exit;
+    }
+
     $interview_data = [];
     if ($action_type === 'interview_scheduled') {
         $interview_data = [
