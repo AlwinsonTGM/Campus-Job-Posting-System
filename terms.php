@@ -57,7 +57,7 @@ require_once __DIR__ . '/includes/navbar.php';
                             <h4 class="fw-bold text-kld-green mb-2">3. Work Hour Regulations (20-Hour Weekly Cap)</h4>
                             <div class="alert alert-warning border-0 p-3 rounded-3 mb-3">
                                 <strong><i class="bi bi-exclamation-triangle-fill me-1"></i> Strict Academic Safeguard:</strong>
-                                Student Assistants are legally restricted to working a maximum of <strong>20 hours per week</strong> during regular instructional terms to ensure employment does not interfere with study hours or lecture attendance.
+                                Student Assistants are legally restricted to working a maximum of <b>20 hours per week</b> during regular instructional terms to ensure employment does not interfere with study hours or lecture attendance.
                             </div>
                             <p class="text-secondary">
                                 Working hours may be expanded up to a maximum of 40 hours per week only during official semester breaks, subject to prior written approval from the Student Affairs & Services Office (SASO).
@@ -65,36 +65,66 @@ require_once __DIR__ . '/includes/navbar.php';
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-kld-green mb-2">4. Campus Employer & Supervisor Obligations</h4>
-                            <p class="text-secondary mb-2">Authorized institute deans and office heads agree to:</p>
-                            <ol class="text-secondary">
-                                <li>Provide clear, accurate, and ethical job descriptions and duties.</li>
-                                <li>Adjust duty shifts flexibly during scheduled midterm and final examination weeks.</li>
-                                <li>Submit signed monthly Daily Time Records (DTR) promptly to avoid stipend disbursement delays.</li>
-                                <li>Foster a safe, harassment-free, and supportive professional learning environment for student assistants.</li>
-                            </ol>
+                            <h4 class="fw-bold text-kld-green mb-2">4. User Account Security & Responsibilities</h4>
+                            <ul class="text-secondary">
+                                <li>Accounts are non-transferable. Users are responsible for maintaining the confidentiality of their login credentials.</li>
+                                <li>Allowing another person to access your dashboard or apply on your behalf is strictly prohibited.</li>
+                            </ul>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-kld-green mb-2">5. Application Integrity & Code of Conduct</h4>
-                            <p class="text-secondary">
-                                Any falsification of academic grades, forgery of study load documents, or fraudulent logging of Daily Time Records ("ghost attendance") will result in immediate termination of the assistantship contract, forfeiture of unreleased stipends, and referral to the KLD Disciplinary Committee.
-                            </p>
+                            <h4 class="fw-bold text-kld-green mb-2">5. Code of Conduct & Integrity</h4>
+                            <ul class="text-secondary">
+                                <li>Applicants must submit accurate documents. Uploading fake, falsified, or tampered GWA records, CORs, or personal identity details will cause immediate disqualification and lead to disciplinary action.</li>
+                                <li>Posting off-campus, unapproved, or fraudulent job listings is strictly prohibited.</li>
+                            </ul>
                         </section>
 
                         <section>
-                            <h4 class="fw-bold text-kld-green mb-2">6. Contract Termination & Resignation</h4>
-                            <p class="text-secondary">
-                                A student assistant may resign by submitting a written 1-week notice to their department supervisor. Campus offices reserve the right to terminate an assignment due to persistent tardiness, unexcused absences, or breach of department confidentiality.
-                            </p>
+                            <h4 class="fw-bold text-kld-green mb-2">6. Hiring Units & Department Supervisor Rules</h4>
+                            <ul class="text-secondary">
+                                <li>Authorized university departments must provide clear, accurate job descriptions and duties.</li>
+                                <li>Supervisors cannot assign work exceeding the <b>20-hour weekly limit</b> or require duties outside official school policy and schedules.</li>
+                            </ul>
                         </section>
 
                         <section class="border-top pt-4">
-                            <h4 class="fw-bold text-kld-green mb-2">7. Inquiries & Oversight</h4>
+                            <h4 class="fw-bold text-kld-green mb-2">7. Non-Disclosure & Data Sharing Policy</h4>
                             <p class="text-secondary small mb-0">
-                                This portal is administered by the <strong>Student Affairs & Services Office (SASO)</strong> at <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong>. For disputes or policy clarifications, visit the SASO Office, KLD Main Campus, City of Dasmariñas, Cavite or email <code>saso@kld.edu.ph</code>.
+                                Under no circumstances will student resumes or contact records be sold, rented, or transferred to third-party commercial marketing firms. Access is restricted exclusively to authorized KLD department supervisors, Student Affairs & Services Office (SASO) administrators, and KLD accounting officers.
                             </p>
                         </section>
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">8. Data Retention & Storage Security</h4>
+                            <p class="text-secondary small mb-0">
+                                Application submissions are retained for the duration of the current academic semester and archived in accordance with university document retention schedules. Secure authentication tokens and role-based access control prevent unauthorized viewing of sensitive student files.
+                            </p>
+                        </section>
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">9. Rights of the Data Subject</h4>
+                            <p class="text-secondary mb-2">Under Republic Act 10173, students and users are entitled to the following privacy rights:</p>
+                            <ul class="text-secondary">
+                                <li><b>Right to Access:</b> View all submitted applications and profile records at any time through the student dashboard.</li>
+                                <li><b>Right to Reactify:</b> Update or correct outdated contact numbers, resume files, and availability matrices.</li>
+                                <li><b>Right to Erasure / Withdraw:</b> Cancel active job applications or request account deactivation.</li>
+                                <li><b>Right to File to Complaints:</b> Report unauthorized data access to the University Data Protection Officer.</li>
+                            </ul>
+                        </section>
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">10. System Availability & Service Disclaimer</h4>
+                            <p class="text-secondary small mb-0">
+                            The university reserves the right to update system features, modify policies, or conduct maintenance resulting in temporary downtime without prior notice.
+                            </p>
+                        </section>
+                        <section class="border-top pt-4">
+                            <h4 class="fw-bold text-kld-green mb-2">11. Data Protection Officer (DPO) Contact</h4>
+                            <p class="text-secondary mb-2">For inquiries, corrections, or concerns regarding your personal data rights:</p>
+                            <p class="text-secondary mb-2">Kolehiyo ng Lungsod ng Dasmariñas - Data Protection Office (DPO)
+                            <p class="text-secondary mb-2">KLD Administration Building, City of Dasmariñas, Cavite
+                            <p class="text-secondary mb-2">Email: dataprivacy@kld.edu.ph | Direct Line: (046) 416-0000 loc 105
+                        </section>
+                        
+
                     </div>
                 </div>
             </div>
