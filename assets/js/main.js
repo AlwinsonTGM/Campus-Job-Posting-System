@@ -51,74 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ------------------------------------------------------------------------
-  // 3. 3D TILT SCROLL PHYSICS (.sheet container)
-  // ------------------------------------------------------------------------
-  const sheet = document.querySelector('.sheet');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (sheet && !prefersReducedMotion && window.innerWidth >= 768) {
-    let lastScrollY = window.scrollY || window.pageYOffset;
-    let targetRotateX = 0;
-    let targetRotateY = 0;
-    let currentRotateX = 0;
-    let currentRotateY = 0;
-    let isTicking = false;
-    let scrollTimeout = null;
-
-    const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
-
-    function onScrollPhysics() {
-      const currentScrollY = window.scrollY || window.pageYOffset;
-      const deltaY = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
-
-      // Map velocity to rotateX (±5deg max) and subtle rotateY (±2deg max)
-      targetRotateX = clamp(deltaY * 0.12, -5, 5);
-      targetRotateY = clamp(deltaY * 0.04, -2, 2);
-
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(function () {
-        // Return to flat at rest
-        targetRotateX = 0;
-        targetRotateY = 0;
-      }, 70);
-
-      if (!isTicking) {
-        isTicking = true;
-        requestAnimationFrame(updatePhysicsRender);
-      }
-    }
-
-    function updatePhysicsRender() {
-      // Lerp with 0.08 smoothing factor
-      currentRotateX += (targetRotateX - currentRotateX) * 0.08;
-      currentRotateY += (targetRotateY - currentRotateY) * 0.08;
-
-      if (Math.abs(currentRotateX) < 0.01 && Math.abs(targetRotateX) < 0.01 &&
-          Math.abs(currentRotateY) < 0.01 && Math.abs(targetRotateY) < 0.01) {
-        currentRotateX = 0;
-        currentRotateY = 0;
-        sheet.style.transform = 'none';
-        isTicking = false;
-        return;
-      }
-
-      sheet.style.transform = `rotateX(${currentRotateX.toFixed(3)}deg) rotateY(${currentRotateY.toFixed(3)}deg)`;
-      requestAnimationFrame(updatePhysicsRender);
-    }
-
-    window.addEventListener('scroll', onScrollPhysics, { passive: true });
-
-    // Handle resize
-    window.addEventListener('resize', function () {
-      if (window.innerWidth < 768) {
-        sheet.style.transform = 'none';
-      }
-    });
-  }
-
-  // ------------------------------------------------------------------------
-  // 4. SEARCH WIDGET CHIPS & PAY TOGGLE
+  // 3. SEARCH WIDGET CHIPS & PAY TOGGLE
   // ------------------------------------------------------------------------
   const payToggleSwitch = document.getElementById('pay-type-toggle');
   const payTypeHidden = document.getElementById('pay-type-hidden');
@@ -140,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ------------------------------------------------------------------------
-  // 5. KEY METRICS CYCLING COUNTERS ENGINE
+  // 4. KEY METRICS CYCLING COUNTERS ENGINE (Single viewport-triggered run)
   // ------------------------------------------------------------------------
   const metricCounterElements = document.querySelectorAll('[data-counter-target]');
   if (metricCounterElements.length > 0) {
@@ -172,22 +105,18 @@ document.addEventListener('DOMContentLoaded', function () {
       requestAnimationFrame(updateNumber);
     }
 
-    // Run initial count-up when section is visible
-    let hasCountedInitial = false;
+    // Run count-up once when section is visible, avoiding continuous layout thrashing
     const metricsSection = document.querySelector('.metrics-section');
     if (metricsSection && 'IntersectionObserver' in window) {
       const metricsObserver = new IntersectionObserver(
-        function (entries) {
-          if (entries[0].isIntersecting && !hasCountedInitial) {
-            hasCountedInitial = true;
+        function (entries, observer) {
+          if (entries[0].isIntersecting) {
             metricCounterElements.forEach(runCountUp);
-            // Repeat cycle every 4 seconds
-            setInterval(function () {
-              metricCounterElements.forEach(runCountUp);
-            }, 4000);
+            observer.unobserve(entries[0].target);
+            observer.disconnect();
           }
         },
-        { threshold: 0.25 }
+        { threshold: 0.2 }
       );
       metricsObserver.observe(metricsSection);
     } else {
@@ -196,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ------------------------------------------------------------------------
-  // 6. FEATURED JOBS CAROUSEL (Center-Mode Engine)
+  // 5. FEATURED JOBS CAROUSEL (Center-Mode Engine)
   // ------------------------------------------------------------------------
   const carouselTrack = document.getElementById('featured-carousel-track');
   const btnPrev = document.getElementById('carousel-prev-btn');
@@ -243,6 +172,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial setup
     updateCarousel();
-    window.addEventListener('resize', updateCarousel);
+
+    // Debounced resize listener
+    let resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateCarousel, 100);
+    }, { passive: true });
   }
 });

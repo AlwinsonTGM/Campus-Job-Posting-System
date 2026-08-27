@@ -90,11 +90,9 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* --------------------------------------------------------------------------
-   3. SHELL & 3D TILT CONTAINER
+   3. SHELL & SHEET CONTAINER (Optimized for butter-smooth native scroll)
    -------------------------------------------------------------------------- */
 .sheet-perspective-wrapper {
-  perspective: 1400px;
-  perspective-origin: center top;
   width: 100%;
   padding: 1.25rem 0.75rem 2.5rem;
   background-color: var(--canvas);
@@ -115,9 +113,6 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 24px 70px rgba(22, 22, 22, 0.14), 0 8px 24px rgba(22, 22, 22, 0.06);
   border: 1px solid var(--line);
   overflow: hidden;
-  transform-style: preserve-3d;
-  will-change: transform;
-  transition: transform 0.08s ease-out;
 }
 
 /* Section Background Alternations */
@@ -150,18 +145,17 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* --------------------------------------------------------------------------
-   4. REVEAL ANIMATIONS (IntersectionObserver, Transform & Opacity only)
+   4. REVEAL ANIMATIONS (Hardware-Accelerated Transform & Opacity only)
    -------------------------------------------------------------------------- */
 .reveal-fade-rise {
   opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-fade-rise.is-revealed {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Stagger delay helpers */
@@ -446,6 +440,9 @@ h1, h2, h3, h4, h5, h6,
   filter: blur(50px);
   opacity: 0.5;
   pointer-events: none;
+  contain: strict;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .search-blob-1 {
@@ -674,6 +671,8 @@ h1, h2, h3, h4, h5, h6,
   border: 1.5px dashed rgba(46, 204, 94, 0.25);
   pointer-events: none;
   animation: spinSlow 40s linear infinite;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 @keyframes spinSlow {
