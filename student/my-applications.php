@@ -62,13 +62,14 @@ require_once __DIR__ . '/../includes/navbar.php';
             </div>
         <?php else: ?>
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+                
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">Applied Vacancy</th>
                                 <th>Department</th>
-                                <th>Applied Date</th>
+                                <th class="text-nowrap">Applied Date</th>
                                 <th>Status</th>
                                 <th>Interview / Remarks</th>
                                 <th class="text-end pe-4">Actions</th>

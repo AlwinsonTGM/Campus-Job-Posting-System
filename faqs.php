@@ -10,7 +10,7 @@ $faqs = [
     [
         'category' => 'Eligibility & Rules',
         'q' => 'Who is eligible to apply for on-campus jobs?',
-        'a' => 'Any currently enrolled undergraduate or graduate student carrying at least 12 academic units, maintaining a General Weighted Average (GWA) of 2.50 or better, and having no disciplinary records is eligible to apply for campus positions.'
+        'a' => 'Any currently enrolled undergraduate or graduate student carrying at least 12 academic units, <b>maintaining a General Weighted Average (GWA) of 2.50 or better</b>, and having <b>no disciplinary records</b> is eligible to apply for campus positions.'
     ],
     [
         'category' => 'Work Hours & Academics',
