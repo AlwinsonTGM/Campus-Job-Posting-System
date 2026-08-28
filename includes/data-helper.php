@@ -29,13 +29,14 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    $current_schema_version = '2.5_profile_verification_workflow';
+    $current_schema_version = '2.6_career_center_updates';
     if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');
         $_SESSION['applications'] = load_json_file('applications.json');
         $_SESSION['categories'] = load_json_file('categories.json');
         $_SESSION['profile_requests'] = load_json_file('profile_requests.json');
+        $_SESSION['updates'] = load_json_file('updates.json');
         $_SESSION['schema_version'] = $current_schema_version;
         $_SESSION['app_initialized'] = true;
     }
@@ -1194,7 +1195,152 @@ function reset_demo_data() {
     $_SESSION['jobs'] = load_json_file('jobs.json');
     $_SESSION['applications'] = load_json_file('applications.json');
     $_SESSION['categories'] = load_json_file('categories.json');
+    $_SESSION['profile_requests'] = load_json_file('profile_requests.json');
+    $_SESSION['updates'] = load_json_file('updates.json');
     $_SESSION['app_initialized'] = true;
     set_flash('info', 'Demo dataset has been reset to default campus state.');
 }
+
+// Career Center Updates & Blog Helpers
+function get_career_updates() {
+    $updates = $_SESSION['updates'] ?? load_json_file('updates.json');
+    if (empty($updates)) {
+        $updates = load_json_file('updates.json');
+    }
+    // Sort descending by published_at or id
+    usort($updates, function($a, $b) {
+        $dateA = strtotime($a['published_at'] ?? '1970-01-01');
+        $dateB = strtotime($b['published_at'] ?? '1970-01-01');
+        if ($dateA === $dateB) {
+            return ($b['id'] ?? 0) <=> ($a['id'] ?? 0);
+        }
+        return $dateB <=> $dateA;
+    });
+    return $updates;
+}
+
+function get_career_update_by_id($id) {
+    $updates = get_career_updates();
+    foreach ($updates as $update) {
+        if ((int)$update['id'] === (int)$id) {
+            return $update;
+        }
+    }
+    return null;
+}
+
+function get_latest_career_updates($limit = 3, $exclude_id = null) {
+    $updates = get_career_updates();
+    if ($exclude_id !== null) {
+        $updates = array_filter($updates, function($u) use ($exclude_id) {
+            return (int)$u['id'] !== (int)$exclude_id;
+        });
+    }
+    return array_slice(array_values($updates), 0, $limit);
+}
+
+function add_career_update($data) {
+    $updates = get_career_updates();
+    $max_id = 0;
+    foreach ($updates as $u) {
+        if (($u['id'] ?? 0) > $max_id) {
+            $max_id = (int)$u['id'];
+        }
+    }
+    $new_id = $max_id + 1;
+    
+    $title = trim($data['title'] ?? 'Campus Career Dispatch');
+    $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title), '-'));
+    
+    $content = trim($data['content'] ?? '');
+    $word_count = str_word_count(strip_tags($content));
+    $read_time = max(1, ceil($word_count / 200)) . ' min read';
+
+    $author_name = trim($data['author_name'] ?? 'Career Development Office');
+    $author_role = trim($data['author_role'] ?? 'Coordinator');
+    $author_office = trim($data['author_office'] ?? 'KLD Career Development & Placement Office');
+    
+    $initials = '';
+    $name_parts = explode(' ', $author_name);
+    foreach ($name_parts as $np) {
+        if (!empty($np)) {
+            $initials .= strtoupper(substr($np, 0, 1));
+        }
+    }
+    $initials = substr($initials, 0, 2) ?: 'CC';
+
+    $new_item = [
+        'id' => $new_id,
+        'slug' => $slug,
+        'title' => $title,
+        'category' => trim($data['category'] ?? 'Campus News'),
+        'published_at' => $data['published_at'] ?? date('Y-m-d H:i:s'),
+        'read_time' => $data['read_time'] ?? $read_time,
+        'author' => [
+            'name' => $author_name,
+            'role' => $author_role,
+            'office' => $author_office,
+            'avatar' => $initials
+        ],
+        'image' => !empty($data['image']) ? trim($data['image']) : 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1200&auto=format&fit=crop',
+        'summary' => trim($data['summary'] ?? (substr(strip_tags($content), 0, 160) . '...')),
+        'content' => $content
+    ];
+
+    $updates[] = $new_item;
+    $_SESSION['updates'] = $updates;
+    save_json_file('updates.json', $updates);
+    return $new_item;
+}
+
+function update_career_update($id, $data) {
+    $updates = get_career_updates();
+    $found = false;
+    foreach ($updates as &$u) {
+        if ((int)$u['id'] === (int)$id) {
+            if (isset($data['title'])) {
+                $u['title'] = trim($data['title']);
+                $u['slug'] = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $u['title']), '-'));
+            }
+            if (isset($data['summary'])) $u['summary'] = trim($data['summary']);
+            if (isset($data['content'])) {
+                $u['content'] = trim($data['content']);
+                $word_count = str_word_count(strip_tags($u['content']));
+                $u['read_time'] = max(1, ceil($word_count / 200)) . ' min read';
+            }
+            if (isset($data['image']) && !empty($data['image'])) $u['image'] = trim($data['image']);
+            if (isset($data['author_name'])) {
+                $u['author']['name'] = trim($data['author_name']);
+                $initials = '';
+                $name_parts = explode(' ', $u['author']['name']);
+                foreach ($name_parts as $np) {
+                    if (!empty($np)) $initials .= strtoupper(substr($np, 0, 1));
+                }
+                $u['author']['avatar'] = substr($initials, 0, 2) ?: 'CC';
+            }
+            if (isset($data['author_role'])) $u['author']['role'] = trim($data['author_role']);
+            if (isset($data['author_office'])) $u['author']['office'] = trim($data['author_office']);
+            $found = true;
+            break;
+        }
+    }
+    if ($found) {
+        $_SESSION['updates'] = $updates;
+        save_json_file('updates.json', $updates);
+    }
+    return $found;
+}
+
+function delete_career_update($id) {
+    $updates = get_career_updates();
+    $filtered = array_values(array_filter($updates, fn($u) => (int)$u['id'] !== (int)$id));
+    if (count($filtered) !== count($updates)) {
+        $_SESSION['updates'] = $filtered;
+        save_json_file('updates.json', $filtered);
+        return true;
+    }
+    return false;
+}
+
+
 

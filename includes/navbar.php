@@ -64,6 +64,11 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?= ($current_script === 'updates.php' && strpos($_SERVER['REQUEST_URI'] ?? '', 'admin') !== false) ? 'active' : '' ?>" href="<?= $base_url ?>admin/updates.php">
+                            DISPATCHES
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
                             JOBS DIRECTORY
                         </a>
@@ -120,11 +125,13 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                             <li><a class="dropdown-item rounded-3" href="<?= $dashboard_link ?>"><i class="bi bi-speedometer2 me-2 text-accent"></i> My Dashboard</a></li>
                             <?php if ($current_user['role'] === 'employer'): ?>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/create-job.php"><i class="bi bi-plus-circle me-2 text-accent"></i> Post a Vacancy</a></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/updates.php"><i class="bi bi-megaphone me-2 text-accent"></i> Post Dispatch</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/applicants.php"><i class="bi bi-people me-2"></i> View Applicants</a></li>
                             <?php elseif ($current_user['role'] === 'student'): ?>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-folder-check me-2"></i> My Applications</a></li>
                             <?php elseif ($current_user['role'] === 'admin'): ?>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/users.php"><i class="bi bi-people-fill me-2 text-accent"></i> Users &amp; Verification</a></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/updates.php"><i class="bi bi-newspaper me-2 text-accent"></i> Career Dispatches</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/categories.php"><i class="bi bi-grid-fill me-2"></i> Job Categories</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-bar-chart-fill me-2"></i> System Reports</a></li>
                             <?php endif; ?>

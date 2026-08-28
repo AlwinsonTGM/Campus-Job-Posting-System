@@ -1,0 +1,104 @@
+[
+  {
+    "id": 1,
+    "slug": "spring-career-fair-welcomes-over-40-campus-offices",
+    "title": "Spring Career Fair Welcomes Over 40 Campus Offices and Department Laboratories",
+    "category": "Campus Event",
+    "published_at": "2026-06-12 09:30:00",
+    "read_time": "4 min read",
+    "author": {
+      "name": "Dr. Elena M. Santos",
+      "role": "Director of Career Services",
+      "office": "KLD Career Development & Placement Office",
+      "avatar": "ES"
+    },
+    "image": "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1200&auto=format&fit=crop",
+    "summary": "The annual campus career fair connects undergraduate students directly with departmental supervisors for on-campus student assistantship roles and practicum placements.",
+    "content": "<p class=\"lead text-ink mb-4\">The Kolehiyo ng Lungsod ng Dasmariñas (KLD) Career Development &amp; Placement Office officially launched its annual Spring Campus Career Fair at the University Gymnasium, drawing hundreds of undergraduate students eager to secure on-campus assistantship roles and academic practicum placements for the upcoming term.</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Connecting Classrooms with Real Campus Work</h3><p>More than 40 academic institutes, administrative offices, and specialized campus facilities participated in this year's event. Representatives from the Institute of Computing and Digital Innovation (ICDI), College Library, Management Information Systems (MIS) Unit, and Science Laboratories set up interactive information desks to discuss open positions, day-to-day duties, and eligibility criteria directly with students.</p><div class=\"card-paper p-4 my-4 bg-cream border-start border-4 border-success\"><h4 class=\"h6 fw-bold text-ink mb-2\"><i class=\"bi bi-lightbulb-fill text-accent me-2\"></i>Key Takeaways for Applicants</h4><ul class=\"mb-0 text-muted-custom small\"><li><strong>Direct Supervisor Consultations:</strong> Over 150 student interviews were conducted on-site for immediate term openings.</li><li><strong>Verified Academic Scheduling:</strong> Applicants were matched based on their free hours to prevent academic class overlaps.</li><li><strong>Automated Application Portals:</strong> Students can follow up on their applications directly through the KLD Campus Job Posting System.</li></ul></div><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Supervisor Perspectives</h3><p>\"Student assistants play a crucial role in maintaining high operational efficiency across our campus libraries and laboratory facilities,\" said Prof. Arthur Valenzuela. \"This event allows us to evaluate not just technical capabilities, but also enthusiasm, communication skills, and reliability.\"</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">What Students Should Do Next</h3><p>If you attended the fair and submitted your resume, remember to check your <strong>Student Dashboard &gt; My Applications</strong> tab regularly. Supervisors will update application statuses with scheduled interview invites or preliminary acceptance notices within 5 to 7 business days.</p>"
+  },
+  {
+    "id": 2,
+    "slug": "employer-portal-opens-for-term-1-student-assistantships",
+    "title": "Employer & Department Portal Opens for Term 1 Student Assistantship Vacancies",
+    "category": "Hiring Policy",
+    "published_at": "2026-06-05 14:15:00",
+    "read_time": "3 min read",
+    "author": {
+      "name": "Prof. Arthur Valenzuela",
+      "role": "Student Affairs Coordinator",
+      "office": "Office of Student Affairs & Services",
+      "avatar": "AV"
+    },
+    "image": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200&auto=format&fit=crop",
+    "summary": "Department heads and laboratory supervisors can now submit student assistant position descriptions, set required schedule slots, and review candidate applications online.",
+    "content": "<p class=\"lead text-ink mb-4\">The Office of Student Affairs &amp; Services (OSAS) has announced the official opening of the Employer &amp; Department Portal for the upcoming academic semester. Faculty supervisors, laboratory custodians, and department administrators can now publish verified job vacancies.</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Simplified Hiring Workflow for Campus Offices</h3><p>With the new role-based portal, departments can easily configure job requirements, set weekly shift hours, specify necessary skill prerequisites, and review incoming student profiles with one-click evaluation tools. The system ensures full adherence to university labor guidelines and institutional policies.</p><div class=\"card-paper p-4 my-4 bg-cream border-start border-4 border-success\"><h4 class=\"h6 fw-bold text-ink mb-2\"><i class=\"bi bi-shield-check text-accent me-2\"></i>Compliance with the 20-Hour Work Policy</h4><p class=\"small text-muted-custom mb-0\">All posted vacancies are automatically checked to ensure student shifts do not exceed the university's statutory <strong>20-hour maximum per week</strong>, ensuring students maintain optimal focus on academic coursework and examinations.</p></div><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">How Departments Can Get Started</h3><ol class=\"text-muted-custom small mb-4\"><li>Log into your registered employer account via the <strong>For Employers</strong> portal.</li><li>Click <strong>Post a Vacancy</strong> and select the appropriate position category and required schedule windows.</li><li>Submit for Career Center verification to publish the listing live to all qualified students.</li></ol>"
+  },
+  {
+    "id": 3,
+    "slug": "interactive-resume-and-interview-workshop",
+    "title": "Interactive Resume & Interview Workshop Prepares Over 200 Students",
+    "category": "Workshop",
+    "published_at": "2026-06-02 11:00:00",
+    "read_time": "5 min read",
+    "author": {
+      "name": "Maria Clara Ocampo",
+      "role": "Career Guidance Counselor",
+      "office": "Guidance & Counseling Center",
+      "avatar": "MO"
+    },
+    "image": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=1200&auto=format&fit=crop",
+    "summary": "Students learned how to highlight academic achievements, coursework projects, and weekly schedule availability to stand out during campus interviews.",
+    "content": "<p class=\"lead text-ink mb-4\">Over 200 undergraduate students gathered at the Audio-Visual Theater for an intensive interactive workshop focused on building effective student resumes, navigating campus interviews, and presenting course availability confidently.</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Highlights from the Workshop</h3><p>Unlike corporate resumes that focus on years of full-time experience, student assistantship applications place high emphasis on coursework competency, academic honors, organizational leadership, and reliable time management.</p><div class=\"card-paper p-4 my-4 bg-cream border-start border-4 border-success\"><h4 class=\"h6 fw-bold text-ink mb-2\"><i class=\"bi bi-journal-text text-accent me-2\"></i>Top 3 Resume Tips from the Counselors</h4><ul class=\"mb-0 text-muted-custom small\"><li><strong>Quantify Academic Projects:</strong> Mention real outputs such as laboratory systems built, research papers authored, or campus events coordinated.</li><li><strong>Detail Schedule Transparency:</strong> Clearly outline your class schedule and available vacant hours so supervisors can immediately see shift compatibility.</li><li><strong>Include Faculty References:</strong> Ensure at least one professor or academic advisor can vouch for your punctuality and dedication.</li></ul></div><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Mock Interview Breakout Sessions</h3><p>Attendees participated in mock interview simulations with faculty volunteers, practicing responses to behavioral questions regarding conflict resolution, deadline handling, and task prioritization during midterm exam weeks.</p>"
+  },
+  {
+    "id": 4,
+    "slug": "alumni-peer-mentors-share-strategies-for-balancing-work-and-study",
+    "title": "Alumni Peer Mentors Share Strategies for Balancing Academics and On-Campus Work",
+    "category": "Student Success",
+    "published_at": "2026-05-29 16:45:00",
+    "read_time": "4 min read",
+    "author": {
+      "name": "Kevin J. Reyes",
+      "role": "Alumni Relations Officer",
+      "office": "Institutional Development Office",
+      "avatar": "KR"
+    },
+    "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+    "summary": "Graduating seniors and alumni discuss time management routines, academic grade maintenance, and hands-on workplace skills acquired through campus jobs.",
+    "content": "<p class=\"lead text-ink mb-4\">In an inspiring panel session hosted by the Institutional Development Office, four former student assistants turned graduating honor students shared how their on-campus jobs became the foundation for their early career readiness.</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Real Insights from Past Student Assistants</h3><p>\"Working in the university computer laboratory wasn't just about earning an hourly stipend,\" shared Mark Fernandez (BSIS Batch 2025). \"It taught me customer service, server maintenance, troubleshooting under pressure, and how to communicate effectively with department chairs.\"</p><div class=\"card-paper p-4 my-4 bg-cream border-start border-4 border-success\"><h4 class=\"h6 fw-bold text-ink mb-2\"><i class=\"bi bi-clock-history text-accent me-2\"></i>The 3-Pillar Balance Strategy</h4><ul class=\"mb-0 text-muted-custom small\"><li><strong>Fixed Study Blocks:</strong> Treat study hours as non-negotiable meetings that cannot be rescheduled.</li><li><strong>Proactive Communication:</strong> Inform your supervisor at least two weeks before midterm exam periods so schedules can be adjusted.</li><li><strong>Rest and Well-being:</strong> Take advantage of campus mental health and counseling resources whenever feeling overloaded.</li></ul></div><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Building Professional Networks on Campus</h3><p>Panelists emphasized that on-campus supervisors often become a student's strongest references for industry jobs, scholarship applications, and graduate school recommendations.</p>"
+  },
+  {
+    "id": 5,
+    "slug": "understanding-campus-work-regulations-20-hour-limit",
+    "title": "Understanding Campus Work Regulations: The 20-Hour Weekly Limit Explained",
+    "category": "Regulations",
+    "published_at": "2026-05-20 10:00:00",
+    "read_time": "3 min read",
+    "author": {
+      "name": "Atty. Rafael Dimalanta",
+      "role": "Legal & Compliance Advisor",
+      "office": "University Legal Affairs",
+      "avatar": "RD"
+    },
+    "image": "https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop",
+    "summary": "A complete guide on student work limits, rest periods during examination periods, and maintaining Dean's List eligibility while employed on campus.",
+    "content": "<p class=\"lead text-ink mb-4\">To safeguard academic excellence and promote student welfare, Kolehiyo ng Lungsod ng Dasmariñas enforces strict institutional policies governing student assistant workloads and duty hours.</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">The Academic Priority Rule</h3><p>Under university guidelines, a student's academic standing takes supreme priority over any campus employment obligation. Student assistants must maintain regular academic enrollment and a passing General Weighted Average (GWA) to remain eligible for assistantship programs.</p><div class=\"card-paper p-4 my-4 bg-cream border-start border-4 border-success\"><h4 class=\"h6 fw-bold text-ink mb-2\"><i class=\"bi bi-exclamation-triangle-fill text-accent me-2\"></i>Mandatory Work Caps</h4><p class=\"small text-muted-custom mb-2\"><strong>Maximum Working Hours:</strong> Students may not be scheduled for more than 20 hours per week during regular academic terms, or 4 hours per day on class days.</p><p class=\"small text-muted-custom mb-0\"><strong>Exam Week Moratorium:</strong> Assistantship duties are strictly paused or reduced to essential standby during official midterm and final examination schedules.</p></div><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Transparent Reporting</h3><p>Supervisors submit digital timecards through the admin portal, allowing the Career Center and Office of Student Affairs to monitor compliance and process monthly stipends accurately.</p>"
+  },
+  {
+    "id": 6,
+    "slug": "peer-tutoring-program-expands-across-stem-and-business",
+    "title": "Peer Tutoring & Academic Coaching Program Expands Across STEM and Business Courses",
+    "category": "Academic Support",
+    "published_at": "2026-05-14 08:30:00",
+    "read_time": "4 min read",
+    "author": {
+      "name": "Dr. Beatrice Ramos",
+      "role": "Dean of Academic Affairs",
+      "office": "Institute of Computing and Digital Innovation",
+      "avatar": "BR"
+    },
+    "image": "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop",
+    "summary": "High-performing 2nd to 4th year students can now apply to become paid peer tutors, supporting fellow classmates in programming, mathematics, and accounting.",
+    "content": "<p class=\"lead text-ink mb-4\">The Institute of Computing and Digital Innovation (ICDI) in partnership with the Career Center has announced the expansion of the campus-wide Peer Tutoring and Academic Coaching Initiative.</p><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">Empowering Student Mentors</h3><p>Qualified upperclassmen who have achieved grades of 1.75 or higher in core subjects (such as Object-Oriented Programming, Database Systems, Discrete Mathematics, and Financial Accounting) are invited to apply for paid peer tutor positions.</p><div class=\"card-paper p-4 my-4 bg-cream border-start border-4 border-success\"><h4 class=\"h6 fw-bold text-ink mb-2\"><i class=\"bi bi-award-fill text-accent me-2\"></i>Tutor Benefits &amp; Incentives</h4><ul class=\"mb-0 text-muted-custom small\"><li><strong>Competitive Hourly Stipend:</strong> Funded directly through the academic support grant.</li><li><strong>Official Certification:</strong> Receive an official Certificate of Academic Mentorship from the Office of the Vice President for Academic Affairs.</li><li><strong>Flexible Tutoring Hubs:</strong> Conduct 1-on-1 or small group study sessions in the campus learning commons or digital study rooms.</li></ul></div><h3 class=\"h4 fw-bold text-ink mt-4 mb-3\">How to Apply as a Peer Tutor</h3><p>Visit the <strong>Find Jobs</strong> page, filter by category <em>Academic &amp; Tutoring</em>, and submit your application with your Certificate of Registration (COR) and latest academic grade slip.</p>"
+  }
+]

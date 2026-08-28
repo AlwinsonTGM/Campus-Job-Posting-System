@@ -40,6 +40,7 @@ if (!defined('SITE_NAME')) {
                 <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
                     <li><a href="<?= $base_url ?>student/jobs.php">Find Jobs</a></li>
                     <li><a href="<?= $base_url ?>employer/dashboard.php">For Employers</a></li>
+                    <li><a href="<?= $base_url ?>updates.php">Career Updates</a></li>
                     <li><a href="<?= $base_url ?>faqs.php">FAQs</a></li>
                     <li><a href="<?= $base_url ?>about-us.php">About Us</a></li>
                     <li><a href="<?= $base_url ?>login.php">Login / Portal</a></li>

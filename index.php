@@ -520,49 +520,29 @@ require_once __DIR__ . '/includes/header.php';
                             <h2 class="h1 fw-extrabold text-ink mb-0">Updates From The Career Center</h2>
                         </div>
                         <div class="mt-3 mt-md-0">
-                            <a href="about-us.php" class="btn-outline-pill">
+                            <a href="<?= $base_url ?>updates.php" class="btn-outline-pill">
                                 SEE ALL <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
                             </a>
                         </div>
                     </div>
 
                     <div class="row g-4">
-                        <div class="col-md-6 col-lg-3">
-                            <a href="faqs.php" class="update-news-card update-card-offset-1">
-                                <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Spring Career Fair">
-                                <div class="p-3 d-flex flex-column flex-grow-1">
-                                    <span class="eyebrow-badge text-muted-custom mb-1">June 12, 2026</span>
-                                    <h3 class="h6 fw-bold text-ink mb-0">Spring Career Fair Welcomes Over 40 Campus Offices</h3>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <a href="employer/dashboard.php" class="update-news-card update-card-offset-2">
-                                <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Employer Portal">
-                                <div class="p-3 d-flex flex-column flex-grow-1">
-                                    <span class="eyebrow-badge text-muted-custom mb-1">June 5, 2026</span>
-                                    <h3 class="h6 fw-bold text-ink mb-0">Employer Portal Opens to All Departments</h3>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <a href="faqs.php" class="update-news-card update-card-offset-1">
-                                <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Resume Workshop">
-                                <div class="p-3 d-flex flex-column flex-grow-1">
-                                    <span class="eyebrow-badge text-muted-custom mb-1">June 2, 2026</span>
-                                    <h3 class="h6 fw-bold text-ink mb-0">Resume Workshop Helps 200 Students Apply</h3>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <a href="about-us.php" class="update-news-card update-card-offset-2">
-                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" class="update-news-photo" alt="Alumni Mentors">
-                                <div class="p-3 d-flex flex-column flex-grow-1">
-                                    <span class="eyebrow-badge text-muted-custom mb-1">May 29, 2026</span>
-                                    <h3 class="h6 fw-bold text-ink mb-0">Alumni Mentors Inspire the Whole Campus</h3>
-                                </div>
-                            </a>
-                        </div>
+                        <?php 
+                        $home_updates = function_exists('get_latest_career_updates') ? get_latest_career_updates(4) : [];
+                        foreach ($home_updates as $i => $u):
+                            $offset_class = ($i % 2 === 0) ? 'update-card-offset-1' : 'update-card-offset-2';
+                            $u_date = date('F j, Y', strtotime($u['published_at'] ?? 'now'));
+                        ?>
+                            <div class="col-md-6 col-lg-3">
+                                <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($u['id']) ?>" class="update-news-card <?= $offset_class ?>">
+                                    <img src="<?= htmlspecialchars($u['image'] ?? 'assets/img/hero-office.jpg') ?>" class="update-news-photo" alt="<?= htmlspecialchars($u['title']) ?>">
+                                    <div class="p-3 d-flex flex-column flex-grow-1">
+                                        <span class="eyebrow-badge text-muted-custom mb-1"><?= $u_date ?></span>
+                                        <h3 class="h6 fw-bold text-ink mb-0 line-clamp-2"><?= htmlspecialchars($u['title']) ?></h3>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </section>

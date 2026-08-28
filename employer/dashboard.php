@@ -40,11 +40,11 @@ require_once __DIR__ . '/../includes/header.php';
                     <a href="create-job.php" class="btn-pill">
                         <i class="bi bi-plus-circle-fill"></i> Post New Vacancy
                     </a>
+                    <a href="updates.php" class="btn-pill-outline">
+                        <i class="bi bi-megaphone-fill"></i> Department Dispatches
+                    </a>
                     <a href="applicants.php" class="btn-pill-outline">
                         <i class="bi bi-people-fill"></i> View Applicants (' . $total_applicants_count . ')
-                    </a>
-                    <a href="../admin/reports.php" class="btn-pill-outline">
-                        <i class="bi bi-bar-chart-fill"></i> Hiring Report
                     </a>
                 ';
                 render_page_head(
