@@ -96,10 +96,7 @@ require_once __DIR__ . '/includes/header.php';
                  ============================================================ -->
             <section id="categories" class="py-5 py-lg-6 bg-cream border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
-                    <div class="text-center mb-5">
-                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-white text-dark mb-2">
-                            <i class="bi bi-grid-fill text-accent"></i> Campus Disciplines
-                        </span>
+                    <div class="text-center mb-5 pt-3 pt-md-4">
                         <h2 class="h1 fw-extrabold text-ink mb-2">Where Do You Want To Work?</h2>
                         <p class="text-muted-custom col-lg-6 mx-auto">
                             Explore dynamic student assistantship roles and verified part-time openings distributed across campus divisions.
@@ -130,80 +127,160 @@ require_once __DIR__ . '/includes/header.php';
             </section>
 
             <!-- ============================================================
-                 SECTION 3: HOW IT WORKS & ACCREDITATION PROCESS (bg --surface)
+                 SECTION 3: HOW IT WORKS & ACCREDITATION PROCESS (Treasure Map / Journey Trail)
                  ============================================================ -->
             <section id="how-it-works" class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
-                    <div class="text-center mb-5">
+                    <div class="text-center mb-5 pt-3 pt-md-4">
                         <h2 class="h1 fw-extrabold text-ink mb-2">How Approved Employers &amp; Offices Deploy Vacancies</h2>
                         <p class="text-muted-custom col-lg-7 mx-auto">
-                            Every opportunity on this platform undergoes institutional vetting before publishing, protecting student academic focus, fair compensation, and safe workplaces.
+                            A secure institutional framework ensuring every partner entity, campus department, and job requisition undergoes formal verification before reaching students.
                         </p>
                     </div>
 
-                    <div class="row g-4">
-                        <!-- Step 1: Institutional Accreditation -->
-                        <div class="col-lg-4">
-                            <div class="why-card h-100">
-                                <div>
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
-                                            <i class="bi bi-file-earmark-check-fill fs-4 text-ink"></i>
+                    <div class="map-journey-container">
+                        <!-- Winding Dashed Journey Trail (Desktop SVG) -->
+                        <svg class="map-journey-track-svg" viewBox="0 0 1000 640" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 320 80 C 750 80, 750 280, 680 280 C 580 280, 250 360, 320 540" class="map-journey-path" />
+                        </svg>
+
+                        <!-- Step 1: Institutional Accreditation (Left-aligned) -->
+                        <div class="row align-items-center map-journey-row">
+                            <div class="map-mobile-marker">01</div>
+                            <div class="col-lg-7">
+                                <div class="map-step-card">
+                                    <div class="map-checkpoint-header">
+                                        <span class="map-waypoint-badge">
+                                            <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span class="step-num">01</span>
+                                        </span>
+                                        <div class="map-card-icon-wrap">
+                                            <i class="bi bi-file-earmark-check-fill"></i>
                                         </div>
-                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle" style="font-size: 11px;">STEP 01</span>
                                     </div>
-                                    <h3 class="h4 fw-bold text-ink mb-2">Accreditation & Partnership</h3>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Accreditation &amp; Partnership</h3>
                                     <p class="text-muted-custom small mb-4">
-                                        University offices register with departmental authorization. External employers and industry partners submit business registration and formal University Partnership Agreements (MOA).
+                                        University offices register with departmental authorization. External employers and industry partners submit corporate credentials and formal University Partnership Agreements (MOA).
                                     </p>
+                                    <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
+                                        <span class="chip-tag"><i class="bi bi-patch-check-fill text-accent me-1"></i> Department Authorization</span>
+                                        <span class="chip-tag"><i class="bi bi-file-text-fill text-accent me-1"></i> Formal MOA Accord</span>
+                                    </div>
                                 </div>
-                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line mt-auto">
-                                    <span class="chip-tag"># Verified Credentials</span>
-                                    <span class="chip-tag"># Formal MOA</span>
+                            </div>
+                            <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+                                <div class="map-preview-card">
+                                    <div class="map-preview-topbar">
+                                        <span><i class="bi bi-patch-check-fill text-accent me-1"></i> PARTNER ACCREDITATION PASS</span>
+                                        <span class="text-white-50">#ACCR-2026</span>
+                                    </div>
+                                    <div class="map-preview-body">
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-building"></i> Registered Unit</span>
+                                            <span class="map-preview-val">MIS &amp; Tech Center</span>
+                                        </div>
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-file-earmark-text"></i> Legal Accord</span>
+                                            <span class="map-preview-val">University MOA Accord</span>
+                                        </div>
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-shield-check"></i> Status</span>
+                                            <span class="map-preview-val text-success-emphasis"><i class="bi bi-check-circle-fill text-accent me-1"></i> Authorized Partner</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Step 2: Vetting & Compliance Audit -->
-                        <div class="col-lg-4">
-                            <div class="why-card h-100">
-                                <div>
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
-                                            <i class="bi bi-shield-lock-fill fs-4 text-ink"></i>
-                                        </div>
-                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle" style="font-size: 11px;">STEP 02</span>
+                        <!-- Step 2: Vetting & Compliance Audit (Right-aligned) -->
+                        <div class="row align-items-center map-journey-row">
+                            <div class="map-mobile-marker">02</div>
+                            <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+                                <div class="map-preview-card">
+                                    <div class="map-preview-topbar">
+                                        <span><i class="bi bi-shield-check text-accent me-1"></i> CAREER CENTER AUDIT PASS</span>
+                                        <span class="text-white-50">#AUDIT-SAFE</span>
                                     </div>
-                                    <h3 class="h4 fw-bold text-ink mb-2">Career Center Vetting</h3>
-                                    <p class="text-muted-custom small mb-4">
-                                        The University Career Center audits job descriptions to verify student-safe pay rates, ethical workload scopes, and strict enforcement of the 20-hour weekly maximum during active semesters.
-                                    </p>
+                                    <div class="map-preview-body">
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-clipboard-check"></i> Role Evaluation</span>
+                                            <span class="map-preview-val">Quality &amp; Ethics Approved</span>
+                                        </div>
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-person-badge"></i> Supervisor Auth</span>
+                                            <span class="map-preview-val">Faculty / Staff Verified</span>
+                                        </div>
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-shield-lock"></i> Compliance</span>
+                                            <span class="map-preview-val text-success-emphasis"><i class="bi bi-check-circle-fill text-accent me-1"></i> 100% Policy Approved</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line mt-auto">
-                                    <span class="chip-tag"># Max 20 hrs/wk Limit</span>
-                                    <span class="chip-tag"># Fair Student Wage</span>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="map-step-card">
+                                    <div class="map-checkpoint-header">
+                                        <span class="map-waypoint-badge">
+                                            <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span class="step-num">02</span>
+                                        </span>
+                                        <div class="map-card-icon-wrap">
+                                            <i class="bi bi-shield-lock-fill"></i>
+                                        </div>
+                                    </div>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Job Scope &amp; Quality Audit</h3>
+                                    <p class="text-muted-custom small mb-4">
+                                        The University Career Center conducts a comprehensive audit of each role description, evaluating workload ethics, skill development opportunities, and supervisor qualifications.
+                                    </p>
+                                    <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
+                                        <span class="chip-tag"><i class="bi bi-shield-check text-accent me-1"></i> Job Scope Review</span>
+                                        <span class="chip-tag"><i class="bi bi-person-badge-fill text-accent me-1"></i> Supervisor Vetting</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Step 3: Authorized Deployment & Direct Tracking -->
-                        <div class="col-lg-4">
-                            <div class="why-card h-100">
-                                <div>
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3" style="width: 56px; height: 56px;">
-                                            <i class="bi bi-person-check-fill fs-4 text-ink"></i>
+                        <!-- Step 3: Authorized Deployment (Left/Center-aligned) -->
+                        <div class="row align-items-center map-journey-row">
+                            <div class="map-mobile-marker">03</div>
+                            <div class="col-lg-7">
+                                <div class="map-step-card">
+                                    <div class="map-checkpoint-header">
+                                        <span class="map-waypoint-badge">
+                                            <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span class="step-num">03</span>
+                                        </span>
+                                        <div class="map-card-icon-wrap">
+                                            <i class="bi bi-person-check-fill"></i>
                                         </div>
-                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle" style="font-size: 11px;">STEP 03</span>
                                     </div>
-                                    <h3 class="h4 fw-bold text-ink mb-2">Authorized Deployment</h3>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Live Broadcast &amp; Applicant CRM</h3>
                                     <p class="text-muted-custom small mb-4">
-                                        Only verified accounts deploy live requisitions. Students submit applications securely, schedule interviews with supervisors, and track hiring decisions directly on their student dashboard.
+                                        Approved listings are published instantly across the campus portal. Recruiters manage applications, shortlist qualified candidates, and coordinate interviews through a centralized dashboard.
                                     </p>
+                                    <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
+                                        <span class="chip-tag"><i class="bi bi-broadcast-pin text-accent me-1"></i> Campus Broadcast</span>
+                                        <span class="chip-tag"><i class="bi bi-kanban-fill text-accent me-1"></i> Integrated Applicant CRM</span>
+                                    </div>
                                 </div>
-                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line mt-auto">
-                                    <span class="chip-tag"># Verified Listings</span>
-                                    <span class="chip-tag"># Direct Status Tracking</span>
+                            </div>
+                            <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+                                <div class="map-preview-card">
+                                    <div class="map-preview-topbar">
+                                        <span><i class="bi bi-broadcast text-accent me-1"></i> LIVE VACANCY REQUISITION</span>
+                                        <span class="text-white-50">#LIVE-SYNC</span>
+                                    </div>
+                                    <div class="map-preview-body">
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-person-badge"></i> Position Category</span>
+                                            <span class="map-preview-val">Student Assistant / OJT</span>
+                                        </div>
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-kanban"></i> Application Flow</span>
+                                            <span class="map-preview-val">Direct Supervisor Queue</span>
+                                        </div>
+                                        <div class="map-preview-row">
+                                            <span class="map-preview-label"><i class="bi bi-lightning-charge"></i> Broadcast Status</span>
+                                            <span class="map-preview-val text-success-emphasis"><i class="bi bi-rocket-takeoff-fill text-accent me-1"></i> Live on Campus Portal</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -212,11 +289,11 @@ require_once __DIR__ . '/includes/header.php';
             </section>
 
             <!-- ============================================================
-                 SECTION 4: WHY WORK ON-CAMPUS (3-card services archetype, bg --surface)
+                 SECTION 4: WHY WORK ON-CAMPUS (Student Benefits - bg --cream)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+            <section class="py-5 py-lg-6 bg-cream border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 pt-3 pt-md-4">
                         <div>
                             <h2 class="h1 fw-extrabold text-ink mb-0">Study Close, Work Close, Grow Faster</h2>
                         </div>
@@ -228,63 +305,59 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
 
                     <div class="row g-4">
-                        <!-- Card 1: Flexible Hours -->
+                        <!-- Card 1: Academic-First Scheduling -->
                         <div class="col-lg-4">
-                            <div class="why-card">
+                            <div class="student-benefit-card">
                                 <div>
-                                    <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3 mb-4" style="width: 56px; height: 56px;">
-                                        <i class="bi bi-clock-history fs-4 text-ink"></i>
+                                    <div class="benefit-icon-box">
+                                        <i class="bi bi-calendar2-check-fill"></i>
                                     </div>
-                                    <h3 class="h4 fw-bold text-ink mb-2">Flexible Hours</h3>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Academic-First Scheduling</h3>
                                     <p class="text-muted-custom small mb-4">
-                                        Shifts are adjusted around your class schedule, with a 20-hour weekly cap during regular semesters.
+                                        Your education always comes first. Work schedules are structured strictly around your lecture hours and lab times, with built-in flexibility during midterm and final exam weeks.
                                     </p>
                                 </div>
                                 <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
-                                    <span class="chip-tag"># Max 20 hrs/wk</span>
-                                    <span class="chip-tag"># Exam-week adjustments</span>
+                                    <span class="benefit-chip"><i class="bi bi-calendar-event me-1"></i> Class-priority shifts</span>
+                                    <span class="benefit-chip"><i class="bi bi-journal-bookmark-fill me-1"></i> Exam-week flexibility</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Card 2: Close To Everything -->
+                        <!-- Card 2: Zero-Commute Convenience -->
                         <div class="col-lg-4">
-                            <div class="why-card">
+                            <div class="student-benefit-card">
                                 <div>
-                                    <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3 mb-4" style="width: 56px; height: 56px;">
-                                        <i class="bi bi-geo-alt-fill fs-4 text-ink"></i>
+                                    <div class="benefit-icon-box">
+                                        <i class="bi bi-geo-alt-fill"></i>
                                     </div>
-                                    <h3 class="h4 fw-bold text-ink mb-2">Close To Everything</h3>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Zero-Commute Convenience</h3>
                                     <p class="text-muted-custom small mb-4">
-                                        Work minutes from your classes in official, university-certified offices — safe and supervised.
+                                        Work steps away from your lecture halls, libraries, and student lounges. Save valuable hours and daily transit costs by working directly on campus or with verified nearby partners.
                                     </p>
                                 </div>
-                                <div class="d-flex align-items-center justify-content-between pt-3 border-top border-line">
-                                    <div class="d-flex align-items-center gap-1 text-accent fs-6">
-                                        <i class="bi bi-building"></i>
-                                        <i class="bi bi-shield-fill-check"></i>
-                                        <i class="bi bi-award"></i>
-                                    </div>
-                                    <span class="small fw-bold text-ink">Official Campus Certification</span>
+                                <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
+                                    <span class="benefit-chip"><i class="bi bi-signpost-2-fill me-1"></i> Zero transit costs</span>
+                                    <span class="benefit-chip"><i class="bi bi-buildings-fill me-1"></i> On-campus locations</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Card 3: Tuition & Stipend Support -->
+                        <!-- Card 3: Real Career Mentorship -->
                         <div class="col-lg-4">
-                            <div class="why-card">
+                            <div class="student-benefit-card">
                                 <div>
-                                    <div class="d-inline-flex align-items-center justify-content-center bg-cream rounded-circle p-3 mb-4" style="width: 56px; height: 56px;">
-                                        <i class="bi bi-cash-stack fs-4 text-ink"></i>
+                                    <div class="benefit-icon-box">
+                                        <i class="bi bi-award-fill"></i>
                                     </div>
-                                    <h3 class="h4 fw-bold text-ink mb-2">Tuition & Stipend Support</h3>
+                                    <h3 class="h4 fw-bold text-ink mb-2">Real Career Mentorship</h3>
                                     <p class="text-muted-custom small mb-4">
-                                        Earn semi-monthly stipends or hourly pay processed by the University Cashier Office upon signed DTRs.
+                                        Gain hands-on workplace experience, develop transferable professional skills, and earn direct supervisor recommendation letters that elevate your resume before graduation.
                                     </p>
                                 </div>
                                 <div class="d-flex flex-wrap gap-2 pt-3 border-top border-line">
-                                    <span class="chip-tag"># Semi-monthly pay</span>
-                                    <span class="chip-tag"># DTR-based</span>
+                                    <span class="benefit-chip"><i class="bi bi-award-fill me-1"></i> Supervisor references</span>
+                                    <span class="benefit-chip"><i class="bi bi-stars me-1"></i> Early resume building</span>
                                 </div>
                             </div>
                         </div>

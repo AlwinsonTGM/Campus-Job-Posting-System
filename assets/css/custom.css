@@ -619,8 +619,277 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* --------------------------------------------------------------------------
-   10. WHY WORK ON-CAMPUS (3-Card Archetype)
+   10. MAP JOURNEY & WORKFLOW PATHWAY (Treasure Map Layout - Section 3)
    -------------------------------------------------------------------------- */
+.map-journey-container {
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.map-journey-track-svg {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 100px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.map-journey-path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-dasharray: 8 8;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+.map-journey-row {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 3.5rem;
+}
+
+.map-journey-row:last-child {
+  margin-bottom: 0;
+}
+
+.map-step-card {
+  background-color: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 2.25rem 2rem;
+  box-shadow: 0 10px 30px rgba(22, 22, 22, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.map-step-card:hover {
+  border-color: var(--ink);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(22, 22, 22, 0.08);
+}
+
+.map-waypoint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background-color: var(--ink);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(22, 22, 22, 0.12);
+}
+
+.map-waypoint-badge .step-num {
+  color: var(--accent);
+}
+
+.map-card-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--ink);
+  transition: all 0.2s ease;
+}
+
+.map-step-card:hover .map-card-icon-wrap {
+  background-color: var(--accent);
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.map-checkpoint-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.map-preview-card {
+  background-color: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(22, 22, 22, 0.04);
+  transition: all 0.25s ease;
+  width: 100%;
+  max-width: 380px;
+}
+
+.map-preview-card:hover {
+  border-color: var(--ink);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(22, 22, 22, 0.08);
+}
+
+.map-preview-topbar {
+  background-color: var(--ink);
+  color: var(--white);
+  padding: 0.65rem 1.1rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-preview-body {
+  padding: 1rem 1.2rem;
+}
+
+.map-preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 0.45rem 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.map-preview-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.map-preview-label {
+  color: var(--muted);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.map-preview-val {
+  color: var(--ink);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Mobile connector line fallback */
+@media (max-width: 991.98px) {
+  .map-journey-track-svg {
+    display: none;
+  }
+  
+  .map-journey-container::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    bottom: 24px;
+    left: 23px;
+    width: 2px;
+    border-left: 2.5px dashed var(--accent);
+    opacity: 0.7;
+    z-index: 1;
+  }
+
+  .map-journey-row {
+    padding-left: 4rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .map-mobile-marker {
+    position: absolute;
+    left: 0;
+    top: 1.25rem;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: var(--ink);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(22, 22, 22, 0.2);
+  }
+}
+
+@media (min-width: 992px) {
+  .map-mobile-marker {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10B. STUDENT BENEFIT CARDS (Section 4: Study Close, Work Close, Grow Faster)
+   -------------------------------------------------------------------------- */
+.student-benefit-card {
+  background-color: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 2.25rem 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 6px 20px rgba(22, 22, 22, 0.02);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.student-benefit-card:hover {
+  border-color: var(--ink);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(22, 22, 22, 0.06);
+}
+
+.benefit-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.student-benefit-card:hover .benefit-icon-box {
+  background-color: var(--ink);
+  color: var(--accent);
+  border-color: var(--ink);
+}
+
+.benefit-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
+  transition: all 0.2s ease;
+}
+
+.student-benefit-card:hover .benefit-chip {
+  background-color: var(--cream);
+  border-color: rgba(22, 22, 22, 0.15);
+}
+
 .why-card {
   background-color: var(--white);
   border: 1px solid var(--line);
@@ -641,7 +910,8 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .chip-tag {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-size: 11px;
   font-weight: 600;
   background-color: var(--surface);
