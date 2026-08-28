@@ -651,10 +651,35 @@ h1, h2, h3, h4, h5, h6,
   position: relative;
   z-index: 2;
   margin-bottom: 3.5rem;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
 
 .map-journey-row:last-child {
   margin-bottom: 0;
+}
+
+/* Stamp Watermark Element (Official Stamp Effect) */
+.map-stamp-watermark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  position: absolute;
+  top: 1.25rem;
+  right: 1.5rem;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.75rem;
+  border: 1.5px dashed var(--ink);
+  color: var(--ink);
+  border-radius: 8px;
+  background-color: var(--surface);
+  text-transform: uppercase;
+  transform: rotate(-10deg) scale(0.65);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
 }
 
 .map-step-card {
@@ -662,15 +687,9 @@ h1, h2, h3, h4, h5, h6,
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   padding: 2.25rem 2rem;
-  box-shadow: 0 10px 30px rgba(22, 22, 22, 0.04);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(22, 22, 22, 0.02);
+  transition: all 0.25s ease;
   position: relative;
-}
-
-.map-step-card:hover {
-  border-color: var(--ink);
-  transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(22, 22, 22, 0.08);
 }
 
 .map-waypoint-badge {
@@ -684,11 +703,12 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0.04em;
   background-color: var(--ink);
   color: var(--white);
-  box-shadow: 0 4px 12px rgba(22, 22, 22, 0.12);
+  box-shadow: 0 2px 8px rgba(22, 22, 22, 0.08);
+  transition: all 0.25s ease;
 }
 
 .map-waypoint-badge .step-num {
-  color: var(--accent);
+  color: var(--white);
 }
 
 .map-card-icon-wrap {
@@ -702,13 +722,8 @@ h1, h2, h3, h4, h5, h6,
   justify-content: center;
   font-size: 1.25rem;
   color: var(--ink);
-  transition: all 0.2s ease;
-}
-
-.map-step-card:hover .map-card-icon-wrap {
-  background-color: var(--accent);
-  color: var(--ink);
-  border-color: var(--accent);
+  transition: all 0.25s ease;
+  flex-shrink: 0;
 }
 
 .map-checkpoint-header {
@@ -723,18 +738,54 @@ h1, h2, h3, h4, h5, h6,
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(22, 22, 22, 0.04);
+  box-shadow: 0 6px 20px rgba(22, 22, 22, 0.02);
   transition: all 0.25s ease;
   width: 100%;
   max-width: 380px;
+  position: relative;
 }
 
-.map-preview-card:hover {
+/* --------------------------------------------------------------------------
+   HARMONIZED SIGNATURE HOVER EFFECT: Neutral Ink Polish (Matched with Sections 2 & 4)
+   -------------------------------------------------------------------------- */
+.map-journey-row:hover .map-step-card {
+  background-color: var(--white);
   border-color: var(--ink);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(22, 22, 22, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(22, 22, 22, 0.06);
 }
 
+.map-journey-row:hover .map-stamp-watermark {
+  opacity: 1;
+  transform: rotate(-10deg) scale(1);
+}
+
+.map-journey-row:hover .map-card-icon-wrap {
+  background-color: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+  transform: scale(1.05);
+}
+
+.map-journey-row:hover .map-waypoint-badge {
+  background-color: var(--ink);
+  box-shadow: 0 4px 14px rgba(22, 22, 22, 0.2);
+}
+
+.map-journey-row:hover .chip-tag {
+  background-color: var(--cream);
+  border-color: rgba(22, 22, 22, 0.15);
+  color: var(--ink);
+}
+
+/* Tilting Effect on Companion Pass - Neutral Ink Polish */
+.map-journey-row:hover .map-preview-card {
+  border-color: var(--ink);
+  transform: translateY(-5px) rotate(-1.5deg) scale(1.02);
+  box-shadow: 0 18px 40px rgba(22, 22, 22, 0.08);
+}
+
+/* Topbar & details */
 .map-preview-topbar {
   background-color: var(--ink);
   color: var(--white);
@@ -745,6 +796,7 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .map-preview-body {
@@ -1818,16 +1870,89 @@ h1, h2, h3, h4, h5, h6,
   outline: none;
 }
 
-.form-paper .input-group-text {
-  background-color: var(--surface);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-input) 0 0 var(--radius-input);
-  color: var(--muted);
-  font-size: 15px;
+/* Unified Integrated Input Group (One Seamless Body for Icon + Input + Eye Button) */
+.input-group-integrated,
+.form-paper .input-group {
+  display: flex !important;
+  align-items: center !important;
+  background-color: var(--surface) !important;
+  border: 1.5px solid var(--line) !important;
+  border-radius: var(--radius-input) !important;
+  padding: 0 0.85rem !important;
+  min-height: 48px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+  position: relative !important;
+  width: 100% !important;
 }
 
+.input-group-integrated:focus-within,
+.form-paper .input-group:focus-within {
+  border-color: var(--accent) !important;
+  background-color: var(--white) !important;
+  box-shadow: 0 0 0 3.5px var(--accent-soft) !important;
+}
+
+.input-group-integrated .input-group-text,
+.form-paper .input-group .input-group-text {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 0.5rem 0 0.15rem !important;
+  color: var(--muted) !important;
+  font-size: 1.15rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.input-group-integrated:focus-within .input-group-text,
+.form-paper .input-group:focus-within .input-group-text {
+  color: var(--ink) !important;
+}
+
+.input-group-integrated .form-control,
 .form-paper .input-group .form-control {
-  border-radius: 0 var(--radius-input) var(--radius-input) 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0.65rem 0.5rem !important;
+  color: var(--ink) !important;
+  font-size: 15px !important;
+  min-height: auto !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.input-group-integrated .form-control:focus,
+.form-paper .input-group .form-control:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.input-group-integrated .btn-toggle-password,
+.form-paper .input-group .btn-toggle-password {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--muted) !important;
+  padding: 0 0.25rem !important;
+  font-size: 1.15rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.15s ease, transform 0.15s ease !important;
+}
+
+.input-group-integrated .btn-toggle-password:hover,
+.form-paper .input-group .btn-toggle-password:hover {
+  color: var(--ink) !important;
+  transform: scale(1.08) !important;
 }
 
 /* Integrated Search Input with Icon Inside Before Text */
@@ -2965,6 +3090,194 @@ h1, h2, h3, h4, h5, h6,
     width: 100%;
     text-align: center;
     justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   14. FREQUENTLY ASKED QUESTIONS (FAQS) PAGE & ACCORDION SYSTEM
+   -------------------------------------------------------------------------- */
+.faq-item-card {
+  background-color: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(22, 22, 22, 0.02);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.faq-item-card:hover {
+  border-color: rgba(22, 22, 22, 0.2);
+  box-shadow: 0 6px 18px rgba(22, 22, 22, 0.04);
+  transform: translateY(-1px);
+}
+
+.faq-item-card:has(.accordion-button:not(.collapsed)),
+.faq-item-card.is-active-item {
+  border-color: var(--ink);
+  box-shadow: 0 8px 24px rgba(22, 22, 22, 0.05);
+}
+
+/* FAQ Accordion Button */
+.faq-accordion-btn {
+  width: 100%;
+  background-color: var(--white);
+  border: none;
+  padding: 1.15rem 1.35rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.faq-accordion-btn::after {
+  display: none !important; /* Hide default bootstrap arrow */
+}
+
+.faq-accordion-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.faq-accordion-btn:not(.collapsed) {
+  background-color: var(--cream);
+}
+
+/* Question Number Badge */
+.faq-q-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.faq-accordion-btn:not(.collapsed) .faq-q-pill {
+  background-color: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+}
+
+/* Question Title */
+.faq-q-title {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Rotating Chevron Indicator Circle */
+.faq-toggle-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.faq-accordion-btn:hover .faq-toggle-icon-wrap {
+  background-color: var(--cream);
+  border-color: var(--ink);
+}
+
+.faq-accordion-btn:not(.collapsed) .faq-toggle-icon-wrap {
+  background-color: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+  transform: rotate(180deg);
+}
+
+/* FAQ Answer Body */
+.faq-answer-body {
+  padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+  background-color: var(--white);
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.faq-answer-body strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.faq-answer-body code {
+  background-color: var(--surface);
+  color: var(--ink);
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.faq-answer-body a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* FAQ Help CTA Card (Simple, Clean, Subtle) */
+.faq-help-card {
+  background-color: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(22, 22, 22, 0.02);
+}
+
+.faq-help-icon-box {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  color: var(--ink);
+  margin-bottom: 1rem;
+  flex-shrink: 0 !important;
+}
+
+@media (max-width: 767.98px) {
+  .faq-accordion-btn {
+    padding: 1rem 1.15rem;
+    gap: 0.75rem;
+  }
+  .faq-q-title {
+    font-size: 0.925rem;
+  }
+  .faq-answer-body {
+    padding: 1.1rem 1.25rem 1.25rem 1.25rem;
   }
 }
 

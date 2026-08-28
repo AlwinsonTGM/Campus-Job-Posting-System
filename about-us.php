@@ -93,7 +93,7 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Developer Photo Specifications Compliance Note -->
                 <div class="card-paper mb-5 bg-cream">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="icon-circle icon-circle-success">
+                        <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
                             <i class="bi bi-patch-check-fill"></i>
                         </div>
                         <div>
@@ -115,11 +115,11 @@ require_once __DIR__ . '/includes/header.php';
                                 <div class="dev-card-role"><?= htmlspecialchars($dev['role']) ?></div>
 
                                 <div class="dev-card-meta">
-                                    <div><i class="bi bi-person-badge me-1 text-accent"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
-                                    <div><i class="bi bi-mortarboard me-1 text-accent"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
+                                    <div><i class="bi bi-person-badge me-1 text-ink"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
+                                    <div><i class="bi bi-mortarboard me-1 text-ink"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
                                     <div class="text-truncate mt-1">
                                         <a href="mailto:<?= htmlspecialchars($dev['email']) ?>" class="text-muted-custom text-decoration-none" title="<?= htmlspecialchars($dev['email']) ?>">
-                                            <i class="bi bi-envelope me-1 text-accent"></i><?= htmlspecialchars($dev['email']) ?>
+                                            <i class="bi bi-envelope me-1 text-ink"></i><?= htmlspecialchars($dev['email']) ?>
                                         </a>
                                     </div>
                                 </div>
@@ -132,7 +132,7 @@ require_once __DIR__ . '/includes/header.php';
                                     <span class="small fw-bold text-ink d-block mb-1">Key Deliverables:</span>
                                     <ul class="list-unstyled small text-muted-custom mb-0">
                                         <?php foreach ($dev['tasks'] as $task): ?>
-                                            <li class="mb-1"><i class="bi bi-check2 text-accent me-1"></i> <?= htmlspecialchars($task) ?></li>
+                                            <li class="mb-1"><i class="bi bi-check2 text-ink me-1"></i> <?= htmlspecialchars($task) ?></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
@@ -147,7 +147,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="col-lg-6">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="icon-circle icon-circle-success">
+                                <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
                                     <i class="bi bi-compass"></i>
                                 </div>
                                 <h3 class="card-paper-title mb-0">Our Project Mission</h3>
@@ -171,7 +171,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="col-lg-6">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="icon-circle icon-circle-success">
+                                <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
                                     <i class="bi bi-stack"></i>
                                 </div>
                                 <h3 class="card-paper-title mb-0">Technical Architecture</h3>
@@ -182,23 +182,23 @@ require_once __DIR__ . '/includes/header.php';
                             
                             <div class="d-flex flex-wrap gap-2">
                                 <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-filetype-php text-accent fs-5"></i>
-                                    <strong>Native PHP 8.x</strong> — Backend & Session State
+                                    <i class="bi bi-filetype-php text-ink fs-5"></i>
+                                    <strong>Native PHP 8.x</strong> — Backend &amp; Session State
                                 </span>
                                 <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-bootstrap-fill text-accent fs-5"></i>
-                                    <strong>Bootstrap 5.3 + Icons</strong> — Responsive UI & Layout
+                                    <i class="bi bi-bootstrap-fill text-ink fs-5"></i>
+                                    <strong>Bootstrap 5.3 + Icons</strong> — Responsive UI &amp; Layout
                                 </span>
                                 <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-filetype-css text-accent fs-5"></i>
-                                    <strong>CSS3 Tokens</strong> — Custom Styling & Theme
+                                    <i class="bi bi-filetype-css text-ink fs-5"></i>
+                                    <strong>CSS3 Tokens</strong> — Custom Styling &amp; Theme
                                 </span>
                                 <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-filetype-js text-accent fs-5"></i>
-                                    <strong>Vanilla JavaScript (ES6)</strong> — Real-time Password Meter & UI
+                                    <i class="bi bi-filetype-js text-ink fs-5"></i>
+                                    <strong>Vanilla JavaScript (ES6)</strong> — Real-time Password Meter &amp; UI
                                 </span>
                                 <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-database-slash text-accent fs-5"></i>
+                                    <i class="bi bi-database-slash text-ink fs-5"></i>
                                     <strong>JSON Datastore</strong> — Zero-DB Persistence
                                 </span>
                             </div>

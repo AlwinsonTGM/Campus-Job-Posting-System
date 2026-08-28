@@ -672,8 +672,9 @@ document.addEventListener('DOMContentLoaded', function () {
         ? targetEl
         : targetEl.querySelector('.accordion-collapse');
       
-      if (!collapseEl && targetEl.closest('.accordion-item')) {
-        collapseEl = targetEl.closest('.accordion-item').querySelector('.accordion-collapse');
+      if (!collapseEl && (targetEl.closest('.faq-item-card') || targetEl.closest('.accordion-item'))) {
+        const parentCard = targetEl.closest('.faq-item-card') || targetEl.closest('.accordion-item');
+        collapseEl = parentCard.querySelector('.accordion-collapse');
       }
 
       if (collapseEl && !collapseEl.classList.contains('show')) {
@@ -687,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Smoothly scroll to target
       setTimeout(function () {
-        const itemToScroll = targetEl.closest('.accordion-item') || targetEl;
+        const itemToScroll = targetEl.closest('.faq-item-card') || targetEl.closest('.accordion-item') || targetEl;
         itemToScroll.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 150);
     }

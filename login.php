@@ -72,22 +72,18 @@ require_once __DIR__ . '/includes/header.php';
                         <div>
                             <!-- Brand Mark -->
                             <div class="d-flex align-items-center gap-2 mb-4">
-                                <span class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-3 p-2 shadow-sm" style="width: 38px; height: 38px;">
+                                <span class="faq-help-icon-box m-0 flex-shrink-0" style="width: 42px; height: 42px; min-width: 42px; min-height: 42px; aspect-ratio: 1 / 1; font-size: 1.15rem;">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#2ECC5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M2 17L12 22L22 17" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M2 12L12 17L22 12" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </span>
                                 <span class="fw-extrabold text-ink fs-5 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
                             </div>
 
-                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
-                                <i class="bi bi-shield-lock-fill text-accent"></i> Secure Access Portal
-                            </span>
-
                             <h2 class="h3 fw-bold text-ink mb-3">
-                                Empowering Student Talent & Campus Opportunities
+                                Empowering Student Talent &amp; Campus Opportunities
                             </h2>
                             <p class="text-muted-custom small mb-4">
                                 Sign in to manage your student applications, explore departmental assistantships, or evaluate student candidates.
@@ -96,19 +92,19 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Feature List -->
                             <div class="d-flex flex-column gap-3 mb-4">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-success">
+                                    <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; aspect-ratio: 1 / 1; font-size: 0.95rem;">
                                         <i class="bi bi-mortarboard-fill"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Verified On-Campus Assistantships</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-success">
+                                    <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; aspect-ratio: 1 / 1; font-size: 0.95rem;">
                                         <i class="bi bi-clock-history"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">Strict 20 hrs/week Academic Safeguards</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-success">
+                                    <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; aspect-ratio: 1 / 1; font-size: 0.95rem;">
                                         <i class="bi bi-shield-check"></i>
                                     </div>
                                     <span class="small fw-semibold text-ink">RA 10173 Data Privacy Compliance</span>
@@ -122,7 +118,6 @@ require_once __DIR__ . '/includes/header.php';
                                 <span class="small fw-bold text-ink text-uppercase" style="font-size: 11px;">
                                     <i class="bi bi-lightning-charge-fill text-accent"></i> 1-Click Demo Accounts
                                 </span>
-                                <span class="badge-status--accepted" style="font-size: 9px; padding: 2px 6px;">Ready</span>
                             </div>
                             <div class="d-flex flex-wrap gap-1">
                                 <button type="button" class="chip chip-selectable" data-demo-email="student@kld.edu.ph">
@@ -180,7 +175,7 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Email Input -->
                             <div class="mb-3">
                                 <label class="form-label" for="login-email">Institutional Email Address</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-integrated">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                     <input type="email" name="email" id="login-email" class="form-control" placeholder="username@campus-hire.edu" required autofocus>
                                 </div>
@@ -194,7 +189,7 @@ require_once __DIR__ . '/includes/header.php';
                                         Forgot Password?
                                     </a>
                                 </div>
-                                <div class="input-group">
+                                <div class="input-group input-group-integrated">
                                     <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                                     <input type="password" name="password" id="login-password" class="form-control" placeholder="••••••••" required>
                                     <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('login-password', 'toggle-pw-icon')" aria-label="Toggle password visibility">

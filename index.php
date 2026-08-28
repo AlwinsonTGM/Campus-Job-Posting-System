@@ -138,17 +138,20 @@ require_once __DIR__ . '/includes/header.php';
                         </p>
                     </div>
 
-                    <div class="map-journey-container">
+                    <div class="map-journey-container" id="map-journey-container">
                         <!-- Winding Dashed Journey Trail (Desktop SVG) -->
                         <svg class="map-journey-track-svg" viewBox="0 0 1000 640" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M 320 80 C 750 80, 750 280, 680 280 C 580 280, 250 360, 320 540" class="map-journey-path" />
                         </svg>
 
                         <!-- Step 1: Institutional Accreditation (Left-aligned) -->
-                        <div class="row align-items-center map-journey-row">
+                        <div class="row align-items-center map-journey-row" data-step="1">
                             <div class="map-mobile-marker">01</div>
                             <div class="col-lg-7">
                                 <div class="map-step-card">
+                                    <div class="map-stamp-watermark">
+                                        <i class="bi bi-patch-check-fill"></i> ACCREDITED
+                                    </div>
                                     <div class="map-checkpoint-header">
                                         <span class="map-waypoint-badge">
                                             <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span class="step-num">01</span>
@@ -192,7 +195,7 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <!-- Step 2: Vetting & Compliance Audit (Right-aligned) -->
-                        <div class="row align-items-center map-journey-row">
+                        <div class="row align-items-center map-journey-row" data-step="2">
                             <div class="map-mobile-marker">02</div>
                             <div class="col-lg-5 d-none d-lg-flex justify-content-center">
                                 <div class="map-preview-card">
@@ -218,6 +221,9 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
                             <div class="col-lg-7">
                                 <div class="map-step-card">
+                                    <div class="map-stamp-watermark">
+                                        <i class="bi bi-shield-check"></i> AUDITED &amp; VETTED
+                                    </div>
                                     <div class="map-checkpoint-header">
                                         <span class="map-waypoint-badge">
                                             <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span class="step-num">02</span>
@@ -239,10 +245,13 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <!-- Step 3: Authorized Deployment (Left/Center-aligned) -->
-                        <div class="row align-items-center map-journey-row">
+                        <div class="row align-items-center map-journey-row" data-step="3">
                             <div class="map-mobile-marker">03</div>
                             <div class="col-lg-7">
                                 <div class="map-step-card">
+                                    <div class="map-stamp-watermark">
+                                        <i class="bi bi-broadcast"></i> DEPLOYED LIVE
+                                    </div>
                                     <div class="map-checkpoint-header">
                                         <span class="map-waypoint-badge">
                                             <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span class="step-num">03</span>

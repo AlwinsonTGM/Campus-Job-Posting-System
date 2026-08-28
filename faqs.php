@@ -112,77 +112,74 @@ require_once __DIR__ . '/includes/header.php';
                 render_page_head(
                     '',
                     'Frequently Asked Questions',
-                    'Have questions about student assistant eligibility, work hour limits, stipend payouts, or application processes? Find answers to the 10 most common questions below.'
+                    'Everything you need to know about student assistant eligibility, work hour limits, stipend payouts, and departmental application workflows.'
                 );
                 ?>
 
-                <!-- 10 FAQs Accordion inside Card Paper -->
+                <!-- 10 FAQs Accordion -->
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
-                        <div class="card-paper p-3 p-md-4 mb-5">
-                            <div class="accordion accordion-flush" id="faqAccordion">
-                                <?php foreach ($faqs as $idx => $item): 
-                                    $is_open = ($idx === $open_index);
-                                    $q_num = $idx + 1;
-                                    $faq_id = $item['id'] ?? ('faq-' . $q_num);
-                                ?>
-                                    <div class="accordion-item bg-transparent border-0 mb-3" id="faq-<?= $q_num ?>" style="scroll-margin-top: 100px;">
-                                        <?php if (!empty($item['id'])): ?>
-                                            <span id="<?= htmlspecialchars($item['id']) ?>" style="display: block; position: relative; top: -100px; visibility: hidden;"></span>
-                                        <?php endif; ?>
-                                        <h2 class="accordion-header" id="heading<?= $idx ?>">
-                                            <button 
-                                                class="accordion-button <?= $is_open ? '' : 'collapsed' ?> card-paper card-hover p-3 d-flex gap-3 align-items-center" 
-                                                type="button" 
-                                                data-bs-toggle="collapse" 
-                                                data-bs-target="#collapse<?= $idx ?>" 
-                                                aria-expanded="<?= $is_open ? 'true' : 'false' ?>" 
-                                                aria-controls="collapse<?= $idx ?>"
-                                            >
-                                                <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle flex-shrink-0" style="font-size: 11px; padding: 0.25rem 0.65rem;">
-                                                    Q<?= $q_num ?>
-                                                </span>
-                                                <span class="fw-bold text-ink fs-6 text-start flex-grow-1">
-                                                    <?= htmlspecialchars($item['q']) ?>
-                                                </span>
-                                            </button>
-                                        </h2>
-                                        <div 
-                                            id="collapse<?= $idx ?>" 
-                                            class="accordion-collapse collapse <?= $is_open ? 'show' : '' ?>" 
-                                            aria-labelledby="heading<?= $idx ?>" 
-                                            data-bs-parent="#faqAccordion"
+                        <div class="accordion accordion-flush mb-5" id="faqAccordion">
+                            <?php foreach ($faqs as $idx => $item): 
+                                $is_open = ($idx === $open_index);
+                                $q_num = $idx + 1;
+                                $faq_id = $item['id'] ?? ('faq-' . $q_num);
+                            ?>
+                                <div class="faq-item-card mb-3 <?= $is_open ? 'is-active-item' : '' ?>" id="faq-<?= $q_num ?>" style="scroll-margin-top: 100px;">
+                                    <?php if (!empty($item['id'])): ?>
+                                        <span id="<?= htmlspecialchars($item['id']) ?>" style="display: block; position: relative; top: -100px; visibility: hidden;"></span>
+                                    <?php endif; ?>
+                                    <h2 class="accordion-header m-0" id="heading<?= $idx ?>">
+                                        <button 
+                                            class="faq-accordion-btn <?= $is_open ? '' : 'collapsed' ?>" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse<?= $idx ?>" 
+                                            aria-expanded="<?= $is_open ? 'true' : 'false' ?>" 
+                                            aria-controls="collapse<?= $idx ?>"
                                         >
-                                            <div class="accordion-body px-4 py-3 text-muted-custom bg-surface rounded-3 mt-1 border border-line">
-                                                <?php if (!empty($item['category'])): ?>
-                                                    <div class="mb-2">
-                                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-dark-subtle text-dark-emphasis border-dark-subtle small" style="font-size: 11px;">
-                                                            <i class="bi bi-tag-fill me-1 text-accent"></i> <?= htmlspecialchars($item['category']) ?>
-                                                        </span>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <p class="mb-0 fs-6 lh-base text-ink">
-                                                    <?= $item['a'] ?>
-                                                </p>
-                                            </div>
+                                            <span class="faq-q-pill">
+                                                Q<?= $q_num ?>
+                                            </span>
+                                            <span class="faq-q-title">
+                                                <?= htmlspecialchars($item['q']) ?>
+                                            </span>
+                                            <span class="faq-toggle-icon-wrap">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </span>
+                                        </button>
+                                    </h2>
+                                    <div 
+                                        id="collapse<?= $idx ?>" 
+                                        class="accordion-collapse collapse <?= $is_open ? 'show' : '' ?>" 
+                                        aria-labelledby="heading<?= $idx ?>" 
+                                        data-bs-parent="#faqAccordion"
+                                    >
+                                        <div class="faq-answer-body">
+                                            <p class="mb-0">
+                                                <?= $item['a'] ?>
+                                            </p>
                                         </div>
                                     </div>
-                                <?php endforeach; ?>
-                            </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
 
-                        <!-- Bottom Help CTA -->
-                        <div class="card-paper bg-cream p-4 text-center">
-                            <h3 class="card-paper-title mb-2">Still Have Questions?</h3>
-                            <p class="text-muted-custom small mb-4">
+                        <!-- Bottom Help CTA (Simple, Clean Card) -->
+                        <div class="faq-help-card">
+                            <div class="faq-help-icon-box">
+                                <i class="bi bi-question-circle"></i>
+                            </div>
+                            <h3 class="h4 fw-bold text-ink mb-2">Still Have Unanswered Questions?</h3>
+                            <p class="text-muted-custom small col-lg-8 mx-auto mb-4">
                                 Reach out to the Student Affairs &amp; Career Services Office or connect with our student development team.
                             </p>
                             <div class="d-flex flex-wrap justify-content-center gap-3">
-                                <a href="student/jobs.php" class="btn-pill">
-                                    <i class="bi bi-search"></i> Explore Campus Vacancies
+                                <a href="student/jobs.php" class="btn-accent-pill">
+                                    <i class="bi bi-search"></i> EXPLORE VACANCIES
                                 </a>
-                                <a href="about-us.php" class="btn-pill-outline">
-                                    <i class="bi bi-people"></i> Meet The Developers
+                                <a href="about-us.php" class="btn-outline-pill">
+                                    MEET THE TEAM <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
                                 </a>
                             </div>
                         </div>
