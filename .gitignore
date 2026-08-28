@@ -25,7 +25,11 @@ package-lock.json
 
 # Agent & Swarm Artifacts
 .agents/
+.agent/
+.codex/
+.claude/
 .gemini/
+.impeccable/
 PROJECT.md
 QA_TEST_REPORT.md
 

@@ -79,8 +79,8 @@ require_once __DIR__ . '/includes/header.php';
 
                             <!-- Right: Scroll Down Indicator -->
                             <div class="col-lg-3 col-md-3 text-start text-md-end">
-                                <a href="#search-widget" class="text-decoration-none d-inline-flex align-items-center gap-2 text-ink fw-bold small">
-                                    <span class="eyebrow-badge">SCROLL DOWN</span>
+                                <a href="#categories" class="text-decoration-none d-inline-flex align-items-center gap-2 text-ink fw-bold small">
+                                    <span class="eyebrow-badge">EXPLORE CATEGORIES</span>
                                     <span class="btn-circle-icon" style="width: 34px; height: 34px;">
                                         <i class="bi bi-arrow-down"></i>
                                     </span>
@@ -92,122 +92,39 @@ require_once __DIR__ . '/includes/header.php';
             </section>
 
             <!-- ============================================================
-                 SECTION 2: SEARCH WIDGET (#search-widget, bg --cream + faint blobs)
+                 SECTION 2: JOB CATEGORIES GRID (#categories, bg --cream)
                  ============================================================ -->
-            <section id="search-widget" class="py-5 py-lg-6 bg-cream search-widget-section border-top border-line reveal-fade-rise">
-                <!-- Faint Background Blobs -->
-                <div class="search-blob search-blob-1"></div>
-                <div class="search-blob search-blob-2"></div>
+            <section id="categories" class="py-5 py-lg-6 bg-cream border-top border-line reveal-fade-rise">
+                <div class="container-fluid px-lg-5">
+                    <div class="text-center mb-5">
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-white text-dark mb-2">
+                            <i class="bi bi-grid-fill text-accent"></i> Campus Disciplines
+                        </span>
+                        <h2 class="h1 fw-extrabold text-ink mb-2">Where Do You Want To Work?</h2>
+                        <p class="text-muted-custom col-lg-6 mx-auto">
+                            Explore dynamic student assistantship roles and verified part-time openings distributed across campus divisions.
+                        </p>
+                    </div>
 
-                <div class="container-fluid px-lg-5 position-relative z-2">
-                    <div class="search-card">
-                        <!-- Card Header -->
-                        <div class="text-center mb-4">
-                            <h2 class="h3 fw-extrabold text-ink mb-1">Find Student Assistantships &amp; Verified Jobs</h2>
-                            <p class="text-muted-custom small mb-3">Browse opportunities from campus offices, academic laboratories, and approved industry partners</p>
-
-                            <!-- Pay Type Toggle Switch -->
-                            <div class="pay-toggle-wrapper">
-                                <span id="pay-hourly-label" class="pay-toggle-label text-accent">Hourly Pay</span>
-                                <div class="form-check form-switch m-0 p-0 d-inline-flex align-items-center">
-                                    <input class="form-check-input ms-0" type="checkbox" role="switch" id="pay-type-toggle" aria-label="Toggle Pay Type">
-                                </div>
-                                <span id="pay-stipend-label" class="pay-toggle-label">Monthly Stipend</span>
-                            </div>
-                        </div>
-
-                        <!-- Search Form (Native GET) -->
-                        <form action="student/jobs.php" method="GET">
-                            <!-- Hidden input synced with pay toggle switch -->
-                            <input type="hidden" name="pay_type" id="pay-type-hidden" value="Hourly">
-
-                            <!-- Keyword & Employer Inputs -->
-                            <div class="row g-2 mb-3">
-                                <div class="col-md-6">
-                                    <label for="search-keyword" class="form-label small fw-bold text-ink mb-1">Keyword Search</label>
-                                    <div class="search-input-wrap">
-                                        <i class="bi bi-search text-muted-custom"></i>
-                                        <input type="text" id="search-keyword" name="q" class="form-control bg-surface border-line" placeholder="Role title, skill, or department…">
+                    <div class="row g-4">
+                        <?php foreach ($categories as $idx => $cat): ?>
+                            <div class="col-6 col-lg-2">
+                                <a href="student/jobs.php?category=<?= htmlspecialchars($cat['id']) ?>" class="category-mini-card">
+                                    <div class="category-mini-arrow">
+                                        <i class="bi bi-arrow-up-right"></i>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="search-dept" class="form-label small fw-bold text-ink mb-1">Employer / Organization</label>
-                                    <div class="search-input-wrap">
-                                        <i class="bi bi-building text-muted-custom"></i>
-                                        <select id="search-dept" name="dept" class="form-select bg-surface border-line">
-                                            <option value="">All Employers (Offices & Partners)</option>
-                                            <optgroup label="University Offices">
-                                                <option value="Management Information Systems (MIS)">Management Information Systems (MIS)</option>
-                                                <option value="Office of the University Registrar">Office of the University Registrar</option>
-                                                <option value="University Library Services">University Library Services</option>
-                                                <option value="Institute of Science and Mathematics (ISM)">Institute of Science and Mathematics (ISM)</option>
-                                                <option value="College of Science & Laboratories">College of Science & Laboratories</option>
-                                            </optgroup>
-                                            <optgroup label="Approved External Partners">
-                                                <option value="TechVanguard Solutions Inc.">TechVanguard Solutions (IT Partner)</option>
-                                                <option value="Dasma Creative Media Studio">Dasma Creative Media (Multimedia)</option>
-                                                <option value="Campus Cafe & Co.">Campus Cafe & Co. (Concessionaire)</option>
-                                            </optgroup>
-                                        </select>
+                                    <div class="category-mini-icon-circle">
+                                        <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Multi-Select Opportunity Types -->
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold text-ink mb-2 d-block">Opportunity Type</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Student Assistant" id="chip-sa">
-                                        <label for="chip-sa" class="search-chip-label"><i class="bi bi-mortarboard"></i> Student Assistant (SA)</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Part-Time Job" id="chip-pt">
-                                        <label for="chip-pt" class="search-chip-label"><i class="bi bi-clock"></i> Part-Time Job</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Internship / OJT" id="chip-ojt">
-                                        <label for="chip-ojt" class="search-chip-label"><i class="bi bi-briefcase"></i> Internship / OJT</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" class="search-chip-input" name="job_type[]" value="Peer Tutor" id="chip-tutor">
-                                        <label for="chip-tutor" class="search-chip-label"><i class="bi bi-person-video3"></i> Peer Tutor</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Employer Type Radio Selection -->
-                            <div class="row g-2 mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-ink mb-1">Employer Classification</label>
-                                    <select name="employer_type" class="form-select bg-surface border-line">
-                                        <option value="">All Verified Classifications</option>
-                                        <option value="university_office">University Academic / Admin Offices Only</option>
-                                        <option value="approved_partner">Approved Industry / Campus Partners Only</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-ink mb-1">Workplace Arrangement</label>
-                                    <select name="work_setup" class="form-select bg-surface border-line">
-                                        <option value="">Any Work Setup</option>
-                                        <option value="On-Campus">On-Campus (University Buildings)</option>
-                                        <option value="Near-Campus">Near-Campus (Partner Offices)</option>
-                                        <option value="Hybrid">Hybrid (Campus + Remote)</option>
-                                        <option value="Remote">Remote / Online</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Form Action Buttons -->
-                            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between pt-2">
-                                <button type="submit" class="btn-accent-pill flex-grow-1">
-                                    <i class="bi bi-arrow-right-circle"></i> SEARCH OPPORTUNITIES
-                                </button>
-                                <a href="student/jobs.php" class="btn-soft-pill text-center">
-                                    BROWSE ALL JOBS
+                                    <h3 class="h6 fw-bold text-ink mb-1 text-center" style="font-size: 0.875rem;">
+                                        <?= htmlspecialchars($cat['name']) ?>
+                                    </h3>
+                                    <span class="text-muted-custom small mt-auto">
+                                        <?= (int)($cat['job_count'] ?? 0) ?> Openings
+                                    </span>
                                 </a>
                             </div>
-                        </form>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </section>
@@ -215,7 +132,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 3: HOW IT WORKS & ACCREDITATION PROCESS (bg --surface)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+            <section id="how-it-works" class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="text-center mb-5">
                         <h2 class="h1 fw-extrabold text-ink mb-2">How Approved Employers &amp; Offices Deploy Vacancies</h2>
@@ -290,41 +207,6 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============================================================
-                 SECTION 3: JOB CATEGORIES GRID (bg --surface)
-                 ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
-                <div class="container-fluid px-lg-5">
-                    <div class="text-center mb-5">
-                        <h2 class="h1 fw-extrabold text-ink mb-2">Where Do You Want To Work?</h2>
-                        <p class="text-muted-custom col-lg-6 mx-auto">
-                            Explore dynamic student assistantship roles distributed across specialized campus divisions.
-                        </p>
-                    </div>
-
-                    <div class="row g-4">
-                        <?php foreach ($categories as $idx => $cat): ?>
-                            <div class="col-6 col-lg-2">
-                                <a href="student/jobs.php?category=<?= htmlspecialchars($cat['id']) ?>" class="category-mini-card">
-                                    <div class="category-mini-arrow">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </div>
-                                    <div class="category-mini-icon-circle">
-                                        <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
-                                    </div>
-                                    <h3 class="h6 fw-bold text-ink mb-1 text-center" style="font-size: 0.875rem;">
-                                        <?= htmlspecialchars($cat['name']) ?>
-                                    </h3>
-                                    <span class="text-muted-custom small mt-auto">
-                                        <?= (int)($cat['job_count'] ?? 0) ?> Openings
-                                    </span>
-                                </a>
-                            </div>
-                        <?php endforeach; ?>
                     </div>
                 </div>
             </section>
@@ -609,18 +491,24 @@ require_once __DIR__ . '/includes/header.php';
             <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="cta-section-wrap">
-                        <!-- Floating Circular Campus Photos (64–280px) -->
-                        <div class="floating-photo-circle photo-pos-1">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" alt="Campus Student">
+                        <!-- Floating Circular Developer Photos -->
+                        <div class="floating-photo-circle photo-pos-1" title="Alwinson Bustamante - Lead System Architect">
+                            <img src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg" alt="Alwinson Bustamante">
                         </div>
-                        <div class="floating-photo-circle photo-pos-2">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt="Campus Assistant">
+                        <div class="floating-photo-circle photo-pos-2" title="Nico Baco - Public Suite & Compliance Specialist">
+                            <img src="<?= $base_url ?>assets/img/developers/BACO.jpg" alt="Nico Baco">
                         </div>
-                        <div class="floating-photo-circle photo-pos-3">
-                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop" alt="Student Researcher">
+                        <div class="floating-photo-circle photo-pos-3" title="Julius Robert Cruzpe - Authentication & Client Validation Engineer">
+                            <img src="<?= $base_url ?>assets/img/developers/CRUZPE.jpg" alt="Julius Robert Cruzpe">
                         </div>
-                        <div class="floating-photo-circle photo-pos-4">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" alt="Peer Tutor">
+                        <div class="floating-photo-circle photo-pos-4" title="Andrei Von Breydan Layco - Student Portal & Application Flow Engineer">
+                            <img src="<?= $base_url ?>assets/img/developers/LAYCO.jpg" alt="Andrei Von Breydan Layco">
+                        </div>
+                        <div class="floating-photo-circle photo-pos-5" title="Joeven Salognon - Department & Hiring Workflow Engineer">
+                            <img src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg" alt="Joeven Salognon">
+                        </div>
+                        <div class="floating-photo-circle photo-pos-6" title="Marl Jordan Jurado - System Administration & QA Lead">
+                            <img src="<?= $base_url ?>assets/img/developers/JURADO.jpg" alt="Marl Jordan Jurado">
                         </div>
 
                         <div class="position-relative z-2 max-w-640 mx-auto" style="max-width: 620px;">

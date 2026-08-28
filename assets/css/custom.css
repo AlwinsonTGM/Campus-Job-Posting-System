@@ -940,10 +940,18 @@ h1, h2, h3, h4, h5, h6,
   object-fit: cover;
 }
 
-.photo-pos-1 { width: 140px; height: 140px; top: 12%; left: 6%; }
-.photo-pos-2 { width: 90px;  height: 90px;  bottom: 14%; left: 10%; }
-.photo-pos-3 { width: 160px; height: 160px; top: 10%; right: 6%; }
-.photo-pos-4 { width: 110px; height: 110px; bottom: 12%; right: 12%; }
+.photo-pos-1 { width: 120px; height: 120px; top: 8%; left: 4%; }
+.photo-pos-2 { width: 88px;  height: 88px;  top: 45%; left: 12%; }
+.photo-pos-3 { width: 105px; height: 105px; bottom: 8%; left: 4%; }
+.photo-pos-4 { width: 120px; height: 120px; top: 8%; right: 4%; }
+.photo-pos-5 { width: 88px;  height: 88px;  top: 45%; right: 12%; }
+.photo-pos-6 { width: 105px; height: 105px; bottom: 8%; right: 4%; }
+
+@media (max-width: 1199.98px) {
+  .photo-pos-2, .photo-pos-5 {
+    display: none;
+  }
+}
 
 @media (max-width: 991.98px) {
   .floating-photo-circle {
