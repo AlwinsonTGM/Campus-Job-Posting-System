@@ -33,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($title) || empty($description)) {
         $error = 'Please provide the vacancy title and detailed description.';
     } else {
+        $photo_file = $_FILES['job_photo'] ?? null;
+
         $new_id = create_job([
             'title' => $title,
             'category' => $category,
@@ -50,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'responsibilities' => array_filter(array_map('trim', explode("\n", $responsibilities))),
             'qualifications' => array_filter(array_map('trim', explode("\n", $qualifications))),
             'tags' => array_filter(array_map('trim', explode(',', $tags)))
-        ]);
+        ], $photo_file);
 
         set_flash('success', "Vacancy '{$title}' ({$job_type}) has been published successfully!");
         header('Location: dashboard.php');
@@ -93,12 +95,12 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 <?php endif; ?>
 
-                <form action="create-job.php" method="POST" class="form-paper">
+                <form action="create-job.php" method="POST" enctype="multipart/form-data" class="form-paper">
                     <div class="row g-4 mb-5">
                         
                         <!-- Left 8-col: Role Overview & Responsibilities -->
                         <div class="col-lg-8">
-                            <div class="card-paper p-4 p-md-4">
+                            <div class="card-paper p-4 p-md-4 mb-4">
                                 <h3 class="card-paper-title fs-5 mb-4 pb-2 border-bottom border-line">
                                     <i class="bi bi-card-text text-accent me-2"></i> 1. Vacancy Information
                                 </h3>
@@ -152,13 +154,44 @@ require_once __DIR__ . '/../includes/header.php';
                                     <textarea name="qualifications" id="job-qual" rows="3" class="form-control" placeholder="Currently enrolled student in good academic standing&#10;GWA of 2.25 or better&#10;Proficiency with basic spreadsheet and office software"></textarea>
                                 </div>
                             </div>
+
+                            <!-- Photo / Hiring Banner (Optional -> Qualifies for Featured) -->
+                            <div class="card-paper p-4 p-md-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-line">
+                                    <h3 class="card-paper-title fs-5 mb-0">
+                                        <i class="bi bi-image text-accent me-2"></i> 2. Hiring Flyer / Office Banner <span class="badge bg-secondary-subtle text-secondary small fw-normal ms-2">Optional</span>
+                                    </h3>
+                                </div>
+                                
+                                <div class="p-3 mb-3 rounded border" style="background-color: var(--surface); border-style: dashed !important; border-color: var(--line) !important;">
+                                    <div class="d-flex gap-3 align-items-start">
+                                        <div class="p-2 rounded bg-accent-subtle text-accent fs-4 flex-shrink-0">
+                                            <i class="bi bi-stars"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-ink small mb-1">Qualify for Featured Homepage Spotlight</div>
+                                            <p class="text-muted-custom small mb-0" style="font-size: 13px;">
+                                                Uploading a hiring flyer or office photo is optional. Postings with an uploaded photo are <strong>automatically showcased in the "Featured Campus &amp; Partner Opportunities" carousel</strong> on the homepage!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="form-label" for="job-photo">Upload Poster / Photo (JPG, PNG, WebP · Max 10MB)</label>
+                                    <input type="file" name="job_photo" id="job-photo" class="form-control" accept="image/jpeg,image/png,image/webp">
+                                    <div class="form-text text-muted-custom small mt-1">
+                                        <i class="bi bi-info-circle me-1"></i> Recommended 16:9 or 4:3 landscape ratio (e.g. 1200×675px).
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Right 4-col: Scheduling & Compensation Sidebar -->
                         <div class="col-lg-4">
                             <div class="card-paper p-4 position-sticky" style="top: 90px;">
                                 <h3 class="card-paper-title fs-5 mb-4 pb-2 border-bottom border-line">
-                                    <i class="bi bi-sliders text-accent me-2"></i> 2. Terms & Quota
+                                    <i class="bi bi-sliders text-accent me-2"></i> 3. Terms &amp; Quota
                                 </h3>
 
                                 <div class="mb-3">

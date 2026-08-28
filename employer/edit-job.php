@@ -46,6 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($title) || empty($description)) {
         $error = 'Please provide the vacancy title and detailed description.';
     } else {
+        $photo_file = $_FILES['job_photo'] ?? null;
+        $remove_photo = !empty($_POST['remove_photo']);
+
         update_job($job['id'], [
             'title' => $title,
             'category' => $category,
@@ -58,9 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'deadline' => $deadline,
             'status' => $status,
             'description' => $description,
+            'remove_photo' => $remove_photo,
             'responsibilities' => !empty($responsibilities) ? array_filter(array_map('trim', explode("\n", $responsibilities))) : ($job['responsibilities'] ?? []),
             'qualifications' => !empty($qualifications) ? array_filter(array_map('trim', explode("\n", $qualifications))) : ($job['qualifications'] ?? [])
-        ]);
+        ], $photo_file);
 
         set_flash('success', "Vacancy '{$title}' has been updated successfully.");
         header('Location: dashboard.php');
@@ -106,12 +110,12 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 <?php endif; ?>
 
-                <form action="edit-job.php?id=<?= $job['id'] ?>" method="POST" class="form-paper">
+                <form action="edit-job.php?id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data" class="form-paper">
                     <div class="row g-4 mb-5">
                         
                         <!-- Left 8-col: Role Overview & Responsibilities -->
                         <div class="col-lg-8">
-                            <div class="card-paper p-4 p-md-4">
+                            <div class="card-paper p-4 p-md-4 mb-4">
                                 <h3 class="card-paper-title fs-5 mb-4 pb-2 border-bottom border-line">
                                     <i class="bi bi-card-text text-accent me-2"></i> 1. Vacancy Information
                                 </h3>
@@ -171,13 +175,66 @@ require_once __DIR__ . '/../includes/header.php';
                                     <textarea name="qualifications" id="edit-qual" rows="3" class="form-control"><?= htmlspecialchars($qual_str) ?></textarea>
                                 </div>
                             </div>
+
+                            <!-- Photo / Hiring Banner (Optional -> Qualifies for Featured) -->
+                            <div class="card-paper p-4 p-md-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-line">
+                                    <h3 class="card-paper-title fs-5 mb-0">
+                                        <i class="bi bi-image text-accent me-2"></i> 2. Hiring Flyer / Office Banner <span class="badge bg-secondary-subtle text-secondary small fw-normal ms-2">Optional</span>
+                                    </h3>
+                                </div>
+                                
+                                <div class="p-3 mb-3 rounded border" style="background-color: var(--surface); border-style: dashed !important; border-color: var(--line) !important;">
+                                    <div class="d-flex gap-3 align-items-start">
+                                        <div class="p-2 rounded bg-accent-subtle text-accent fs-4 flex-shrink-0">
+                                            <i class="bi bi-stars"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-ink small mb-1">Featured Homepage Spotlight Status</div>
+                                            <p class="text-muted-custom small mb-0" style="font-size: 13px;">
+                                                Postings with an attached flyer or photo are <strong>automatically showcased in the "Featured Campus &amp; Partner Opportunities" carousel</strong> on the landing page!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php if (!empty($job['image'])): ?>
+                                    <div class="mb-3 p-3 border rounded bg-surface">
+                                        <label class="form-label d-block fw-bold small text-ink mb-2">Current Flyer / Photo</label>
+                                        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
+                                            <div style="width: 140px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); flex-shrink: 0;">
+                                                <img src="<?= (str_starts_with($job['image'], 'http') || str_starts_with($job['image'], '/')) ? htmlspecialchars($job['image']) : '../' . htmlspecialchars($job['image']) ?>" alt="Current Banner" style="width: 100%; height: 100%; object-fit: cover;">
+                                            </div>
+                                            <div>
+                                                <div class="badge bg-success-subtle text-success border border-success-subtle mb-2">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Featured on Homepage
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="remove_photo" id="remove-photo" value="1">
+                                                    <label class="form-check-label small text-danger fw-semibold" for="remove-photo">
+                                                        Remove photo (demotes from Featured status)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div>
+                                    <label class="form-label" for="job-photo"><?= !empty($job['image']) ? 'Replace Photo / Flyer (JPG, PNG, WebP · Max 10MB)' : 'Upload Poster / Photo (JPG, PNG, WebP · Max 10MB)' ?></label>
+                                    <input type="file" name="job_photo" id="job-photo" class="form-control" accept="image/jpeg,image/png,image/webp">
+                                    <div class="form-text text-muted-custom small mt-1">
+                                        <i class="bi bi-info-circle me-1"></i> Recommended 16:9 or 4:3 landscape ratio (e.g. 1200×675px).
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Right 4-col: Scheduling & Status Controls Sidebar -->
                         <div class="col-lg-4">
                             <div class="card-paper p-4 position-sticky" style="top: 90px;">
                                 <h3 class="card-paper-title fs-5 mb-4 pb-2 border-bottom border-line">
-                                    <i class="bi bi-sliders text-accent me-2"></i> 2. Terms & Controls
+                                    <i class="bi bi-sliders text-accent me-2"></i> 3. Terms &amp; Controls
                                 </h3>
 
                                 <div class="mb-3">

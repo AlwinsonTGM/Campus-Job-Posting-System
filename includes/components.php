@@ -179,6 +179,11 @@ if (!function_exists('render_job_card')) {
                         </span>
                     <?php endif; ?>
                 </div>
+                <?php if (!empty($job['image']) || !empty($job['is_featured'])): ?>
+                    <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border" style="background-color: var(--surface); color: var(--ink); border-color: var(--line) !important; font-size: 11px; font-weight: 600; padding: 4px 8px;">
+                        <i class="bi bi-stars text-accent"></i> Featured
+                    </span>
+                <?php endif; ?>
             </div>
 
             <!-- 2. Job Title and Employer Info -->

@@ -465,6 +465,39 @@ function save_uploaded_resume($file) {
     return null;
 }
 
+// Helper to handle job requisition banner / flyer photo uploads
+function save_uploaded_job_photo($file) {
+    if (!isset($file) || !is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    
+    $job_dir = dirname(__DIR__) . '/uploads/jobs';
+    if (!is_dir($job_dir)) {
+        @mkdir($job_dir, 0777, true);
+    }
+
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'webp'];
+    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($file_ext, $allowed_extensions)) {
+        return null;
+    }
+
+    // Limit file size to 10MB
+    if (($file['size'] ?? 0) > 10 * 1024 * 1024) {
+        return null;
+    }
+
+    $safe_name = 'job_' . time() . '_' . substr(md5(uniqid((string)rand(), true)), 0, 8) . '.' . $file_ext;
+    $target_path = $job_dir . '/' . $safe_name;
+
+    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+        return 'uploads/jobs/' . $safe_name;
+    }
+
+    return null;
+}
+
 function update_employer_verification($id, $status, $notes = '') {
     $users = $_SESSION['users'] ?? load_json_file('users.json');
     foreach ($users as $key => $u) {
@@ -843,7 +876,7 @@ function get_job_by_id($id) {
     return null;
 }
 
-function create_job($data) {
+function create_job($data, $photo_file = null) {
     $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
     $new_id = count($jobs) > 0 ? max(array_column($jobs, 'id')) + 1 : 1;
     
@@ -852,6 +885,17 @@ function create_job($data) {
     $org_name = $user['organization_name'] ?? ($user['department'] ?? ($data['department'] ?? 'Campus Department'));
     $work_setup = $data['work_setup'] ?? 'On-Campus';
     $job_type = $data['job_type'] ?? 'Student Assistant';
+
+    // Handle optional photo upload
+    $image_path = null;
+    if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+        $image_path = save_uploaded_job_photo($photo_file);
+    }
+    if (empty($image_path) && !empty($data['image'])) {
+        $image_path = $data['image'];
+    }
+
+    $is_featured = !empty($image_path);
 
     $new_job = [
         'id' => $new_id,
@@ -875,7 +919,8 @@ function create_job($data) {
         'slots_filled' => 0,
         'deadline' => $data['deadline'] ?? date('Y-m-d', strtotime('+30 days')),
         'status' => 'active',
-        'image' => 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=900&auto=format&fit=crop',
+        'image' => $image_path,
+        'is_featured' => $is_featured,
         'created_at' => date('Y-m-d'),
         'tags' => !empty($data['tags']) ? (is_array($data['tags']) ? $data['tags'] : explode(',', $data['tags'])) : [$job_type, $work_setup, $employer_type === 'university_office' ? 'University Office' : 'Approved Partner'],
         'badges' => [$job_type, $work_setup],
@@ -890,7 +935,7 @@ function create_job($data) {
     return $new_id;
 }
 
-function update_job($id, $data) {
+function update_job($id, $data, $photo_file = null) {
     $jobs = $_SESSION['jobs'] ?? load_json_file('jobs.json');
     foreach ($jobs as $key => $j) {
         if ($j['id'] == $id) {
@@ -906,6 +951,27 @@ function update_job($id, $data) {
             $jobs[$key]['deadline'] = $data['deadline'] ?? $j['deadline'];
             $jobs[$key]['status'] = $data['status'] ?? $j['status'];
             $jobs[$key]['description'] = htmlspecialchars($data['description'] ?? $j['description']);
+
+            // Photo management
+            if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $new_image = save_uploaded_job_photo($photo_file);
+                if ($new_image) {
+                    $jobs[$key]['image'] = $new_image;
+                }
+            } elseif (!empty($data['remove_photo'])) {
+                $jobs[$key]['image'] = null;
+            } elseif (isset($data['image'])) {
+                $jobs[$key]['image'] = $data['image'];
+            }
+
+            $jobs[$key]['is_featured'] = !empty($jobs[$key]['image']);
+
+            if (isset($data['responsibilities'])) {
+                $jobs[$key]['responsibilities'] = is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", $data['responsibilities'])));
+            }
+            if (isset($data['qualifications'])) {
+                $jobs[$key]['qualifications'] = is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", $data['qualifications'])));
+            }
             
             $_SESSION['jobs'] = $jobs;
             save_json_file('jobs.json', $jobs);

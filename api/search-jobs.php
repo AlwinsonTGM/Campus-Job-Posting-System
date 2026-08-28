@@ -56,6 +56,7 @@ foreach ($results_slice as $job) {
         'location' => $job['location'] ?? 'Campus',
         'deadline' => $job['deadline'] ?? 'Open',
         'image' => $job['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=600&auto=format&fit=crop',
+        'is_featured' => !empty($job['image']) || !empty($job['is_featured']),
         'badges' => $job['badges'] ?? [$job['job_type'] ?? 'Student Assistant', $job['work_setup'] ?? 'On-Campus']
     ];
 }
