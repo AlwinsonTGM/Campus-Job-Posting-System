@@ -1,0 +1,134 @@
+[
+  {
+    "id": "sprint-06",
+    "sprint_number": "06",
+    "sprint_badge": "SPRINT 06 · SYSTEM QA & ADMIN",
+    "title": "Hardening Platform Reliability: Administrative Governance & Print-Ready Analytics",
+    "date": "August 28, 2026",
+    "read_time": "5 min read",
+    "author_name": "Marl Jordan Jurado",
+    "author_role": "System Administration & QA Lead",
+    "author_image": "assets/img/developers/JURADO.jpg",
+    "summary_excerpt": "Orchestrated end-to-end platform validation across cross-browser environments, engineered administrative category governance, and integrated native paper-styled printable report engines.",
+    "tags": ["Admin Controls", "QA Testing", "Print Engine", "User Audit"],
+    "cover_image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>As the project neared its final deployment milestone, our primary objective was ensuring every administrative control, data audit stream, and client-facing screen functioned flawlessly without regressions.</p><p>Sprint 06 focused on building the centralized <strong>System Administration Portal</strong>, where campus coordinators can manage job categories, monitor platform usage metrics, and audit active user profiles across Student, Employer, and Staff roles.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-printer-fill text-accent me-2'></i>Institutional Print-Ready Analytics</h5><p>A critical requirement of the academic midterm specification was generating formal, printable administrative summaries. Rather than relying on heavy external PDF libraries, we developed a native, CSS3 print stylesheet architecture that formats job posting metrics, department partnership tallies, and applicant logs into formal institutional paper reports with official KLD headers and compliance footers.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-check-all text-accent me-2'></i>Cross-Browser QA & Boundary Hardening</h5><p>We conducted extensive functional and responsive regression testing across Chromium, Gecko, and WebKit browsers. Edge cases such as session expiration mid-application, invalid schedule slots, and JSON file concurrency safety were rigorously tested and resolved.</p>",
+    "key_takeaways": [
+      "Built centralized category and user management interfaces with real-time JSON sync.",
+      "Engineered clean print-formatted institutional reports without external runtime bloat.",
+      "Standardized error boundary handlers across all authenticated student and employer views.",
+      "Achieved 100% test scenario pass rate across mobile and desktop viewport profiles."
+    ],
+    "tech_stack": ["Native PHP 8", "Print CSS3 Media Queries", "Bootstrap 5.3 Modals", "JSON Datastore"]
+  },
+  {
+    "id": "sprint-05",
+    "sprint_number": "05",
+    "sprint_badge": "SPRINT 05 · HIRING PIPELINE",
+    "title": "Architecting the Department Hiring Pipeline & Candidate Evaluation Flow",
+    "date": "August 21, 2026",
+    "read_time": "6 min read",
+    "author_name": "Joeven Salognon",
+    "author_role": "Department & Hiring Workflow Engineer",
+    "author_image": "assets/img/developers/SOLOGNON.jpg",
+    "summary_excerpt": "Engineered the campus department recruitment portal, vacancy management workflows, candidate evaluation drawers, and automated interview scheduling state transitions.",
+    "tags": ["Employer Portal", "Hiring Pipeline", "Application Review", "Workflow Engine"],
+    "cover_image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>Campus offices and accredited industry partners required an intuitive, zero-friction interface to create vacancy listings, evaluate incoming student credentials, and move candidates through structured hiring stages.</p><p>During Sprint 05, we built the <strong>Employer & Campus Office Recruitment Suite</strong>. The core challenge was designing a hiring pipeline that respects academic schedules while keeping supervisors informed of student applicant qualifications at a glance.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-kanban-fill text-accent me-2'></i>Interactive Candidate Review Drawer</h5><p>We implemented a side evaluation drawer that allows recruiters to inspect student resumes, course year levels, verified institutional emails, and submitted statements of purpose without leaving the applicant queue. Recruiters can transition candidate statuses across <em>Pending</em>, <em>Under Review</em>, <em>Shortlisted</em>, <em>Interview Scheduled</em>, and <em>Hired</em> with instant state persistence.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-calendar-check-fill text-accent me-2'></i>Multi-Step Vacancy Creation & Slot Tracking</h5><p>The job posting wizard allows departments to set total vacancies, hourly stipend rates, duty locations, and required weekly time commitments. Automated progress bars visually display filled vs. open slots to prevent over-hiring.</p>",
+    "key_takeaways": [
+      "Engineered role-isolated employer dashboard with real-time candidate pipeline stats.",
+      "Developed side-drawer candidate inspector with instant status transition triggers.",
+      "Implemented slot progress tracking logic with automatic closing upon capacity fulfillment.",
+      "Designed clean notification alerts when applications transition between review stages."
+    ],
+    "tech_stack": ["Vanilla PHP State Handlers", "Bootstrap 5.3 Drawers", "CSS Progress Meters", "Session Persistence"]
+  },
+  {
+    "id": "sprint-04",
+    "sprint_number": "04",
+    "sprint_badge": "SPRINT 04 · STUDENT DISCOVERY",
+    "title": "Building Intuitive Student Discovery: Weekly Schedule Availability & Live Applications",
+    "date": "August 14, 2026",
+    "read_time": "5 min read",
+    "author_name": "Andrei Von Breydan Layco",
+    "author_role": "Student Portal & Application Flow Engineer",
+    "author_image": "assets/img/developers/LAYCO.jpg",
+    "summary_excerpt": "Designed the student job exploration catalog with multi-criteria filtering, weekly schedule availability time grid matching, and frictionless application submission modals.",
+    "tags": ["Student Portal", "Schedule Grid", "Live Filters", "Application Modal"],
+    "cover_image": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>For working students, the biggest hurdle is finding assistantship positions that do not conflict with lectures, laboratories, or exam periods.</p><p>In Sprint 04, we concentrated on building the student-facing experience with a strong emphasis on <strong>Schedule Matching</strong> and <strong>Frictionless Application Flows</strong>.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-calendar-week-fill text-accent me-2'></i>Weekly Schedule Time Grid Matrix</h5><p>We engineered an interactive 6-day (Monday to Saturday) weekly schedule grid where students can visually configure their available time windows (Morning, Afternoon, Evening). This matrix allows candidates to attach their exact availability directly to job submissions, enabling campus supervisors to immediately assess shift compatibility.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-funnel-fill text-accent me-2'></i>Multi-Parameter Search & Status Tracking</h5><p>We created an accessible job search interface supporting real-time category filtering, stipend vs. hourly toggling, and work setup chips (On-Campus vs. Hybrid). Once applied, students can monitor the exact status of their application through an organized timeline tracker.</p>",
+    "key_takeaways": [
+      "Built interactive weekly availability time grid matrix for student profiles and job submissions.",
+      "Crafted multi-parameter search catalog with instant filter chips and pay toggles.",
+      "Engineered 'My Applications' tracker displaying live supervisor review stages.",
+      "Optimized mobile touch targets for effortless job exploration on smartphone viewports."
+    ],
+    "tech_stack": ["ES6 JavaScript Filters", "Bootstrap 5.3 Form Controls", "CSS Grid Matrix", "PHP JSON Helpers"]
+  },
+  {
+    "id": "sprint-03",
+    "sprint_number": "03",
+    "sprint_badge": "SPRINT 03 · AUTH & SECURITY",
+    "title": "Securing the Campus Gateway: Real-Time Password Entropy & Session Guard",
+    "date": "August 07, 2026",
+    "read_time": "6 min read",
+    "author_name": "Julius Robert Cruzpe",
+    "author_role": "Authentication & Client Validation Engineer",
+    "author_image": "assets/img/developers/CRUZPE.jpg",
+    "summary_excerpt": "Implemented multi-role authentication gates, client-side real-time password entropy scoring, password strength visualizers, and resilient session timeout validation.",
+    "tags": ["Auth Engine", "Password Entropy", "Client Security", "Session Guard"],
+    "cover_image": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>User trust begins at the authentication perimeter. With students, faculty supervisors, and administrative personnel sharing the platform, strict role segregation and client-side password hardening were paramount.</p><p>Sprint 03 delivered the unified <strong>Authentication & Client Validation Engine</strong>, providing secure sign-in, account registration with student ID verification, and password recovery workflows.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-shield-lock-fill text-accent me-2'></i>Real-Time Shannon Entropy Password Meter</h5><p>Rather than relying on generic regex rules alone, we wrote a standalone vanilla JavaScript password strength analyzer (<code class='bg-cream text-ink px-1 rounded'>password-strength.js</code>). The algorithm evaluates character set diversity, length thresholds, sequential character penalties, and entropy calculations to provide dynamic, color-coded visual feedback with real-time criteria checkmarks.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-fingerprint text-accent me-2'></i>Multi-Role Access Control (RBAC)</h5><p>We created strict session guard middlewares (<code class='bg-cream text-ink px-1 rounded'>auth-check.php</code>) ensuring users can only access endpoints authorized for their authenticated role, preventing privilege escalation and securing private data.</p>",
+    "key_takeaways": [
+      "Engineered standalone vanilla JS password entropy algorithm with zero external libraries.",
+      "Implemented dynamic 4-tier visual strength bar with animated checklist validations.",
+      "Enforced role-based access control (RBAC) across Student, Employer, and Admin routes.",
+      "Standardized input sanitization and form validation across all entry gateways."
+    ],
+    "tech_stack": ["Vanilla JavaScript ES6", "Password Entropy Algorithm", "PHP Session Handlers", "Custom CSS Glow Meters"]
+  },
+  {
+    "id": "sprint-02",
+    "sprint_number": "02",
+    "sprint_badge": "SPRINT 02 · UI & COMPLIANCE",
+    "title": "Crafting the Institutional Identity: Paper Sheet Aesthetic & RA 10173 Compliance",
+    "date": "July 31, 2026",
+    "read_time": "5 min read",
+    "author_name": "Nico Baco",
+    "author_role": "Public Suite & Legal Compliance Specialist",
+    "author_image": "assets/img/developers/BACO.jpg",
+    "summary_excerpt": "Designed the signature Paper Sheet 3D visual language, created the public landing page with interactive journey map, and drafted institutional RA 10173 Data Privacy policies.",
+    "tags": ["Design System", "Paper Sheet UI", "RA 10173 Privacy", "Landing Experience"],
+    "cover_image": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>The KLD Campus Job Posting System needed a memorable, refined, and tactile identity that felt like handling physical institutional paperwork while maintaining ultra-modern digital usability.</p><p>Sprint 02 focused on defining the <strong>Paper Sheet Design System</strong>, implementing the interactive public landing page, and establishing full compliance with the <em>Philippine Data Privacy Act of 2012 (RA 10173)</em>.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-file-earmark-ruled-fill text-accent me-2'></i>Tactile Paper Sheet CSS Architecture</h5><p>We created a custom design token system featuring an ivory cream palette (<code class='bg-cream text-ink px-1 rounded'>--cream: #FBF9F4</code>), deep carbon ink typography (<code class='bg-cream text-ink px-1 rounded'>--ink: #161616</code>), and subtle perspective elevations. The landing page incorporates an interactive Accreditation Journey Trail (Section 3) with SVG connectors and official stamp hover effects.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-shield-check text-accent me-2'></i>Institutional Privacy & Legal Governance</h5><p>We authored dedicated Data Privacy and Terms of Service documents tailored to educational institutions, incorporating student data rights, consent checkboxes on registration, and clear guidelines on student assistant workplace ethics.</p>",
+    "key_takeaways": [
+      "Crafted full CSS design token architecture with tactile paper sheet elevation and ink contrast.",
+      "Built responsive public landing page featuring SVG journey tracks and interactive hero elements.",
+      "Drafted comprehensive RA 10173 Data Privacy Policy and institutional Terms of Service.",
+      "Engineered mobile-responsive navigation with offcanvas drawers and smooth reveal transitions."
+    ],
+    "tech_stack": ["CSS3 Custom Properties", "Bootstrap 5.3 Theme Tokens", "SVG Path Geometry", "Legal Governance"]
+  },
+  {
+    "id": "sprint-01",
+    "sprint_number": "01",
+    "sprint_badge": "SPRINT 01 · CORE ARCHITECTURE",
+    "title": "Blueprint to Reality: Designing the Zero-DB JSON Engine & Routing Architecture",
+    "date": "July 24, 2026",
+    "read_time": "6 min read",
+    "author_name": "Alwinson Bustamante",
+    "author_role": "Lead System Architect & Core Backend",
+    "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+    "summary_excerpt": "Engineered the foundational architecture blueprint, zero-database JSON persistence layer, dynamic session synchronization engine, and modular PHP template layout.",
+    "tags": ["System Architecture", "JSON Engine", "Session Sync", "PHP 8 Backend"],
+    "cover_image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>Every robust web application begins with solid architectural foundations. Our project specification required complete data persistence without an external MySQL or PostgreSQL database, using only native PHP and structured JSON storage.</p><p>Sprint 01 laid the core technical foundation of the <strong>Campus Job Posting System</strong> by establishing the routing protocols, data access abstraction layer, and modular layout hierarchy.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-database-fill-gear text-accent me-2'></i>Zero-DB JSON Engine & Session Runtime Cache</h5><p>We designed <code class='bg-cream text-ink px-1 rounded'>includes/data-helper.php</code>, which reads and writes structured JSON datasets with atomic file locking and seamlessly synchronizes runtime states into <code class='bg-cream text-ink px-1 rounded'>$_SESSION</code>. This architecture provides near-instant response times, zero database setup overhead, and portable execution across any PHP 8 runtime.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-diagram-3-fill text-accent me-2'></i>Modular Template System</h5><p>We established a clean separation of concerns using reusable components (<code class='bg-cream text-ink px-1 rounded'>header.php</code>, <code class='bg-cream text-ink px-1 rounded'>navbar.php</code>, <code class='bg-cream text-ink px-1 rounded'>footer.php</code>, <code class='bg-cream text-ink px-1 rounded'>auth-check.php</code>), ensuring strict DRY (Don't Repeat Yourself) compliance and seamless maintenance across all 6 team member deliverables.</p>",
+    "key_takeaways": [
+      "Engineered atomic JSON data helper layer with session state synchronization.",
+      "Designed modular project directory structure and shared component templates.",
+      "Established comprehensive project blueprint and technical data schemas.",
+      "Configured session versioning engine to ensure clean data migration during feature updates."
+    ],
+    "tech_stack": ["Native PHP 8.x", "JSON Storage Engine", "Session Lifecycle Architecture", "RESTful Data Helpers"]
+  }
+]

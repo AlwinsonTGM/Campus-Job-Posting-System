@@ -72,6 +72,8 @@ $team_members = [
     ]
 ];
 
+$devblogs = get_devblogs();
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -141,6 +143,112 @@ require_once __DIR__ . '/includes/header.php';
                     <?php endforeach; ?>
                 </div>
 
+                <!-- ============================================================
+                     DEVBLOG & SPRINT CHRONICLES (3D Stage Coverflow Section)
+                     ============================================================ -->
+                <section class="devblog-section mb-5 py-4 reveal-fade-rise" id="devblog">
+                    <div class="text-center mb-4">
+                        <span class="eyebrow-badge mb-2 d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-journal-code text-accent"></i> SPRINT CHRONICLES
+                        </span>
+                        <h2 class="h1 fw-extrabold text-ink mb-2">Behind the Code: Engineering DevBlog</h2>
+                        <p class="text-muted-custom col-lg-8 mx-auto">
+                            Explore our team's 6-sprint engineering journey—from foundational zero-DB architecture and security algorithms to live student schedule matching and administrative QA governance.
+                        </p>
+                    </div>
+
+                    <!-- 3D Stage Container with Flanking Left/Right Floating Arrows -->
+                    <div class="devblog-stage-container position-relative">
+                        <!-- Flanking Left Navigation Arrow (Newer / Latest) -->
+                        <button type="button" id="devblog-prev-btn" class="devblog-nav-arrow devblog-nav-left"
+                            aria-label="Previous Sprint" title="Newer Sprint" disabled>
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+
+                        <!-- Flanking Right Navigation Arrow (Older / Project Kickoff) -->
+                        <button type="button" id="devblog-next-btn" class="devblog-nav-arrow devblog-nav-right"
+                            aria-label="Next Sprint" title="Older Sprint">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+
+                        <!-- 3D Track Viewport -->
+                        <div class="devblog-track" id="devblog-track">
+                            <?php foreach ($devblogs as $idx => $blog):
+                                $stateClass = ($idx === 0) ? 'is-active' : (($idx === 1) ? 'is-next' : 'is-hidden is-hidden-right');
+                            ?>
+                                <article class="devblog-card <?= $stateClass ?>" data-index="<?= $idx ?>" data-id="<?= htmlspecialchars($blog['id']) ?>" tabindex="0" role="group" aria-label="DevBlog: <?= htmlspecialchars($blog['title']) ?>">
+                                    <div class="devblog-card-photo-wrap">
+                                        <img src="<?= htmlspecialchars($blog['cover_image']) ?>"
+                                            alt="<?= htmlspecialchars($blog['title']) ?>" loading="lazy">
+                                        <div class="devblog-card-badges">
+                                            <span class="badge-tag-overlay" style="background-color: var(--ink); color: #fff;">
+                                                <i class="bi bi-flag-fill text-accent me-1"></i><?= htmlspecialchars($blog['sprint_badge']) ?>
+                                            </span>
+                                            <span class="badge-tag-overlay">
+                                                <i class="bi bi-clock-history me-1"></i><?= htmlspecialchars($blog['read_time']) ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="devblog-card-body">
+                                        <div class="devblog-author-row mb-3">
+                                            <img src="<?= $base_url . $blog['author_image'] ?>" alt="<?= htmlspecialchars($blog['author_name']) ?>" class="devblog-author-img">
+                                            <div class="devblog-author-info">
+                                                <div class="devblog-author-name"><?= htmlspecialchars($blog['author_name']) ?></div>
+                                                <div class="devblog-author-role"><?= htmlspecialchars($blog['author_role']) ?></div>
+                                            </div>
+                                            <span class="devblog-date-pill ms-auto">
+                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars($blog['date']) ?>
+                                            </span>
+                                        </div>
+
+                                        <h3 class="devblog-card-title"><?= htmlspecialchars($blog['title']) ?></h3>
+
+                                        <p class="devblog-card-excerpt">
+                                            <?= htmlspecialchars($blog['summary_excerpt']) ?>
+                                        </p>
+
+                                        <div class="devblog-card-tags mb-3">
+                                            <?php foreach ($blog['tags'] as $tag): ?>
+                                                <span class="chip-tag"><?= htmlspecialchars($tag) ?></span>
+                                            <?php endforeach; ?>
+                                        </div>
+
+                                        <div class="devblog-card-footer mt-auto pt-3 border-top border-line">
+                                            <button type="button" class="btn-accent-pill w-100 justify-content-center py-2 devblog-read-trigger" data-blog-index="<?= $idx ?>">
+                                                <i class="bi bi-book-half me-1"></i> Read Full Sprint Story
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- Progress Step Indicators & Counter -->
+                    <div class="devblog-controls-strip d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mt-4 pt-3">
+                        <div class="small fw-semibold text-muted-custom">
+                            <i class="bi bi-layers-fill text-accent me-1"></i>
+                            Showing Sprint <strong id="devblog-counter-current" class="text-ink"><?= $devblogs[0]['sprint_number'] ?? '06' ?></strong> of <strong class="text-ink"><?= sprintf('%02d', count($devblogs)) ?></strong>
+                        </div>
+
+                        <div class="devblog-step-dots" id="devblog-step-dots" role="tablist" aria-label="DevBlog sprint navigation">
+                            <?php foreach ($devblogs as $idx => $blog): ?>
+                                <button type="button" class="devblog-dot <?= ($idx === 0) ? 'is-active' : '' ?>"
+                                    data-dot-index="<?= $idx ?>"
+                                    aria-label="Sprint <?= htmlspecialchars($blog['sprint_number']) ?>"
+                                    title="Sprint <?= htmlspecialchars($blog['sprint_number']) ?>: <?= htmlspecialchars($blog['author_name']) ?>"></button>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <div class="small text-muted-custom d-none d-md-block">
+                            <span class="badge bg-cream text-ink border border-line px-2 py-1">
+                                <i class="bi bi-keyboard me-1"></i> &larr; &rarr; Arrow Keys
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Mission & Vision and Tech Stack -->
                 <div class="row g-4 pt-2">
                     <!-- Project Mission & Vision -->
@@ -208,6 +316,85 @@ require_once __DIR__ . '/includes/header.php';
 
             </div>
         </main>
+
+        <!-- ============================================================
+             INTERACTIVE DEVBLOG READER MODAL
+             ============================================================ -->
+        <div class="modal fade" id="devblogModal" tabindex="-1" aria-labelledby="devblogModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content paper-modal-content border-0 shadow-lg">
+                    <div class="modal-header border-bottom border-line pb-3 bg-surface">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-ink text-white px-2 py-1 small fw-bold" id="devblog-modal-sprint-badge">
+                                SPRINT 06 · SYSTEM QA &amp; ADMIN
+                            </span>
+                            <span class="badge bg-cream text-muted-custom border border-line small" id="devblog-modal-readtime">
+                                5 min read
+                            </span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-4 bg-white" id="devblog-modal-body">
+                        <!-- Cover Banner -->
+                        <div class="devblog-modal-banner-wrap mb-4">
+                            <img src="" id="devblog-modal-banner" alt="Sprint Cover" class="w-100 rounded-3 object-fit-cover" style="max-height: 280px;">
+                        </div>
+
+                        <!-- Title -->
+                        <h2 class="h3 fw-extrabold text-ink mb-3" id="devblog-modal-title"></h2>
+
+                        <!-- Author Meta Bar -->
+                        <div class="devblog-author-row p-3 bg-cream rounded-3 border border-line mb-4">
+                            <img src="" id="devblog-modal-author-img" alt="Author" class="devblog-author-img" style="width: 46px; height: 46px;">
+                            <div class="devblog-author-info">
+                                <div class="fw-bold text-ink" id="devblog-modal-author-name"></div>
+                                <div class="small text-muted-custom" id="devblog-modal-author-role"></div>
+                            </div>
+                            <div class="ms-auto text-end small text-muted-custom">
+                                <div><i class="bi bi-calendar3 text-accent me-1"></i><span id="devblog-modal-date"></span></div>
+                            </div>
+                        </div>
+
+                        <!-- Full Story Content -->
+                        <div class="devblog-modal-content mb-4" id="devblog-modal-story"></div>
+
+                        <!-- Key Deliverables & Takeaways Box -->
+                        <div class="p-3 bg-surface rounded-3 border border-line mb-4">
+                            <h5 class="h6 fw-bold text-ink mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-check2-circle text-accent fs-5"></i> Key Engineering Deliverables &amp; Takeaways
+                            </h5>
+                            <ul class="list-unstyled small text-muted-custom mb-0 d-flex flex-column gap-2" id="devblog-modal-takeaways"></ul>
+                        </div>
+
+                        <!-- Tech Stack Tags -->
+                        <div>
+                            <span class="small fw-bold text-ink d-block mb-2">Technologies &amp; Modules Applied:</span>
+                            <div class="d-flex flex-wrap gap-2" id="devblog-modal-techstack"></div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-top border-line bg-surface d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i> Close Story
+                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3" id="devblog-modal-prev-btn">
+                                <i class="bi bi-arrow-left me-1"></i> Prev Sprint
+                            </button>
+                            <button type="button" class="btn btn-accent-pill btn-sm px-3" id="devblog-modal-next-btn">
+                                Next Sprint <i class="bi bi-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Embedded DevBlogs Data for Instant Client-Side Rendering -->
+        <script id="devblogs-data" type="application/json">
+            <?= json_encode($devblogs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>
+        </script>
 
         <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </div>

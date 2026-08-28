@@ -29,7 +29,7 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    $current_schema_version = '2.6_career_center_updates';
+    $current_schema_version = '2.7_devblogs_sprint_chronicles';
     if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');
@@ -37,6 +37,7 @@ function init_app_data() {
         $_SESSION['categories'] = load_json_file('categories.json');
         $_SESSION['profile_requests'] = load_json_file('profile_requests.json');
         $_SESSION['updates'] = load_json_file('updates.json');
+        $_SESSION['devblogs'] = load_json_file('devblogs.json');
         $_SESSION['schema_version'] = $current_schema_version;
         $_SESSION['app_initialized'] = true;
     }
@@ -1407,6 +1408,27 @@ function delete_career_update($id) {
     }
     return false;
 }
+
+// ============================================================================
+// DEVBLOG & SPRINT CHRONICLES ENGINE
+// ============================================================================
+function get_devblogs() {
+    if (!isset($_SESSION['devblogs']) || empty($_SESSION['devblogs'])) {
+        $_SESSION['devblogs'] = load_json_file('devblogs.json');
+    }
+    return is_array($_SESSION['devblogs']) ? $_SESSION['devblogs'] : [];
+}
+
+function get_devblog_by_id($id) {
+    $blogs = get_devblogs();
+    foreach ($blogs as $blog) {
+        if (($blog['id'] ?? '') === $id || ($blog['sprint_number'] ?? '') === $id) {
+            return $blog;
+        }
+    }
+    return null;
+}
+
 
 
 

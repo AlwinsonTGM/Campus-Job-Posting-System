@@ -696,6 +696,292 @@ document.addEventListener('DOMContentLoaded', function () {
 
   handleFaqHash();
   window.addEventListener('hashchange', handleFaqHash);
+
+  // ------------------------------------------------------------------------
+  // 12. DEVBLOG & SPRINT CHRONICLES (3D Stage Coverflow & Reader Engine)
+  // ------------------------------------------------------------------------
+  const devblogTrack = document.getElementById('devblog-track');
+  const devblogPrevBtn = document.getElementById('devblog-prev-btn');
+  const devblogNextBtn = document.getElementById('devblog-next-btn');
+
+  if (devblogTrack && devblogPrevBtn && devblogNextBtn) {
+    const cards = Array.from(devblogTrack.querySelectorAll('.devblog-card'));
+    const dots = Array.from(document.querySelectorAll('.devblog-dot'));
+    const counterCurrent = document.getElementById('devblog-counter-current');
+    const stageContainer = document.querySelector('.devblog-stage-container');
+    const totalCards = cards.length;
+    let currentIndex = 0; // Starts at index 0 (Sprint 06 - Latest)
+
+    // Load devblogs JSON dataset
+    let devblogsData = [];
+    const dataScriptEl = document.getElementById('devblogs-data');
+    if (dataScriptEl) {
+      try {
+        devblogsData = JSON.parse(dataScriptEl.textContent || '[]');
+      } catch (err) {
+        console.warn('Failed to parse devblogs data:', err);
+      }
+    }
+
+    let isAnimating = false;
+
+    function updateCoverflow(newIndex) {
+      if (newIndex < 0 || newIndex >= totalCards) return;
+      if (isAnimating && newIndex !== currentIndex) return;
+
+      isAnimating = true;
+      currentIndex = newIndex;
+
+      // Update 3D card classes with directional left/right off-screen positions
+      cards.forEach(function (card, idx) {
+        card.classList.remove('is-active', 'is-prev', 'is-next', 'is-hidden', 'is-hidden-left', 'is-hidden-right');
+        if (idx === currentIndex) {
+          card.classList.add('is-active');
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('aria-hidden', 'false');
+        } else if (idx === currentIndex - 1) {
+          card.classList.add('is-prev');
+          card.setAttribute('tabindex', '-1');
+          card.setAttribute('aria-hidden', 'true');
+        } else if (idx === currentIndex + 1) {
+          card.classList.add('is-next');
+          card.setAttribute('tabindex', '-1');
+          card.setAttribute('aria-hidden', 'true');
+        } else if (idx < currentIndex - 1) {
+          card.classList.add('is-hidden', 'is-hidden-left');
+          card.setAttribute('tabindex', '-1');
+          card.setAttribute('aria-hidden', 'true');
+        } else {
+          card.classList.add('is-hidden', 'is-hidden-right');
+          card.setAttribute('tabindex', '-1');
+          card.setAttribute('aria-hidden', 'true');
+        }
+      });
+
+      // Update boundary button states
+      devblogPrevBtn.disabled = (currentIndex === 0);
+      devblogNextBtn.disabled = (currentIndex === totalCards - 1);
+
+      // Update dots
+      dots.forEach(function (dot, idx) {
+        dot.classList.toggle('is-active', idx === currentIndex);
+      });
+
+      // Update counter
+      if (counterCurrent && devblogsData[currentIndex]) {
+        counterCurrent.textContent = devblogsData[currentIndex].sprint_number || String(6 - currentIndex).padStart(2, '0');
+      }
+
+      // Reset animation lock after CSS transition completes
+      setTimeout(function () {
+        isAnimating = false;
+      }, 260);
+    }
+
+    // Arrow Button Handlers
+    devblogPrevBtn.addEventListener('click', function () {
+      if (currentIndex > 0) {
+        updateCoverflow(currentIndex - 1);
+      }
+    });
+
+    devblogNextBtn.addEventListener('click', function () {
+      if (currentIndex < totalCards - 1) {
+        updateCoverflow(currentIndex + 1);
+      }
+    });
+
+    // Step Dot Handlers
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        const dotIdx = parseInt(this.getAttribute('data-dot-index'), 10);
+        if (!isNaN(dotIdx)) {
+          updateCoverflow(dotIdx);
+        }
+      });
+    });
+
+    // Direct Side Card Click Handler
+    cards.forEach(function (card, idx) {
+      card.addEventListener('click', function (e) {
+        // If clicking the read trigger button, let the modal trigger handle it
+        if (e.target.closest('.devblog-read-trigger')) return;
+
+        if (card.classList.contains('is-prev')) {
+          updateCoverflow(currentIndex - 1);
+        } else if (card.classList.contains('is-next')) {
+          updateCoverflow(currentIndex + 1);
+        }
+      });
+    });
+
+    // Keyboard Arrow Keys when focused or hovering on stage
+    let isHoveringStage = false;
+    if (stageContainer) {
+      stageContainer.addEventListener('mouseenter', function () { isHoveringStage = true; });
+      stageContainer.addEventListener('mouseleave', function () { isHoveringStage = false; });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      const modalEl = document.getElementById('devblogModal');
+      const isModalOpen = modalEl && modalEl.classList.contains('show');
+      if (isModalOpen) return; // Handled separately when modal is open
+
+      if (isHoveringStage || (document.activeElement && document.activeElement.closest('.devblog-section'))) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          if (currentIndex > 0) updateCoverflow(currentIndex - 1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          if (currentIndex < totalCards - 1) updateCoverflow(currentIndex + 1);
+        }
+      }
+    });
+
+    // Touch Swipe Gesture Support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    devblogTrack.addEventListener('touchstart', function (e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    devblogTrack.addEventListener('touchend', function (e) {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 45) {
+        if (diff > 0 && currentIndex > 0) {
+          // Swipe right -> Go to newer / previous sprint
+          updateCoverflow(currentIndex - 1);
+        } else if (diff < 0 && currentIndex < totalCards - 1) {
+          // Swipe left -> Go to older / next sprint
+          updateCoverflow(currentIndex + 1);
+        }
+      }
+    }, { passive: true });
+
+    // ------------------------------------------------------------------------
+    // Interactive DevBlog Modal Populator
+    // ------------------------------------------------------------------------
+    const modalEl = document.getElementById('devblogModal');
+    let modalCurrentIndex = 0;
+
+    function populateDevblogModal(index) {
+      if (!devblogsData[index]) return;
+      modalCurrentIndex = index;
+      const blog = devblogsData[index];
+
+      // Update Coverflow position synchronously
+      updateCoverflow(index);
+
+      // Elements
+      const badgeEl = document.getElementById('devblog-modal-sprint-badge');
+      const readtimeEl = document.getElementById('devblog-modal-readtime');
+      const bannerEl = document.getElementById('devblog-modal-banner');
+      const titleEl = document.getElementById('devblog-modal-title');
+      const authorImgEl = document.getElementById('devblog-modal-author-img');
+      const authorNameEl = document.getElementById('devblog-modal-author-name');
+      const authorRoleEl = document.getElementById('devblog-modal-author-role');
+      const dateEl = document.getElementById('devblog-modal-date');
+      const storyEl = document.getElementById('devblog-modal-story');
+      const takeawaysEl = document.getElementById('devblog-modal-takeaways');
+      const techstackEl = document.getElementById('devblog-modal-techstack');
+      const modalPrevBtn = document.getElementById('devblog-modal-prev-btn');
+      const modalNextBtn = document.getElementById('devblog-modal-next-btn');
+
+      if (badgeEl) badgeEl.textContent = blog.sprint_badge || `SPRINT ${blog.sprint_number}`;
+      if (readtimeEl) readtimeEl.textContent = blog.read_time || '5 min read';
+      if (bannerEl) {
+        bannerEl.src = blog.cover_image || '';
+        bannerEl.alt = blog.title || 'Sprint Cover';
+      }
+      if (titleEl) titleEl.textContent = blog.title || '';
+      if (authorImgEl) {
+        // Resolve path relative to document or base URL
+        const cardImg = cards[index] ? cards[index].querySelector('.devblog-author-img') : null;
+        authorImgEl.src = cardImg ? cardImg.src : (blog.author_image || '');
+        authorImgEl.alt = blog.author_name || '';
+      }
+      if (authorNameEl) authorNameEl.textContent = blog.author_name || '';
+      if (authorRoleEl) authorRoleEl.textContent = blog.author_role || '';
+      if (dateEl) dateEl.textContent = blog.date || '';
+      if (storyEl) storyEl.innerHTML = blog.full_story || '';
+
+      // Populate Takeaways
+      if (takeawaysEl) {
+        takeawaysEl.innerHTML = '';
+        if (Array.isArray(blog.key_takeaways)) {
+          blog.key_takeaways.forEach(function (t) {
+            const li = document.createElement('li');
+            li.className = 'd-flex align-items-start gap-2';
+            li.innerHTML = '<i class="bi bi-check-circle-fill text-accent flex-shrink-0 mt-1"></i> <span>' + t + '</span>';
+            takeawaysEl.appendChild(li);
+          });
+        }
+      }
+
+      // Populate Tech Stack
+      if (techstackEl) {
+        techstackEl.innerHTML = '';
+        if (Array.isArray(blog.tech_stack)) {
+          blog.tech_stack.forEach(function (tech) {
+            const span = document.createElement('span');
+            span.className = 'badge bg-cream text-ink border border-line px-2 py-1 small fw-semibold';
+            span.textContent = tech;
+            techstackEl.appendChild(span);
+          });
+        }
+      }
+
+      // Modal navigation buttons
+      if (modalPrevBtn) {
+        modalPrevBtn.disabled = (modalCurrentIndex === 0);
+      }
+      if (modalNextBtn) {
+        modalNextBtn.disabled = (modalCurrentIndex === totalCards - 1);
+      }
+    }
+
+    // Trigger button listeners
+    document.addEventListener('click', function (e) {
+      const trigger = e.target.closest('.devblog-read-trigger');
+      if (trigger) {
+        e.preventDefault();
+        const idx = parseInt(trigger.getAttribute('data-blog-index'), 10);
+        if (!isNaN(idx) && modalEl && typeof bootstrap !== 'undefined') {
+          populateDevblogModal(idx);
+          const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+          bsModal.show();
+        }
+      }
+    });
+
+    // Modal Prev/Next Navigation
+    const modalPrevBtn = document.getElementById('devblog-modal-prev-btn');
+    const modalNextBtn = document.getElementById('devblog-modal-next-btn');
+
+    if (modalPrevBtn) {
+      modalPrevBtn.addEventListener('click', function () {
+        if (modalCurrentIndex > 0) {
+          populateDevblogModal(modalCurrentIndex - 1);
+          const modalBody = document.getElementById('devblog-modal-body');
+          if (modalBody) modalBody.scrollTop = 0;
+        }
+      });
+    }
+
+    if (modalNextBtn) {
+      modalNextBtn.addEventListener('click', function () {
+        if (modalCurrentIndex < totalCards - 1) {
+          populateDevblogModal(modalCurrentIndex + 1);
+          const modalBody = document.getElementById('devblog-modal-body');
+          if (modalBody) modalBody.scrollTop = 0;
+        }
+      });
+    }
+
+    // Initialize initial coverflow state
+    updateCoverflow(0);
+  }
 });
 
 // ------------------------------------------------------------------------

@@ -3718,4 +3718,418 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 2px 8px rgba(22, 22, 22, 0.15);
 }
 
+/* --------------------------------------------------------------------------
+   25. DEVBLOG & SPRINT CHRONICLES (3D Stage Coverflow Engine)
+   -------------------------------------------------------------------------- */
+.devblog-section {
+  position: relative;
+  width: 100%;
+}
+
+.devblog-stage-container {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  padding: 1.5rem 0;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+}
+
+/* Flanking Left/Right Floating Circular Navigation Buttons */
+.devblog-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  cursor: pointer;
+  z-index: 35;
+  box-shadow: 0 8px 24px rgba(22, 22, 22, 0.12);
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.devblog-nav-left {
+  left: 12px;
+}
+
+.devblog-nav-right {
+  right: 12px;
+}
+
+.devblog-nav-arrow:hover:not(:disabled) {
+  background-color: var(--ink);
+  color: var(--white);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 12px 30px rgba(22, 22, 22, 0.24);
+}
+
+.devblog-nav-arrow:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.devblog-nav-arrow:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  border-color: var(--line);
+  background-color: var(--surface);
+  color: var(--muted);
+  box-shadow: none;
+  transform: translateY(-50%) scale(0.92);
+}
+
+/* 3D Track */
+.devblog-track {
+  position: relative;
+  width: 100%;
+  height: 510px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+}
+
+/* Individual DevBlog Card */
+.devblog-card {
+  position: absolute;
+  width: 440px;
+  max-width: 90vw;
+  height: 490px;
+  background-color: var(--white);
+  border-radius: var(--radius-card);
+  border: 1.5px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.32s ease,
+              box-shadow 0.32s ease,
+              border-color 0.25s ease;
+  transform-origin: center center;
+  cursor: pointer;
+  user-select: none;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  outline: none;
+}
+
+.devblog-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 3D State: Center Active (On the topest) */
+.devblog-card.is-active {
+  transform: translateX(0) scale(1) translateZ(80px);
+  z-index: 10;
+  opacity: 1;
+  filter: grayscale(0%);
+  border-color: var(--ink);
+  box-shadow: 0 24px 54px rgba(22, 22, 22, 0.16), 0 8px 20px rgba(22, 22, 22, 0.08);
+  cursor: default;
+  pointer-events: auto;
+}
+
+/* 3D State: Left Flanking Card (in the back, transparent) */
+.devblog-card.is-prev {
+  transform: translateX(-56%) scale(0.86) rotateY(10deg) translateZ(0);
+  z-index: 5;
+  opacity: 0.58;
+  filter: grayscale(35%);
+  box-shadow: 0 12px 28px rgba(22, 22, 22, 0.06);
+  pointer-events: auto;
+}
+
+.devblog-card.is-prev:hover {
+  opacity: 0.88;
+  filter: grayscale(0%);
+  transform: translateX(-53%) scale(0.89) rotateY(6deg);
+  border-color: var(--ink);
+}
+
+/* 3D State: Right Flanking Card (in the back, transparent) */
+.devblog-card.is-next {
+  transform: translateX(56%) scale(0.86) rotateY(-10deg) translateZ(0);
+  z-index: 5;
+  opacity: 0.58;
+  filter: grayscale(35%);
+  box-shadow: 0 12px 28px rgba(22, 22, 22, 0.06);
+  pointer-events: auto;
+}
+
+.devblog-card.is-next:hover {
+  opacity: 0.88;
+  filter: grayscale(0%);
+  transform: translateX(53%) scale(0.89) rotateY(-6deg);
+  border-color: var(--ink);
+}
+
+/* 3D State: Far Outer Hidden Cards (Left and Right trajectories prevent center jumping) */
+.devblog-card.is-hidden-left,
+.devblog-card.is-hidden {
+  transform: translateX(-110%) scale(0.72) rotateY(14deg) translateZ(-100px);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.devblog-card.is-hidden-right {
+  transform: translateX(110%) scale(0.72) rotateY(-14deg) translateZ(-100px);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* DevBlog Card Structure */
+.devblog-card-photo-wrap {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  background-color: var(--cream);
+  flex-shrink: 0;
+}
+
+.devblog-card-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.devblog-card.is-active:hover .devblog-card-photo-wrap img {
+  transform: scale(1.05);
+}
+
+.devblog-card-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.devblog-card-body {
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.devblog-author-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.devblog-author-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--ink);
+  background-color: var(--cream);
+  flex-shrink: 0;
+}
+
+.devblog-author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.devblog-author-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.devblog-author-role {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+.devblog-date-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--surface);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.devblog-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: 0.45rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.devblog-card-excerpt {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.devblog-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* DevBlog Progress Step Dots */
+.devblog-step-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.devblog-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--line);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.devblog-dot:hover:not(.is-active) {
+  background-color: var(--muted);
+  transform: scale(1.15);
+}
+
+.devblog-dot.is-active {
+  width: 32px;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(46, 204, 94, 0.4);
+}
+
+/* Modal Content Styling */
+.devblog-modal-content p {
+  color: #2b2b2b;
+  line-height: 1.7;
+  font-size: 14.5px;
+  margin-bottom: 1rem;
+}
+
+.devblog-modal-content strong {
+  color: var(--ink);
+}
+
+.devblog-modal-content code {
+  background-color: var(--cream);
+  border: 1px solid var(--line);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+/* Mobile & Tablet Responsive Adjustments */
+@media (max-width: 991.98px) {
+  .devblog-card {
+    width: 380px;
+    height: 480px;
+  }
+  .devblog-card.is-prev {
+    transform: translateX(-60%) scale(0.84) rotateY(8deg) translateZ(0);
+    opacity: 0.45;
+  }
+  .devblog-card.is-next {
+    transform: translateX(60%) scale(0.84) rotateY(-8deg) translateZ(0);
+    opacity: 0.45;
+  }
+  .devblog-card.is-hidden-left,
+  .devblog-card.is-hidden {
+    transform: translateX(-115%) scale(0.7) rotateY(10deg) translateZ(-100px);
+    opacity: 0;
+  }
+  .devblog-card.is-hidden-right {
+    transform: translateX(115%) scale(0.7) rotateY(-10deg) translateZ(-100px);
+    opacity: 0;
+  }
+  .devblog-nav-arrow {
+    width: 46px;
+    height: 46px;
+    font-size: 1.15rem;
+  }
+  .devblog-nav-left {
+    left: 4px;
+  }
+  .devblog-nav-right {
+    right: 4px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .devblog-stage-container {
+    min-height: 520px;
+    padding: 1rem 0;
+  }
+  .devblog-track {
+    height: 510px;
+  }
+  .devblog-card {
+    width: 320px;
+    height: 490px;
+  }
+  .devblog-card.is-prev {
+    transform: translateX(-75%) scale(0.8) rotateY(6deg) translateZ(0);
+    opacity: 0.25;
+  }
+  .devblog-card.is-next {
+    transform: translateX(75%) scale(0.8) rotateY(-6deg) translateZ(0);
+    opacity: 0.25;
+  }
+  .devblog-card.is-hidden-left,
+  .devblog-card.is-hidden {
+    transform: translateX(-125%) scale(0.65) rotateY(8deg) translateZ(-100px);
+    opacity: 0;
+  }
+  .devblog-card.is-hidden-right {
+    transform: translateX(125%) scale(0.65) rotateY(-8deg) translateZ(-100px);
+    opacity: 0;
+  }
+  .devblog-nav-arrow {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+    z-index: 40;
+  }
+}
+
+
+
 
