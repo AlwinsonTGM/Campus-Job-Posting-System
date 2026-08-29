@@ -769,7 +769,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Update counter
       if (counterCurrent && devblogsData[currentIndex]) {
-        counterCurrent.textContent = devblogsData[currentIndex].sprint_number || String(6 - currentIndex).padStart(2, '0');
+        counterCurrent.textContent = devblogsData[currentIndex].sprint_number || String(devblogsData.length - currentIndex).padStart(2, '0');
       }
 
       // Reset animation lock after CSS transition completes
@@ -888,8 +888,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const modalPrevBtn = document.getElementById('devblog-modal-prev-btn');
       const modalNextBtn = document.getElementById('devblog-modal-next-btn');
 
-      if (badgeEl) badgeEl.textContent = blog.sprint_badge || `SPRINT ${blog.sprint_number}`;
-      if (readtimeEl) readtimeEl.textContent = blog.read_time || '5 min read';
+      if (badgeEl) {
+        badgeEl.innerHTML = '<i class="bi bi-flag-fill text-accent me-1"></i>' + (blog.sprint_badge || ('DAY ' + (blog.sprint_number || '01')));
+      }
+      if (readtimeEl) {
+        readtimeEl.innerHTML = '<i class="bi bi-clock-history me-1 text-accent"></i>' + (blog.read_time || '5 min read');
+      }
       if (bannerEl) {
         bannerEl.src = blog.cover_image || '';
         bannerEl.alt = blog.title || 'Sprint Cover';

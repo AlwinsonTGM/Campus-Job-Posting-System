@@ -144,16 +144,16 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
 
                 <!-- ============================================================
-                     DEVBLOG & SPRINT CHRONICLES (3D Stage Coverflow Section)
+                     DEVBLOG & DAILY CHRONICLES (3D Stage Coverflow Section)
                      ============================================================ -->
                 <section class="devblog-section mb-5 py-4 reveal-fade-rise" id="devblog">
                     <div class="text-center mb-4">
                         <span class="eyebrow-badge mb-2 d-inline-flex align-items-center gap-1">
-                            <i class="bi bi-journal-code text-accent"></i> SPRINT CHRONICLES
+                            <i class="bi bi-journal-code text-accent"></i> DEVBLOG CHRONICLES
                         </span>
-                        <h2 class="h1 fw-extrabold text-ink mb-2">Behind the Code: Engineering DevBlog</h2>
+                        <h2 class="h1 fw-extrabold text-ink mb-2">Behind the Code: Lead Developer DevBlog</h2>
                         <p class="text-muted-custom col-lg-8 mx-auto">
-                            Explore our team's 6-sprint engineering journey—from foundational zero-DB architecture and security algorithms to live student schedule matching and administrative QA governance.
+                            Follow Alwinson's daily engineering chronicles—from initial topic selection, architecture planning, and all-night coding marathons to collaborative Git mentoring and UI/UX design refinements.
                         </p>
                     </div>
 
@@ -161,13 +161,13 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="devblog-stage-container position-relative">
                         <!-- Flanking Left Navigation Arrow (Newer / Latest) -->
                         <button type="button" id="devblog-prev-btn" class="devblog-nav-arrow devblog-nav-left"
-                            aria-label="Previous Sprint" title="Newer Sprint" disabled>
+                            aria-label="Previous Day" title="Newer Log" disabled>
                             <i class="bi bi-chevron-left"></i>
                         </button>
 
                         <!-- Flanking Right Navigation Arrow (Older / Project Kickoff) -->
                         <button type="button" id="devblog-next-btn" class="devblog-nav-arrow devblog-nav-right"
-                            aria-label="Next Sprint" title="Older Sprint">
+                            aria-label="Next Day" title="Older Log">
                             <i class="bi bi-chevron-right"></i>
                         </button>
 
@@ -216,7 +216,7 @@ require_once __DIR__ . '/includes/header.php';
 
                                         <div class="devblog-card-footer mt-auto pt-3 border-top border-line">
                                             <button type="button" class="btn-accent-pill w-100 justify-content-center py-2 devblog-read-trigger" data-blog-index="<?= $idx ?>">
-                                                <i class="bi bi-book-half me-1"></i> Read Full Sprint Story
+                                                <i class="bi bi-book-half me-1"></i> Read Full Daily Log
                                             </button>
                                         </div>
                                     </div>
@@ -229,15 +229,15 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="devblog-controls-strip d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mt-4 pt-3">
                         <div class="small fw-semibold text-muted-custom">
                             <i class="bi bi-layers-fill text-accent me-1"></i>
-                            Showing Sprint <strong id="devblog-counter-current" class="text-ink"><?= $devblogs[0]['sprint_number'] ?? '06' ?></strong> of <strong class="text-ink"><?= sprintf('%02d', count($devblogs)) ?></strong>
+                            Showing Day <strong id="devblog-counter-current" class="text-ink"><?= $devblogs[0]['sprint_number'] ?? '04' ?></strong> of <strong class="text-ink"><?= sprintf('%02d', count($devblogs)) ?></strong>
                         </div>
 
-                        <div class="devblog-step-dots" id="devblog-step-dots" role="tablist" aria-label="DevBlog sprint navigation">
+                        <div class="devblog-step-dots" id="devblog-step-dots" role="tablist" aria-label="DevBlog day navigation">
                             <?php foreach ($devblogs as $idx => $blog): ?>
                                 <button type="button" class="devblog-dot <?= ($idx === 0) ? 'is-active' : '' ?>"
                                     data-dot-index="<?= $idx ?>"
-                                    aria-label="Sprint <?= htmlspecialchars($blog['sprint_number']) ?>"
-                                    title="Sprint <?= htmlspecialchars($blog['sprint_number']) ?>: <?= htmlspecialchars($blog['author_name']) ?>"></button>
+                                    aria-label="Day <?= htmlspecialchars($blog['sprint_number']) ?>"
+                                    title="Day <?= htmlspecialchars($blog['sprint_number']) ?>: <?= htmlspecialchars($blog['title']) ?>"></button>
                             <?php endforeach; ?>
                         </div>
 
@@ -326,10 +326,10 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="modal-header border-bottom border-line pb-3 bg-surface">
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge bg-ink text-white px-2 py-1 small fw-bold" id="devblog-modal-sprint-badge">
-                                SPRINT 06 · SYSTEM QA &amp; ADMIN
+                                <i class="bi bi-flag-fill text-accent me-1"></i>DAY 04 · TACTILE UX &amp; SYSTEM HARMONY
                             </span>
                             <span class="badge bg-cream text-muted-custom border border-line small" id="devblog-modal-readtime">
-                                5 min read
+                                <i class="bi bi-clock-history me-1 text-accent"></i>5 min read
                             </span>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -338,7 +338,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="modal-body p-4 bg-white" id="devblog-modal-body">
                         <!-- Cover Banner -->
                         <div class="devblog-modal-banner-wrap mb-4">
-                            <img src="" id="devblog-modal-banner" alt="Sprint Cover" class="w-100 rounded-3 object-fit-cover" style="max-height: 280px;">
+                            <img src="" id="devblog-modal-banner" alt="Log Cover" class="w-100 rounded-3 object-fit-cover" style="max-height: 280px;">
                         </div>
 
                         <!-- Title -->
@@ -380,10 +380,10 @@ require_once __DIR__ . '/includes/header.php';
                         </button>
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3" id="devblog-modal-prev-btn">
-                                <i class="bi bi-arrow-left me-1"></i> Prev Sprint
+                                <i class="bi bi-arrow-left me-1"></i> Newer Log
                             </button>
                             <button type="button" class="btn btn-accent-pill btn-sm px-3" id="devblog-modal-next-btn">
-                                Next Sprint <i class="bi bi-arrow-right ms-1"></i>
+                                Older Log <i class="bi bi-arrow-right ms-1"></i>
                             </button>
                         </div>
                     </div>

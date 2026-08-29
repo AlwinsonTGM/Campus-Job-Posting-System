@@ -29,7 +29,7 @@ function save_json_file($filename, $data) {
 
 // Initialize runtime state from JSON if not set in session
 function init_app_data() {
-    $current_schema_version = '2.7_devblogs_sprint_chronicles';
+    $current_schema_version = '2.9_alwinson_daily_devblogs_time_fix';
     if (!isset($_SESSION['app_initialized']) || ($_SESSION['schema_version'] ?? '') !== $current_schema_version) {
         $_SESSION['users'] = load_json_file('users.json');
         $_SESSION['jobs'] = load_json_file('jobs.json');

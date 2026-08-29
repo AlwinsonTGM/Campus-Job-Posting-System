@@ -35,6 +35,10 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?> | <?= htmlspecialchars(SITE_NAME) ?></title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="<?= $base_url ?>assets/img/favicon.svg">
+    <link rel="apple-touch-icon" href="<?= $base_url ?>assets/img/favicon.svg">
+    
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
