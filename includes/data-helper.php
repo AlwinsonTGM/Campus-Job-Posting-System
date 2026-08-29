@@ -1256,6 +1256,90 @@ function get_metrics_avg_hourly_pay() {
     return '₱' . $avg;
 }
 
+// ============================================================================
+// SYSTEM DATA MODE SWITCHING ENGINE (Demo / Real Toggle)
+// ============================================================================
+
+/**
+ * Get the current system data mode ('demo' or 'real').
+ */
+function get_system_data_mode() {
+    $mode_file = DATA_DIR . '/system_mode.json';
+    if (file_exists($mode_file)) {
+        $data = json_decode(file_get_contents($mode_file), true);
+        return ($data['active_mode'] ?? 'demo');
+    }
+    return 'demo';
+}
+
+/**
+ * Switch the entire system between demo (placeholder) and real (clean) datasets.
+ * Copies seed files from data/seeds/{mode}/ into the active data/ directory,
+ * forces a session re-init, and records the switch in system_mode.json.
+ *
+ * @param string $mode 'demo' or 'real'
+ * @param string $switched_by Name of user who triggered the switch
+ * @return bool
+ */
+function switch_system_data_mode($mode, $switched_by = 'User') {
+    $seed_dir = DATA_DIR . '/seeds/' . $mode;
+    if (!is_dir($seed_dir)) {
+        return false;
+    }
+
+    $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
+                   'profile_requests.json', 'updates.json', 'devblogs.json'];
+
+    foreach ($data_files as $file) {
+        $src = $seed_dir . '/' . $file;
+        $dst = DATA_DIR . '/' . $file;
+        if (file_exists($src)) {
+            copy($src, $dst);
+        }
+    }
+
+    // Record mode change
+    $mode_data = [
+        'active_mode' => $mode,
+        'last_switched_at' => date('Y-m-d H:i:s'),
+        'switched_by' => $switched_by
+    ];
+    file_put_contents(DATA_DIR . '/system_mode.json', json_encode($mode_data, JSON_PRETTY_PRINT));
+
+    // Force full session re-init on next page load
+    unset($_SESSION['app_initialized']);
+    unset($_SESSION['schema_version']);
+    // Also clear the logged-in user session so stale user data doesn't persist
+    unset($_SESSION['user']);
+
+    return true;
+}
+
+/**
+ * Reset the current mode's dataset back to its seed baseline.
+ *
+ * @param string $switched_by
+ * @return bool
+ */
+function reset_current_data_mode($switched_by = 'User') {
+    $current_mode = get_system_data_mode();
+    return switch_system_data_mode($current_mode, $switched_by);
+}
+
+/**
+ * Wipe the real dataset completely clean (empty arrays), keeping only the admin account.
+ *
+ * @return bool
+ */
+function wipe_real_data_fresh() {
+    $seed_dir = DATA_DIR . '/seeds/real';
+    if (!is_dir($seed_dir)) {
+        return false;
+    }
+    // Re-copy real seeds (which are already clean/empty)
+    return switch_system_data_mode('real', 'System Wipe');
+}
+
 // Reset Demo Data helper
 function reset_demo_data() {
     $_SESSION['users'] = load_json_file('users.json');

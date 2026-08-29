@@ -1,0 +1,90 @@
+[
+  {
+    "id": "day-04",
+    "sprint_number": "04",
+    "sprint_badge": "DAY 04 · TACTILE UX & SYSTEM HARMONY",
+    "title": "Perfecting the Tactile Paper Sheet UX: Spotlight Search, 3D DevBlog & Final Polish",
+    "date": "August 29, 2026",
+    "read_time": "5 min read",
+    "author_name": "Alwinson Bustamante",
+    "author_role": "Lead Developer & System Architect",
+    "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+    "summary_excerpt": "Following up on yesterday's UX critique, elevated the portal experience—crafting the signature Tactile Paper Sheet design system, keyboard-driven spotlight search (Ctrl+K), and interactive 3D DevBlog Coverflow.",
+    "tags": ["Tactile UX", "Spotlight Search", "Design System", "Final Polish"],
+    "cover_image": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>Following up on yesterday's self-critique where the UX still felt incomplete, today's objective was relentless visual and interactive perfection.</p><p>I dedicated today to turning raw functional components into a unified, tactile experience. We established the <strong>Tactile Paper Sheet Design System</strong>, introducing warm ivory canvas tones (<code class='bg-cream text-ink px-1 rounded'>#FBF9F4</code>), deep carbon ink contrast (<code class='bg-cream text-ink px-1 rounded'>#161616</code>), physical paper border elevations, and official KLD Green accents across all student, employer, and administrative views.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-search text-accent me-2'></i>Universal Spotlight Search & 3D Stage DevBlog</h5><p>To make navigation effortless, I engineered the keyboard-driven universal Spotlight Search modal (<code class='bg-cream text-ink px-1 rounded'>Ctrl+K</code>) that queries <code class='bg-cream text-ink px-1 rounded'>api/search-jobs.php</code> with live debouncing. Furthermore, I built this interactive 3D Coverflow DevBlog on the About Us page so our entire daily journey is recorded transparently for our professor and peers.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-check-all text-accent me-2'></i>Presentation Readiness</h5><p>With both design variations prepared and our core workflows rigorously validated across mobile and desktop devices, we are fully prepared to present our dual-design project to our professor with utmost confidence.</p>",
+    "key_takeaways": [
+      "Perfected the Tactile Paper Sheet design tokens across all student, employer, and admin interfaces.",
+      "Engineered universal Spotlight Search (Ctrl+K) with live API debounce.",
+      "Constructed the interactive 3D perspective DevBlog Coverflow and modal reader.",
+      "Ensured both design variations are polished and presentation-ready for our professor."
+    ],
+    "tech_stack": ["CSS3 3D Perspective", "Spotlight Search API", "Tactile Paper Tokens", "Vanilla JS ES6"]
+  },
+  {
+    "id": "day-03",
+    "sprint_number": "03",
+    "sprint_badge": "DAY 03 · GIT ONBOARDING & DUAL DESIGN",
+    "title": "Team Git Collaboration, Mentoring Groupmates & The Dual-Design Strategy",
+    "date": "August 28, 2026",
+    "read_time": "6 min read",
+    "author_name": "Alwinson Bustamante",
+    "author_role": "Lead Developer & System Architect",
+    "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+    "summary_excerpt": "Balanced multi-subject coursework with core development, mentored groupmates on Git and GitHub collaborative workflows, and initiated a dual-design strategy to present two strong prototypes to our professor.",
+    "tags": ["Git Collaboration", "Team Mentoring", "Dual Design", "UX Critique"],
+    "cover_image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>When I woke up in the morning, well what do you expect—I quickly finished my required tasks for other subjects and immediately dove straight back into system development.</p><p>Today marked a major team milestone: I conducted a hands-on mentoring session for my groupmates to teach them how the system works, how our file hierarchy is organized, and how to use <strong>Git and GitHub for collaborative development</strong>. They learned remarkably fast and were eager to contribute.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-diagram-3-fill text-accent me-2'></i>Dual-Design Presentation Strategy</h5><p>To maximize our impact during the midterm presentation, we planned a dual-design strategy: my groupmates would develop their design variation, while I developed mine. This ensures we can present 2 distinct, fully functioning design directions to our professor.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-clock-history text-accent me-2'></i>The 11:30 PM Build & UX Reflections</h5><p>I completed that day's development build at 11:30 PM. However, stepping back to evaluate it, my design still felt incomplete and the UX did not fully satisfy my standards. I resolved then and there to start developing further tomorrow to bring the user experience to perfection.</p>",
+    "key_takeaways": [
+      "Taught groupmates Git version control and GitHub collaborative repository workflows.",
+      "Established the dual-design strategy to develop and present 2 unique prototype options.",
+      "Completed the 11:30 PM core build milestone covering applicant review and admin controls.",
+      "Critiqued UX shortcomings and established high-fidelity refinement goals for the next day."
+    ],
+    "tech_stack": ["Git & GitHub Workflows", "Collaborative Branching", "Bootstrap 5.3 Modals", "PHP State Handlers"]
+  },
+  {
+    "id": "day-02",
+    "sprint_number": "02",
+    "sprint_badge": "DAY 02 · DEEP DIVE & CODING MARATHON",
+    "title": "The Start of the Madness: All-Day Coding Sprint & 1:00 AM Optimization Marathon",
+    "date": "August 27, 2026",
+    "read_time": "6 min read",
+    "author_name": "Alwinson Bustamante",
+    "author_role": "Lead Developer & System Architect",
+    "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+    "summary_excerpt": "Pushed through an intensive full-day coding marathon from early morning to 1:00 AM—building the zero-DB JSON persistence engine, session state synchronization, password entropy meter, and end-to-end application workflows.",
+    "tags": ["Coding Marathon", "JSON Engine", "Session Sync", "Password Entropy"],
+    "cover_image": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>August 27 was the true start of creating this madness. The moment I woke up in the morning, I jumped directly into the codebase to develop and optimize the core architecture even further.</p><p>For the entire day, I worked non-stop on our zero-database data architecture. I built <code class='bg-cream text-ink px-1 rounded'>includes/data-helper.php</code>, establishing atomic file reads/writes for our JSON datasets and synchronizing live states into <code class='bg-cream text-ink px-1 rounded'>$_SESSION</code> for zero database overhead and lightning-fast responses.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-shield-lock-fill text-accent me-2'></i>Security Algorithms & Shift Availability Matrix</h5><p>I engineered the standalone client-side Shannon password entropy analyzer (<code class='bg-cream text-ink px-1 rounded'>password-strength.js</code>) with real-time criteria checkmarks, role-based access control (RBAC), and built the interactive 18-slot weekly schedule availability time grid matrix for student job submissions.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-moon-stars-fill text-accent me-2'></i>Pushing Through to 1:00 AM</h5><p>I coded and optimized straight through the evening and night, finally stopping at 1:00 AM on August 28, hoping that this intensive development foundation would be solid and comprehensive enough for our project.</p>",
+    "key_takeaways": [
+      "Engineered zero-database atomic JSON persistence and dynamic session synchronization.",
+      "Implemented real-time client-side password entropy scoring and visual strength feedback.",
+      "Built the 18-slot weekly schedule availability grid matrix for student applications.",
+      "Completed a grueling 16+ hour coding marathon ending at 1:00 AM for core engine stability."
+    ],
+    "tech_stack": ["Native PHP 8", "Atomic JSON Engine", "Shannon Entropy Algorithm", "Session Persistence"]
+  },
+  {
+    "id": "day-01",
+    "sprint_number": "01",
+    "sprint_badge": "DAY 01 · TOPIC SELECTION & SYSTEM DRAFTING",
+    "title": "Genesis of the System: Topic Selection, Architecture Drafting & Pure PHP Foundations",
+    "date": "August 26, 2026",
+    "read_time": "5 min read",
+    "author_name": "Alwinson Bustamante",
+    "author_role": "Lead Developer & System Architect",
+    "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+    "summary_excerpt": "Kicked off on topic selection day—immediately drafted the architecture, cataloged requirements, explored UI inspirations, and began non-stop coding during every free hour adhering strictly to pure PHP with zero static HTML.",
+    "tags": ["Topic Selection", "System Blueprint", "Modular PHP", "Zero Static HTML"],
+    "cover_image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+    "full_story": "<p class='lead text-ink fw-semibold'>Our journey began on August 26, 2026—the day our team picked the project topic for our COAL101 Web Systems and Technologies midterm lab project.</p><p>As soon as we chose the <strong>Campus Job Posting System</strong>, we didn't waste a single moment. We planned immediately, structured the project directory hierarchy, listed every functional module we would need, and researched modern design inspirations suited for a premier institutional portal.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-code-slash text-accent me-2'></i>Strict Stack Compliance: Native PHP, No Raw HTML</h5><p>During our free time that day on campus, we started drafting the site. We strictly limited our stack to what our professor permitted: Native PHP, CSS, Bootstrap 5.3, and Vanilla JavaScript—with <strong>strictly no standalone HTML files</strong> as our professor instructed. Every page had to be dynamically composed via modular PHP components.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-lightning-charge-fill text-accent me-2'></i>Lead Developer Dedication</h5><p>As the lead of this development, I simply couldn't stop thinking about the system. I continued developing through another free period that same day and kept writing code up until we went home, determined to finish the foundational task.</p>",
+    "key_takeaways": [
+      "Selected the Campus Job Posting System topic and mapped all functional requirements.",
+      "Enforced pure Native PHP modular template architecture with zero static .html files.",
+      "Defined initial JSON datastore schemas for users, categories, jobs, and applications.",
+      "Developed continuously through campus free periods and after going home to build the skeleton."
+    ],
+    "tech_stack": ["Native PHP 8", "Bootstrap 5.3", "Modular Architecture", "JSON Datastore Schema"]
+  }
+]
