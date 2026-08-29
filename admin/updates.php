@@ -132,8 +132,8 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
-                            <thead class="bg-surface border-bottom border-line text-muted-custom small">
+                        <table class="table-paper table-paper-responsive mb-0">
+                            <thead>
                                 <tr>
                                     <th class="ps-4" style="width: 80px;">Thumbnail</th>
                                     <th>Title &amp; Summary</th>
@@ -156,10 +156,10 @@ require_once __DIR__ . '/../includes/header.php';
                                         $pub_formatted = date('M j, Y • g:i A', $pub_time);
                                     ?>
                                         <tr>
-                                            <td class="ps-4">
+                                            <td class="ps-4" data-label="Thumbnail">
                                                 <img src="<?= htmlspecialchars($item['image'] ?? '../assets/img/hero-office.jpg') ?>" class="rounded-3 border border-line" style="width: 54px; height: 42px; object-fit: cover;" alt="">
                                             </td>
-                                            <td>
+                                            <td data-label="Title &amp; Summary">
                                                 <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="fw-bold text-ink text-decoration-none d-block">
                                                     <?= htmlspecialchars($item['title']) ?>
                                                 </a>
@@ -167,14 +167,14 @@ require_once __DIR__ . '/../includes/header.php';
                                                     <?= htmlspecialchars($item['summary']) ?>
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td data-label="Author / Office">
                                                 <span class="d-block fw-semibold text-ink small"><?= htmlspecialchars($item['author']['name'] ?? 'Career Center') ?></span>
                                                 <span class="text-muted-custom small" style="font-size: 0.75rem;"><?= htmlspecialchars($item['author']['office'] ?? 'University') ?></span>
                                             </td>
-                                            <td class="text-muted-custom small">
+                                            <td class="text-muted-custom small" data-label="Published">
                                                 <?= $pub_formatted ?>
                                             </td>
-                                            <td class="text-end pe-4">
+                                            <td class="text-end pe-4" data-label="Actions">
                                                 <div class="d-inline-flex gap-2">
                                                     <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="btn-circle-icon" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="View Public Post">
                                                         <i class="bi bi-eye"></i>

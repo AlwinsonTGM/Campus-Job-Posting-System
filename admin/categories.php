@@ -141,7 +141,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <div class="col-6">
                                     <label class="form-label" for="cat-color">Color Theme</label>
                                     <select name="color" id="cat-color" class="form-select">
-                                        <option value="primary">Accent Gold</option>
+                                        <option value="primary">Emerald Accent (Primary)</option>
                                         <option value="success">Success Green</option>
                                         <option value="info">Review Blue</option>
                                         <option value="warning">Warning Yellow</option>

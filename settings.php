@@ -654,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     settingsAlertBox.style.display = 'flex';
                 }
                 settingsMatrixContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                settingsMatrixContainer.style.borderColor = 'var(--kld-red, #dc3545)';
+                settingsMatrixContainer.style.borderColor = 'var(--st-declined, #E5484D)';
                 return false;
             } else {
                 if (settingsAlertBox) {

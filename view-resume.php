@@ -130,88 +130,99 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
     <link rel="apple-touch-icon" href="assets/img/favicon.svg">
     <link rel=preconnect href=https://fonts.googleapis.com>
     <link rel=preconnect href=https://fonts.gstatic.com crossorigin>
-    <link href=https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap rel=stylesheet>
-    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css>
-    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
-            --kld-green: #0a3d24;
-            --kld-accent: #0f5132;
-            --kld-gold: #c59b27;
-            --ink: #1a1a1a;
-            --paper: #ffffff;
-            --cream: #fbfbf9;
-            --line: #e2e4e0;
+            --canvas: #CDC0AB;
+            --surface: #F5F4F0;
+            --cream: #F1EBDC;
+            --ink: #161616;
+            --muted: #6E6A61;
+            --accent: #2ECC5E;
+            --accent-hover: #26b150;
+            --accent-soft: #DDF3E2;
+            --line: #E5E0D4;
+            --white: #FFFFFF;
         }
         body {
-            background-color: #525659;
-            font-family: 'Inter', sans-serif;
+            background-color: var(--canvas);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--ink);
             padding: 30px 15px;
             margin: 0;
+            line-height: 1.55;
         }
         .resume-page {
-            background: #ffffff;
+            background: var(--white);
             max-width: 850px;
             min-height: 1100px;
             margin: 0 auto 30px;
             padding: 48px 56px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-            border-radius: 4px;
+            box-shadow: 0 16px 40px rgba(22, 22, 22, 0.12);
+            border-radius: 16px;
+            border: 1px solid var(--line);
             position: relative;
         }
         .resume-header {
-            border-bottom: 2px solid var(--kld-green);
+            border-bottom: 2px solid var(--ink);
             padding-bottom: 20px;
             margin-bottom: 24px;
         }
         .resume-name {
-            font-family: 'Cinzel', serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--kld-green);
-            letter-spacing: 0.5px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.02em;
             margin-bottom: 4px;
         }
         .resume-sub {
             font-size: 13.5px;
-            color: #4a5568;
-            font-weight: 500;
+            color: var(--muted);
+            font-weight: 600;
         }
         .section-heading {
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--kld-green);
+            letter-spacing: 0.08em;
+            color: var(--ink);
             border-bottom: 1.5px solid var(--line);
-            padding-bottom: 5px;
+            padding-bottom: 6px;
             margin-top: 24px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
+        .section-heading i {
+            color: var(--accent);
+        }
         .badge-tag {
             display: inline-block;
-            padding: 3px 8px;
-            font-size: 11.5px;
-            border-radius: 4px;
-            background-color: #eef7f2;
-            color: var(--kld-green);
-            border: 1px solid #cce8d7;
-            font-weight: 500;
-        }
-        .matrix-pill {
-            background: #f8faf9;
-            border: 1px solid var(--line);
             padding: 4px 10px;
             font-size: 12px;
-            border-radius: 6px;
+            border-radius: 999px;
+            background-color: var(--accent-soft);
+            color: var(--ink);
+            border: 1px solid var(--line);
+            font-weight: 600;
+        }
+        .matrix-pill {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            padding: 5px 12px;
+            font-size: 12px;
+            border-radius: 999px;
             display: inline-block;
             margin-right: 6px;
             margin-bottom: 6px;
-            color: #2d3748;
+            color: var(--ink);
+            font-weight: 500;
+        }
+        .matrix-pill i {
+            color: var(--accent) !important;
         }
         .floating-controls {
             position: fixed;
@@ -220,6 +231,28 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
             z-index: 999;
             display: flex;
             gap: 10px;
+        }
+        @media (max-width: 767.98px) {
+            body {
+                padding: 16px 8px;
+            }
+            .resume-page {
+                padding: 24px 18px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+            }
+            .resume-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .resume-header .text-end {
+                text-align: left !important;
+            }
+            .floating-controls {
+                position: static;
+                margin-bottom: 16px;
+                justify-content: center;
+            }
         }
         @media print {
             body {
@@ -235,18 +268,18 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
                 padding: 30px;
                 max-width: 100%;
                 border-radius: 0;
+                border: none;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class=floating-controls no-print>
     <div class="floating-controls no-print">
-        <button type="button" class="btn btn-dark btn-sm shadow d-flex align-items-center gap-1 px-3 py-2" onclick="window.print()">
-            <i class="bi bi-printer-fill"></i> Print / Save as PDF
+        <button type="button" class="btn btn-dark btn-sm shadow-sm rounded-pill d-flex align-items-center gap-1 px-3 py-2" onclick="window.print()">
+            <i class="bi bi-printer-fill text-accent"></i> Print / Save PDF
         </button>
-        <button type="button" class="btn btn-light btn-sm shadow d-flex align-items-center gap-1 px-3 py-2" onclick="window.close()">
+        <button type="button" class="btn btn-light btn-sm shadow-sm rounded-pill border-line d-flex align-items-center gap-1 px-3 py-2" onclick="window.close()">
             <i class="bi bi-x-lg"></i> Close
         </button>
     </div>

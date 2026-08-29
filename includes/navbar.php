@@ -142,7 +142,7 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                     </div>
                 <?php else: ?>
                     <!-- Guest: POST A VACANCY solid pill + Login link -->
-                    <a href="<?= $base_url ?>login.php" class="btn-outline-pill d-none d-sm-inline-flex px-3 py-2 text-decoration-none">
+                    <a href="<?= $base_url ?>login.php" class="btn-outline-pill d-inline-flex px-3 py-2 text-decoration-none">
                         LOG IN
                     </a>
                     <a href="<?= $base_url ?>employer/create-job.php" class="btn-accent-pill">

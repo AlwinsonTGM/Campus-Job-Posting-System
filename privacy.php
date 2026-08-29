@@ -41,7 +41,7 @@ require_once __DIR__ . '/includes/header.php';
                         We collect and process only the minimum necessary information required to assess eligibility for campus student assistantships and office staffing requisitions:
                     </p>
                     <ul>
-                        <li><strong>Student Identification:</strong> Student ID Number, Full Legal Name, and Institutional Email (<code>@university.edu.ph</code>).</li>
+                        <li><strong>Student Identification:</strong> Student ID Number, Full Legal Name, and Institutional Email (<code>@kld.edu.ph</code>).</li>
                         <li><strong>Academic Information:</strong> Enrolled Course/Degree Program, Academic Year Level, and Academic Standing.</li>
                         <li><strong>Application Credentials:</strong> Digital Resume / Curriculum Vitae, statements of interest, and Cover Letters.</li>
                         <li><strong>Schedule Availability:</strong> Class schedule timetable and weekly vacant shift hours.</li>

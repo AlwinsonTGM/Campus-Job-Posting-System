@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (matrixContainer) {
                     matrixContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    matrixContainer.style.borderColor = 'var(--kld-red, #dc3545)';
+                    matrixContainer.style.borderColor = 'var(--st-declined, #E5484D)';
                 }
                 return false;
             } else {
