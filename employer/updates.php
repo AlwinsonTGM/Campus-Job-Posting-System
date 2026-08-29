@@ -179,11 +179,11 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <?= $pub_formatted ?>
                                             </td>
                                             <td class="text-end pe-4">
-                                                <div class="d-inline-flex gap-1">
-                                                    <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="View Public Post">
+                                                <div class="d-inline-flex gap-2">
+                                                    <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="btn-circle-icon" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="View Public Post">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-circle edit-emp-dispatch-btn" 
+                                                    <button type="button" class="btn-circle-icon edit-emp-dispatch-btn" 
                                                         data-id="<?= htmlspecialchars($item['id']) ?>"
                                                         data-title="<?= htmlspecialchars($item['title']) ?>"
                                                         data-summary="<?= htmlspecialchars($item['summary']) ?>"
@@ -192,13 +192,13 @@ require_once __DIR__ . '/../includes/header.php';
                                                         data-author-name="<?= htmlspecialchars($item['author']['name'] ?? $user['name']) ?>"
                                                         data-author-role="<?= htmlspecialchars($item['author']['role'] ?? 'Department Supervisor') ?>"
                                                         data-author-office="<?= htmlspecialchars($item['author']['office'] ?? $org_name) ?>"
-                                                        style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Edit Dispatch">
+                                                        style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Edit Dispatch">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
                                                     <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Delete this dispatch?');">
                                                         <input type="hidden" name="action" value="delete">
                                                         <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Delete Dispatch">
+                                                        <button type="submit" class="btn-circle-icon text-danger" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Delete Dispatch">
                                                             <i class="bi bi-trash"></i>
                                                         </button>
                                                     </form>
@@ -267,10 +267,10 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-line bg-surface p-3">
-                    <button type="button" class="btn-paper-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-paper-primary btn-sm">
-                        <i class="bi bi-send-fill me-1"></i> Publish Live Immediately
+                <div class="modal-footer bg-cream border-top border-line py-3 px-4">
+                    <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-pill btn-pill-sm">
+                        <i class="bi bi-send-fill"></i> Publish Live Immediately
                     </button>
                 </div>
             </form>
@@ -327,10 +327,10 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-line bg-surface p-3">
-                    <button type="button" class="btn-paper-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-paper-primary btn-sm">
-                        <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+                <div class="modal-footer bg-cream border-top border-line py-3 px-4">
+                    <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-pill btn-pill-sm">
+                        <i class="bi bi-check-circle-fill"></i> Save Changes
                     </button>
                 </div>
             </form>

@@ -101,7 +101,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="card-paper p-4 mb-4">
                     <form action="applicants.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-4">
+                            <div class="col-12 col-xl-4 col-lg-4 col-md-12">
                                 <label class="form-label" for="search-applicant">Search Candidates</label>
                                 <div class="search-input-wrap">
                                     <i class="bi bi-search text-muted-custom"></i>
@@ -109,7 +109,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-12 col-xl-4 col-lg-4 col-md-6">
                                 <label class="form-label" for="filter-job">Filter by Job Requisition</label>
                                 <select name="job_id" id="filter-job" class="form-select">
                                     <option value="">All Department Openings</option>
@@ -121,7 +121,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-8 col-xl-3 col-lg-3 col-md-5">
                                 <label class="form-label" for="filter-status">Filter by Status</label>
                                 <select name="status" id="filter-status" class="form-select">
                                     <option value="">All Application Stages</option>
@@ -133,11 +133,13 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-1">
-                                <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
-                                <a href="applicants.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </a>
+                            <div class="col-4 col-xl-1 col-lg-1 col-md-1 d-flex justify-content-end">
+                                <div>
+                                    <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
+                                    <a href="applicants.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </form>

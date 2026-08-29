@@ -89,7 +89,7 @@ if (!function_exists('render_status_badge')) {
             return '<span class="badge-status--review"><i class="bi bi-search"></i> Under Evaluation</span>';
         }
         if ($raw === 'Interview Scheduled' || $normalized === 'interview_scheduled' || $normalized === 'interview scheduled' || $normalized === 'interview') {
-            return '<span class="badge-status--interview">Interview Scheduled</span>';
+            return '<span class="badge-status--interview"><i class="bi bi-calendar-event"></i> Interview Scheduled</span>';
         }
         if ($raw === 'Accepted / Hired' || $raw === 'Accepted' || $normalized === 'accepted' || $normalized === 'hired' || $normalized === 'accepted / hired') {
             return '<span class="badge-status--accepted"><i class="bi bi-check-circle-fill"></i> Accepted / Hired</span>';
@@ -115,8 +115,8 @@ if (!function_exists('render_metric')) {
     function render_metric($value, $label, $icon = 'bi-bar-chart-fill') {
         ?>
         <div class="metric h-100">
-            <div class="d-flex flex-column justify-content-center min-w-0">
-                <div class="metric-lbl text-truncate"><?= htmlspecialchars($label) ?></div>
+            <div class="d-flex flex-column justify-content-center min-w-0 flex-grow-1">
+                <div class="metric-lbl"><?= htmlspecialchars($label) ?></div>
                 <div class="metric-val"><?= htmlspecialchars((string)$value) ?></div>
             </div>
             <div class="icon-circle icon-circle-success flex-shrink-0">
@@ -218,20 +218,20 @@ if (!function_exists('render_job_card')) {
 
             <!-- 4. Creative Pay Rate Box -->
             <div class="job-card-pay mt-auto mb-3">
-                <div class="job-card-pay-box d-flex align-items-center justify-content-between p-2 px-3">
+                <div class="job-card-pay-box">
                     <div class="d-flex align-items-center gap-2 min-w-0">
                         <div class="job-card-pay-icon flex-shrink-0">
                             <i class="bi bi-cash-stack"></i>
                         </div>
-                        <div class="d-flex align-items-baseline gap-1 text-truncate">
+                        <div class="d-flex align-items-baseline gap-1 min-w-0 text-truncate">
                             <span class="job-card-pay-amount"><?= htmlspecialchars($pay_amount) ?></span>
                             <?php if (!empty($pay_unit)): ?>
                                 <span class="job-card-pay-unit">/ <?= htmlspecialchars($pay_unit) ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
-                    <span class="job-card-pay-tag flex-shrink-0">
-                        <i class="bi bi-shield-check text-accent me-1"></i>Verified Rate
+                    <span class="job-card-pay-tag">
+                        <i class="bi bi-shield-check text-accent"></i> Verified Rate
                     </span>
                 </div>
             </div>
@@ -310,21 +310,29 @@ if (!function_exists('render_stepper')) {
         ?>
         <div class="stepper">
             <div class="stepper-step <?= ($current_step > 1) ? 'is-completed' : ($current_step === 1 && !$is_declined ? 'is-active' : '') ?>">
-                <div class="stepper-dot">1</div>
+                <div class="stepper-dot">
+                    <?= ($current_step > 1) ? '<i class="bi bi-check-lg"></i>' : '1' ?>
+                </div>
                 <div class="stepper-label">Pending Review</div>
             </div>
             <div class="stepper-step <?= ($current_step > 2) ? 'is-completed' : ($current_step === 2 && !$is_declined ? 'is-active' : '') ?>">
-                <div class="stepper-dot">2</div>
+                <div class="stepper-dot">
+                    <?= ($current_step > 2) ? '<i class="bi bi-check-lg"></i>' : '2' ?>
+                </div>
                 <div class="stepper-label">Under Evaluation</div>
             </div>
             <div class="stepper-step <?= ($current_step > 3) ? 'is-completed' : ($current_step === 3 && !$is_declined ? 'is-active' : '') ?>">
-                <div class="stepper-dot">3</div>
+                <div class="stepper-dot">
+                    <?= ($current_step > 3) ? '<i class="bi bi-check-lg"></i>' : '3' ?>
+                </div>
                 <div class="stepper-label">Interview Scheduled</div>
             </div>
             <div class="stepper-step <?= ($current_step === 4 && !$is_declined) ? 'is-completed is-active' : ($is_declined ? 'is-declined is-active' : '') ?>">
                 <div class="stepper-dot">
                     <?php if ($is_declined): ?>
-                        <i class="bi bi-x"></i>
+                        <i class="bi bi-x-lg"></i>
+                    <?php elseif ($current_step === 4): ?>
+                        <i class="bi bi-check-lg"></i>
                     <?php else: ?>
                         4
                     <?php endif; ?>

@@ -116,11 +116,13 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
 
                             <!-- Filter Reset Button -->
-                            <div class="col-lg-1 col-md-4">
-                                <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
-                                <a href="jobs.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </a>
+                            <div class="col-lg-1 col-md-4 d-flex justify-content-md-start justify-content-lg-end">
+                                <div>
+                                    <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
+                                    <a href="jobs.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
 

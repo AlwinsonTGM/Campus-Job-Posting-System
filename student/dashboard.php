@@ -152,12 +152,12 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php endif; ?>
 
                             <div class="d-flex align-items-center gap-3 mb-4">
-                                <div class="icon-circle icon-circle-success" style="width: 54px; height: 54px; font-size: 24px;">
+                                <div class="icon-circle icon-circle-success flex-shrink-0" style="width: 54px; height: 54px; min-width: 54px; min-height: 54px; font-size: 24px; aspect-ratio: 1 / 1;">
                                     <?= strtoupper(substr($user['name'] ?? 'S', 0, 1)) ?>
                                 </div>
-                                <div>
-                                    <h4 class="card-paper-title fs-5 mb-0"><?= htmlspecialchars($user['name']) ?></h4>
-                                    <span class="small text-muted-custom"><?= htmlspecialchars($user['email']) ?></span>
+                                <div class="min-w-0 flex-grow-1">
+                                    <h4 class="card-paper-title fs-5 mb-0 text-truncate"><?= htmlspecialchars($user['name']) ?></h4>
+                                    <span class="small text-muted-custom text-truncate d-block"><?= htmlspecialchars($user['email']) ?></span>
                                 </div>
                             </div>
 

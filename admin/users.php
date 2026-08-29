@@ -240,7 +240,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="card-paper p-4 mb-4">
                     <form action="users.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-4">
+                            <div class="col-12 col-xl-4 col-lg-3 col-md-12">
                                 <label class="form-label" for="search-user">Search User Directory</label>
                                 <div class="search-input-wrap">
                                     <i class="bi bi-search text-muted-custom"></i>
@@ -248,7 +248,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-6 col-xl-2 col-lg-2 col-md-4">
                                 <label class="form-label" for="role-select">Role</label>
                                 <select name="role" id="role-select" class="form-select">
                                     <option value="">All Roles</option>
@@ -258,16 +258,16 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label" for="emp-select">Employer Classification</label>
+                            <div class="col-6 col-xl-3 col-lg-3 col-md-4">
+                                <label class="form-label" for="emp-select">Employer Type</label>
                                 <select name="emp_type" id="emp-select" class="form-select">
-                                    <option value="">All Employer Types</option>
+                                    <option value="">All Types</option>
                                     <option value="university_office" <?= ($emp_type_filter === 'university_office') ? 'selected' : '' ?>>University Offices</option>
                                     <option value="approved_partner" <?= ($emp_type_filter === 'approved_partner') ? 'selected' : '' ?>>Approved Partners</option>
                                 </select>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-8 col-xl-2 col-lg-3 col-md-3">
                                 <label class="form-label" for="ver-select">Accreditation</label>
                                 <select name="ver_status" id="ver-select" class="form-select">
                                     <option value="">All Statuses</option>
@@ -277,11 +277,13 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
-                            <div class="col-md-1">
-                                <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
-                                <a href="users.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </a>
+                            <div class="col-4 col-xl-1 col-lg-1 col-md-1 d-flex justify-content-end">
+                                <div>
+                                    <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
+                                    <a href="users.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </form>
