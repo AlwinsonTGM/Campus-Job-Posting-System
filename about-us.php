@@ -99,9 +99,9 @@ require_once __DIR__ . '/includes/header.php';
                             <i class="bi bi-patch-check-fill"></i>
                         </div>
                         <div>
-                            <h4 class="card-paper-title mb-1">Developer Photo Standards Policy</h4>
+                            <h4 class="card-paper-title mb-1">Developer 2x2 Photo Standards Policy</h4>
                             <p class="text-muted-custom small mb-0">
-                                All developer profiles feature formal KLD Green institutional blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories to uphold campus professional standards.
+                                All developer profiles feature 2x2 formal institutional portrait photos in KLD Green blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories.
                             </p>
                         </div>
                     </div>

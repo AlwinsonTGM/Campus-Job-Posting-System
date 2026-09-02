@@ -51,8 +51,8 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Custom Theme & Paper Sheet CSS -->
-    <link rel="stylesheet" href="<?= $base_url ?>assets/css/style.css">
-    <link rel="stylesheet" href="<?= $base_url ?>assets/css/custom.css">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/style.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/custom.css?v=<?= time() ?>">
 </head>
 <body>
 

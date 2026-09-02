@@ -547,8 +547,9 @@ require_once __DIR__ . '/includes/header.php';
                                     </select>
                                 </div>
                                 <div class="col-5">
-                                    <label class="form-label small mb-1" for="req-sex">Sex <span class="text-danger">*</span></label>
+                                    <label class="form-label small mb-1" for="req-sex">Sex / Gender <span class="text-danger">*</span></label>
                                     <select name="sex" id="req-sex" class="form-select form-select-sm" required>
+                                        <option value="" disabled <?= empty($user['sex']) ? 'selected' : '' ?>>Select Gender</option>
                                         <?php foreach (get_sex_options() as $val => $label): ?>
                                             <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['sex']) && $user['sex'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                                         <?php endforeach; ?>

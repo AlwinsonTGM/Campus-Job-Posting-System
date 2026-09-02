@@ -154,21 +154,7 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
                         <?php endif; ?>
 
-                        <!-- Quick Role Switcher Chips -->
-                        <div class="mb-4">
-                            <label class="form-label small fw-bold text-muted-custom text-uppercase" style="font-size: 11px;">Select Role Context</label>
-                            <div class="d-flex gap-2">
-                                <button type="button" class="chip chip-selectable active" id="tab-student" onclick="selectRoleTab('student')">
-                                    <i class="bi bi-mortarboard"></i> Student
-                                </button>
-                                <button type="button" class="chip chip-selectable" id="tab-employer" onclick="selectRoleTab('employer')">
-                                    <i class="bi bi-building"></i> Employer / Office
-                                </button>
-                                <button type="button" class="chip chip-selectable" id="tab-admin" onclick="selectRoleTab('admin')">
-                                    <i class="bi bi-shield-lock"></i> Admin
-                                </button>
-                            </div>
-                        </div>
+
 
                         <form action="login.php" method="POST" class="form-paper">
                             
@@ -233,20 +219,6 @@ require_once __DIR__ . '/includes/header.php';
 
 <script src="assets/js/password-strength.js"></script>
 <script>
-function selectRoleTab(role) {
-    document.querySelectorAll('.chip-selectable').forEach(el => el.classList.remove('active'));
-    const btn = document.getElementById('tab-' + role);
-    if (btn) btn.classList.add('active');
-
-    const emailInput = document.getElementById('login-email');
-    const passInput = document.getElementById('login-password');
-    if (emailInput && passInput) {
-        if (role === 'student') emailInput.value = 'student@kld.edu.ph';
-        else if (role === 'employer') emailInput.value = 'registrar@kld.edu.ph';
-        else if (role === 'admin') emailInput.value = 'admin@kld.edu.ph';
-        passInput.value = 'Password123!';
-    }
-}
 
 document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('login-email');

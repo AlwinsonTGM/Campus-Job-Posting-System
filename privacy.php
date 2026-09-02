@@ -19,6 +19,13 @@ require_once __DIR__ . '/includes/header.php';
         <main class="py-5">
             <div class="container-paper">
                 <div class="prose">
+                    <!-- Top Back Navigation Button -->
+                    <div class="mb-3">
+                        <a href="javascript:history.back()" class="btn-pill-outline d-inline-flex align-items-center gap-2" style="padding: 0.4rem 1.1rem; font-size: 0.9rem;">
+                            <i class="bi bi-arrow-left"></i> Go Back
+                        </a>
+                    </div>
+
                     <!-- Page Head & Last Updated Line -->
                     <div class="mb-4 pb-3 border-bottom border-line">
                         <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-2">
@@ -105,9 +112,12 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
 
                     <!-- Return CTA -->
-                    <div class="pt-4 mt-4 border-top border-line text-center">
+                    <div class="pt-4 mt-4 border-top border-line d-flex justify-content-center gap-3">
+                        <a href="javascript:history.back()" class="btn-pill">
+                            <i class="bi bi-arrow-left"></i> Go Back to Previous Page
+                        </a>
                         <a href="index.php" class="btn-pill-outline">
-                            <i class="bi bi-arrow-left"></i> Return to Home
+                            <i class="bi bi-house"></i> Home
                         </a>
                     </div>
                 </div>

@@ -41,27 +41,28 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 1: HERO (bg --surface)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface position-relative reveal-fade-rise">
-                <div class="container-fluid px-lg-5">
-                    <div class="row align-items-center py-4 py-lg-5">
-                        <div class="col-xl-10 mx-auto text-center">
-                            <!-- Giant Two-Line Heading with Inline Rounded Image Pill -->
-                            <h1 class="hero-headline mb-4">
-                                Empowering <span class="hero-inline-pill-img"><img
-                                        src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop"
-                                        alt="Campus Students"></span> Students,<br class="d-none d-sm-block">
+            <section class="hero-backdrop-wrapper reveal-fade-rise">
+                <!-- Background Campus Photo Backdrop -->
+                <div class="hero-backdrop-bg"></div>
+
+                <div class="container-fluid px-lg-5 hero-backdrop-content">
+                    <div class="row align-items-center justify-content-center hero-center-body">
+                        <div class="col-12 col-xl-11 mx-auto text-center">
+                            <!-- Clean High-Impact Headline without Inline Image -->
+                            <h1 class="hero-headline mb-3">
+                                Empowering Students,<br class="d-none d-sm-block">
                                 Connecting Trusted Employers
                             </h1>
 
                             <!-- Subtitle -->
-                            <p class="lead text-muted-custom col-lg-8 mx-auto mb-5">
+                            <p class="lead text-muted-custom col-12 col-lg-10 col-xl-9 mx-auto mb-4">
                                 Discover on-campus student assistantships in university offices alongside accredited
                                 part-time jobs, academic internships (OJT), and project roles from verified partner
                                 employers, scheduled flexibly around your classes.
                             </p>
 
                             <!-- CTAs -->
-                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-5">
+                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
                                 <a href="student/jobs.php" class="btn-accent-pill">
                                     <i class="bi bi-search"></i> EXPLORE VACANCIES
                                 </a>
@@ -114,11 +115,11 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 2: JOB CATEGORIES GRID (#categories, bg --cream)
                  ============================================================ -->
-            <section id="categories" class="py-5 py-lg-6 bg-cream border-top border-line reveal-fade-rise">
+            <section id="categories" class="py-4 py-lg-5 bg-cream border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
-                    <div class="text-center mb-5 pt-3 pt-md-4">
+                    <div class="text-center mb-4 pt-2 pt-md-3">
                         <h2 class="h1 fw-extrabold text-ink mb-2">Where Do You Want To Work?</h2>
-                        <p class="text-muted-custom col-lg-6 mx-auto">
+                        <p class="text-muted-custom col-12 col-lg-8 mx-auto mb-0">
                             Explore dynamic student assistantship roles and verified part-time openings distributed
                             across campus divisions.
                         </p>
@@ -151,12 +152,12 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 3: HOW IT WORKS & ACCREDITATION PROCESS (Treasure Map / Journey Trail)
                  ============================================================ -->
-            <section id="how-it-works" class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+            <section id="how-it-works" class="py-4 py-lg-5 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
-                    <div class="text-center mb-5 pt-3 pt-md-4">
+                    <div class="text-center mb-4 pt-2 pt-md-3">
                         <h2 class="h1 fw-extrabold text-ink mb-2">How Approved Employers &amp; Offices Deploy Vacancies
                         </h2>
-                        <p class="text-muted-custom col-lg-7 mx-auto">
+                        <p class="text-muted-custom col-12 col-lg-9 mx-auto mb-0">
                             A secure institutional framework ensuring every partner entity, campus department, and job
                             requisition undergoes formal verification before reaching students.
                         </p>
@@ -181,7 +182,7 @@ require_once __DIR__ . '/includes/header.php';
                                     <div class="map-checkpoint-header">
                                         <span class="map-waypoint-badge">
                                             <i class="bi bi-geo-alt-fill text-accent"></i> CHECKPOINT <span
-                                                class="step-num">01</span>
+                                                 class="step-num">01</span>
                                         </span>
                                         <div class="map-card-icon-wrap">
                                             <i class="bi bi-file-earmark-check-fill"></i>
@@ -216,7 +217,7 @@ require_once __DIR__ . '/includes/header.php';
                                         </div>
                                         <div class="map-preview-row">
                                             <span class="map-preview-label"><i class="bi bi-file-earmark-text"></i>
-                                                Legal Accord</span>
+                                                 Legal Accord</span>
                                             <span class="map-preview-val">University MOA Accord</span>
                                         </div>
                                         <div class="map-preview-row">
@@ -359,10 +360,10 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 4: WHY WORK ON-CAMPUS (Student Benefits - bg --cream)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-cream border-top border-line reveal-fade-rise">
+            <section class="py-4 py-lg-5 bg-cream border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div
-                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 pt-3 pt-md-4">
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 pt-2 pt-md-3">
                         <div>
                             <h2 class="h1 fw-extrabold text-ink mb-0">Study Close, Work Close, Grow Faster</h2>
                         </div>
@@ -450,7 +451,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 5: KEY METRICS (cycling counters, bg crossfade + arc)
                  ============================================================ -->
-            <section class="py-5 bg-surface border-top border-line reveal-fade-rise">
+            <section class="py-4 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="metrics-section">
                         <!-- Ambient Glowing Arc -->
@@ -504,7 +505,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 6: FEATURED JOB POSTINGS (center-mode carousel, bg --surface)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+            <section class="py-4 py-lg-5 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
                         <div>
@@ -606,9 +607,9 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 7: CAMPUS UPDATES (staggered news carousel, bg --surface)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+            <section class="py-4 py-lg-5 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
                         <div>
                             <h2 class="h1 fw-extrabold text-ink mb-0">Updates From The Career Center</h2>
                         </div>
@@ -648,7 +649,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- ============================================================
                  SECTION 8: CTA (bg --cream, floating circular campus photos 64–280px)
                  ============================================================ -->
-            <section class="py-5 py-lg-6 bg-surface border-top border-line reveal-fade-rise">
+            <section class="py-4 py-lg-5 bg-surface border-top border-line reveal-fade-rise">
                 <div class="container-fluid px-lg-5">
                     <div class="cta-section-wrap">
                         <!-- Floating Circular Developer Photos -->

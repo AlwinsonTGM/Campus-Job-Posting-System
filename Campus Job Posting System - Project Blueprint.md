@@ -25,32 +25,60 @@ aliases: [Campus Job Posting System Blueprint, Job Board Project Plan, COAL101 P
 
 ## 🧭 System Architecture & Site Map
 
-```
-                               ┌────────────────────────────────────────────────────────┐
-                               │          CAMPUS JOB POSTING SYSTEM (PORTAL)            │
-                               └───────────────────────────┬────────────────────────────┘
-                                                           │
-          ┌────────────────────────────────────────────────┼────────────────────────────────────────────────┐
-          │                                                │                                                │
-┌─────────┴──────────┐                          ┌──────────┴───────────┐                         ┌──────────┴───────────┐
-│    PUBLIC SUITE    │                          │   STUDENT PORTAL     │                         │  EMPLOYER & ADMIN    │
-├────────────────────┤                          ├──────────────────────┤                         ├──────────────────────┤
-│ • index.php        │                          │ • student/           │                         │ • employer/          │
-│ • about-us.php     │                          │   - dashboard.php    │                         │   - dashboard.php    │
-│ • updates.php      │                          │   - jobs.php         │                         │   - create-job.php   │
-│ • update-detail.php│                          │   - job-details.php  │                         │   - edit-job.php     │
-│ • privacy.php      │                          │   - apply.php        │                         │   - applicants.php   │
-│ • terms.php        │                          │   - my-apps.php      │                         │   - review-app.php   │
-│ • faqs.php         │                          └──────────────────────┘                         │   - updates.php      │
-│ • login.php        │                                     │                                     │ • admin/             │
-│ • register.php     │                          ┌──────────┴───────────┐                         │   - users.php        │
-│ • forgot-pass.php  │                          │   SHARED SERVICES    │                         │   - categories.php   │
-│ • logout.php       │                          ├──────────────────────┤                         │   - reports.php      │
-└────────────────────┘                          │ • settings.php       │                         │   - updates.php      │
-                                                │ • view-resume.php    │                         └──────────────────────┘
-                                                │ • search-modal (JS)  │
-                                                │ • api/search-jobs.php│
-                                                └──────────────────────┘
+```mermaid
+flowchart TB
+    Root["🎓 CAMPUS JOB POSTING SYSTEM<br/>(KLD Campus Hire)"]
+
+    subgraph Public_Suite ["🌐 PUBLIC SUITE"]
+        Index["index.php (Landing Page)"]
+        About["about-us.php (Team & 3D DevBlog)"]
+        Updates["updates.php (Career Center Hub)"]
+        UpdateDetail["update-detail.php (Article Reader)"]
+        Privacy["privacy.php (RA 10173 Compliance)"]
+        Terms["terms.php (20h/wk Policy)"]
+        FAQs["faqs.php (10 Campus Q&As)"]
+        Login["login.php (Role Tabs & Quick-Fill)"]
+        Register["register.php (Password Meter & Permit)"]
+        Forgot["forgot-pass.php (Single-Field Reset)"]
+        Logout["logout.php (Session Destroy)"]
+    end
+
+    subgraph Student_Suite ["🎓 STUDENT PORTAL (student/)"]
+        SDash["dashboard.php (Metrics & Timeline)"]
+        SJobs["jobs.php (Faceted Job Search)"]
+        SJobDetail["job-details.php (Requisition Specs)"]
+        SApply["apply.php (Availability Matrix)"]
+        SMyApps["my-applications.php (5-Stage Tracker)"]
+    end
+
+    subgraph Employer_Suite ["🏢 EMPLOYER SUITE (employer/)"]
+        EDash["dashboard.php (Active Listings & KPIs)"]
+        ECreate["create-job.php (Job Composer)"]
+        EEdit["edit-job.php (IDOR Vacancy Editor)"]
+        EApplicants["applicants.php (Candidate Ledger)"]
+        EReview["review-app.php (Dossier & Decision Gate)"]
+        EUpdates["updates.php (Department Announcements)"]
+    end
+
+    subgraph Admin_Suite ["🛠️ ADMIN SUITE (admin/)"]
+        AUsers["users.php (Accreditation & Profile Queue)"]
+        ACats["categories.php (Taxonomy CRUD)"]
+        AReports["reports.php (Analytics & Print PDF)"]
+        AUpdates["updates.php (Career Hub CRUD)"]
+    end
+
+    subgraph Shared_Suite ["🔒 SHARED SERVICES"]
+        Settings["settings.php (Profile, Security, COR Request)"]
+        ResumeView["view-resume.php (IDOR Resume Viewer)"]
+        SearchModal["includes/search-modal.php (Ctrl+K Spotlight)"]
+        SearchAPI["api/search-jobs.php (JSON REST API)"]
+    end
+
+    Root --> Public_Suite
+    Root --> Student_Suite
+    Root --> Employer_Suite
+    Root --> Admin_Suite
+    Root --> Shared_Suite
 ```
 
 ---
@@ -282,6 +310,7 @@ Campus-Job-Posting-System/
 │   │   └── main.js             <-- Double-submit debounce, search modal, tooltips
 │   └── img/
 │       ├── logo.png
+│       ├── favicon.svg         <-- Institutional brand favicon
 │       └── developers/         <-- 6 Formal Developer Portraits
 │           ├── BUSTAMANTE.jpg
 │           ├── BACO.jpg
@@ -304,7 +333,7 @@ Campus-Job-Posting-System/
 │   ├── applications.json       <-- Applications, availability, and decisions
 │   ├── categories.json         <-- Category taxonomy
 │   ├── updates.json            <-- Career Center updates & articles
-│   ├── devblogs.json           <-- 3D Coverflow Developer sprint logs
+│   ├── devblogs.json           <-- 3D Coverflow Developer daily chronicles
 │   └── profile_requests.json   <-- Student academic profile change queue
 ├── uploads/
 │   ├── .htaccess               <-- Script execution prevention
@@ -332,13 +361,16 @@ Campus-Job-Posting-System/
 ├── api/
 │   └── search-jobs.php         <-- Type-guarded JSON search API
 ├── tests/
-│   └── e2e/                    <-- Playwright automated test suite (40+ assertions)
+│   └── e2e/                    <-- Playwright automated test suite (100+ assertions)
 │       ├── security.spec.ts
 │       ├── employer.spec.ts
 │       ├── admin.spec.ts
 │       ├── student.spec.ts
 │       ├── smoke.spec.ts
-│       └── e2e-regression.spec.ts
+│       ├── e2e-regression.spec.ts
+│       ├── comprehensive-audit.spec.ts
+│       └── half-screen.spec.ts
+├── favicon.svg                 <-- Root brand SVG favicon
 ├── index.php
 ├── about-us.php
 ├── updates.php
@@ -386,11 +418,11 @@ D-Day (Sep 02)  ━━━> 🚀 FINAL SUBMISSION, DEMO PRESENTATION & CODEBASE H
 
 ## ✅ Quality Assurance & Security Checklist
 
-- [x] **Bootstrap 5 UI Responsiveness:** Verified on mobile (375px), tablet (768px), and desktop (1200px+).
+- [x] **Bootstrap 5 UI Responsiveness:** Verified on mobile (375px), tablet (768px), desktop split/half-screen (680px-960px), and wide desktop (1200px+).
 - [x] **No Database Dependency:** Verified without MySQL/XAMPP database — session & flat-file JSON datastore fully functional.
 - [x] **Developer Photos Verified:** All 6 developer images are formal, clear, wearing green institutional blazers, free of accessories.
 - [x] **Auth Validation:** Password strength meter accurately verifies lowercase, uppercase, digits, symbols, and length.
 - [x] **Forgot Password Layout:** Strictly single institutional email field with anti-enumeration response.
 - [x] **10 FAQs:** Interactive accordion answering 10 university employment questions.
 - [x] **IDOR & CSRF Security:** Zero unauthorized parameter tampering across jobs, applicant reviews, and resumes; anti-CSRF token verification on all POST actions.
-- [x] **Automated Testing:** 100% pass rate across full Playwright E2E test suite (`npx playwright test`).
+- [x] **Automated Testing:** 100% pass rate across full Playwright E2E test suite (100+ assertions across 9 test specifications).

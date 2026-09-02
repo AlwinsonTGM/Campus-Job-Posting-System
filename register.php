@@ -15,7 +15,11 @@ $error = null;
 $preselected_role = $_GET['role'] ?? 'student';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
+    $name = trim($first_name . ($middle_name !== '' ? ' ' . $middle_name : '') . ' ' . $last_name);
+    
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -24,9 +28,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $organization_name = trim($_POST['organization_name'] ?? '');
     $student_id = trim($_POST['student_id'] ?? '');
     $department = trim($_POST['department'] ?? '');
+    
+    if ($role === 'student') {
+        if ($department === 'Other Institute / Outsider' && !empty($_POST['other_institute'])) {
+            $department = trim($_POST['other_institute']);
+        }
+    } elseif ($role === 'employer') {
+        if ($employer_type === 'university_office') {
+            $office_dept = trim($_POST['office_department'] ?? '');
+            if (!empty($office_dept)) {
+                $department = $office_dept;
+                $organization_name = $office_dept;
+            }
+            $office_location = trim($_POST['office_location'] ?? '');
+            $accreditation_number = trim($_POST['office_accreditation_number'] ?? '');
+        }
+    }
+    
     $course = trim($_POST['course'] ?? '');
     $year_level = $_POST['year_level'] ?? '1st Year';
-    $sex = $_POST['sex'] ?? 'Male';
+    $sex = trim($_POST['sex'] ?? '');
     $birthdate = trim($_POST['birthdate'] ?? '');
     $age = !empty($birthdate) ? calculate_age($birthdate) : 20;
     $phone = trim($_POST['phone'] ?? '');
@@ -34,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accreditation_number = trim($_POST['accreditation_number'] ?? '');
 
     // Server-side validation
-    if (empty($name) || empty($email) || empty($password)) {
-        $error = 'Please fill in all mandatory fields.';
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
+        $error = 'Please fill in all mandatory fields (First Name, Last Name, Email, Password).';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please provide a valid email address.';
     } elseif ($role === 'employer' && $employer_type === 'university_office' && !preg_match('/@kld\.edu\.ph$/i', $email)) {
@@ -44,8 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Password must contain at least 8 characters.';
     } elseif ($password !== $confirm_password) {
         $error = 'Password and Confirm Password do not match.';
-    } elseif ($role === 'student' && (empty($student_id) || empty($department) || empty($course) || empty($birthdate))) {
-        $error = 'Please complete all student profile fields (Student ID, Institute, Degree Program, and Date of Birth).';
+    } elseif ($role === 'student' && (empty($student_id) || empty($department) || empty($course) || empty($sex) || empty($birthdate))) {
+        $error = 'Please complete all student profile fields (Student ID, Academic Institute, Degree Program, Biological Sex, and Date of Birth).';
     } else {
         $permit_file_path = null;
         if ($role === 'employer' && isset($_FILES['permit_photo']) && ($_FILES['permit_photo']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
@@ -230,15 +251,23 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                             </div>
 
-                            <!-- Basic Information -->
+                            <!-- Basic Information (3-Part Name) -->
                             <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="reg-name">Full Name / Representative <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" id="reg-name" class="form-control" placeholder="Juan Dela Cruz" value="<?= htmlspecialchars($name ?? '') ?>" required>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="reg-first-name">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="first_name" id="reg-first-name" class="form-control" placeholder="Juan" value="<?= htmlspecialchars($first_name ?? '') ?>" required>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="reg-middle-name">Middle Name / Initial</label>
+                                    <input type="text" name="middle_name" id="reg-middle-name" class="form-control" placeholder="Santos (Optional)" value="<?= htmlspecialchars($middle_name ?? '') ?>">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="reg-last-name">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="last_name" id="reg-last-name" class="form-control" placeholder="Dela Cruz" value="<?= htmlspecialchars($last_name ?? '') ?>" required>
+                                </div>
+                                <div class="col-12">
                                     <label class="form-label" for="reg-email">Institutional / Business Email <span class="text-danger">*</span></label>
-                                    <input type="email" name="email" id="reg-email" class="form-control" placeholder="username@campus-hire.edu" value="<?= htmlspecialchars($email ?? '') ?>" required>
+                                    <input type="email" name="email" id="reg-email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email ?? '') ?>" required>
                                 </div>
                             </div>
 
@@ -250,20 +279,17 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="department-select">Academic Institute <span class="text-danger">*</span></label>
-                                    <select name="department" class="form-select" id="department-select">
-                                        <option value="">Select Institute / Office</option>
-                                        <optgroup label="Academic Institutes">
-                                            <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
-                                                <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($department) && $department === $inst) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
-                                            <?php endforeach; ?>
-                                        </optgroup>
-                                        <optgroup label="Administrative Offices">
-                                            <option value="Office of the University Registrar" <?= (isset($department) && $department === 'Office of the University Registrar') ? 'selected' : '' ?>>Office of the University Registrar</option>
-                                            <option value="Student Affairs & Services Office (SASO)" <?= (isset($department) && $department === 'Student Affairs & Services Office (SASO)') ? 'selected' : '' ?>>Student Affairs & Services Office (SASO)</option>
-                                            <option value="Management Information Systems (MIS)" <?= (isset($department) && $department === 'Management Information Systems (MIS)') ? 'selected' : '' ?>>Management Information Systems (MIS)</option>
-                                            <option value="KLD University Library" <?= (isset($department) && $department === 'KLD University Library') ? 'selected' : '' ?>>KLD University Library</option>
-                                        </optgroup>
+                                    <select name="department" class="form-select" id="department-select" onchange="checkOtherInstitute(this.value)">
+                                        <option value="">Select Academic Institute</option>
+                                        <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                            <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($department) && $department === $inst) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
+                                        <?php endforeach; ?>
+                                        <option value="Other Institute / Outsider" <?= (isset($department) && ($department === 'Other Institute / Outsider' || (!empty($department) && !array_key_exists($department, get_kld_institutes_and_courses())))) ? 'selected' : '' ?>>Other Institute / Outsider</option>
                                     </select>
+                                </div>
+                                <div class="col-12" id="other-institute-wrap" style="display: <?= (isset($department) && ($department === 'Other Institute / Outsider' || (!empty($department) && !array_key_exists($department, get_kld_institutes_and_courses())))) ? 'block' : 'none' ?>;">
+                                    <label class="form-label" for="other_institute">Specify Institute / University Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="other_institute" id="other_institute" class="form-control" placeholder="e.g. Cavite State University, De La Salle..." value="<?= htmlspecialchars($_POST['other_institute'] ?? (isset($department) && !array_key_exists($department, get_kld_institutes_and_courses()) ? $department : '')) ?>">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="course-select">Degree Program / Course <span class="text-danger">*</span></label>
@@ -276,6 +302,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <?php endforeach; ?>
                                             </optgroup>
                                         <?php endforeach; ?>
+                                        <option value="Other Degree Program" <?= (isset($course) && $course === 'Other Degree Program') ? 'selected' : '' ?>>Other Degree Program / Outsider</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -287,8 +314,9 @@ require_once __DIR__ . '/includes/header.php';
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="reg-sex">Biological Sex <span class="text-danger">*</span></label>
-                                    <select name="sex" id="reg-sex" class="form-select">
+                                    <label class="form-label" for="reg-sex">Biological Sex / Gender <span class="text-danger">*</span></label>
+                                    <select name="sex" id="reg-sex" class="form-select" required>
+                                        <option value="" disabled <?= empty($sex) ? 'selected' : '' ?>>Select Gender</option>
                                         <?php foreach (get_sex_options() as $val => $label): ?>
                                             <option value="<?= htmlspecialchars($val) ?>" <?= (isset($sex) && $sex === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                                         <?php endforeach; ?>
@@ -311,6 +339,33 @@ require_once __DIR__ . '/includes/header.php';
                                     <span class="small text-muted-custom mt-1 d-block" style="font-size: 11.5px;">
                                         <i class="bi bi-shield-lock text-accent me-1"></i> Upload your official COR or valid student ID. Your institutional profile will be locked and verified based on this document.
                                     </span>
+                                </div>
+                            </div>
+
+                            <!-- University Office Specific Fields -->
+                            <div class="row g-3 mb-3" id="office-fields" style="display: none;">
+                                <div class="col-12">
+                                    <label class="form-label" for="office_name_select">University Department / Administrative Office <span class="text-danger">*</span></label>
+                                    <select name="office_department" id="office_name_select" class="form-select">
+                                        <option value="">Select Administrative Office</option>
+                                        <option value="Office of the University Registrar" <?= (isset($department) && $department === 'Office of the University Registrar') ? 'selected' : '' ?>>Office of the University Registrar</option>
+                                        <option value="Student Affairs & Services Office (SASO)" <?= (isset($department) && $department === 'Student Affairs & Services Office (SASO)') ? 'selected' : '' ?>>Student Affairs & Services Office (SASO)</option>
+                                        <option value="Management Information Systems (MIS)" <?= (isset($department) && $department === 'Management Information Systems (MIS)') ? 'selected' : '' ?>>Management Information Systems (MIS)</option>
+                                        <option value="KLD University Library" <?= (isset($department) && $department === 'KLD University Library') ? 'selected' : '' ?>>KLD University Library</option>
+                                        <option value="Accounting & Finance Office" <?= (isset($department) && $department === 'Accounting & Finance Office') ? 'selected' : '' ?>>Accounting & Finance Office</option>
+                                        <option value="Human Resource Management Office" <?= (isset($department) && $department === 'Human Resource Management Office') ? 'selected' : '' ?>>Human Resource Management Office</option>
+                                        <option value="Guidance & Counseling Office" <?= (isset($department) && $department === 'Guidance & Counseling Office') ? 'selected' : '' ?>>Guidance & Counseling Office</option>
+                                        <option value="Campus Clinic / Medical Health Unit" <?= (isset($department) && $department === 'Campus Clinic / Medical Health Unit') ? 'selected' : '' ?>>Campus Clinic / Medical Health Unit</option>
+                                        <option value="Other Campus Office" <?= (isset($department) && $department === 'Other Campus Office') ? 'selected' : '' ?>>Other Campus Office / Unit</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="office_location">Campus Office Location</label>
+                                    <input type="text" name="office_location" id="office_location" class="form-control" placeholder="e.g. KLD Admin Building, 2nd Floor, Room 204" value="<?= htmlspecialchars($office_location ?? '') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="office_accreditation_number">Office Code / Department Ref</label>
+                                    <input type="text" name="office_accreditation_number" id="office_accreditation_number" class="form-control" placeholder="e.g. INTERNAL-UNIV-REG01" value="<?= htmlspecialchars($accreditation_number ?? '') ?>">
                                 </div>
                             </div>
 
@@ -452,6 +507,17 @@ require_once __DIR__ . '/includes/header.php';
 
 <script src="assets/js/password-strength.js"></script>
 <script>
+function checkOtherInstitute(val) {
+    const wrap = document.getElementById('other-institute-wrap');
+    if (wrap) {
+        wrap.style.display = (val === 'Other Institute / Outsider') ? 'block' : 'none';
+        const input = document.getElementById('other_institute');
+        if (input && val === 'Other Institute / Outsider') {
+            input.focus();
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const roleStudent = document.getElementById('role-student');
     const roleEmployer = document.getElementById('role-employer');
@@ -465,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const lblTypePartner = document.getElementById('lbl-type-partner');
 
     const studentFields = document.getElementById('student-fields');
+    const officeFields = document.getElementById('office-fields');
     const partnerFields = document.getElementById('partner-fields');
     const employerTypeNote = document.getElementById('employer-type-note');
 
@@ -474,6 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lblRoleEmployer.classList.remove('active');
             if (employerClassSec) employerClassSec.style.display = 'none';
             if (studentFields) studentFields.style.display = 'flex';
+            if (officeFields) officeFields.style.display = 'none';
             if (partnerFields) partnerFields.style.display = 'none';
         } else {
             lblRoleEmployer.classList.add('active');
@@ -484,12 +552,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 lblTypePartner.classList.add('active');
                 lblTypeOffice.classList.remove('active');
                 if (studentFields) studentFields.style.display = 'none';
+                if (officeFields) officeFields.style.display = 'none';
                 if (partnerFields) partnerFields.style.display = 'flex';
-                if (employerTypeNote) employerTypeNote.innerHTML = '<i class="bi bi-patch-check text-accent me-1"></i> For accredited industry partners and campus concessionaires. Account will be verified by Career Services.';
+                if (employerTypeNote) employerTypeNote.innerHTML = '<i class="bi bi-patch-check text-accent me-1"></i> For accredited industry partners and enterprise recruiters. Account will be verified by Career Services.';
             } else {
                 lblTypeOffice.classList.add('active');
                 lblTypePartner.classList.remove('active');
-                if (studentFields) studentFields.style.display = 'flex';
+                if (studentFields) studentFields.style.display = 'none';
+                if (officeFields) officeFields.style.display = 'flex';
                 if (partnerFields) partnerFields.style.display = 'none';
                 if (employerTypeNote) employerTypeNote.innerHTML = '<i class="bi bi-info-circle text-accent me-1"></i> For university academic divisions, laboratories, and student services offices.';
             }
