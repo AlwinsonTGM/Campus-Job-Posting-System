@@ -104,7 +104,9 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     INDEX `idx_jobs_status` (`status`),
     INDEX `idx_jobs_deadline` (`deadline`),
     INDEX `idx_jobs_job_type` (`job_type`),
-    INDEX `idx_jobs_work_setup` (`work_setup`)
+    INDEX `idx_jobs_work_setup` (`work_setup`),
+    CONSTRAINT `publishes (employers)` FOREIGN KEY (`employer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `classifies` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -140,7 +142,9 @@ CREATE TABLE IF NOT EXISTS `applications` (
     INDEX `idx_applications_job_id` (`job_id`),
     INDEX `idx_applications_student_id` (`student_id`),
     INDEX `idx_applications_status` (`status`),
-    INDEX `idx_applications_department` (`department`)
+    INDEX `idx_applications_department` (`department`),
+    CONSTRAINT `receives` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `submits (students)` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -162,7 +166,8 @@ CREATE TABLE IF NOT EXISTS `profile_requests` (
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `resolved_at` DATETIME NULL,
     INDEX `idx_profile_requests_user_id` (`user_id`),
-    INDEX `idx_profile_requests_status` (`status`)
+    INDEX `idx_profile_requests_status` (`status`),
+    CONSTRAINT `requests (students)` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -175,6 +180,7 @@ CREATE TABLE IF NOT EXISTS `updates` (
     `category` VARCHAR(100) NOT NULL DEFAULT 'Campus News',
     `published_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `read_time` VARCHAR(50) NOT NULL DEFAULT '3 min read',
+    `author_id` INT NULL,
     `author_name` VARCHAR(191) NULL,
     `author_role` VARCHAR(191) NULL,
     `author_office` VARCHAR(255) NULL,
@@ -186,7 +192,9 @@ CREATE TABLE IF NOT EXISTS `updates` (
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_updates_slug` (`slug`),
     INDEX `idx_updates_category` (`category`),
-    INDEX `idx_updates_published_at` (`published_at`)
+    INDEX `idx_updates_published_at` (`published_at`),
+    INDEX `idx_updates_author_id` (`author_id`),
+    CONSTRAINT `authors` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
