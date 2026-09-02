@@ -19,13 +19,9 @@ $target_student = null;
 $resume_filename = 'Student_Resume.pdf';
 
 if ($app_id) {
-    $apps = $_SESSION['applications'] ?? load_json_file('applications.json');
-    foreach ($apps as $a) {
-        if ($a['id'] == $app_id) {
-            $app = $a;
-            $resume_filename = $a['resume_file'] ?? 'Student_Resume.pdf';
-            break;
-        }
+    $app = get_application_by_id($app_id);
+    if ($app) {
+        $resume_filename = $app['resume_file'] ?? 'Student_Resume.pdf';
     }
 
     if (!$app) {
@@ -38,13 +34,7 @@ if ($app_id) {
         die('Access Denied: You are not authorized to view this candidate credential.');
     }
 
-    $users = $_SESSION['users'] ?? load_json_file('users.json');
-    foreach ($users as $u) {
-        if ($u['id'] == ($app['student_id'] ?? 0) || $u['email'] === ($app['student_email'] ?? '')) {
-            $target_student = $u;
-            break;
-        }
-    }
+    $target_student = get_user_by_id($app['student_id'] ?? 0) ?? get_user_by_email($app['student_email'] ?? '');
 } elseif ($user_id) {
     if (!can_view_student_resume(null, $user_id, $current_user)) {
         http_response_code(403);
@@ -55,13 +45,9 @@ if ($app_id) {
         }
     }
 
-    $users = $_SESSION['users'] ?? load_json_file('users.json');
-    foreach ($users as $u) {
-        if ($u['id'] == $user_id) {
-            $target_student = $u;
-            $resume_filename = ($u['name'] ?? 'Student') . '_Resume.pdf';
-            break;
-        }
+    $target_student = get_user_by_id($user_id);
+    if ($target_student) {
+        $resume_filename = ($target_student['name'] ?? 'Student') . '_Resume.pdf';
     }
 
     if (!$target_student) {

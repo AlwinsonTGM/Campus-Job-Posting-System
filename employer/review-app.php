@@ -10,15 +10,7 @@ require_auth(['employer', 'admin']);
 $user = get_logged_user();
 
 $app_id = $_GET['id'] ?? null;
-$apps = $_SESSION['applications'] ?? load_json_file('applications.json');
-$target_app = null;
-
-foreach ($apps as $a) {
-    if ($a['id'] == $app_id) {
-        $target_app = $a;
-        break;
-    }
-}
+$target_app = $app_id ? get_application_by_id($app_id) : null;
 
 if (!$target_app) {
     set_flash('danger', 'The specified student application could not be found.');
@@ -36,6 +28,12 @@ $job = get_job_by_id($target_app['job_id'] ?? 0);
 
 // Handle status update POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        set_flash('danger', 'Security validation failed: Invalid or expired security token. Please try again.');
+        header("Location: review-app.php?id={$target_app['id']}");
+        exit;
+    }
+
     $new_status = $_POST['status'] ?? 'under_review';
     $notes = trim($_POST['supervisor_notes'] ?? '');
 
@@ -190,6 +188,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                             <!-- Status Transition Form -->
                             <form action="review-app.php?id=<?= $target_app['id'] ?>" method="POST" class="form-paper">
+                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 
                                 <div class="mb-3">
                                     <label class="form-label" for="eval-status">Update Candidate Stage <span class="text-danger">*</span></label>

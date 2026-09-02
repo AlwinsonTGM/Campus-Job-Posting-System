@@ -13,104 +13,112 @@ $page_title = 'Account Settings & Preferences';
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    
-    if ($action === 'profile') {
-        $phone = trim($_POST['phone'] ?? '');
-        $availability = $_POST['availability'] ?? [];
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = 'Security validation failed: Invalid or expired security token. Please try again.';
+    } else {
+        $action = $_POST['action'] ?? '';
+        
+        if ($action === 'profile') {
+            $phone = trim($_POST['phone'] ?? '');
+            $availability = $_POST['availability'] ?? [];
 
-        if (($user['role'] ?? '') === 'student' && (empty($availability) || count($availability) === 0)) {
-            $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one weekly timeslot.';
-        } else {
-            $users = $_SESSION['users'] ?? load_json_file('users.json');
-            foreach ($users as $k => $u) {
-                if ($u['id'] == $user['id']) {
-                    $users[$k]['phone'] = htmlspecialchars($phone);
+            if (($user['role'] ?? '') === 'student' && (empty($availability) || count($availability) === 0)) {
+                $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one weekly timeslot.';
+            } else {
+                try {
+                    $pdo = get_db_connection();
+                    $updates = ['phone' => htmlspecialchars($phone)];
+
                     if (($user['role'] ?? '') === 'student') {
-                        $users[$k]['availability'] = $availability;
+                        $updates['availability'] = json_encode($availability);
                     }
 
-                    if ($u['role'] === 'employer') {
+                    if ($user['role'] === 'employer') {
                         $name = trim($_POST['name'] ?? '');
                         $org_name = trim($_POST['organization_name'] ?? '');
                         $office_loc = trim($_POST['office_location'] ?? '');
                         $department = trim($_POST['department'] ?? '');
-                        if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
-                        if (!empty($org_name)) $users[$k]['organization_name'] = htmlspecialchars($org_name);
-                        if (!empty($office_loc)) $users[$k]['office_location'] = htmlspecialchars($office_loc);
-                        if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
-                    } elseif ($u['role'] === 'admin') {
+                        if (!empty($name)) $updates['name'] = htmlspecialchars($name);
+                        if (!empty($org_name)) $updates['organization_name'] = htmlspecialchars($org_name);
+                        if (!empty($office_loc)) $updates['office_location'] = htmlspecialchars($office_loc);
+                        if (!empty($department)) $updates['department'] = htmlspecialchars($department);
+                    } elseif ($user['role'] === 'admin') {
                         $name = trim($_POST['name'] ?? '');
                         $department = trim($_POST['department'] ?? '');
-                        if (!empty($name)) $users[$k]['name'] = htmlspecialchars($name);
-                        if (!empty($department)) $users[$k]['department'] = htmlspecialchars($department);
+                        if (!empty($name)) $updates['name'] = htmlspecialchars($name);
+                        if (!empty($department)) $updates['department'] = htmlspecialchars($department);
                     }
-                    
-                    $_SESSION['user'] = $users[$k];
-                    break;
+
+                    $set_clauses = [];
+                    $params = [':id' => (int)$user['id']];
+                    foreach ($updates as $col => $val) {
+                        $set_clauses[] = "`$col` = :$col";
+                        $params[":$col"] = $val;
+                    }
+                    $sql = "UPDATE `users` SET " . implode(', ', $set_clauses) . " WHERE `id` = :id";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute($params);
+
+                    // Refresh session user
+                    $fresh = get_user_by_id($user['id']);
+                    if ($fresh) {
+                        $_SESSION['user'] = $fresh;
+                    }
+
+                    set_flash('success', 'Contact information and weekly availability settings have been updated successfully.');
+                    header('Location: settings.php');
+                    exit;
+                } catch (Exception $e) {
+                    $error = 'Failed to update profile: ' . $e->getMessage();
                 }
             }
-            $_SESSION['users'] = $users;
-            save_json_file('users.json', $users);
-            set_flash('success', 'Contact information and weekly availability settings have been updated successfully.');
+        } elseif ($action === 'request_profile_change') {
+            $reason = trim($_POST['reason'] ?? '');
+            $proof_path = null;
+            if (isset($_FILES['proof_file']) && ($_FILES['proof_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $proof_path = save_uploaded_proof($_FILES['proof_file']);
+            }
+
+            if (!$proof_path) {
+                $error = 'Please attach an official Certificate of Registration (COR), Student ID, or PSA document to verify your request.';
+            } else {
+                $res = create_profile_request($user['id'], $_POST, $proof_path, $reason);
+                if ($res['success']) {
+                    set_flash('success', 'Your official profile change request has been submitted to the University Admin / Registrar for review.');
+                    header('Location: settings.php');
+                    exit;
+                } else {
+                    $error = $res['message'];
+                }
+            }
+        } elseif ($action === 'dismiss_notice') {
+            dismiss_profile_request_notice($user['id']);
             header('Location: settings.php');
             exit;
-        }
-    } elseif ($action === 'request_profile_change') {
-        $reason = trim($_POST['reason'] ?? '');
-        $proof_path = null;
-        if (isset($_FILES['proof_file']) && ($_FILES['proof_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            $proof_path = save_uploaded_proof($_FILES['proof_file']);
-        }
+        } elseif ($action === 'password') {
+            $current_pass = $_POST['current_password'] ?? '';
+            $new_pass = $_POST['new_password'] ?? '';
+            $confirm_pass = $_POST['confirm_password'] ?? '';
 
-        if (!$proof_path) {
-            $error = 'Please attach an official Certificate of Registration (COR), Student ID, or PSA document to verify your request.';
-        } else {
-            $res = create_profile_request($user['id'], $_POST, $proof_path, $reason);
-            if ($res['success']) {
-                set_flash('success', 'Your official profile change request has been submitted to the University Admin / Registrar for review.');
+            $stored_pass = $user['password'] ?? '';
+            $is_current_valid = ($stored_pass === $current_pass) || 
+                                (!empty($stored_pass) && password_verify($current_pass, $stored_pass));
+
+            if (empty($current_pass)) {
+                $error = 'Please enter your current password to confirm your identity.';
+            } elseif (!$is_current_valid) {
+                $error = 'The current password you entered is incorrect.';
+            } elseif (strlen($new_pass) < 8) {
+                $error = 'New password must contain at least 8 characters.';
+            } elseif ($new_pass !== $confirm_pass) {
+                $error = 'New password and confirm password do not match.';
+            } else {
+                $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
+                update_user_password($user['id'], $hashed_password);
+                set_flash('success', 'Your password has been updated successfully.');
                 header('Location: settings.php');
                 exit;
-            } else {
-                $error = $res['message'];
             }
-        }
-    } elseif ($action === 'dismiss_notice') {
-        dismiss_profile_request_notice($user['id']);
-        header('Location: settings.php');
-        exit;
-    } elseif ($action === 'password') {
-        $current_pass = $_POST['current_password'] ?? '';
-        $new_pass = $_POST['new_password'] ?? '';
-        $confirm_pass = $_POST['confirm_password'] ?? '';
-
-        $stored_pass = $user['password'] ?? '';
-        $is_current_valid = ($stored_pass === $current_pass) || 
-                            (!empty($stored_pass) && password_verify($current_pass, $stored_pass));
-
-        if (empty($current_pass)) {
-            $error = 'Please enter your current password to confirm your identity.';
-        } elseif (!$is_current_valid) {
-            $error = 'The current password you entered is incorrect.';
-        } elseif (strlen($new_pass) < 8) {
-            $error = 'New password must contain at least 8 characters.';
-        } elseif ($new_pass !== $confirm_pass) {
-            $error = 'New password and confirm password do not match.';
-        } else {
-            $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
-            $users = $_SESSION['users'] ?? load_json_file('users.json');
-            foreach ($users as $k => $u) {
-                if ($u['id'] == $user['id']) {
-                    $users[$k]['password'] = $hashed_password;
-                    $_SESSION['user']['password'] = $hashed_password;
-                    break;
-                }
-            }
-            $_SESSION['users'] = $users;
-            save_json_file('users.json', $users);
-            set_flash('success', 'Your password has been updated successfully.');
-            header('Location: settings.php');
-            exit;
         }
     }
 }
@@ -195,6 +203,7 @@ require_once __DIR__ . '/includes/header.php';
                                     </div>
                                 </div>
                                 <form action="settings.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                     <input type="hidden" name="action" value="dismiss_notice">
                                     <button type="submit" class="btn-pill-outline btn-pill-sm">Dismiss</button>
                                 </form>
@@ -222,6 +231,7 @@ require_once __DIR__ . '/includes/header.php';
                                         Submit New Proof
                                     </button>
                                     <form action="settings.php" method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                         <input type="hidden" name="action" value="dismiss_notice">
                                         <button type="submit" class="btn-pill-outline btn-pill-sm">Dismiss</button>
                                     </form>
@@ -243,6 +253,7 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
 
                             <form action="settings.php" method="POST" class="form-paper">
+                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 <input type="hidden" name="action" value="profile">
 
                                 <div class="mb-3">
@@ -394,6 +405,7 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
 
                             <form action="settings.php" method="POST" class="form-paper" id="register-form">
+                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 <input type="hidden" name="action" value="password">
 
                                 <div class="mb-3">
@@ -498,6 +510,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             
             <form action="settings.php" method="POST" enctype="multipart/form-data" class="form-paper m-0">
+                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="request_profile_change">
 
                 <div class="modal-body p-3">

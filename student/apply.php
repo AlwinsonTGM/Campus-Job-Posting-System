@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$default_availability = $user['availability'] ?? [
+$default_availability = (!empty($user['availability']) && is_array($user['availability'])) ? $user['availability'] : [
     'Mon - Morning (8AM–12NN)',
     'Wed - Morning (8AM–12NN)',
     'Fri - Afternoon (1PM–5PM)'
@@ -157,7 +157,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <label class="form-label" for="app-phone">Mobile Phone (for SMS interview notices) <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                            <input type="text" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars($user['phone'] ?? '+63 917 555 0192') ?>" required>
+                                            <input type="text" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars(!empty($user['phone']) ? $user['phone'] : '+63 917 555 0192') ?>" required>
                                         </div>
                                         <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
                                             Department supervisors use this contact to confirm interview dates and duty room assignments.

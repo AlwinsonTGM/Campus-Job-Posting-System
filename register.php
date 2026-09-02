@@ -18,7 +18,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name'] ?? '');
     $middle_name = trim($_POST['middle_name'] ?? '');
     $last_name = trim($_POST['last_name'] ?? '');
-    $name = trim($first_name . ($middle_name !== '' ? ' ' . $middle_name : '') . ' ' . $last_name);
+    $raw_name = trim($_POST['name'] ?? '');
+
+    if (!empty($raw_name) && empty($first_name)) {
+        $parts = explode(' ', $raw_name);
+        $first_name = array_shift($parts);
+        $last_name = !empty($parts) ? implode(' ', $parts) : $first_name;
+        $name = $raw_name;
+    } else {
+        $name = trim($first_name . ($middle_name !== '' ? ' ' . $middle_name : '') . ' ' . $last_name);
+    }
     
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -55,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accreditation_number = trim($_POST['accreditation_number'] ?? '');
 
     // Server-side validation
-    if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
-        $error = 'Please fill in all mandatory fields (First Name, Last Name, Email, Password).';
+    if ((empty($first_name) && empty($raw_name)) || empty($email) || empty($password)) {
+        $error = 'Please fill in all mandatory fields (Name, Email, Password).';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please provide a valid email address.';
     } elseif ($role === 'employer' && $employer_type === 'university_office' && !preg_match('/@kld\.edu\.ph$/i', $email)) {
@@ -251,11 +260,11 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                             </div>
 
-                            <!-- Basic Information (3-Part Name) -->
-                            <div class="row g-3 mb-3">
+                            <!-- Basic Information (3-Part Name for Student, Representative Name for Employer) -->
+                            <div class="row g-3 mb-3" id="student-name-fields" style="display: <?= $preselected_role !== 'employer' ? 'flex' : 'none' ?>;">
                                 <div class="col-md-4">
                                     <label class="form-label" for="reg-first-name">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="first_name" id="reg-first-name" class="form-control" placeholder="Juan" value="<?= htmlspecialchars($first_name ?? '') ?>" required>
+                                    <input type="text" name="first_name" id="reg-first-name" class="form-control" placeholder="Juan" value="<?= htmlspecialchars($first_name ?? '') ?>">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label" for="reg-middle-name">Middle Name / Initial</label>
@@ -263,8 +272,18 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label" for="reg-last-name">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="last_name" id="reg-last-name" class="form-control" placeholder="Dela Cruz" value="<?= htmlspecialchars($last_name ?? '') ?>" required>
+                                    <input type="text" name="last_name" id="reg-last-name" class="form-control" placeholder="Dela Cruz" value="<?= htmlspecialchars($last_name ?? '') ?>">
                                 </div>
+                            </div>
+
+                            <div class="row g-3 mb-3" id="employer-name-fields" style="display: <?= $preselected_role === 'employer' ? 'flex' : 'none' ?>;">
+                                <div class="col-12">
+                                    <label class="form-label" for="reg-name">Authorized Representative / Contact Person <span class="text-danger">*</span></label>
+                                    <input type="text" name="name" id="reg-name" class="form-control" placeholder="e.g. Prof. Self Verified" value="<?= htmlspecialchars($name ?? '') ?>">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
                                 <div class="col-12">
                                     <label class="form-label" for="reg-email">Institutional / Business Email <span class="text-danger">*</span></label>
                                     <input type="email" name="email" id="reg-email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email ?? '') ?>" required>
@@ -530,6 +549,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const lblTypeOffice = document.getElementById('lbl-type-office');
     const lblTypePartner = document.getElementById('lbl-type-partner');
 
+    const studentNameFields = document.getElementById('student-name-fields');
+    const employerNameFields = document.getElementById('employer-name-fields');
     const studentFields = document.getElementById('student-fields');
     const officeFields = document.getElementById('office-fields');
     const partnerFields = document.getElementById('partner-fields');
@@ -539,6 +560,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (roleStudent.checked) {
             lblRoleStudent.classList.add('active');
             lblRoleEmployer.classList.remove('active');
+            if (studentNameFields) studentNameFields.style.display = 'flex';
+            if (employerNameFields) employerNameFields.style.display = 'none';
             if (employerClassSec) employerClassSec.style.display = 'none';
             if (studentFields) studentFields.style.display = 'flex';
             if (officeFields) officeFields.style.display = 'none';
@@ -546,6 +569,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             lblRoleEmployer.classList.add('active');
             lblRoleStudent.classList.remove('active');
+            if (studentNameFields) studentNameFields.style.display = 'none';
+            if (employerNameFields) employerNameFields.style.display = 'flex';
             if (employerClassSec) employerClassSec.style.display = 'block';
 
             if (typePartner.checked) {

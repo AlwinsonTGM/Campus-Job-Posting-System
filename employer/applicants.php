@@ -17,6 +17,12 @@ $search = trim($_GET['q'] ?? '');
 
 // Handle decision submissions via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        set_flash('danger', 'Security validation failed: Invalid or expired security token. Please try again.');
+        header('Location: applicants.php' . ($job_filter ? "?job_id={$job_filter}" : ''));
+        exit;
+    }
+
     $app_id = $_POST['app_id'];
     $action_type = $_POST['action_type'];
     $notes = trim($_POST['supervisor_notes'] ?? '');

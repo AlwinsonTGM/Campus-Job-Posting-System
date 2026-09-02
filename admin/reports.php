@@ -13,7 +13,7 @@ $page_title = 'Reports & Institutional Analytics';
 $all_jobs = get_jobs();
 $all_apps = get_applications();
 $categories = get_categories();
-$all_users = $_SESSION['users'] ?? load_json_file('users.json');
+$all_users = get_all_users();
 
 $total_jobs = count($all_jobs);
 $total_apps = count($all_apps);

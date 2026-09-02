@@ -12,13 +12,8 @@ $page_title = 'My Assistantship Applications';
 
 // Handle withdrawal
 if (isset($_POST['withdraw_id'])) {
-    $withdraw_id = $_POST['withdraw_id'];
-    $apps = $_SESSION['applications'] ?? load_json_file('applications.json');
-    $filtered = array_filter($apps, function($a) use ($withdraw_id, $user) {
-        return !($a['id'] == $withdraw_id && ($a['student_id'] == $user['id'] || $a['student_email'] == $user['email']));
-    });
-    $_SESSION['applications'] = array_values($filtered);
-    save_json_file('applications.json', $_SESSION['applications']);
+    $withdraw_id = (int)$_POST['withdraw_id'];
+    delete_application($withdraw_id, $user['id'] ?? null);
     set_flash('info', 'Application was successfully withdrawn.');
     header('Location: my-applications.php');
     exit;
