@@ -116,13 +116,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ], $permit_file_path, $proof_file_path);
 
             if ($res['success']) {
-                if ($role === 'employer' && $employer_type === 'approved_partner') {
-                    set_flash('success', 'Account registered! Your business permit and partner profile will be reviewed by Career Services.');
+                if ($role === 'employer') {
+                    set_flash('success', 'Account registered! Your organization credentials have been submitted for administrative verification.');
+                    header('Location: employer/dashboard.php');
                 } else {
-                    set_flash('success', 'Account registered successfully! Welcome to Campus Hire.');
+                    set_flash('success', 'Account registered successfully! Your student registration and attached credentials are under review by the Administrator.');
+                    header('Location: student/dashboard.php');
                 }
-                if ($role === 'student') header('Location: student/dashboard.php');
-                else header('Location: employer/dashboard.php');
                 exit;
             } else {
                 $error = $res['message'];

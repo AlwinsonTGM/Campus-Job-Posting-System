@@ -56,6 +56,32 @@ require_once __DIR__ . '/../includes/header.php';
                 );
                 ?>
 
+                <?php if (($user['verification_status'] ?? 'verified') === 'pending_approval'): ?>
+                    <div class="alert-paper alert-paper--warning mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-hourglass-split text-warning fs-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-ink d-block mb-1">Organization Accreditation Pending Review</strong>
+                                <span class="small text-muted-custom">
+                                    Your employer registration and organization credentials have been submitted to Career Services. Once verified by the Campus Administrator, you will be authorized to post student assistant vacancies.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
+                    <div class="alert-paper alert-paper--danger mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-exclamation-triangle-fill text-danger fs-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-ink d-block mb-1">Accreditation Requires Revision</strong>
+                                <span class="small text-muted-custom">
+                                    <?= htmlspecialchars($user['rejection_reason'] ?: 'Your permit documents or institutional accreditation were not approved.') ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <!-- 4 KPI Metrics -->
                 <div class="row g-3 mb-5">
                     <div class="col-6 col-lg-3">

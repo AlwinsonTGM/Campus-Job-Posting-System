@@ -26,10 +26,15 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
             <span class="fw-extrabold text-ink tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
         </a>
 
-        <!-- Mobile Hamburger Toggle -->
-        <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <!-- Mobile Controls (Search Button to the left of the Hamburger) -->
+        <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
+            <button type="button" class="btn-circle-icon btn-nav-search-mobile" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs" aria-label="Search Jobs">
+                <i class="bi bi-search"></i>
+            </button>
+            <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
 
         <!-- Navbar Links & Right Actions -->
         <div class="collapse navbar-collapse" id="navbarMain">
@@ -98,19 +103,9 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
             </ul>
 
             <!-- Right Action Items -->
-            <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-                <!-- Dataset Mode Switcher Button -->
-                <?php
-                $current_data_mode = function_exists('get_system_data_mode') ? get_system_data_mode() : 'demo';
-                $is_real_mode = ($current_data_mode === 'real');
-                ?>
-                <button type="button" class="btn-data-mode-toggle chip <?= $is_real_mode ? 'btn-data-mode--real text-success' : 'btn-data-mode--demo text-warning' ?> d-inline-flex align-items-center gap-1 border-0 py-1 px-2" data-bs-toggle="modal" data-bs-target="#dataModeModal" title="Toggle System Dataset Mode">
-                    <i class="bi <?= $is_real_mode ? 'bi-database-check' : 'bi-database-fill-gear' ?>"></i>
-                    <span class="small fw-bold"><?= $is_real_mode ? 'REAL DATA' : 'DEMO DATA' ?></span>
-                </button>
-
-                <!-- Circular Search-Icon Button (Opens Floating Spotlight Modal) -->
-                <button type="button" class="btn-circle-icon" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
+            <div class="paper-nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                <!-- Circular Search-Icon Button (Desktop only; mobile is in top bar beside hamburger) -->
+                <button type="button" class="btn-circle-icon d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
                     <i class="bi bi-search"></i>
                 </button>
 
@@ -125,10 +120,11 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                     }
                     $user_initial = strtoupper(substr($current_user['name'] ?? 'U', 0, 1));
                     ?>
-                    <div class="dropdown">
+                    <div class="dropdown nav-user-mobile-wrap">
                         <a href="#" class="user-avatar-chip dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="avatar-circle"><?= htmlspecialchars($user_initial) ?></span>
-                            <span class="d-none d-sm-inline"><?= htmlspecialchars($current_user['name']) ?></span>
+                            <span class="user-chip-name"><?= htmlspecialchars($current_user['name']) ?></span>
+                            <span class="badge bg-cream text-ink border border-line ms-auto small d-inline-block d-lg-none" style="font-size: 10px;"><?= htmlspecialchars(ucfirst($current_user['role'])) ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-line p-2 rounded-4">
                             <li><h6 class="dropdown-header small text-muted-custom"><?= htmlspecialchars($current_user['email']) ?> (<?= htmlspecialchars(ucfirst($current_user['role'])) ?>)</h6></li>
@@ -151,13 +147,15 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                         </ul>
                     </div>
                 <?php else: ?>
-                    <!-- Guest: POST A VACANCY solid pill + Login link -->
-                    <a href="<?= $base_url ?>login.php" class="btn-outline-pill d-inline-flex px-3 py-2 text-decoration-none">
-                        LOG IN
-                    </a>
-                    <a href="<?= $base_url ?>employer/create-job.php" class="btn-accent-pill">
-                        POST A VACANCY
-                    </a>
+                    <!-- Guest: LOG IN + POST A VACANCY action buttons -->
+                    <div class="paper-nav-btn-group">
+                        <a href="<?= $base_url ?>login.php" class="btn-paper-nav-login">
+                            LOG IN
+                        </a>
+                        <a href="<?= $base_url ?>employer/create-job.php" class="btn-paper-nav-post">
+                            POST A VACANCY
+                        </a>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

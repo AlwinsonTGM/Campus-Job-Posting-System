@@ -32,6 +32,13 @@ if (!$job) {
     exit;
 }
 
+// Verification Check
+if (($user['verification_status'] ?? 'verified') !== 'verified') {
+    set_flash('warning', 'Account Verification Required: Your student registration is currently awaiting administrative review. The administrator must verify your account before you can submit applications.');
+    header('Location: dashboard.php');
+    exit;
+}
+
 // Gating Checks
 if (strtolower($job['status'] ?? '') !== 'active') {
     set_flash('danger', 'This requisition has been closed or paused and is not accepting applications.');

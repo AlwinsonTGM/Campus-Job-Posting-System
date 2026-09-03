@@ -30,20 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    if ($action === 'approve_employer') {
+    if ($action === 'approve_user' || $action === 'approve_student' || $action === 'approve_employer') {
         $approve_id = (int)($_POST['id'] ?? 0);
-        if (update_employer_verification($approve_id, 'verified')) {
+        if (update_user_verification($approve_id, 'verified')) {
             $u = get_user_by_id($approve_id);
-            $u_name = $u['name'] ?? 'Employer';
-            set_flash('success', "Partner employer '{$u_name}' has been officially verified!");
+            $u_name = $u['name'] ?? 'Account';
+            $role_label = ucfirst($u['role'] ?? 'User');
+            set_flash('success', "{$role_label} '{$u_name}' has been officially approved & verified!");
             header('Location: users.php');
             exit;
         }
-    } elseif ($action === 'reject_employer') {
+    } elseif ($action === 'reject_user' || $action === 'reject_student' || $action === 'reject_employer') {
         $reject_id = (int)($_POST['id'] ?? 0);
-        $notes = trim($_POST['notes'] ?? 'Permit documentation did not match or requires re-submission.');
-        if (update_employer_verification($reject_id, 'rejected', $notes)) {
-            set_flash('warning', "Partner employer registration has been marked as rejected / revision requested.");
+        $notes = trim($_POST['notes'] ?? 'Submitted credentials did not match or require re-submission.');
+        if (update_user_verification($reject_id, 'rejected', $notes)) {
+            $u = get_user_by_id($reject_id);
+            $u_name = $u['name'] ?? 'Account';
+            $role_label = ucfirst($u['role'] ?? 'User');
+            set_flash('warning', "{$role_label} '{$u_name}' registration has been marked as rejected / revision requested.");
             header('Location: users.php');
             exit;
         }
@@ -71,9 +75,11 @@ $emp_type_filter = $_GET['emp_type'] ?? null;
 $ver_filter = $_GET['ver_status'] ?? null;
 $search = $_GET['q'] ?? null;
 
-// Count pending verifications & student requests
+// Count pending verifications & student requests across all roles
 $all_users = get_all_users();
-$pending_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+$pending_employers_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+$pending_students_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
+$pending_count = $pending_employers_count + $pending_students_count;
 
 $all_profile_requests = get_profile_requests();
 $pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
@@ -146,11 +152,19 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3">
                             <div class="icon-circle icon-circle-sm icon-circle-success">
-                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <i class="bi bi-person-check-fill"></i>
                             </div>
                             <div>
-                                <strong class="text-ink"><?= $pending_count ?> Partner Registration(s) Awaiting Review:</strong>
-                                <span class="small text-muted-custom d-block">Business permits and MOA references require manual verification.</span>
+                                <strong class="text-ink"><?= $pending_count ?> Account Registration(s) Awaiting Review:</strong>
+                                <span class="small text-muted-custom d-block">
+                                    <?php if ($pending_employers_count > 0 && $pending_students_count > 0): ?>
+                                        <?= $pending_employers_count ?> Partner Employer(s) &bull; <?= $pending_students_count ?> Student Registration(s) requiring verification.
+                                    <?php elseif ($pending_employers_count > 0): ?>
+                                        <?= $pending_employers_count ?> Partner Employer(s) awaiting business permit / MOA verification.
+                                    <?php else: ?>
+                                        <?= $pending_students_count ?> Student Registration(s) awaiting Certificate of Registration (COR) verification.
+                                    <?php endif; ?>
+                                </span>
                             </div>
                         </div>
                         <a href="users.php?ver_status=pending_approval" class="btn-pill btn-pill-sm">
@@ -383,19 +397,15 @@ require_once __DIR__ . '/../includes/header.php';
                                             <td class="text-end pe-4 text-nowrap" data-label="Actions">
                                                 <div class="d-flex align-items-center justify-content-end gap-1">
                                                     <?php if ($u['role'] === 'employer'): ?>
-                                                        <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#verifyModal<?= $u['id'] ?>">
+                                                        <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2 <?= ($ver_status === 'pending_approval') ? 'border-warning text-dark fw-bold bg-warning-subtle' : '' ?>" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#verifyModal<?= $u['id'] ?>">
                                                             <i class="bi bi-file-earmark-check"></i> Inspect
                                                         </button>
                                                     <?php elseif ($u['role'] === 'student'): ?>
-                                                        <?php if (!empty($u['proof_file'])): ?>
-                                                            <a href="../<?= htmlspecialchars($u['proof_file']) ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-decoration-none py-1 px-2 d-inline-flex align-items-center gap-1" style="font-size: 11.5px;" title="View Registered COR / Student ID Attachment">
-                                                                <i class="bi bi-file-earmark-check text-accent"></i> View Proof
-                                                            </a>
-                                                        <?php else: ?>
-                                                            <span class="small text-muted-custom">Active</span>
-                                                        <?php endif; ?>
+                                                        <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2 <?= ($ver_status === 'pending_approval') ? 'border-warning text-dark fw-bold bg-warning-subtle' : '' ?>" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#verifyStudentModal<?= $u['id'] ?>">
+                                                            <i class="bi bi-person-check"></i> Inspect
+                                                        </button>
                                                     <?php else: ?>
-                                                        <span class="small text-muted-custom">Active</span>
+                                                        <span class="small text-muted-custom">Admin Active</span>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -724,6 +734,181 @@ require_once __DIR__ . '/../includes/header.php';
                                     <input type="hidden" name="notes" value="Revoked by admin">
                                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                     <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Revoke verification for this partner?')">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Revoke
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                            <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <!-- Document Verification Modals for Student Accounts -->
+        <?php foreach ($users as $u): 
+            if ($u['role'] !== 'student') continue;
+            $ver_status = $u['verification_status'] ?? 'verified';
+            $proof_doc = $u['registration_proof'] ?? ($u['proof_file'] ?? null);
+            $has_proof_file = !empty($proof_doc) && file_exists(__DIR__ . '/../' . $proof_doc);
+            $is_pdf = $has_proof_file && (strtolower(pathinfo($proof_doc, PATHINFO_EXTENSION)) === 'pdf');
+        ?>
+        <div class="modal fade" id="verifyStudentModal<?= $u['id'] ?>" tabindex="-1" aria-labelledby="verifyStudentModalLabel<?= $u['id'] ?>" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content rounded-4 border-line shadow-lg">
+                    
+                    <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="icon-circle icon-circle-sm icon-circle-success">
+                                <i class="bi bi-mortarboard-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-ink mb-0" id="verifyStudentModalLabel<?= $u['id'] ?>">Student Credential Verification</h5>
+                                <span class="small text-muted-custom"><?= htmlspecialchars($u['name']) ?> &bull; <?= htmlspecialchars($u['student_id'] ?? 'Student') ?></span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-4">
+                        <div class="row g-4">
+                            <!-- Left 7-col: Student Dossier Details -->
+                            <div class="col-lg-7">
+                                <h6 class="fw-bold text-ink mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-lines-fill text-accent"></i> Academic Registration Record
+                                </h6>
+
+                                <div class="bg-surface p-3 rounded-3 border border-line mb-3">
+                                    <div class="row g-2 small">
+                                        <div class="col-5 text-muted-custom">Full Legal Name:</div>
+                                        <div class="col-7 fw-bold text-ink"><?= htmlspecialchars($u['name']) ?></div>
+
+                                        <div class="col-5 text-muted-custom">Student ID:</div>
+                                        <div class="col-7 font-monospace fw-bold text-ink"><?= htmlspecialchars($u['student_id'] ?? 'N/A') ?></div>
+
+                                        <div class="col-5 text-muted-custom">Institutional Email:</div>
+                                        <div class="col-7 font-monospace text-ink text-break"><?= htmlspecialchars($u['email']) ?></div>
+
+                                        <div class="col-5 text-muted-custom">Academic Institute:</div>
+                                        <div class="col-7 fw-semibold text-ink"><?= htmlspecialchars($u['department'] ?? 'N/A') ?></div>
+
+                                        <div class="col-5 text-muted-custom">Degree Program:</div>
+                                        <div class="col-7 fw-semibold text-ink"><?= htmlspecialchars($u['course'] ?? 'N/A') ?></div>
+
+                                        <div class="col-5 text-muted-custom">Year Level:</div>
+                                        <div class="col-7 text-ink"><?= htmlspecialchars($u['year_level'] ?? 'N/A') ?></div>
+
+                                        <div class="col-5 text-muted-custom">Sex &amp; Age:</div>
+                                        <div class="col-7 text-ink"><?= htmlspecialchars($u['sex'] ?? 'N/A') ?>, <?= htmlspecialchars((string)($u['age'] ?? 'N/A')) ?> yrs</div>
+
+                                        <div class="col-5 text-muted-custom">Phone Contact:</div>
+                                        <div class="col-7 text-ink"><?= htmlspecialchars($u['phone'] ?? 'N/A') ?></div>
+
+                                        <div class="col-5 text-muted-custom">Registered Date:</div>
+                                        <div class="col-7 text-ink"><?= date('M d, Y h:i A', strtotime($u['created_at'])) ?></div>
+
+                                        <div class="col-5 text-muted-custom">Verification Status:</div>
+                                        <div class="col-7">
+                                            <?php if ($ver_status === 'verified'): ?>
+                                                <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Verified Active</span>
+                                            <?php elseif ($ver_status === 'rejected'): ?>
+                                                <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Rejected / Revoked</span>
+                                            <?php else: ?>
+                                                <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php if (!empty($u['rejection_reason'])): ?>
+                                    <div class="p-3 bg-danger-subtle text-danger-emphasis rounded-3 border border-danger-subtle small mb-3">
+                                        <strong>Admin Notes / Feedback:</strong>
+                                        <p class="mb-0 mt-1"><?= htmlspecialchars($u['rejection_reason']) ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Right 5-col: Proof of Registration Document -->
+                            <div class="col-lg-5">
+                                <h6 class="fw-bold text-ink mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-file-earmark-check text-accent"></i> Certificate of Registration / ID
+                                </h6>
+
+                                <?php if ($has_proof_file): ?>
+                                    <div class="card-paper p-2 text-center bg-surface border border-line">
+                                        <?php if ($is_pdf): ?>
+                                            <div class="py-4">
+                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-1 d-block mb-2"></i>
+                                                <strong class="text-ink small d-block mb-2">COR Document (PDF)</strong>
+                                                <a href="../<?= htmlspecialchars($proof_doc) ?>" target="_blank" class="btn-pill btn-pill-sm d-inline-flex align-items-center gap-1">
+                                                    <i class="bi bi-box-arrow-up-right"></i> Open PDF Document
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <a href="../<?= htmlspecialchars($proof_doc) ?>" target="_blank" title="Click to view full size">
+                                                <img src="../<?= htmlspecialchars($proof_doc) ?>" alt="Student Proof" class="img-fluid rounded border border-line" style="max-height: 220px; object-fit: contain;">
+                                            </a>
+                                            <div class="mt-2">
+                                                <a href="../<?= htmlspecialchars($proof_doc) ?>" target="_blank" class="small fw-semibold text-ink text-decoration-none">
+                                                    <i class="bi bi-zoom-in me-1"></i> View Full Attachment
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php elseif (!empty($proof_doc)): ?>
+                                    <div class="card-paper p-3 text-center bg-surface border border-line">
+                                        <i class="bi bi-file-earmark-text text-accent fs-1 d-block mb-2"></i>
+                                        <strong class="text-ink small d-block mb-1">Document Attachment</strong>
+                                        <a href="../<?= htmlspecialchars($proof_doc) ?>" target="_blank" class="btn-pill btn-pill-sm d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-box-arrow-up-right"></i> View Document
+                                        </a>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="p-4 bg-cream rounded-4 border border-line text-center text-muted-custom">
+                                        <i class="bi bi-file-earmark-x fs-1 d-block mb-2 text-muted-custom"></i>
+                                        <strong class="text-ink small">No Proof Uploaded</strong>
+                                        <p class="small text-muted-custom mb-0 mt-1" style="font-size: 11px;">
+                                            Account registered via campus direct registration.
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-cream border-top border-line py-3 px-4 d-flex justify-content-between">
+                        <div>
+                            <?php if ($ver_status === 'verified'): ?>
+                                <span class="badge-status--accepted"><i class="bi bi-shield-check me-1"></i> Verified Student</span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <?php if ($ver_status !== 'verified'): ?>
+                                <form action="users.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="reject_user">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Decline this student registration?')">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                </form>
+                                <form action="users.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="approve_user">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <button type="submit" class="btn-pill btn-pill-sm">
+                                        <i class="bi bi-check-circle-fill"></i> Approve &amp; Verify Student
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <form action="users.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="reject_user">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="notes" value="Verification revoked by admin">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Revoke verification for this student?')">
                                         <i class="bi bi-arrow-counterclockwise"></i> Revoke
                                     </button>
                                 </form>

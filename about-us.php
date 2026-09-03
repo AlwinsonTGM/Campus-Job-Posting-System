@@ -176,40 +176,40 @@ require_once __DIR__ . '/includes/header.php';
                             <?php foreach ($devblogs as $idx => $blog):
                                 $stateClass = ($idx === 0) ? 'is-active' : (($idx === 1) ? 'is-next' : 'is-hidden is-hidden-right');
                             ?>
-                                <article class="devblog-card <?= $stateClass ?>" data-index="<?= $idx ?>" data-id="<?= htmlspecialchars($blog['id']) ?>" tabindex="0" role="group" aria-label="DevBlog: <?= htmlspecialchars($blog['title']) ?>">
+                                <article class="devblog-card <?= $stateClass ?>" data-index="<?= $idx ?>" data-id="<?= htmlspecialchars($blog['id'] ?? ('day-' . $idx)) ?>" tabindex="0" role="group" aria-label="DevBlog: <?= htmlspecialchars($blog['title'] ?? 'Development Log') ?>">
                                     <div class="devblog-card-photo-wrap">
-                                        <img src="<?= htmlspecialchars($blog['cover_image']) ?>"
-                                            alt="<?= htmlspecialchars($blog['title']) ?>" loading="lazy">
+                                        <img src="<?= htmlspecialchars($blog['cover_image'] ?? 'assets/img/kld-campus.jpg') ?>"
+                                            alt="<?= htmlspecialchars($blog['title'] ?? 'DevBlog') ?>" loading="lazy">
                                         <div class="devblog-card-badges">
                                             <span class="badge-tag-overlay" style="background-color: var(--ink); color: #fff;">
-                                                <i class="bi bi-flag-fill text-accent me-1"></i><?= htmlspecialchars($blog['sprint_badge']) ?>
+                                                <i class="bi bi-flag-fill text-accent me-1"></i><?= htmlspecialchars($blog['sprint_badge'] ?? ('DAY ' . ($blog['sprint_number'] ?? ($idx + 1)))) ?>
                                             </span>
                                             <span class="badge-tag-overlay">
-                                                <i class="bi bi-clock-history me-1"></i><?= htmlspecialchars($blog['read_time']) ?>
+                                                <i class="bi bi-clock-history me-1"></i><?= htmlspecialchars($blog['read_time'] ?? '5 min read') ?>
                                             </span>
                                         </div>
                                     </div>
 
                                     <div class="devblog-card-body">
                                         <div class="devblog-author-row mb-3">
-                                            <img src="<?= $base_url . $blog['author_image'] ?>" alt="<?= htmlspecialchars($blog['author_name']) ?>" class="devblog-author-img">
+                                            <img src="<?= $base_url . ($blog['author_image'] ?? 'assets/img/developers/BUSTAMANTE.jpg') ?>" alt="<?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?>" class="devblog-author-img">
                                             <div class="devblog-author-info">
-                                                <div class="devblog-author-name"><?= htmlspecialchars($blog['author_name']) ?></div>
-                                                <div class="devblog-author-role"><?= htmlspecialchars($blog['author_role']) ?></div>
+                                                <div class="devblog-author-name"><?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?></div>
+                                                <div class="devblog-author-role"><?= htmlspecialchars($blog['author_role'] ?? 'Lead Developer & System Architect') ?></div>
                                             </div>
                                             <span class="devblog-date-pill ms-auto">
-                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars($blog['date']) ?>
+                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars($blog['date'] ?? 'Aug 2026') ?>
                                             </span>
                                         </div>
 
-                                        <h3 class="devblog-card-title"><?= htmlspecialchars($blog['title']) ?></h3>
+                                        <h3 class="devblog-card-title"><?= htmlspecialchars($blog['title'] ?? 'Development Sprint') ?></h3>
 
                                         <p class="devblog-card-excerpt">
-                                            <?= htmlspecialchars($blog['summary_excerpt']) ?>
+                                            <?= htmlspecialchars($blog['summary_excerpt'] ?? '') ?>
                                         </p>
 
                                         <div class="devblog-card-tags mb-3">
-                                            <?php foreach ($blog['tags'] as $tag): ?>
+                                            <?php foreach (($blog['tags'] ?? []) as $tag): ?>
                                                 <span class="chip-tag"><?= htmlspecialchars($tag) ?></span>
                                             <?php endforeach; ?>
                                         </div>
@@ -236,8 +236,8 @@ require_once __DIR__ . '/includes/header.php';
                             <?php foreach ($devblogs as $idx => $blog): ?>
                                 <button type="button" class="devblog-dot <?= ($idx === 0) ? 'is-active' : '' ?>"
                                     data-dot-index="<?= $idx ?>"
-                                    aria-label="Day <?= htmlspecialchars($blog['sprint_number']) ?>"
-                                    title="Day <?= htmlspecialchars($blog['sprint_number']) ?>: <?= htmlspecialchars($blog['title']) ?>"></button>
+                                    aria-label="Day <?= htmlspecialchars($blog['sprint_number'] ?? ($idx + 1)) ?>"
+                                    title="Day <?= htmlspecialchars($blog['sprint_number'] ?? ($idx + 1)) ?>: <?= htmlspecialchars($blog['title'] ?? '') ?>"></button>
                             <?php endforeach; ?>
                         </div>
 

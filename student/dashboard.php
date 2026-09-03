@@ -51,6 +51,32 @@ require_once __DIR__ . '/../includes/header.php';
                 );
                 ?>
 
+                <?php if (($user['verification_status'] ?? 'verified') === 'pending_approval'): ?>
+                    <div class="alert-paper alert-paper--warning mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-hourglass-split text-warning fs-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-ink d-block mb-1">Student Account Verification in Progress</strong>
+                                <span class="small text-muted-custom">
+                                    Your student registration and Certificate of Registration (COR) are currently awaiting administrative review by the Student Affairs and Services Office (SASO). You may explore campus vacancies in the meantime; once approved by the Admin, you can submit job applications.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
+                    <div class="alert-paper alert-paper--danger mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-exclamation-triangle-fill text-danger fs-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-ink d-block mb-1">Registration Revision Requested</strong>
+                                <span class="small text-muted-custom">
+                                    <?= htmlspecialchars($user['rejection_reason'] ?: 'Your submitted proof requires resubmission or did not match institutional records.') ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <!-- 4 KPI Metrics -->
                 <div class="row g-3 mb-5">
                     <div class="col-6 col-lg-3">
@@ -71,11 +97,11 @@ require_once __DIR__ . '/../includes/header.php';
                     <!-- Left: Recent Applications Stream -->
                     <div class="col-lg-7">
                         <div class="card-paper h-100 reveal-fade-rise">
-                            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
-                                <h3 class="card-paper-title mb-0">
-                                    <i class="bi bi-clock-history text-accent me-2"></i> Active Application Status
+                            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line gap-2">
+                                <h3 class="card-paper-title mb-0 fs-5 text-truncate">
+                                    <i class="bi bi-clock-history text-accent me-2"></i>Active Application Status
                                 </h3>
-                                <a href="my-applications.php" class="text-ink fw-bold small text-decoration-none">
+                                <a href="my-applications.php" class="text-ink fw-bold small text-decoration-none text-nowrap ms-auto flex-shrink-0">
                                     View All <i class="bi bi-arrow-right"></i>
                                 </a>
                             </div>
@@ -94,16 +120,16 @@ require_once __DIR__ . '/../includes/header.php';
                                 <div class="d-flex flex-column gap-3">
                                     <?php foreach (array_slice($my_apps, 0, 3) as $app): ?>
                                         <div class="p-3 bg-surface rounded-4 border border-line">
-                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                                                <div>
-                                                    <h4 class="card-paper-title fs-6 mb-1">
+                                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 mb-2">
+                                                <div class="flex-grow-1 min-w-0">
+                                                    <h4 class="card-paper-title fs-6 mb-1 text-break">
                                                         <?= htmlspecialchars($app['job_title']) ?>
                                                     </h4>
-                                                    <span class="small text-muted-custom">
+                                                    <div class="small text-muted-custom text-break">
                                                         <i class="bi bi-building me-1 text-accent"></i><?= htmlspecialchars($app['department']) ?>
-                                                    </span>
+                                                    </div>
                                                 </div>
-                                                <div>
+                                                <div class="flex-shrink-0 mt-1 mt-sm-0">
                                                     <?= render_status_badge($app['status']) ?>
                                                 </div>
                                             </div>
@@ -162,26 +188,26 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
 
                             <div class="d-flex flex-column gap-2 mb-4">
-                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Student ID:</span>
-                                    <span class="fw-bold text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></span>
+                                    <span class="fw-bold text-ink text-break"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></span>
                                 </div>
-                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Degree Program:</span>
-                                    <span class="fw-bold text-ink"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?></span>
+                                    <span class="fw-bold text-ink text-end text-break"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?></span>
                                 </div>
-                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Year Level / Standing:</span>
-                                    <span class="fw-bold text-ink"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
+                                    <span class="fw-bold text-ink text-end text-break"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
                                 </div>
-                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Demographics:</span>
-                                    <span class="fw-bold text-ink">
+                                    <span class="fw-bold text-ink text-end text-break">
                                         <?= htmlspecialchars($user['sex'] ?? 'Male') ?> &bull; 
                                         <?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20))) ?> yrs old
                                     </span>
                                 </div>
-                                <div class="d-flex justify-content-between p-2 px-3 bg-cream rounded-3 small">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Academic Safeguard:</span>
                                     <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/week</span>
                                 </div>

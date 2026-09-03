@@ -524,6 +524,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal Events: Autofocus on open & pre-load default opportunities instantly
     spotlightModalEl.addEventListener('show.bs.modal', function () {
+      const navCollapse = document.getElementById('navbarMain');
+      if (navCollapse && navCollapse.classList.contains('show')) {
+        try {
+          if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+            const bsCollapse = bootstrap.Collapse.getInstance(navCollapse) || new bootstrap.Collapse(navCollapse, { toggle: false });
+            bsCollapse.hide();
+          } else {
+            navCollapse.classList.remove('show');
+          }
+        } catch (e) {
+          navCollapse.classList.remove('show');
+        }
+      }
       executeSpotlightSearch();
     });
     spotlightModalEl.addEventListener('shown.bs.modal', function () {

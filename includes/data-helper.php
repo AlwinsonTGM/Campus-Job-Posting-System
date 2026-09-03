@@ -200,7 +200,23 @@ function get_flash() {
 // ============================================================================
 
 function get_logged_user() {
-    return $_SESSION['user'] ?? null;
+    if (!isset($_SESSION['user']) || empty($_SESSION['user']['id'])) {
+        return null;
+    }
+
+    // Live sync from database so administrative approvals / profile changes take effect immediately
+    try {
+        $fresh = get_user_by_id((int)$_SESSION['user']['id']);
+        if ($fresh) {
+            unset($fresh['password']);
+            $_SESSION['user'] = $fresh;
+            return $fresh;
+        }
+    } catch (Exception $e) {
+        // Fallback to session cache if DB query encounters an issue
+    }
+
+    return $_SESSION['user'];
 }
 
 function is_logged_in() {
@@ -578,7 +594,7 @@ function save_uploaded_job_photo($file) {
     return null;
 }
 
-function update_employer_verification($id, $status, $notes = '') {
+function update_user_verification($id, $status, $notes = '') {
     try {
         $pdo = get_db_connection();
         $stmt = $pdo->prepare("
@@ -593,9 +609,13 @@ function update_employer_verification($id, $status, $notes = '') {
         ]);
         return $stmt->rowCount() > 0;
     } catch (Exception $e) {
-        error_log("update_employer_verification error: " . $e->getMessage());
+        error_log("update_user_verification error: " . $e->getMessage());
         return false;
     }
+}
+
+function update_employer_verification($id, $status, $notes = '') {
+    return update_user_verification($id, $status, $notes);
 }
 
 function register_user($data, $permit_file = null, $proof_file = null) {
@@ -627,8 +647,9 @@ function register_user($data, $permit_file = null, $proof_file = null) {
                 $accreditation = $data['accreditation_number'] ?? 'PENDING-VERIFICATION';
             }
         } else {
-            $verification = 'verified';
-            $accreditation = 'STUDENT-INTERNAL';
+            // New student registrations start in pending_approval for admin acceptance
+            $verification = 'pending_approval';
+            $accreditation = $data['student_id'] ?? ('STUDENT-' . rand(10000, 99999));
         }
 
         $sex = $data['sex'] ?? ($role === 'student' ? 'Male' : '');
@@ -1637,84 +1658,28 @@ function get_metrics_avg_hourly_pay() {
 }
 
 // ============================================================================
-// SYSTEM DATA MODE SWITCHING (Demo / Real Toggle)
+// UNIFIED SYSTEM DATA MODE (Coexisting Demo & Real Data)
 // ============================================================================
 
 function get_system_data_mode() {
-    $mode_file = DATA_DIR . '/system_mode.json';
-    if (file_exists($mode_file)) {
-        $data = json_decode(file_get_contents($mode_file), true);
-        return ($data['active_mode'] ?? 'demo');
-    }
-    return 'demo';
+    return 'live';
 }
 
 function switch_system_data_mode($mode, $switched_by = 'User') {
-    $seed_dir = DATA_DIR . '/seeds/' . $mode;
-    if (!is_dir($seed_dir)) {
-        return false;
-    }
-
-    // 1. Sync seed files to data/
-    $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
-                   'profile_requests.json', 'updates.json', 'devblogs.json'];
-
-    foreach ($data_files as $file) {
-        $src = $seed_dir . '/' . $file;
-        $dst = DATA_DIR . '/' . $file;
-        if (file_exists($src)) {
-            copy($src, $dst);
-        }
-    }
-
-    // 2. Re-import into MySQL
-    try {
-        $pdo = get_db_connection();
-        // Truncate tables and re-import
-        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-        $pdo->exec("TRUNCATE TABLE `applications`;");
-        $pdo->exec("TRUNCATE TABLE `profile_requests`;");
-        $pdo->exec("TRUNCATE TABLE `jobs`;");
-        $pdo->exec("TRUNCATE TABLE `categories`;");
-        $pdo->exec("TRUNCATE TABLE `updates`;");
-        $pdo->exec("TRUNCATE TABLE `devblogs`;");
-        $pdo->exec("TRUNCATE TABLE `users`;");
-        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-
-        // Run migration logic
-        require_once dirname(__DIR__) . '/database/migrate.php';
-        execute_migration_and_seed(false, $seed_dir, false);
-    } catch (Exception $e) {
-        error_log("switch_system_data_mode db error: " . $e->getMessage());
-    }
-
-    // Record mode change
-    $mode_data = [
-        'active_mode' => $mode,
-        'last_switched_at' => date('Y-m-d H:i:s'),
-        'switched_by' => $switched_by
-    ];
-    file_put_contents(DATA_DIR . '/system_mode.json', json_encode($mode_data, JSON_PRETTY_PRINT));
-
-    // Clear session user
-    unset($_SESSION['user']);
-    unset($_SESSION['flash']);
-
+    // Mode switching is permanently unified: demo fixtures and real accounts coexist.
     return true;
 }
 
 function reset_current_data_mode($switched_by = 'User') {
-    $current_mode = get_system_data_mode();
-    return switch_system_data_mode($current_mode, $switched_by);
+    return true;
 }
 
 function wipe_real_data_fresh() {
-    return switch_system_data_mode('real', 'System Wipe');
+    return true;
 }
 
 function reset_demo_data() {
-    switch_system_data_mode('demo', 'System Reset');
-    set_flash('info', 'Demo dataset has been reset to default campus state.');
+    return true;
 }
 
 // ============================================================================
@@ -1910,6 +1875,13 @@ function delete_career_update($id) {
 // ============================================================================
 
 function get_devblogs() {
+    $file = __DIR__ . '/../data/devblogs.json';
+    if (file_exists($file)) {
+        $json = json_decode(file_get_contents($file), true);
+        if (is_array($json) && !empty($json)) {
+            return $json;
+        }
+    }
     try {
         $pdo = get_db_connection();
         $stmt = $pdo->query("SELECT * FROM `devblogs` ORDER BY `sprint_number` ASC");
@@ -1922,6 +1894,12 @@ function get_devblogs() {
 }
 
 function get_devblog_by_id($id) {
+    $blogs = get_devblogs();
+    foreach ($blogs as $b) {
+        if (($b['id'] ?? '') === (string)$id || ($b['sprint_number'] ?? '') === (string)$id) {
+            return $b;
+        }
+    }
     try {
         $pdo = get_db_connection();
         $stmt = $pdo->prepare("SELECT * FROM `devblogs` WHERE `id` = :id OR `sprint_number` = :sprint LIMIT 1");

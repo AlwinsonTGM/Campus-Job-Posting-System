@@ -14,7 +14,7 @@ if (!function_exists('render_page_head')) {
             <div class="page-head-content">
                 <?php if (!empty($eyebrow)): ?>
                     <div class="mb-2">
-                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle">
+                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle text-wrap text-start lh-sm py-2 px-3" style="max-width: 100%; white-space: normal; font-size: 12px;">
                             <?= $eyebrow ?>
                         </span>
                     </div>

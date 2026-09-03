@@ -19,13 +19,6 @@ if (isset($_GET['demo'])) {
     }
 }
 
-if (isset($_GET['reset'])) {
-    reset_demo_data();
-    set_flash('info', 'Demo datastore has been reset to defaults.');
-    header('Location: login.php');
-    exit;
-}
-
 // Check if already logged in
 if (is_logged_in()) {
     $u = get_logged_user();
@@ -116,7 +109,7 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="p-3 bg-white rounded-4 border border-line mt-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="small fw-bold text-ink text-uppercase" style="font-size: 11px;">
-                                    <i class="bi bi-lightning-charge-fill text-accent"></i> 1-Click Demo Accounts
+                                    <i class="bi bi-lightning-charge-fill text-accent"></i> 1-Click Evaluation Accounts
                                 </span>
                             </div>
                             <div class="d-flex flex-wrap gap-1">
