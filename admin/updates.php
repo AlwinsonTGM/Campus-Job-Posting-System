@@ -15,7 +15,9 @@ $action = $_POST['action'] ?? null;
 
 // Handle Add / Edit / Delete POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($action === 'create') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = 'Security validation failed: Invalid or expired security token. Please try again.';
+    } elseif ($action === 'create') {
         $title = trim($_POST['title'] ?? '');
         $category = trim($_POST['category'] ?? 'Campus News');
         $summary = trim($_POST['summary'] ?? '');
@@ -193,6 +195,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
                                                     <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this dispatch? This cannot be undone.');">
+                                                        <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                                         <input type="hidden" name="action" value="delete">
                                                         <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
                                                         <button type="submit" class="btn-circle-icon text-danger" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Delete Dispatch">
@@ -226,6 +229,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="updates.php">
+                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="create">
                 <div class="modal-body p-4">
                     <div class="mb-3">
@@ -292,6 +296,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="updates.php">
+                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="id" id="edit_id">
                 <div class="modal-body p-4">

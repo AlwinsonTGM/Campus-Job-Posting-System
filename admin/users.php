@@ -10,7 +10,7 @@ require_auth(['admin']);
 $user = get_logged_user();
 $page_title = 'User Directory & Partner Verification';
 
-$users = $_SESSION['users'] ?? load_json_file('users.json');
+$users = get_all_users();
 
 // Reject any deprecated GET-based mutation attempts
 if (isset($_GET['approve_id']) || isset($_GET['reject_id'])) {
@@ -33,10 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'approve_employer') {
         $approve_id = (int)($_POST['id'] ?? 0);
         if (update_employer_verification($approve_id, 'verified')) {
-            $u_name = '';
-            foreach ($_SESSION['users'] as $u) {
-                if ($u['id'] == $approve_id) { $u_name = $u['name']; break; }
-            }
+            $u = get_user_by_id($approve_id);
+            $u_name = $u['name'] ?? 'Employer';
             set_flash('success', "Partner employer '{$u_name}' has been officially verified!");
             header('Location: users.php');
             exit;
@@ -74,7 +72,7 @@ $ver_filter = $_GET['ver_status'] ?? null;
 $search = $_GET['q'] ?? null;
 
 // Count pending verifications & student requests
-$all_users = $_SESSION['users'] ?? load_json_file('users.json');
+$all_users = get_all_users();
 $pending_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
 
 $all_profile_requests = get_profile_requests();

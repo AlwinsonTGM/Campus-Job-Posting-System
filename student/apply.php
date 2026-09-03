@@ -32,45 +32,83 @@ if (!$job) {
     exit;
 }
 
+// Gating Checks
+if (strtolower($job['status'] ?? '') !== 'active') {
+    set_flash('danger', 'This requisition has been closed or paused and is not accepting applications.');
+    header('Location: job-details.php?id=' . $job['id']);
+    exit;
+}
+
+if (!empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d'))) {
+    set_flash('danger', 'The application deadline for this position has passed.');
+    header('Location: job-details.php?id=' . $job['id']);
+    exit;
+}
+
+$slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
+$slots_filled = (int)($job['slots_filled'] ?? 0);
+if ($slots_total > 0 && $slots_filled >= $slots_total) {
+    set_flash('danger', 'All vacancy slots for this position have been filled.');
+    header('Location: job-details.php?id=' . $job['id']);
+    exit;
+}
+
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $cover_letter = trim($_POST['cover_letter'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $availability = $_POST['availability'] ?? [];
-    
-    // Handle resume file upload
-    $resume_path = null;
-    if (isset($_FILES['resume']) && ($_FILES['resume']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-        $resume_path = save_uploaded_resume($_FILES['resume']);
-    }
-    
-    $resume_name = $resume_path ? basename($resume_path) : ($user['name'] . '_Resume.pdf');
-
-    if (empty($cover_letter)) {
-        $error = 'Please provide a brief statement of intent / cover letter.';
-    } elseif (empty($availability) || count($availability) === 0) {
-        $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one available weekly timeslot in the matrix.';
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = 'Security validation failed (invalid CSRF session token). Please refresh and submit again.';
     } else {
-        $res = create_application([
-            'job_id' => $job['id'],
-            'cover_letter' => $cover_letter,
-            'phone' => $phone,
-            'availability' => $availability,
-            'resume_file' => $resume_name
-        ]);
+        $cover_letter = trim($_POST['cover_letter'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $availability = $_POST['availability'] ?? [];
+        
+        // Handle resume file upload with failure detection
+        $resume_name = ($user['name'] ?? 'Student') . '_Resume.pdf';
+        $upload_failed = false;
 
-        if ($res['success']) {
-            set_flash('success', "Application successfully submitted for {$job['title']}! You can track its review progress below.");
-            header('Location: my-applications.php');
-            exit;
-        } else {
-            $error = $res['message'];
+        if (isset($_FILES['resume']) && $_FILES['resume']['error'] !== UPLOAD_ERR_NO_FILE) {
+            if ($_FILES['resume']['error'] !== UPLOAD_ERR_OK) {
+                $error = 'File upload failed. Please verify that your resume file is under 5MB.';
+                $upload_failed = true;
+            } else {
+                $resume_path = save_uploaded_resume($_FILES['resume']);
+                if (!$resume_path) {
+                    $error = 'Invalid resume format or size. Accepted formats: PDF, DOC, DOCX (Max 5MB).';
+                    $upload_failed = true;
+                } else {
+                    $resume_name = basename($resume_path);
+                }
+            }
+        }
+
+        if (!$upload_failed) {
+            if (empty($cover_letter)) {
+                $error = 'Please provide a brief statement of intent / cover letter.';
+            } elseif (empty($availability) || count($availability) === 0) {
+                $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one available weekly timeslot in the matrix.';
+            } else {
+                $res = create_application([
+                    'job_id' => $job['id'],
+                    'cover_letter' => $cover_letter,
+                    'phone' => $phone,
+                    'availability' => $availability,
+                    'resume_file' => $resume_name
+                ]);
+
+                if ($res['success']) {
+                    set_flash('success', "Application successfully submitted for {$job['title']}! You can track its review progress below.");
+                    header('Location: my-applications.php');
+                    exit;
+                } else {
+                    $error = $res['message'];
+                }
+            }
         }
     }
 }
 
-$default_availability = $user['availability'] ?? [
+$default_availability = (!empty($user['availability']) && is_array($user['availability'])) ? $user['availability'] : [
     'Mon - Morning (8AM–12NN)',
     'Wed - Morning (8AM–12NN)',
     'Fri - Afternoon (1PM–5PM)'
@@ -117,6 +155,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="card-paper p-4 p-md-5 mb-5">
                             
                             <form action="apply.php?id=<?= $job['id'] ?>&job_id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data" class="form-paper">
+                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 
                                 <!-- Section 1: Applicant Profile Confirmation -->
                                 <div class="mb-4 pb-3 border-bottom border-line">
@@ -157,7 +196,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <label class="form-label" for="app-phone">Mobile Phone (for SMS interview notices) <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                            <input type="text" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars($user['phone'] ?? '+63 917 555 0192') ?>" required>
+                                            <input type="text" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars(!empty($user['phone']) ? $user['phone'] : '+63 917 555 0192') ?>" required>
                                         </div>
                                         <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
                                             Department supervisors use this contact to confirm interview dates and duty room assignments.

@@ -99,6 +99,16 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
 
             <!-- Right Action Items -->
             <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                <!-- Dataset Mode Switcher Button -->
+                <?php
+                $current_data_mode = function_exists('get_system_data_mode') ? get_system_data_mode() : 'demo';
+                $is_real_mode = ($current_data_mode === 'real');
+                ?>
+                <button type="button" class="btn-data-mode-toggle chip <?= $is_real_mode ? 'btn-data-mode--real text-success' : 'btn-data-mode--demo text-warning' ?> d-inline-flex align-items-center gap-1 border-0 py-1 px-2" data-bs-toggle="modal" data-bs-target="#dataModeModal" title="Toggle System Dataset Mode">
+                    <i class="bi <?= $is_real_mode ? 'bi-database-check' : 'bi-database-fill-gear' ?>"></i>
+                    <span class="small fw-bold"><?= $is_real_mode ? 'REAL DATA' : 'DEMO DATA' ?></span>
+                </button>
+
                 <!-- Circular Search-Icon Button (Opens Floating Spotlight Modal) -->
                 <button type="button" class="btn-circle-icon" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
                     <i class="bi bi-search"></i>

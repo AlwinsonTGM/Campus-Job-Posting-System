@@ -17,6 +17,12 @@ $search = trim($_GET['q'] ?? '');
 
 // Handle decision submissions via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        set_flash('danger', 'Security validation failed: Invalid or expired security token. Please try again.');
+        header('Location: applicants.php' . ($job_filter ? "?job_id={$job_filter}" : ''));
+        exit;
+    }
+
     $app_id = $_POST['app_id'];
     $action_type = $_POST['action_type'];
     $notes = trim($_POST['supervisor_notes'] ?? '');
@@ -43,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
     exit;
 }
 
-$all_dept_apps = get_applications(null, $job_filter, ($user['role'] === 'admin' ? null : $dept));
+$emp_id_filter = ($user['role'] === 'admin') ? null : (int)$user['id'];
+$all_dept_apps = get_applications(null, $job_filter, null, $emp_id_filter);
 
 if ($status_filter) {
     $all_dept_apps = array_filter($all_dept_apps, function($a) use ($status_filter) {
@@ -67,7 +74,7 @@ if (!empty($search)) {
     });
 }
 
-$dept_jobs = get_jobs(null, null, ($user['role'] === 'admin' ? null : $dept));
+$dept_jobs = get_jobs(null, null, null, null, null, null, null, $emp_id_filter);
 
 require_once __DIR__ . '/../includes/header.php';
 ?>

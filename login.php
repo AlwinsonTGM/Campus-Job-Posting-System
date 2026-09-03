@@ -6,15 +6,6 @@
 require_once __DIR__ . '/includes/data-helper.php';
 require_once __DIR__ . '/includes/auth-check.php';
 
-// Check if already logged in
-if (is_logged_in()) {
-    $u = get_logged_user();
-    if ($u['role'] === 'student') header('Location: student/dashboard.php');
-    elseif ($u['role'] === 'employer') header('Location: employer/dashboard.php');
-    elseif ($u['role'] === 'admin') header('Location: admin/reports.php');
-    exit;
-}
-
 // Handle Quick Demo Login from URL params
 if (isset($_GET['demo'])) {
     $role = $_GET['demo'];
@@ -32,6 +23,15 @@ if (isset($_GET['reset'])) {
     reset_demo_data();
     set_flash('info', 'Demo datastore has been reset to defaults.');
     header('Location: login.php');
+    exit;
+}
+
+// Check if already logged in
+if (is_logged_in()) {
+    $u = get_logged_user();
+    if ($u['role'] === 'student') header('Location: student/dashboard.php');
+    elseif ($u['role'] === 'employer') header('Location: employer/dashboard.php');
+    elseif ($u['role'] === 'admin') header('Location: admin/reports.php');
     exit;
 }
 
@@ -120,16 +120,16 @@ require_once __DIR__ . '/includes/header.php';
                                 </span>
                             </div>
                             <div class="d-flex flex-wrap gap-1">
-                                <button type="button" class="chip chip-selectable" data-demo-email="student@kld.edu.ph">
+                                <button type="button" id="tab-student" class="chip chip-selectable" data-demo-email="student@kld.edu.ph">
                                     <i class="bi bi-mortarboard text-accent"></i> Student
                                 </button>
-                                <button type="button" class="chip chip-selectable" data-demo-email="registrar@kld.edu.ph">
+                                <button type="button" id="tab-employer" class="chip chip-selectable" data-demo-email="registrar@kld.edu.ph">
                                     <i class="bi bi-bank text-accent"></i> Campus Office
                                 </button>
-                                <button type="button" class="chip chip-selectable" data-demo-email="techvanguard@partner.kld.edu.ph">
+                                <button type="button" id="tab-partner" class="chip chip-selectable" data-demo-email="techvanguard@partner.kld.edu.ph">
                                     <i class="bi bi-patch-check-fill text-accent"></i> Partner
                                 </button>
-                                <button type="button" class="chip chip-selectable" data-demo-email="admin@kld.edu.ph">
+                                <button type="button" id="tab-admin" class="chip chip-selectable" data-demo-email="admin@kld.edu.ph">
                                     <i class="bi bi-shield-lock text-accent"></i> Admin
                                 </button>
                             </div>

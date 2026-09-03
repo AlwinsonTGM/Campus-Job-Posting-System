@@ -13,23 +13,37 @@ $page_title = 'Job Family Category Taxonomy';
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $icon = $_POST['icon'] ?? 'bi-briefcase';
-    $color = $_POST['color'] ?? 'primary';
-
-    if (empty($name)) {
-        $error = 'Category name cannot be empty.';
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = 'Security validation failed: Invalid or expired security token. Please try again.';
     } else {
-        create_category([
-            'name' => $name,
-            'description' => $description,
-            'icon' => $icon,
-            'color' => $color
-        ]);
-        set_flash('success', "New category '{$name}' was created successfully.");
-        header('Location: categories.php');
-        exit;
+        $name = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $icon = $_POST['icon'] ?? 'bi-briefcase';
+        if (!preg_match('/^bi-[a-z0-9-]+$/', $icon)) {
+            $icon = 'bi-briefcase';
+        }
+        $color = $_POST['color'] ?? 'primary';
+        if (!in_array($color, ['primary', 'accent', 'danger', 'info', 'warning', 'success', 'secondary'], true)) {
+            $color = 'primary';
+        }
+
+        if (empty($name)) {
+            $error = 'Category name cannot be empty.';
+        } else {
+            $cat_id = create_category([
+                'name' => $name,
+                'description' => $description,
+                'icon' => $icon,
+                'color' => $color
+            ]);
+            if ($cat_id > 0) {
+                set_flash('success', "New category '{$name}' was created successfully.");
+                header('Location: categories.php');
+                exit;
+            } else {
+                $error = "Failed to create category '{$name}'. A category with this name or slug may already exist.";
+            }
+        }
     }
 }
 
@@ -127,6 +141,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
 
                     <form action="categories.php" method="POST" class="form-paper">
+                        <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                         <div class="modal-body p-4">
                             <div class="mb-3">
                                 <label class="form-label" for="cat-name">Category Title <span class="text-danger">*</span></label>

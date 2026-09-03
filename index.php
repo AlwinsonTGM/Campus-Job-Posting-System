@@ -520,6 +520,20 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
 
                     <!-- Carousel Viewport -->
+                    <?php if (empty($featured_jobs)): ?>
+                        <div class="card-paper text-center py-5 my-3">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="bi bi-briefcase"></i>
+                                </div>
+                                <h3 class="empty-state-title">No Active Requisitions Published Yet</h3>
+                                <p class="empty-state-body">There are currently no active featured campus requisitions in the live database. Check back soon or browse all vacancies.</p>
+                                <a href="student/jobs.php" class="btn-pill">
+                                    Browse All Vacancies <i class="bi bi-arrow-up-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    <?php else: ?>
                     <div class="carousel-viewport-container">
                         <div id="featured-carousel-track" class="carousel-track">
                             <?php foreach ($featured_jobs as $idx => $job):
@@ -601,6 +615,7 @@ require_once __DIR__ . '/includes/header.php';
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
+                    <?php endif; ?>
                 </div>
             </section>
 

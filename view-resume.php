@@ -19,13 +19,9 @@ $target_student = null;
 $resume_filename = 'Student_Resume.pdf';
 
 if ($app_id) {
-    $apps = $_SESSION['applications'] ?? load_json_file('applications.json');
-    foreach ($apps as $a) {
-        if ($a['id'] == $app_id) {
-            $app = $a;
-            $resume_filename = $a['resume_file'] ?? 'Student_Resume.pdf';
-            break;
-        }
+    $app = get_application_by_id($app_id);
+    if ($app) {
+        $resume_filename = $app['resume_file'] ?? 'Student_Resume.pdf';
     }
 
     if (!$app) {
@@ -38,13 +34,7 @@ if ($app_id) {
         die('Access Denied: You are not authorized to view this candidate credential.');
     }
 
-    $users = $_SESSION['users'] ?? load_json_file('users.json');
-    foreach ($users as $u) {
-        if ($u['id'] == ($app['student_id'] ?? 0) || $u['email'] === ($app['student_email'] ?? '')) {
-            $target_student = $u;
-            break;
-        }
-    }
+    $target_student = get_user_by_id($app['student_id'] ?? 0) ?? get_user_by_email($app['student_email'] ?? '');
 } elseif ($user_id) {
     if (!can_view_student_resume(null, $user_id, $current_user)) {
         http_response_code(403);
@@ -55,13 +45,9 @@ if ($app_id) {
         }
     }
 
-    $users = $_SESSION['users'] ?? load_json_file('users.json');
-    foreach ($users as $u) {
-        if ($u['id'] == $user_id) {
-            $target_student = $u;
-            $resume_filename = ($u['name'] ?? 'Student') . '_Resume.pdf';
-            break;
-        }
+    $target_student = get_user_by_id($user_id);
+    if ($target_student) {
+        $resume_filename = ($target_student['name'] ?? 'Student') . '_Resume.pdf';
     }
 
     if (!$target_student) {
@@ -71,7 +57,39 @@ if ($app_id) {
 } else {
     $target_student = $current_user;
     if ($file_param) {
-        $resume_filename = basename($file_param);
+        $requested_file = basename($file_param);
+
+        // Verify authorization for file access
+        $is_authorized_file = false;
+        if (($current_user['role'] ?? '') === 'admin') {
+            $is_authorized_file = true;
+        } elseif (($current_user['role'] ?? '') === 'student') {
+            $profile_name = ($current_user['name'] ?? '') . '_Resume.pdf';
+            if ($requested_file === $profile_name) {
+                $is_authorized_file = true;
+            } else {
+                $pdo = get_db_connection();
+                $chk = $pdo->prepare("SELECT `id` FROM `applications` WHERE `student_id` = :sid AND `resume_file` = :rfile LIMIT 1");
+                $chk->execute([':sid' => (int)($current_user['id'] ?? 0), ':rfile' => $requested_file]);
+                if ($chk->fetch()) {
+                    $is_authorized_file = true;
+                }
+            }
+        } elseif (($current_user['role'] ?? '') === 'employer') {
+            $pdo = get_db_connection();
+            $chk = $pdo->prepare("SELECT a.`id` FROM `applications` a INNER JOIN `jobs` j ON j.`id` = a.`job_id` WHERE j.`employer_id` = :eid AND a.`resume_file` = :rfile LIMIT 1");
+            $chk->execute([':eid' => (int)($current_user['id'] ?? 0), ':rfile' => $requested_file]);
+            if ($chk->fetch()) {
+                $is_authorized_file = true;
+            }
+        }
+
+        if (!$is_authorized_file) {
+            http_response_code(403);
+            die('Access Denied: You are not authorized to inspect this document.');
+        }
+
+        $resume_filename = $requested_file;
     }
 }
 
@@ -91,11 +109,7 @@ $availability = $app['availability'] ?? ($target_student['availability'] ?? [
 ]);
 
 $candidate_paths = [
-    __DIR__ . '/' . ltrim($resume_filename, '/'),
-    __DIR__ . '/uploads/resumes/' . basename($resume_filename),
-    __DIR__ . '/uploads/proofs/' . basename($resume_filename),
-    __DIR__ . '/uploads/resumes/Juan_Dela_Cruz_Resume.pdf',
-    __DIR__ . '/uploads/proofs/proof_1787818447_8a7d0655.pdf'
+    __DIR__ . '/uploads/resumes/' . basename($resume_filename)
 ];
 
 $physical_pdf_path = null;

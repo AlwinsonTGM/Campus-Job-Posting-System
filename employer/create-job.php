@@ -8,6 +8,15 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 require_auth(['employer', 'admin']);
 $user = get_logged_user();
+
+$is_partner = ($user['employer_type'] ?? '') === 'approved_partner';
+$ver_status = $user['verification_status'] ?? 'verified';
+if ($user['role'] === 'employer' && $is_partner && $ver_status !== 'verified') {
+    set_flash('danger', 'Your partner organization account is currently awaiting administrative accreditation. Vacancies cannot be published until verified.');
+    header('Location: dashboard.php');
+    exit;
+}
+
 $categories = get_categories();
 $job_types = get_job_types();
 $work_setups = get_work_setups();
@@ -15,48 +24,58 @@ $work_setups = get_work_setups();
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $category = $_POST['category'] ?? 'Administrative & Clerical';
-    $job_type = $_POST['job_type'] ?? 'Student Assistant';
-    $work_setup = $_POST['work_setup'] ?? 'On-Campus';
-    $department = trim($_POST['department'] ?? ($user['organization_name'] ?? ($user['department'] ?? 'Campus Office')));
-    $location = trim($_POST['location'] ?? 'Campus Main Office');
-    $pay_rate = trim($_POST['pay_rate'] ?? '₱80.00 / hour');
-    $hours_per_week = trim($_POST['hours_per_week'] ?? '10 - 20 hrs/week');
-    $vacancies = (int)($_POST['vacancies'] ?? 1);
-    $deadline = $_POST['deadline'] ?? date('Y-m-d', strtotime('+30 days'));
-    $description = trim($_POST['description'] ?? '');
-    $responsibilities = trim($_POST['responsibilities'] ?? '');
-    $qualifications = trim($_POST['qualifications'] ?? '');
-    $tags = trim($_POST['tags'] ?? "{$job_type}, {$work_setup}");
-
-    if (empty($title) || empty($description)) {
-        $error = 'Please provide the vacancy title and detailed description.';
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = 'Security validation failed: Invalid or expired security token. Please try again.';
     } else {
-        $photo_file = $_FILES['job_photo'] ?? null;
+        $title = trim($_POST['title'] ?? '');
+        $category = $_POST['category'] ?? 'Administrative & Clerical';
+        $job_type = $_POST['job_type'] ?? 'Student Assistant';
+        $work_setup = $_POST['work_setup'] ?? 'On-Campus';
+        $department = trim($_POST['department'] ?? ($user['organization_name'] ?? ($user['department'] ?? 'Campus Office')));
+        $location = trim($_POST['location'] ?? 'Campus Main Office');
+        $pay_rate = trim($_POST['pay_rate'] ?? '₱80.00 / hour');
+        $hours_per_week = trim($_POST['hours_per_week'] ?? '10 - 20 hrs/week');
+        $vacancies = (int)($_POST['vacancies'] ?? 1);
+        $deadline = $_POST['deadline'] ?? date('Y-m-d', strtotime('+30 days'));
+        $description = trim($_POST['description'] ?? '');
+        $responsibilities = trim($_POST['responsibilities'] ?? '');
+        $qualifications = trim($_POST['qualifications'] ?? '');
+        $tags = trim($_POST['tags'] ?? "{$job_type}, {$work_setup}");
 
-        $new_id = create_job([
-            'title' => $title,
-            'category' => $category,
-            'job_type' => $job_type,
-            'work_setup' => $work_setup,
-            'employer_type' => $user['employer_type'] ?? 'university_office',
-            'organization_name' => $user['organization_name'] ?? $department,
-            'department' => $department,
-            'location' => $location,
-            'pay_rate' => $pay_rate,
-            'hours_per_week' => $hours_per_week,
-            'vacancies' => $vacancies,
-            'deadline' => $deadline,
-            'description' => $description,
-            'responsibilities' => array_filter(array_map('trim', explode("\n", $responsibilities))),
-            'qualifications' => array_filter(array_map('trim', explode("\n", $qualifications))),
-            'tags' => array_filter(array_map('trim', explode(',', $tags)))
-        ], $photo_file);
+        if (empty($title) || empty($description)) {
+            $error = 'Please provide the vacancy title and detailed description.';
+        } elseif ($vacancies < 1) {
+            $error = 'Vacancy quota must be at least 1 position.';
+        } else {
+            $photo_file = $_FILES['job_photo'] ?? null;
 
-        set_flash('success', "Vacancy '{$title}' ({$job_type}) has been published successfully!");
-        header('Location: dashboard.php');
-        exit;
+            $new_id = create_job([
+                'title' => $title,
+                'category' => $category,
+                'job_type' => $job_type,
+                'work_setup' => $work_setup,
+                'employer_type' => $user['employer_type'] ?? 'university_office',
+                'organization_name' => $user['organization_name'] ?? $department,
+                'department' => $department,
+                'location' => $location,
+                'pay_rate' => $pay_rate,
+                'hours_per_week' => $hours_per_week,
+                'vacancies' => $vacancies,
+                'deadline' => $deadline,
+                'description' => $description,
+                'responsibilities' => $responsibilities,
+                'qualifications' => $qualifications,
+                'tags' => $tags
+            ], $photo_file);
+
+            if ($new_id > 0) {
+                set_flash('success', "New vacancy '{$title}' posted successfully!");
+                header('Location: dashboard.php');
+                exit;
+            } else {
+                $error = 'Failed to create vacancy. Please try again.';
+            }
+        }
     }
 }
 
@@ -96,6 +115,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
 
                 <form action="create-job.php" method="POST" enctype="multipart/form-data" class="form-paper">
+                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                     <div class="row g-4 mb-5">
                         
                         <!-- Left 8-col: Role Overview & Responsibilities -->

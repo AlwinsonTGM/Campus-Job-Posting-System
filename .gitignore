@@ -47,8 +47,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.env
-.env.local
-.env.*.local
+# Temporary Test Upload Artifacts
+uploads/proofs/proof_*
+!uploads/proofs/proof_1787818447_8a7d0655.pdf
 
 
