@@ -74,35 +74,94 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
                     </div>
 
-                    <!-- Bottom Strip (Partners & Scroll Indicator) -->
+                    <!-- Bottom Strip (Partners Marquee & Scroll Indicator) -->
                     <div class="hero-partner-strip">
-                        <div class="row align-items-center justify-content-between g-3">
-                            <!-- Left: Trusted Campus & Industry Partners -->
-                            <div class="col-lg-9 col-md-9">
-                                <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4">
-                                    <span class="eyebrow-badge text-muted-custom">ACCREDITED OFFICES & PARTNERS</span>
-                                    <div
-                                        class="d-flex flex-wrap align-items-center gap-3 gap-md-4 text-ink fw-bold small">
-                                        <span class="partner-logo-item"><i class="bi bi-building text-accent"></i>
-                                            University Registrar</span>
-                                        <span class="partner-logo-item"><i class="bi bi-cpu text-accent"></i> MIS & Tech
-                                            Center</span>
-                                        <span class="partner-logo-item"><i class="bi bi-book text-accent"></i> Campus
-                                            Library</span>
-                                        <span class="partner-logo-item"><i class="bi bi-briefcase text-accent"></i>
-                                            TechVanguard Solutions</span>
-                                        <span class="partner-logo-item"><i class="bi bi-camera-reels text-accent"></i>
-                                            Dasma Creative Media</span>
+                        <div class="hero-partner-grid">
+                            <!-- Left: Badge Label -->
+                            <div class="hero-partner-label">
+                                <span class="eyebrow-badge text-muted-custom">ACCREDITED OFFICES &amp; PARTNERS</span>
+                            </div>
+
+                            <!-- Center: Infinite Scrolling Marquee Track -->
+                            <div class="hero-partner-marquee" role="region" aria-label="Accredited Offices and Industry Partners">
+                                <div class="hero-partner-track">
+                                    <!-- Primary Set -->
+                                    <div class="hero-partner-group">
+                                        <a href="student/jobs.php?q=Registrar" class="partner-logo-item">
+                                            <i class="bi bi-building text-accent"></i> University Registrar
+                                        </a>
+                                        <a href="student/jobs.php?q=MIS" class="partner-logo-item">
+                                            <i class="bi bi-cpu text-accent"></i> MIS &amp; Tech Center
+                                        </a>
+                                        <a href="student/jobs.php?q=Library" class="partner-logo-item">
+                                            <i class="bi bi-book text-accent"></i> Campus Library
+                                        </a>
+                                        <a href="student/jobs.php?q=TechVanguard" class="partner-logo-item">
+                                            <i class="bi bi-briefcase text-accent"></i> TechVanguard Solutions
+                                        </a>
+                                        <a href="student/jobs.php?q=Creative+Media" class="partner-logo-item">
+                                            <i class="bi bi-camera-reels text-accent"></i> Dasma Creative Media
+                                        </a>
+                                        <a href="student/jobs.php?q=Student+Affairs" class="partner-logo-item">
+                                            <i class="bi bi-mortarboard text-accent"></i> Student Affairs Office
+                                        </a>
+                                        <a href="student/jobs.php?q=Health+Services" class="partner-logo-item">
+                                            <i class="bi bi-heart-pulse text-accent"></i> University Health Services
+                                        </a>
+                                        <a href="student/jobs.php?q=Innovation" class="partner-logo-item">
+                                            <i class="bi bi-code-slash text-accent"></i> Nexus Innovation Labs
+                                        </a>
+                                        <a href="student/jobs.php?q=Engineering" class="partner-logo-item">
+                                            <i class="bi bi-laptop text-accent"></i> College of Engineering &amp; IT
+                                        </a>
+                                        <a href="student/jobs.php?q=Alumni" class="partner-logo-item">
+                                            <i class="bi bi-people text-accent"></i> Alumni Placement Network
+                                        </a>
+                                    </div>
+
+                                    <!-- Duplicate Set for Seamless Infinite Loop -->
+                                    <div class="hero-partner-group" aria-hidden="true">
+                                        <a href="student/jobs.php?q=Registrar" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-building text-accent"></i> University Registrar
+                                        </a>
+                                        <a href="student/jobs.php?q=MIS" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-cpu text-accent"></i> MIS &amp; Tech Center
+                                        </a>
+                                        <a href="student/jobs.php?q=Library" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-book text-accent"></i> Campus Library
+                                        </a>
+                                        <a href="student/jobs.php?q=TechVanguard" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-briefcase text-accent"></i> TechVanguard Solutions
+                                        </a>
+                                        <a href="student/jobs.php?q=Creative+Media" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-camera-reels text-accent"></i> Dasma Creative Media
+                                        </a>
+                                        <a href="student/jobs.php?q=Student+Affairs" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-mortarboard text-accent"></i> Student Affairs Office
+                                        </a>
+                                        <a href="student/jobs.php?q=Health+Services" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-heart-pulse text-accent"></i> University Health Services
+                                        </a>
+                                        <a href="student/jobs.php?q=Innovation" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-code-slash text-accent"></i> Nexus Innovation Labs
+                                        </a>
+                                        <a href="student/jobs.php?q=Engineering" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-laptop text-accent"></i> College of Engineering &amp; IT
+                                        </a>
+                                        <a href="student/jobs.php?q=Alumni" class="partner-logo-item" tabindex="-1">
+                                            <i class="bi bi-people text-accent"></i> Alumni Placement Network
+                                        </a>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Right: Scroll Down Indicator -->
-                            <div class="col-lg-3 col-md-3 text-start text-md-end">
+                            <div class="hero-partner-action">
                                 <a href="#categories"
-                                    class="text-decoration-none d-inline-flex align-items-center gap-2 text-ink fw-bold small">
-                                    <span class="eyebrow-badge">EXPLORE CATEGORIES</span>
-                                    <span class="btn-circle-icon" style="width: 34px; height: 34px;">
+                                    class="text-decoration-none d-inline-flex align-items-center gap-2 text-ink fw-bold small"
+                                    title="Explore Categories">
+                                    <span class="eyebrow-badge d-none d-sm-inline">EXPLORE CATEGORIES</span>
+                                    <span class="btn-circle-icon" style="width: 32px; height: 32px;">
                                         <i class="bi bi-arrow-down"></i>
                                     </span>
                                 </a>

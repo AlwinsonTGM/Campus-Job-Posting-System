@@ -46,8 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
-    update_application_status($target_app['id'], $new_status, $notes, $interview_data);
-    set_flash('success', "Candidate status for {$target_app['student_name']} updated to " . ucfirst(str_replace('_', ' ', $new_status)) . ".");
+    $res = update_application_status($target_app['id'], $new_status, $notes, $interview_data);
+    if ($res) {
+        set_flash('success', "Candidate status for {$target_app['student_name']} updated to " . ucfirst(str_replace('_', ' ', $new_status)) . ".");
+    } else {
+        set_flash('danger', "Unable to update candidate status. Please ensure the interview schedule date is today or in the future.");
+    }
     header("Location: review-app.php?id={$target_app['id']}");
     exit;
 }
@@ -202,7 +206,13 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
 
                                 <!-- Dynamic Interview Details Box -->
-                                <div id="interviewBox" class="p-3 bg-cream rounded-4 border border-line mb-3" style="<?= !in_array($target_app['status'], ['interview_scheduled', 'Interview Scheduled']) ? 'display:none;' : '' ?>">
+                                <?php
+                                $is_interview_selected = in_array($target_app['status'], ['interview_scheduled', 'Interview Scheduled']);
+                                $stored_int_date = $target_app['interview_date'] ?? '';
+                                $is_stored_date_valid = (!empty($stored_int_date) && strtotime($stored_int_date) >= strtotime(date('Y-m-d')));
+                                $default_int_date = $is_stored_date_valid ? $stored_int_date : date('Y-m-d', strtotime('+2 days'));
+                                ?>
+                                <div id="interviewBox" class="p-3 bg-cream rounded-4 border border-line mb-3" style="<?= !$is_interview_selected ? 'display:none;' : '' ?>">
                                     <h4 class="card-paper-title fs-6 mb-2">
                                         <i class="bi bi-calendar-event text-accent me-1"></i> Interview Logistics
                                     </h4>
@@ -210,11 +220,16 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div class="row g-2 mb-2">
                                         <div class="col-6">
                                             <label class="form-label small mb-1" for="int-date">Interview Date</label>
-                                            <input type="date" name="interview_date" id="int-date" min="<?= date('Y-m-d') ?>" class="form-control" value="<?= htmlspecialchars($target_app['interview_date'] ?? date('Y-m-d', strtotime('+2 days'))) ?>">
+                                            <input type="date" name="interview_date" id="int-date" min="<?= date('Y-m-d') ?>" class="form-control" value="<?= htmlspecialchars($default_int_date) ?>" <?= !$is_interview_selected ? 'disabled' : '' ?>>
+                                            <?php if (!empty($stored_int_date) && !$is_stored_date_valid): ?>
+                                                <div class="small text-muted-custom mt-1" style="font-size: 11px;">
+                                                    <i class="bi bi-clock-history me-1"></i> Prior: <?= date('M d, Y', strtotime($stored_int_date)) ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="col-6">
                                             <label class="form-label small mb-1" for="int-time">Interview Time</label>
-                                            <select name="interview_time" id="int-time" class="form-select">
+                                            <select name="interview_time" id="int-time" class="form-select" <?= !$is_interview_selected ? 'disabled' : '' ?>>
                                                 <?php
                                                 $standard_times = [
                                                     '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', 
@@ -233,7 +248,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                     <div>
                                         <label class="form-label small mb-1" for="int-venue">Venue / Room</label>
-                                        <select name="interview_venue" id="int-venue" class="form-select">
+                                        <select name="interview_venue" id="int-venue" class="form-select" <?= !$is_interview_selected ? 'disabled' : '' ?>>
                                             <?php
                                             $dept_office = $user['office_location'] ?? ($user['department'] ?? 'Campus Main Office');
                                             $standard_venues = [
@@ -316,7 +331,29 @@ require_once __DIR__ . '/../includes/header.php';
 function toggleInterviewFields(status) {
     const box = document.getElementById('interviewBox');
     if (box) {
-        box.style.display = (status === 'interview_scheduled') ? 'block' : 'none';
+        const isScheduled = (status === 'interview_scheduled');
+        box.style.display = isScheduled ? 'block' : 'none';
+        
+        const inputs = box.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.disabled = !isScheduled;
+            if (isScheduled && input.id === 'int-date') {
+                const today = new Date().toISOString().split('T')[0];
+                input.min = today;
+                if (!input.value || input.value < today) {
+                    const future = new Date();
+                    future.setDate(future.getDate() + 2);
+                    input.value = future.toISOString().split('T')[0];
+                }
+            }
+        });
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('eval-status');
+    if (select) {
+        toggleInterviewFields(select.value);
+    }
+});
 </script>

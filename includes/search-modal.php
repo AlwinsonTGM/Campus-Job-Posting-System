@@ -25,7 +25,7 @@ if (!defined('SITE_NAME')) {
                             id="spotlightSearchInput" 
                             name="keyword" 
                             class="spotlight-input form-control border-0 shadow-none bg-transparent fs-5 fw-semibold text-ink" 
-                            placeholder="Search opportunities, titles, skills, departments..." 
+                            placeholder="Search opportunities, titles, skills..." 
                             autocomplete="off"
                             spellcheck="false"
                             aria-label="Search campus jobs"

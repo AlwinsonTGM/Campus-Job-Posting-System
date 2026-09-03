@@ -458,16 +458,16 @@ require_once __DIR__ . '/includes/header.php';
                             <h4 class="card-paper-title fs-6 mb-3">
                                 <i class="bi bi-bell text-accent me-2"></i> Notification Channels
                             </h4>
-                            <div class="d-flex flex-column gap-2 mb-4">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="emailNotif" checked>
-                                    <label class="form-check-label small text-ink" for="emailNotif">
+                            <div class="d-flex flex-column gap-3 mb-4">
+                                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-0">
+                                    <input class="form-check-input flex-shrink-0 ms-0 mt-0" type="checkbox" id="emailNotif" checked>
+                                    <label class="form-check-label small text-ink cursor-pointer mb-0" for="emailNotif">
                                         Email alerts for application status changes
                                     </label>
                                 </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="smsNotif" checked>
-                                    <label class="form-check-label small text-ink" for="smsNotif">
+                                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-0">
+                                    <input class="form-check-input flex-shrink-0 ms-0 mt-0" type="checkbox" id="smsNotif" checked>
+                                    <label class="form-check-label small text-ink cursor-pointer mb-0" for="smsNotif">
                                         SMS notices for interview appointments
                                     </label>
                                 </div>
@@ -493,7 +493,10 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Student Profile Update Request Modal -->
 <div class="modal fade" id="requestProfileModal" tabindex="-1" aria-labelledby="requestProfileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content rounded-4 border-line shadow-lg">
+        <form action="settings.php" method="POST" enctype="multipart/form-data" class="modal-content rounded-4 border-line shadow-lg form-paper m-0">
+            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+            <input type="hidden" name="action" value="request_profile_change">
+
             <div class="modal-header bg-cream border-bottom border-line py-2 px-3">
                 <div class="d-flex align-items-center gap-2">
                     <div class="icon-circle icon-circle-sm icon-circle-success" style="width: 32px; height: 32px; font-size: 14px;">
@@ -506,122 +509,117 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
-            <form action="settings.php" method="POST" enctype="multipart/form-data" class="form-paper m-0">
-                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                <input type="hidden" name="action" value="request_profile_change">
 
-                <div class="modal-body p-3">
-                    <div class="row g-3">
-                        <!-- Left Column: Academic & Identity Fields -->
-                        <div class="col-md-6 border-end-md border-line pe-md-3">
-                            <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
-                                <i class="bi bi-person-lines-fill text-accent me-1"></i> Requested Student Identity
-                            </div>
+            <div class="modal-body p-3">
+                <div class="row g-3">
+                    <!-- Left Column: Academic & Identity Fields -->
+                    <div class="col-md-6 border-end-md border-line pe-md-3">
+                        <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
+                            <i class="bi bi-person-lines-fill text-accent me-1"></i> Requested Student Identity
+                        </div>
 
-                            <div class="mb-2">
-                                <label class="form-label small mb-1" for="req-name">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" id="req-name" class="form-control form-control-sm" value="<?= htmlspecialchars($user['name']) ?>" required>
-                            </div>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1" for="req-name">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="req-name" class="form-control form-control-sm" value="<?= htmlspecialchars($user['name']) ?>" required>
+                        </div>
 
-                            <div class="mb-2">
-                                <label class="form-label small mb-1" for="req-dept">Academic Institute <span class="text-danger">*</span></label>
-                                <select name="department" id="req-dept" class="form-select form-select-sm" required>
-                                    <option value="">Select Academic Institute</option>
-                                    <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
-                                        <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($user['department']) && ($user['department'] === $inst || strpos($inst, $user['department']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1" for="req-dept">Academic Institute <span class="text-danger">*</span></label>
+                            <select name="department" id="req-dept" class="form-select form-select-sm" required>
+                                <option value="">Select Academic Institute</option>
+                                <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                    <option value="<?= htmlspecialchars($inst) ?>" <?= (isset($user['department']) && ($user['department'] === $inst || strpos($inst, $user['department']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label small mb-1" for="req-course">Degree Program / Course <span class="text-danger">*</span></label>
+                            <select name="course" id="req-course" class="form-select form-select-sm" required>
+                                <option value="">Select Degree Program</option>
+                                <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
+                                    <optgroup label="<?= htmlspecialchars($inst) ?>">
+                                        <?php foreach ($courses as $c): ?>
+                                            <option value="<?= htmlspecialchars($c) ?>" <?= (isset($user['course']) && ($user['course'] === $c || strpos($c, $user['course']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-7">
+                                <label class="form-label small mb-1" for="req-year-level">Year Level <span class="text-danger">*</span></label>
+                                <select name="year_level" id="req-year-level" class="form-select form-select-sm" required>
+                                    <?php foreach (get_year_levels() as $val => $label): ?>
+                                        <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['year_level']) && $user['year_level'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-
-                            <div class="mb-2">
-                                <label class="form-label small mb-1" for="req-course">Degree Program / Course <span class="text-danger">*</span></label>
-                                <select name="course" id="req-course" class="form-select form-select-sm" required>
-                                    <option value="">Select Degree Program</option>
-                                    <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
-                                        <optgroup label="<?= htmlspecialchars($inst) ?>">
-                                            <?php foreach ($courses as $c): ?>
-                                                <option value="<?= htmlspecialchars($c) ?>" <?= (isset($user['course']) && ($user['course'] === $c || strpos($c, $user['course']) !== false)) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
-                                            <?php endforeach; ?>
-                                        </optgroup>
+                            <div class="col-5">
+                                <label class="form-label small mb-1" for="req-sex">Sex / Gender <span class="text-danger">*</span></label>
+                                <select name="sex" id="req-sex" class="form-select form-select-sm" required>
+                                    <option value="" disabled <?= empty($user['sex']) ? 'selected' : '' ?>>Select Gender</option>
+                                    <?php foreach (get_sex_options() as $val => $label): ?>
+                                        <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['sex']) && $user['sex'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                            </div>
-
-                            <div class="row g-2 mb-2">
-                                <div class="col-7">
-                                    <label class="form-label small mb-1" for="req-year-level">Year Level <span class="text-danger">*</span></label>
-                                    <select name="year_level" id="req-year-level" class="form-select form-select-sm" required>
-                                        <?php foreach (get_year_levels() as $val => $label): ?>
-                                            <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['year_level']) && $user['year_level'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-5">
-                                    <label class="form-label small mb-1" for="req-sex">Sex / Gender <span class="text-danger">*</span></label>
-                                    <select name="sex" id="req-sex" class="form-select form-select-sm" required>
-                                        <option value="" disabled <?= empty($user['sex']) ? 'selected' : '' ?>>Select Gender</option>
-                                        <?php foreach (get_sex_options() as $val => $label): ?>
-                                            <option value="<?= htmlspecialchars($val) ?>" <?= (isset($user['sex']) && $user['sex'] === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row g-2 mb-0">
-                                <div class="col-7">
-                                    <label class="form-label small mb-1" for="req-birthdate">Date of Birth <span class="text-danger">*</span></label>
-                                    <input type="date" name="birthdate" id="req-birthdate" class="form-control form-control-sm" value="<?= htmlspecialchars($user['birthdate'] ?? '') ?>" max="<?= date('Y-m-d', strtotime('-15 years')) ?>" required>
-                                </div>
-                                <div class="col-5">
-                                    <label class="form-label small mb-1" for="req-age">Age</label>
-                                    <input type="number" name="age" id="req-age" class="form-control form-control-sm" value="<?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : ''))) ?>" readonly style="background-color: var(--cream);">
-                                </div>
                             </div>
                         </div>
 
-                        <!-- Right Column: Document Proof & Justification -->
-                        <div class="col-md-6 ps-md-3 d-flex flex-column justify-content-between">
-                            <div>
-                                <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
-                                    <i class="bi bi-file-earmark-check text-accent me-1"></i> Verification Document &amp; Reason
-                                </div>
-
-                                <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-cream rounded-3 border border-line mb-2 small">
-                                    <span class="text-muted-custom" style="font-size: 11px;">Student ID:</span>
-                                    <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
-                                </div>
-
-                                <div class="mb-2">
-                                    <label class="form-label small mb-1" for="req-proof-file">Proof Attachment (COR / ID / PSA) <span class="text-danger">*</span></label>
-                                    <input type="file" name="proof_file" id="req-proof-file" class="form-control form-control-sm" accept="image/*,application/pdf" required>
-                                    <span class="small text-muted-custom mt-1 d-block" style="font-size: 10.5px;">
-                                        Attach clear PDF or image of your latest COR/ID (Max 10MB).
-                                    </span>
-                                </div>
-
-                                <div class="mb-2">
-                                    <label class="form-label small mb-1" for="req-reason">Remarks / Justification</label>
-                                    <textarea name="reason" id="req-reason" rows="2" class="form-control form-control-sm" placeholder="e.g. Enrolled in 3rd Year BSIS; attached latest COR."></textarea>
-                                </div>
+                        <div class="row g-2 mb-0">
+                            <div class="col-7">
+                                <label class="form-label small mb-1" for="req-birthdate">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" name="birthdate" id="req-birthdate" class="form-control form-control-sm" value="<?= htmlspecialchars($user['birthdate'] ?? '') ?>" max="<?= date('Y-m-d', strtotime('-15 years')) ?>" required>
                             </div>
-
-                            <div class="p-2 px-3 bg-cream rounded-3 border border-line small text-muted-custom" style="font-size: 11px;">
-                                <i class="bi bi-shield-lock-fill text-accent me-1"></i>
-                                Subject to Admin / Registrar approval before taking effect.
+                            <div class="col-5">
+                                <label class="form-label small mb-1" for="req-age">Age</label>
+                                <input type="number" name="age" id="req-age" class="form-control form-control-sm" value="<?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : ''))) ?>" readonly style="background-color: var(--cream);">
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="modal-footer bg-surface border-top border-line py-2 px-3">
-                    <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-pill btn-pill-sm">
-                        <i class="bi bi-send-fill"></i> Submit Verification
-                    </button>
+                    <!-- Right Column: Document Proof & Justification -->
+                    <div class="col-md-6 ps-md-3 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
+                                <i class="bi bi-file-earmark-check text-accent me-1"></i> Verification Document &amp; Reason
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-cream rounded-3 border border-line mb-2 small">
+                                <span class="text-muted-custom" style="font-size: 11px;">Student ID:</span>
+                                <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small mb-1" for="req-proof-file">Proof Attachment (COR / ID / PSA) <span class="text-danger">*</span></label>
+                                <input type="file" name="proof_file" id="req-proof-file" class="form-control form-control-sm" accept="image/*,application/pdf" required>
+                                <span class="small text-muted-custom mt-1 d-block" style="font-size: 10.5px;">
+                                    Attach clear PDF or image of your latest COR/ID (Max 10MB).
+                                </span>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small mb-1" for="req-reason">Remarks / Justification</label>
+                                <textarea name="reason" id="req-reason" rows="2" class="form-control form-control-sm" placeholder="e.g. Enrolled in 3rd Year BSIS; attached latest COR."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="p-2 px-3 bg-cream rounded-3 border border-line small text-muted-custom" style="font-size: 11px;">
+                            <i class="bi bi-shield-lock-fill text-accent me-1"></i>
+                            Subject to Admin / Registrar approval before taking effect.
+                        </div>
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="modal-footer bg-surface border-top border-line py-2 px-3">
+                <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn-pill btn-pill-sm">
+                    <i class="bi bi-send-fill"></i> Submit Verification
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 <?php endif; ?>

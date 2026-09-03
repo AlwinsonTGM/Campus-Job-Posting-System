@@ -436,16 +436,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
             html += `
               <div class="spotlight-job-item">
-                <a href="${jobDetailsUrl}" class="d-flex align-items-center gap-3 text-decoration-none text-ink flex-grow-1 min-w-0">
+                <a href="${jobDetailsUrl}" class="spotlight-job-link text-decoration-none text-ink">
                   <img src="${escapeHtml(job.image)}" alt="${escapeHtml(job.title)}" class="spotlight-job-thumb">
-                  <div class="min-w-0">
+                  <div class="spotlight-job-info">
                     <div class="d-flex align-items-center gap-1 mb-1">
                       ${isPartnerBadge}
-                      <span class="spotlight-job-meta fw-semibold text-truncate d-inline-block" style="max-width: 280px;">
+                      <span class="spotlight-job-meta fw-semibold text-truncate d-inline-block">
                         ${escapeHtml(job.organization_name || job.department)}
                       </span>
                     </div>
-                    <div class="spotlight-job-title text-truncate">${escapeHtml(job.title)}</div>
+                    <div class="spotlight-job-title">${escapeHtml(job.title)}</div>
                     <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
                       <span class="badge bg-cream text-ink border border-line small py-1 px-2" style="font-size: 11px; font-weight: 600;">
                         ${escapeHtml(job.pay_rate)}

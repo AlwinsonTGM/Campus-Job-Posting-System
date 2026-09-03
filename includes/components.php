@@ -95,7 +95,7 @@ if (!function_exists('render_status_badge')) {
             return '<span class="badge-status--accepted"><i class="bi bi-check-circle-fill"></i> Accepted / Hired</span>';
         }
         if ($raw === 'Declined / Position Filled' || $raw === 'Declined' || $raw === 'Rejected' || $normalized === 'declined' || $normalized === 'rejected' || $normalized === 'declined / position filled') {
-            return '<span class="badge-status--declined"><i class="bi bi-x-circle-fill"></i> Declined / Position Filled</span>';
+            return '<span class="badge-status--declined"><i class="bi bi-x-circle-fill"></i> <span class="d-none d-sm-inline">Declined / Position Filled</span><span class="d-sm-none">Declined / Filled</span></span>';
         }
         if ($raw === 'Active' || $normalized === 'active') {
             return '<span class="badge-status--accepted"><i class="bi bi-check-circle"></i> Active</span>';
@@ -354,7 +354,10 @@ if (!function_exists('render_availability_matrix')) {
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         $slots = ['Morning (8AM–12NN)', 'Afternoon (1PM–5PM)', 'Evening (5PM–8PM)'];
         ?>
-        <div class="table-responsive">
+        <div class="small text-muted-custom d-md-none mb-2" style="font-size: 11px;">
+            <i class="bi bi-arrow-left-right text-accent me-1"></i> Swipe horizontally to view full schedule (Mon–Sat)
+        </div>
+        <div class="table-responsive matrix-responsive-container">
             <table class="matrix-table">
                 <thead>
                     <tr>
@@ -374,7 +377,7 @@ if (!function_exists('render_availability_matrix')) {
                                 $key = "{$day} - {$slot}";
                                 $is_checked = in_array($key, $selected) || in_array($day, $selected);
                             ?>
-                                <td>
+                                <td class="<?= $is_checked ? 'matrix-cell-selected' : '' ?>">
                                     <input 
                                         type="checkbox" 
                                         name="<?= htmlspecialchars($name) ?>" 

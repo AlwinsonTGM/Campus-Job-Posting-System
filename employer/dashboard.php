@@ -177,7 +177,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                         <i class="bi bi-people"></i> Applicants
                                                     </a>
                                                     <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm" title="Edit Posting">
-                                                        <i class="bi bi-pencil"></i>
+                                                        <i class="bi bi-pencil"></i> Edit
                                                     </a>
                                                 </div>
                                             </td>
@@ -191,14 +191,14 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Recent Candidate Submissions -->
                 <div class="card-paper p-4 mb-5 reveal-fade-rise">
-                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
-                        <div>
-                            <h3 class="card-paper-title mb-1">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line gap-3">
+                        <div class="min-w-0">
+                            <h3 class="card-paper-title mb-1 fs-5 text-break">
                                 <i class="bi bi-person-lines-fill text-accent me-2"></i> Recent Candidate Applications
                             </h3>
                             <p class="text-muted-custom small mb-0">Incoming submissions awaiting department evaluation</p>
                         </div>
-                        <a href="applicants.php" class="btn-pill-outline btn-pill-sm">
+                        <a href="applicants.php" class="btn-pill-outline btn-pill-sm text-nowrap flex-shrink-0">
                             View All (<?= $total_applicants_count ?>)
                         </a>
                     </div>
@@ -210,19 +210,21 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php else: ?>
                         <div class="d-flex flex-column gap-3">
                             <?php foreach (array_slice($dept_apps, 0, 4) as $app): ?>
-                                <div class="p-3 bg-surface rounded-4 border border-line d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                                    <div>
-                                        <div class="d-flex align-items-center gap-2 mb-1">
-                                            <strong class="text-ink fs-6"><?= htmlspecialchars($app['student_name']) ?></strong>
-                                            <span class="small text-muted-custom">(<?= htmlspecialchars($app['course']) ?> &bull; <?= htmlspecialchars($app['year_level']) ?>)</span>
+                                <div class="candidate-app-item p-3 bg-surface rounded-4 border border-line d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3">
+                                    <div class="min-w-0 flex-grow-1">
+                                        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-baseline gap-1 gap-sm-2 mb-1">
+                                            <strong class="text-ink fs-6 text-break"><?= htmlspecialchars($app['student_name']) ?></strong>
+                                            <span class="small text-muted-custom text-break">(<?= htmlspecialchars($app['course']) ?> &bull; <?= htmlspecialchars($app['year_level']) ?>)</span>
                                         </div>
-                                        <span class="small text-muted-custom">
+                                        <div class="small text-muted-custom text-break">
                                             Applied for: <strong class="text-ink"><?= htmlspecialchars($app['job_title']) ?></strong> &bull; <?= date('M d, Y', strtotime($app['applied_at'])) ?>
-                                        </span>
+                                        </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <?= render_status_badge($app['status']) ?>
-                                        <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm">
+                                    <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-2 gap-sm-3 pt-2 pt-md-0 border-top border-md-0 border-line">
+                                        <div class="flex-shrink-1 min-w-0">
+                                            <?= render_status_badge($app['status']) ?>
+                                        </div>
+                                        <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm text-nowrap flex-shrink-0">
                                             Evaluate
                                         </a>
                                     </div>
