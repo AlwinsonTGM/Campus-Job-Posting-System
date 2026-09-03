@@ -283,26 +283,7 @@ function can_manage_job($job_or_id, $user = null) {
         return false;
     }
 
-    if (isset($job['employer_id']) && (int)$job['employer_id'] === (int)($user['id'] ?? 0)) {
-        return true;
-    }
-
-    $user_org = trim($user['organization_name'] ?? '');
-    $user_dept = trim($user['department'] ?? '');
-    $job_dept = trim($job['department'] ?? '');
-    $job_org = trim($job['organization_name'] ?? '');
-
-    if (!empty($job_dept)) {
-        if (!empty($user_dept) && strcasecmp($job_dept, $user_dept) === 0) return true;
-        if (!empty($user_org) && strcasecmp($job_dept, $user_org) === 0) return true;
-    }
-
-    if (!empty($job_org)) {
-        if (!empty($user_dept) && strcasecmp($job_org, $user_dept) === 0) return true;
-        if (!empty($user_org) && strcasecmp($job_org, $user_org) === 0) return true;
-    }
-
-    return false;
+    return isset($job['employer_id']) && (int)$job['employer_id'] === (int)($user['id'] ?? 0);
 }
 
 function can_review_application($app_or_id, $user = null) {
@@ -325,20 +306,7 @@ function can_review_application($app_or_id, $user = null) {
     }
 
     $job = get_job_by_id($app['job_id'] ?? 0);
-    if ($job && can_manage_job($job, $user)) {
-        return true;
-    }
-
-    $user_org = trim($user['organization_name'] ?? '');
-    $user_dept = trim($user['department'] ?? '');
-    $app_dept = trim($app['department'] ?? '');
-
-    if (!empty($app_dept)) {
-        if (!empty($user_org) && strcasecmp($app_dept, $user_org) === 0) return true;
-        if (!empty($user_dept) && strcasecmp($app_dept, $user_dept) === 0) return true;
-    }
-
-    return false;
+    return $job && can_manage_job($job, $user);
 }
 
 function can_view_student_resume($app = null, $student_user_id = null, $user = null) {
@@ -447,7 +415,23 @@ function login_user($email, $password) {
 
         if ($row) {
             $user = hydrate_user($row);
-            if ($user['password'] === $password || password_verify($password, $user['password'])) {
+            $stored_hash = $user['password'] ?? '';
+            $is_valid = false;
+
+            if (password_verify($password, $stored_hash)) {
+                $is_valid = true;
+                if (password_needs_rehash($stored_hash, PASSWORD_DEFAULT)) {
+                    update_user_password($user['id'], password_hash($password, PASSWORD_DEFAULT));
+                }
+            } elseif ($stored_hash === $password) {
+                // Legacy plaintext fallback: upgrade immediately to secure hash
+                $is_valid = true;
+                update_user_password($user['id'], password_hash($password, PASSWORD_DEFAULT));
+            }
+
+            if ($is_valid) {
+                session_regenerate_id(true);
+                unset($user['password']);
                 $_SESSION['user'] = $user;
                 return ['success' => true, 'user' => $user];
             }
@@ -482,14 +466,26 @@ function quick_login($role, $user_id = null) {
     }
 }
 
-// File Upload Handlers
+// File Upload Handlers with MIME Validation
+function validate_upload_mime($tmp_name, array $allowed_mimes) {
+    if (!is_uploaded_file($tmp_name)) {
+        return false;
+    }
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if (!$finfo) return false;
+    $mime = finfo_file($finfo, $tmp_name);
+    finfo_close($finfo);
+    return in_array($mime, $allowed_mimes, true);
+}
+
 function save_uploaded_permit($file) {
     if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
         return null;
     }
     $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
+    $allowed_mimes = ['application/pdf', 'image/jpeg', 'image/png'];
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts)) {
+    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
         return null;
     }
     if ($file['size'] > 5 * 1024 * 1024) {
@@ -497,7 +493,7 @@ function save_uploaded_permit($file) {
     }
     $upload_dir = dirname(__DIR__) . '/uploads/permits';
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
     $filename = 'permit_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $target = $upload_dir . '/' . $filename;
@@ -512,8 +508,9 @@ function save_uploaded_proof($file) {
         return null;
     }
     $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
+    $allowed_mimes = ['application/pdf', 'image/jpeg', 'image/png'];
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts)) {
+    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
         return null;
     }
     if ($file['size'] > 5 * 1024 * 1024) {
@@ -521,7 +518,7 @@ function save_uploaded_proof($file) {
     }
     $upload_dir = dirname(__DIR__) . '/uploads/proofs';
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
     $filename = 'proof_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $target = $upload_dir . '/' . $filename;
@@ -536,8 +533,9 @@ function save_uploaded_resume($file) {
         return null;
     }
     $allowed_exts = ['pdf', 'doc', 'docx'];
+    $allowed_mimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/octet-stream'];
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts)) {
+    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
         return null;
     }
     if ($file['size'] > 5 * 1024 * 1024) {
@@ -545,7 +543,7 @@ function save_uploaded_resume($file) {
     }
     $upload_dir = dirname(__DIR__) . '/uploads/resumes';
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
     $filename = 'resume_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $target = $upload_dir . '/' . $filename;
@@ -560,8 +558,9 @@ function save_uploaded_job_photo($file) {
         return null;
     }
     $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
+    $allowed_mimes = ['image/jpeg', 'image/png', 'image/webp'];
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts)) {
+    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
         return null;
     }
     if ($file['size'] > 5 * 1024 * 1024) {
@@ -569,7 +568,7 @@ function save_uploaded_job_photo($file) {
     }
     $upload_dir = dirname(__DIR__) . '/uploads/jobs';
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
     $filename = 'job_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $target = $upload_dir . '/' . $filename;
@@ -611,7 +610,10 @@ function register_user($data, $permit_file = null, $proof_file = null) {
             return ['success' => false, 'message' => 'Email address is already registered.'];
         }
 
-        $role = $data['role'] ?? 'student';
+        // Strictly prevent public registration of admin accounts
+        $allowed_roles = ['student', 'employer'];
+        $role = in_array($data['role'] ?? '', $allowed_roles, true) ? $data['role'] : 'student';
+
         $employer_type = $data['employer_type'] ?? 'university_office';
         $org_name = $data['organization_name'] ?? ($data['department'] ?? 'Campus Organization');
         $is_kld_email = (bool)preg_match('/@kld\.edu\.ph$/i', $email);
@@ -650,10 +652,13 @@ function register_user($data, $permit_file = null, $proof_file = null) {
             )
         ");
 
+        $raw_pass = $data['password'] ?? 'Password123!';
+        $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
+
         $stmt->execute([
             ':name'                 => htmlspecialchars($data['name'] ?? ''),
             ':email'                => $email,
-            ':password'             => $data['password'] ?? 'Password123!',
+            ':password'             => $hashed_pass,
             ':role'                 => $role,
             ':employer_type'        => $employer_type,
             ':organization_name'    => htmlspecialchars($org_name),
@@ -674,6 +679,7 @@ function register_user($data, $permit_file = null, $proof_file = null) {
 
         $new_id = (int)$pdo->lastInsertId();
         $new_user = get_user_by_id($new_id);
+        if ($new_user) unset($new_user['password']);
         $_SESSION['user'] = $new_user;
 
         return ['success' => true, 'user' => $new_user];
@@ -831,7 +837,7 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
 function approve_profile_request($request_id, $admin_notes = '') {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `profile_requests` WHERE `id` = :id LIMIT 1");
+        $stmt = $pdo->prepare("SELECT * FROM `profile_requests` WHERE `id` = :id AND `status` = 'pending' LIMIT 1");
         $stmt->execute([':id' => (int)$request_id]);
         $row = $stmt->fetch();
         if (!$row) return false;
@@ -880,7 +886,7 @@ function approve_profile_request($request_id, $admin_notes = '') {
         $stmt_req_upd = $pdo->prepare("
             UPDATE `profile_requests` 
             SET `status` = 'approved', `admin_notes` = :notes, `resolved_at` = NOW(), `dismissed_by_user` = 0 
-            WHERE `id` = :id
+            WHERE `id` = :id AND `status` = 'pending'
         ");
         $stmt_req_upd->execute([
             ':notes' => htmlspecialchars($admin_notes),
@@ -910,7 +916,7 @@ function reject_profile_request($request_id, $admin_notes = '') {
         $stmt = $pdo->prepare("
             UPDATE `profile_requests` 
             SET `status` = 'rejected', `admin_notes` = :notes, `resolved_at` = NOW(), `dismissed_by_user` = 0 
-            WHERE `id` = :id
+            WHERE `id` = :id AND `status` = 'pending'
         ");
         $stmt->execute([
             ':notes' => htmlspecialchars($admin_notes),
@@ -927,20 +933,26 @@ function reject_profile_request($request_id, $admin_notes = '') {
 // JOB REQUISITIONS MANAGEMENT
 // ============================================================================
 
-function get_jobs($category = null, $keyword = null, $department = null, $pay_type = null, $job_type = null, $employer_type = null, $work_setup = null) {
+function get_jobs($category = null, $keyword = null, $department = null, $pay_type = null, $job_type = null, $employer_type = null, $work_setup = null, $employer_id = null) {
     try {
         $pdo = get_db_connection();
         $sql = "SELECT * FROM `jobs` WHERE 1=1";
         $params = [];
 
+        if ($employer_id !== null) {
+            $sql .= " AND `employer_id` = :emp_owner_id";
+            $params[':emp_owner_id'] = (int)$employer_id;
+        }
+
         if ($category) {
             if (is_array($category)) {
                 $cat_clauses = [];
-                foreach ($category as $idx => $cat_val) {
-                    if (empty($cat_val)) continue;
-                    $p_name = ":cat_" . $idx;
+                $i = 0;
+                foreach ($category as $cat_val) {
+                    if (empty($cat_val) || !is_scalar($cat_val)) continue;
+                    $p_name = ":cat_" . ($i++);
                     $cat_clauses[] = "(`category` LIKE $p_name OR `category_id` = $p_name)";
-                    $params[$p_name] = '%' . trim($cat_val) . '%';
+                    $params[$p_name] = '%' . trim((string)$cat_val) . '%';
                 }
                 if (!empty($cat_clauses)) {
                     $sql .= " AND (" . implode(' OR ', $cat_clauses) . ")";
@@ -955,11 +967,12 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
         if ($job_type) {
             if (is_array($job_type)) {
                 $jt_clauses = [];
-                foreach ($job_type as $idx => $jt_val) {
-                    if (empty($jt_val)) continue;
-                    $p_name = ":jt_" . $idx;
+                $j = 0;
+                foreach ($job_type as $jt_val) {
+                    if (empty($jt_val) || !is_scalar($jt_val)) continue;
+                    $p_name = ":jt_" . ($j++);
                     $jt_clauses[] = "`job_type` LIKE $p_name";
-                    $params[$p_name] = '%' . trim($jt_val) . '%';
+                    $params[$p_name] = '%' . trim((string)$jt_val) . '%';
                 }
                 if (!empty($jt_clauses)) {
                     $sql .= " AND (" . implode(' OR ', $jt_clauses) . ")";
@@ -1039,6 +1052,8 @@ function create_job($data, $photo_file = null) {
         $org_name = $user['organization_name'] ?? ($user['department'] ?? ($data['department'] ?? 'Campus Department'));
         $work_setup = $data['work_setup'] ?? 'On-Campus';
         $job_type = $data['job_type'] ?? 'Student Assistant';
+        $is_verified_employer = (($user['role'] ?? '') === 'admin' || ($user['verification_status'] ?? 'verified') === 'verified') ? 1 : 0;
+        $vacancies_count = max(1, (int)($data['vacancies'] ?? 1));
 
         // Handle optional photo upload
         $image_path = null;
@@ -1064,7 +1079,7 @@ function create_job($data, $photo_file = null) {
             ) VALUES (
                 :title, :department, :organization_name, :category, :category_id,
                 :employer_id, :employer_name, :employer_type, :job_type, :work_setup,
-                1, :location, :pay_rate, :pay_type, :hours_per_week,
+                :verified_employer, :location, :pay_rate, :pay_type, :hours_per_week,
                 :vacancies, :slots_total, 0, :deadline, 'active', :image,
                 :tags, :badges, :description, :responsibilities, :qualifications, NOW()
             )
@@ -1076,17 +1091,18 @@ function create_job($data, $photo_file = null) {
             ':organization_name' => $org_name,
             ':category'          => $data['category'] ?? 'Administrative & Clerical',
             ':category_id'       => (int)($data['category_id'] ?? 3),
-            ':employer_id'       => $user['id'] ?? 3,
+            ':employer_id'       => (int)($user['id'] ?? 0),
             ':employer_name'     => $user['name'] ?? 'Office Supervisor',
             ':employer_type'     => $employer_type,
             ':job_type'          => $job_type,
             ':work_setup'        => $work_setup,
+            ':verified_employer' => $is_verified_employer,
             ':location'          => htmlspecialchars($data['location'] ?? 'Campus Main Office'),
             ':pay_rate'          => htmlspecialchars($data['pay_rate'] ?? '₱80.00 / hour'),
             ':pay_type'          => $data['pay_type'] ?? 'Hourly',
             ':hours_per_week'    => htmlspecialchars($data['hours_per_week'] ?? '10 - 20 hrs/week'),
-            ':vacancies'         => (int)($data['vacancies'] ?? 1),
-            ':slots_total'       => (int)($data['vacancies'] ?? 1),
+            ':vacancies'         => $vacancies_count,
+            ':slots_total'       => $vacancies_count,
             ':deadline'          => !empty($data['deadline']) ? $data['deadline'] : date('Y-m-d', strtotime('+30 days')),
             ':image'             => $image_path,
             ':tags'              => json_encode($tags),
@@ -1122,6 +1138,8 @@ function update_job($id, $data, $photo_file = null) {
         $responsibilities = isset($data['responsibilities']) ? (is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", $data['responsibilities'])))) : $existing['responsibilities'];
         $qualifications = isset($data['qualifications']) ? (is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", $data['qualifications'])))) : $existing['qualifications'];
 
+        $vacancies_count = max(1, (int)($data['vacancies'] ?? $existing['vacancies']));
+
         $stmt = $pdo->prepare("
             UPDATE `jobs` SET
                 `title` = :title,
@@ -1151,8 +1169,8 @@ function update_job($id, $data, $photo_file = null) {
             ':location'         => htmlspecialchars($data['location'] ?? $existing['location']),
             ':pay_rate'         => htmlspecialchars($data['pay_rate'] ?? $existing['pay_rate']),
             ':hours_per_week'   => htmlspecialchars($data['hours_per_week'] ?? $existing['hours_per_week']),
-            ':vacancies'        => (int)($data['vacancies'] ?? $existing['vacancies']),
-            ':slots_total'      => (int)($data['vacancies'] ?? $existing['slots_total']),
+            ':vacancies'        => $vacancies_count,
+            ':slots_total'      => $vacancies_count,
             ':deadline'         => $data['deadline'] ?? $existing['deadline'],
             ':status'           => $data['status'] ?? $existing['status'],
             ':description'      => htmlspecialchars($data['description'] ?? $existing['description']),
@@ -1197,26 +1215,34 @@ function delete_job($id) {
 // APPLICATIONS MANAGEMENT
 // ============================================================================
 
-function get_applications($student_id = null, $job_id = null, $department = null) {
+function get_applications($student_id = null, $job_id = null, $department = null, $employer_id = null) {
     try {
         $pdo = get_db_connection();
-        $sql = "SELECT * FROM `applications` WHERE 1=1";
+        $sql = "SELECT a.* FROM `applications` a";
+        if ($employer_id !== null) {
+            $sql .= " INNER JOIN `jobs` j ON j.`id` = a.`job_id`";
+        }
+        $sql .= " WHERE 1=1";
         $params = [];
 
-        if ($student_id) {
-            $sql .= " AND `student_id` = :student_id";
+        if ($student_id !== null && $student_id !== '') {
+            $sql .= " AND a.`student_id` = :student_id";
             $params[':student_id'] = (int)$student_id;
         }
         if ($job_id) {
-            $sql .= " AND `job_id` = :job_id";
+            $sql .= " AND a.`job_id` = :job_id";
             $params[':job_id'] = (int)$job_id;
         }
         if ($department) {
-            $sql .= " AND `department` LIKE :dept";
+            $sql .= " AND a.`department` LIKE :dept";
             $params[':dept'] = '%' . trim($department) . '%';
         }
+        if ($employer_id !== null) {
+            $sql .= " AND j.`employer_id` = :emp_id";
+            $params[':emp_id'] = (int)$employer_id;
+        }
 
-        $sql .= " ORDER BY `applied_at` DESC";
+        $sql .= " ORDER BY a.`applied_at` DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
@@ -1251,9 +1277,33 @@ function create_application($data) {
             return ['success' => false, 'message' => 'Job posting not found.'];
         }
 
-        $student_id = (int)($user['id'] ?? 1);
+        // 1. Enforce Job Status Gating (closed, paused, etc.)
+        if (strtolower($job['status'] ?? '') !== 'active') {
+            return ['success' => false, 'message' => 'This job vacancy has been closed or paused and is no longer accepting applications.'];
+        }
 
-        // Check if student already applied
+        // 2. Enforce Application Deadline Gating
+        if (!empty($job['deadline'])) {
+            $today = strtotime(date('Y-m-d'));
+            $deadline = strtotime($job['deadline']);
+            if ($deadline && $deadline < $today) {
+                return ['success' => false, 'message' => 'The application deadline for this position has passed.'];
+            }
+        }
+
+        // 3. Enforce Vacancy Slot Gating
+        $slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
+        $slots_filled = (int)($job['slots_filled'] ?? 0);
+        if ($slots_total > 0 && $slots_filled >= $slots_total) {
+            return ['success' => false, 'message' => 'All available vacancy slots for this position have already been filled.'];
+        }
+
+        $student_id = (int)($user['id'] ?? 0);
+        if ($student_id <= 0) {
+            return ['success' => false, 'message' => 'Invalid student authentication session.'];
+        }
+
+        // 4. Duplicate Check
         $check_stmt = $pdo->prepare("SELECT `id` FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id LIMIT 1");
         $check_stmt->execute([
             ':job_id'     => $job['id'],
@@ -1304,6 +1354,11 @@ function create_application($data) {
 
         $new_id = (int)$pdo->lastInsertId();
         return ['success' => true, 'id' => $new_id];
+    } catch (PDOException $e) {
+        if ($e->getCode() == 23000 || strpos($e->getMessage(), 'unique_student_job') !== false) {
+            return ['success' => false, 'message' => 'You have already submitted an application for this position.'];
+        }
+        return ['success' => false, 'message' => 'Application failed: ' . $e->getMessage()];
     } catch (Exception $e) {
         return ['success' => false, 'message' => 'Application failed: ' . $e->getMessage()];
     }
@@ -1312,6 +1367,12 @@ function create_application($data) {
 function update_application_status($id, $status, $notes = '', $interview_data = []) {
     try {
         $pdo = get_db_connection();
+        $target_app = get_application_by_id($id);
+        if (!$target_app) return false;
+
+        $old_status = $target_app['status'] ?? 'pending';
+        $job_id = (int)($target_app['job_id'] ?? 0);
+
         $badge_map = [
             'pending'             => 'warning',
             'under_review'        => 'primary',
@@ -1335,10 +1396,16 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
         $interview_venue = null;
 
         if ($status === 'interview_scheduled' && !empty($interview_data)) {
-            $interview_date = $interview_data['date'] ?? null;
+            $raw_date = trim($interview_data['date'] ?? '');
+            if (!empty($raw_date) && strtotime($raw_date) < strtotime(date('Y-m-d'))) {
+                return false; // Cannot schedule in the past
+            }
+            $interview_date = $raw_date ?: null;
             $interview_time = $interview_data['time'] ?? null;
             $interview_venue = htmlspecialchars($interview_data['venue'] ?? '');
         }
+
+        $pdo->beginTransaction();
 
         $stmt = $pdo->prepare("
             UPDATE `applications` SET
@@ -1364,8 +1431,35 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
             ':id'              => (int)$id
         ]);
 
+        // Synchronize slots_filled and job status
+        if ($job_id > 0) {
+            if ($old_status !== 'accepted' && $status === 'accepted') {
+                $stmt_inc = $pdo->prepare("
+                    UPDATE `jobs` SET
+                        `slots_filled` = `slots_filled` + 1,
+                        `status` = CASE WHEN (`slots_filled` + 1) >= `slots_total` THEN 'filled' ELSE `status` END,
+                        `updated_at` = NOW()
+                    WHERE `id` = :job_id
+                ");
+                $stmt_inc->execute([':job_id' => $job_id]);
+            } elseif ($old_status === 'accepted' && $status !== 'accepted') {
+                $stmt_dec = $pdo->prepare("
+                    UPDATE `jobs` SET
+                        `slots_filled` = GREATEST(0, `slots_filled` - 1),
+                        `status` = CASE WHEN `status` = 'filled' AND (GREATEST(0, `slots_filled` - 1) < `slots_total`) THEN 'active' ELSE `status` END,
+                        `updated_at` = NOW()
+                    WHERE `id` = :job_id
+                ");
+                $stmt_dec->execute([':job_id' => $job_id]);
+            }
+        }
+
+        $pdo->commit();
         return true;
     } catch (Exception $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         error_log("update_application_status error: " . $e->getMessage());
         return false;
     }

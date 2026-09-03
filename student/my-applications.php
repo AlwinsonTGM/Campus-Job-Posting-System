@@ -12,7 +12,28 @@ $page_title = 'My Assistantship Applications';
 
 // Handle withdrawal
 if (isset($_POST['withdraw_id'])) {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        set_flash('danger', 'Security validation failed (invalid CSRF session token). Please refresh and try again.');
+        header('Location: my-applications.php');
+        exit;
+    }
+
     $withdraw_id = (int)$_POST['withdraw_id'];
+    $target_app = get_application_by_id($withdraw_id);
+
+    if (!$target_app || (int)$target_app['student_id'] !== (int)($user['id'] ?? 0)) {
+        set_flash('danger', 'Unauthorized or non-existent application.');
+        header('Location: my-applications.php');
+        exit;
+    }
+
+    // Only allow withdrawing applications that are still pending review
+    if (!in_array(strtolower($target_app['status'] ?? ''), ['pending', 'pending review'])) {
+        set_flash('warning', 'Applications that are under review, scheduled for interview, or accepted cannot be withdrawn.');
+        header('Location: my-applications.php');
+        exit;
+    }
+
     delete_application($withdraw_id, $user['id'] ?? null);
     set_flash('info', 'Application was successfully withdrawn.');
     header('Location: my-applications.php');
@@ -186,6 +207,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                     <?php if ($is_pending): ?>
                                         <form action="my-applications.php" method="POST" onsubmit="return confirm('Are you sure you want to withdraw this application?');">
+                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                             <input type="hidden" name="withdraw_id" value="<?= $app['id'] ?>">
                                             <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger">
                                                 <i class="bi bi-trash"></i> Withdraw

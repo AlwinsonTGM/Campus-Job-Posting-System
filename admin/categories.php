@@ -19,7 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $icon = $_POST['icon'] ?? 'bi-briefcase';
+        if (!preg_match('/^bi-[a-z0-9-]+$/', $icon)) {
+            $icon = 'bi-briefcase';
+        }
         $color = $_POST['color'] ?? 'primary';
+        if (!in_array($color, ['primary', 'accent', 'danger', 'info', 'warning', 'success', 'secondary'], true)) {
+            $color = 'primary';
+        }
 
         if (empty($name)) {
             $error = 'Category name cannot be empty.';

@@ -4,6 +4,13 @@
  */
 require_once __DIR__ . '/components.php';
 
+if (!headers_sent()) {
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+}
+
 if (!defined('SITE_NAME')) {
     define('SITE_NAME', 'CAMPUS HIRE');
 }

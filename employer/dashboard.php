@@ -12,8 +12,9 @@ $page_title = 'Employer & Department Dashboard';
 
 // Filter jobs by this employer/department
 $dept = $user['organization_name'] ?? ($user['department'] ?? 'Office of the University Registrar');
-$all_dept_jobs = get_jobs(null, null, ($user['role'] === 'admin' ? null : $dept));
-$dept_apps = get_applications(null, null, ($user['role'] === 'admin' ? null : $dept));
+$emp_id_filter = ($user['role'] === 'admin') ? null : (int)$user['id'];
+$all_dept_jobs = get_jobs(null, null, null, null, null, null, null, $emp_id_filter);
+$dept_apps = get_applications(null, null, null, $emp_id_filter);
 
 $active_jobs_count = count(array_filter($all_dept_jobs, fn($j) => in_array($j['status'] ?? '', ['active', 'Active'])));
 $total_applicants_count = count($dept_apps);

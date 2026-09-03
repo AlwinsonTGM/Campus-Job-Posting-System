@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../includes/data-helper.php';
 require_once __DIR__ . '/../includes/auth-check.php';
 
-require_auth(['admin', 'employer']);
+require_auth(['admin']);
 $user = get_logged_user();
 $page_title = 'Reports & Institutional Analytics';
 

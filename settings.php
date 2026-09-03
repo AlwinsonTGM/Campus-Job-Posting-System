@@ -35,13 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($user['role'] === 'employer') {
                         $name = trim($_POST['name'] ?? '');
-                        $org_name = trim($_POST['organization_name'] ?? '');
                         $office_loc = trim($_POST['office_location'] ?? '');
-                        $department = trim($_POST['department'] ?? '');
                         if (!empty($name)) $updates['name'] = htmlspecialchars($name);
-                        if (!empty($org_name)) $updates['organization_name'] = htmlspecialchars($org_name);
                         if (!empty($office_loc)) $updates['office_location'] = htmlspecialchars($office_loc);
-                        if (!empty($department)) $updates['department'] = htmlspecialchars($department);
+                        // Organization name and department cannot be self-modified to prevent IDOR spoofing
                     } elseif ($user['role'] === 'admin') {
                         $name = trim($_POST['name'] ?? '');
                         $department = trim($_POST['department'] ?? '');
@@ -62,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Refresh session user
                     $fresh = get_user_by_id($user['id']);
                     if ($fresh) {
+                        unset($fresh['password']);
                         $_SESSION['user'] = $fresh;
                     }
 
@@ -100,9 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new_pass = $_POST['new_password'] ?? '';
             $confirm_pass = $_POST['confirm_password'] ?? '';
 
-            $stored_pass = $user['password'] ?? '';
-            $is_current_valid = ($stored_pass === $current_pass) || 
-                                (!empty($stored_pass) && password_verify($current_pass, $stored_pass));
+            $fresh_user = get_user_by_id($user['id']);
+            $stored_pass = $fresh_user['password'] ?? '';
+            $is_current_valid = password_verify($current_pass, $stored_pass) || ($stored_pass === $current_pass);
 
             if (empty($current_pass)) {
                 $error = 'Please enter your current password to confirm your identity.';

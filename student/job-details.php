@@ -240,9 +240,34 @@ require_once __DIR__ . '/../includes/header.php';
                                     </a>
                                 </div>
                             <?php else: ?>
-                                <a href="apply.php?id=<?= $job['id'] ?>&job_id=<?= $job['id'] ?>" class="btn-pill w-100 mb-2">
-                                    <i class="bi bi-send-fill"></i> APPLY FOR THIS POSITION
-                                </a>
+                                <?php 
+                                $is_closed = strtolower($job['status'] ?? '') !== 'active';
+                                $is_expired = !empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d'));
+                                $slots_total_val = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
+                                $slots_filled_val = (int)($job['slots_filled'] ?? 0);
+                                $is_filled = $slots_total_val > 0 && $slots_filled_val >= $slots_total_val;
+                                ?>
+
+                                <?php if ($is_closed): ?>
+                                    <div class="p-3 bg-secondary-subtle rounded-3 border border-secondary text-center mb-2">
+                                        <span class="text-secondary fw-bold small d-block"><i class="bi bi-slash-circle me-1"></i> Requisition Closed</span>
+                                        <span class="small text-muted-custom" style="font-size: 11px;">This office is no longer accepting new submissions.</span>
+                                    </div>
+                                <?php elseif ($is_expired): ?>
+                                    <div class="p-3 bg-danger-subtle rounded-3 border border-danger text-center mb-2">
+                                        <span class="text-danger fw-bold small d-block"><i class="bi bi-clock-history me-1"></i> Deadline Passed</span>
+                                        <span class="small text-muted-custom" style="font-size: 11px;">The cutoff date for applications has expired.</span>
+                                    </div>
+                                <?php elseif ($is_filled): ?>
+                                    <div class="p-3 bg-warning-subtle rounded-3 border border-warning text-center mb-2">
+                                        <span class="text-warning-emphasis fw-bold small d-block"><i class="bi bi-check2-all me-1"></i> All Vacancies Filled</span>
+                                        <span class="small text-muted-custom" style="font-size: 11px;">All available positions have been appointed.</span>
+                                    </div>
+                                <?php else: ?>
+                                    <a href="apply.php?id=<?= $job['id'] ?>&job_id=<?= $job['id'] ?>" class="btn-pill w-100 mb-2">
+                                        <i class="bi bi-send-fill"></i> APPLY FOR THIS POSITION
+                                    </a>
+                                <?php endif; ?>
                             <?php endif; ?>
 
                             <a href="jobs.php" class="btn-pill-outline btn-pill-sm w-100 text-center">

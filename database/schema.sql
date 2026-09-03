@@ -143,6 +143,7 @@ CREATE TABLE IF NOT EXISTS `applications` (
     INDEX `idx_applications_student_id` (`student_id`),
     INDEX `idx_applications_status` (`status`),
     INDEX `idx_applications_department` (`department`),
+    UNIQUE KEY `unique_student_job` (`job_id`, `student_id`),
     CONSTRAINT `receives` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `submits (students)` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

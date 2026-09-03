@@ -32,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    $role = $_POST['role'] ?? 'student';
+    $raw_role = $_POST['role'] ?? 'student';
+    $role = in_array($raw_role, ['student', 'employer'], true) ? $raw_role : 'student';
     $employer_type = $_POST['employer_type'] ?? 'university_office';
     $organization_name = trim($_POST['organization_name'] ?? '');
     $student_id = trim($_POST['student_id'] ?? '');

@@ -57,7 +57,39 @@ if ($app_id) {
 } else {
     $target_student = $current_user;
     if ($file_param) {
-        $resume_filename = basename($file_param);
+        $requested_file = basename($file_param);
+
+        // Verify authorization for file access
+        $is_authorized_file = false;
+        if (($current_user['role'] ?? '') === 'admin') {
+            $is_authorized_file = true;
+        } elseif (($current_user['role'] ?? '') === 'student') {
+            $profile_name = ($current_user['name'] ?? '') . '_Resume.pdf';
+            if ($requested_file === $profile_name) {
+                $is_authorized_file = true;
+            } else {
+                $pdo = get_db_connection();
+                $chk = $pdo->prepare("SELECT `id` FROM `applications` WHERE `student_id` = :sid AND `resume_file` = :rfile LIMIT 1");
+                $chk->execute([':sid' => (int)($current_user['id'] ?? 0), ':rfile' => $requested_file]);
+                if ($chk->fetch()) {
+                    $is_authorized_file = true;
+                }
+            }
+        } elseif (($current_user['role'] ?? '') === 'employer') {
+            $pdo = get_db_connection();
+            $chk = $pdo->prepare("SELECT a.`id` FROM `applications` a INNER JOIN `jobs` j ON j.`id` = a.`job_id` WHERE j.`employer_id` = :eid AND a.`resume_file` = :rfile LIMIT 1");
+            $chk->execute([':eid' => (int)($current_user['id'] ?? 0), ':rfile' => $requested_file]);
+            if ($chk->fetch()) {
+                $is_authorized_file = true;
+            }
+        }
+
+        if (!$is_authorized_file) {
+            http_response_code(403);
+            die('Access Denied: You are not authorized to inspect this document.');
+        }
+
+        $resume_filename = $requested_file;
     }
 }
 
@@ -77,11 +109,7 @@ $availability = $app['availability'] ?? ($target_student['availability'] ?? [
 ]);
 
 $candidate_paths = [
-    __DIR__ . '/' . ltrim($resume_filename, '/'),
-    __DIR__ . '/uploads/resumes/' . basename($resume_filename),
-    __DIR__ . '/uploads/proofs/' . basename($resume_filename),
-    __DIR__ . '/uploads/resumes/Juan_Dela_Cruz_Resume.pdf',
-    __DIR__ . '/uploads/proofs/proof_1787818447_8a7d0655.pdf'
+    __DIR__ . '/uploads/resumes/' . basename($resume_filename)
 ];
 
 $physical_pdf_path = null;

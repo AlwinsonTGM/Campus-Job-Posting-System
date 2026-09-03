@@ -29,46 +29,52 @@ $work_setups = get_work_setups();
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $category = $_POST['category'] ?? $job['category'];
-    $job_type = $_POST['job_type'] ?? ($job['job_type'] ?? 'Student Assistant');
-    $work_setup = $_POST['work_setup'] ?? ($job['work_setup'] ?? 'On-Campus');
-    $location = trim($_POST['location'] ?? $job['location']);
-    $pay_rate = trim($_POST['pay_rate'] ?? $job['pay_rate']);
-    $hours_per_week = trim($_POST['hours_per_week'] ?? $job['hours_per_week']);
-    $vacancies = (int)($_POST['vacancies'] ?? $job['vacancies']);
-    $deadline = $_POST['deadline'] ?? $job['deadline'];
-    $status = $_POST['status'] ?? $job['status'];
-    $description = trim($_POST['description'] ?? $job['description']);
-    $responsibilities = trim($_POST['responsibilities'] ?? '');
-    $qualifications = trim($_POST['qualifications'] ?? '');
-
-    if (empty($title) || empty($description)) {
-        $error = 'Please provide the vacancy title and detailed description.';
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = 'Security validation failed: Invalid or expired security token. Please try again.';
     } else {
-        $photo_file = $_FILES['job_photo'] ?? null;
-        $remove_photo = !empty($_POST['remove_photo']);
+        $title = trim($_POST['title'] ?? '');
+        $category = $_POST['category'] ?? $job['category'];
+        $job_type = $_POST['job_type'] ?? ($job['job_type'] ?? 'Student Assistant');
+        $work_setup = $_POST['work_setup'] ?? ($job['work_setup'] ?? 'On-Campus');
+        $location = trim($_POST['location'] ?? $job['location']);
+        $pay_rate = trim($_POST['pay_rate'] ?? $job['pay_rate']);
+        $hours_per_week = trim($_POST['hours_per_week'] ?? $job['hours_per_week']);
+        $vacancies = (int)($_POST['vacancies'] ?? $job['vacancies']);
+        $deadline = $_POST['deadline'] ?? $job['deadline'];
+        $status = $_POST['status'] ?? $job['status'];
+        $description = trim($_POST['description'] ?? $job['description']);
+        $responsibilities = trim($_POST['responsibilities'] ?? '');
+        $qualifications = trim($_POST['qualifications'] ?? '');
 
-        update_job($job['id'], [
-            'title' => $title,
-            'category' => $category,
-            'job_type' => $job_type,
-            'work_setup' => $work_setup,
-            'location' => $location,
-            'pay_rate' => $pay_rate,
-            'hours_per_week' => $hours_per_week,
-            'vacancies' => $vacancies,
-            'deadline' => $deadline,
-            'status' => $status,
-            'description' => $description,
-            'remove_photo' => $remove_photo,
-            'responsibilities' => !empty($responsibilities) ? array_filter(array_map('trim', explode("\n", $responsibilities))) : ($job['responsibilities'] ?? []),
-            'qualifications' => !empty($qualifications) ? array_filter(array_map('trim', explode("\n", $qualifications))) : ($job['qualifications'] ?? [])
-        ], $photo_file);
+        if (empty($title) || empty($description)) {
+            $error = 'Please provide the vacancy title and detailed description.';
+        } elseif ($vacancies < 1) {
+            $error = 'Vacancy quota must be at least 1 position.';
+        } else {
+            $photo_file = $_FILES['job_photo'] ?? null;
+            $remove_photo = !empty($_POST['remove_photo']);
 
-        set_flash('success', "Vacancy '{$title}' has been updated successfully.");
-        header('Location: dashboard.php');
-        exit;
+            update_job($job['id'], [
+                'title' => $title,
+                'category' => $category,
+                'job_type' => $job_type,
+                'work_setup' => $work_setup,
+                'location' => $location,
+                'pay_rate' => $pay_rate,
+                'hours_per_week' => $hours_per_week,
+                'vacancies' => $vacancies,
+                'deadline' => $deadline,
+                'status' => $status,
+                'description' => $description,
+                'remove_photo' => $remove_photo,
+                'responsibilities' => !empty($responsibilities) ? array_filter(array_map('trim', explode("\n", $responsibilities))) : ($job['responsibilities'] ?? []),
+                'qualifications' => !empty($qualifications) ? array_filter(array_map('trim', explode("\n", $qualifications))) : ($job['qualifications'] ?? [])
+            ], $photo_file);
+
+            set_flash('success', "Vacancy '{$title}' updated successfully!");
+            header('Location: dashboard.php');
+            exit;
+        }
     }
 }
 
@@ -111,6 +117,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
 
                 <form action="edit-job.php?id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data" class="form-paper">
+                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                     <div class="row g-4 mb-5">
                         
                         <!-- Left 8-col: Role Overview & Responsibilities -->
