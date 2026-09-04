@@ -5162,8 +5162,8 @@ body.modal-open {
 .devblog-stage-container {
   position: relative;
   width: 100%;
-  min-height: 520px;
-  padding: 1.5rem 0;
+  min-height: 570px;
+  padding: 1.25rem 0;
   perspective: 1400px;
   perspective-origin: 50% 50%;
   overflow: hidden;
@@ -5225,7 +5225,7 @@ body.modal-open {
 .devblog-track {
   position: relative;
   width: 100%;
-  height: 510px;
+  height: 550px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -5237,7 +5237,7 @@ body.modal-open {
   position: absolute;
   width: 440px;
   max-width: 90vw;
-  height: 490px;
+  height: 525px;
   background-color: var(--white);
   border-radius: var(--radius-card);
   border: 1.5px solid var(--line);
@@ -5329,7 +5329,7 @@ body.modal-open {
 .devblog-card-photo-wrap {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 145px;
   overflow: hidden;
   background-color: var(--cream);
   flex-shrink: 0;
@@ -5359,22 +5359,24 @@ body.modal-open {
 }
 
 .devblog-card-body {
-  padding: 1.25rem 1.4rem;
+  padding: 1.1rem 1.25rem 1rem;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  justify-content: space-between;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .devblog-author-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  margin-bottom: 0.55rem;
+  flex-shrink: 0;
 }
 
 .devblog-author-img {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   object-fit: cover;
   border: 1.5px solid var(--ink);
@@ -5385,59 +5387,155 @@ body.modal-open {
 .devblog-author-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .devblog-author-name {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .devblog-author-role {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--muted);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .devblog-date-pill {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--muted);
   background-color: var(--surface);
-  padding: 0.25rem 0.65rem;
+  padding: 0.2rem 0.6rem;
   border-radius: var(--radius-pill);
   border: 1px solid var(--line);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .devblog-card-title {
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 800;
   color: var(--ink);
-  line-height: 1.35;
-  margin-bottom: 0.45rem;
+  line-height: 1.3;
+  margin-bottom: 0.35rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .devblog-card-excerpt {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 1;
 }
 
 .devblog-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+  max-height: 58px;
+  overflow: hidden;
+  flex-shrink: 1;
+}
+
+.devblog-card-tags .chip-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  line-height: 1.3;
+  border-radius: var(--radius-pill);
+}
+
+.devblog-card-footer {
+  margin-top: auto;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.devblog-card-footer .btn-accent-pill {
+  width: 100%;
+  padding: 0.52rem 1.15rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  box-shadow: 0 4px 12px rgba(46, 204, 94, 0.28);
+  min-height: 38px;
+  flex-shrink: 0;
+}
+
+/* DevBlog Tactile Navigation Cluster (Arrows + Dots) */
+.devblog-nav-cluster {
+  background-color: var(--surface);
+  border: 1.5px solid var(--line);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 10px rgba(22, 22, 22, 0.05);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.devblog-nav-cluster-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--white);
+  border: 1.5px solid var(--line);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.92rem;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.devblog-nav-cluster-btn:hover:not(:disabled) {
+  background-color: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+  transform: scale(1.08);
+}
+
+.devblog-nav-cluster-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.devblog-nav-cluster-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  border-color: var(--line);
+  background-color: var(--surface);
+  color: var(--muted);
+  box-shadow: none;
 }
 
 /* DevBlog Progress Step Dots */
@@ -5521,9 +5619,21 @@ body.modal-open {
 
 /* Mobile & Tablet Responsive Adjustments */
 @media (max-width: 991.98px) {
+  .devblog-stage-container {
+    min-height: 560px;
+  }
+  .devblog-track {
+    height: 540px;
+  }
   .devblog-card {
-    width: 380px;
-    height: 480px;
+    width: 390px;
+    height: 520px;
+  }
+  .devblog-card-photo-wrap {
+    height: 140px;
+  }
+  .devblog-card-body {
+    padding: 1rem 1.15rem;
   }
   .devblog-card.is-prev {
     transform: translateX(-60%) scale(0.84) rotateY(8deg) translateZ(0);
@@ -5542,32 +5652,71 @@ body.modal-open {
     transform: translateX(115%) scale(0.7) rotateY(-10deg) translateZ(-100px);
     opacity: 0;
   }
+  /* Hide floating arrows on tablet and mobile so they never obstruct card text */
   .devblog-nav-arrow {
-    width: 46px;
-    height: 46px;
-    font-size: 1.15rem;
-  }
-  .devblog-nav-left {
-    left: 4px;
-  }
-  .devblog-nav-right {
-    right: 4px;
+    display: none !important;
   }
 }
 
 @media (max-width: 767.98px) {
   .devblog-stage-container {
-    min-height: 520px;
+    min-height: 540px;
     padding: 0.5rem 0;
     overflow: hidden;
   }
   .devblog-track {
-    height: 510px;
+    height: 525px;
   }
   .devblog-card {
-    width: min(320px, calc(100vw - 32px));
-    max-width: calc(100vw - 32px);
-    height: 490px;
+    width: min(340px, calc(100vw - 28px));
+    max-width: calc(100vw - 28px);
+    height: 505px;
+  }
+  .devblog-card-photo-wrap {
+    height: 135px;
+  }
+  .devblog-card-body {
+    padding: 0.85rem 1rem;
+  }
+  .devblog-author-img {
+    width: 34px;
+    height: 34px;
+  }
+  .devblog-author-name {
+    font-size: 12px;
+  }
+  .devblog-author-role {
+    font-size: 10px;
+  }
+  .devblog-date-pill {
+    font-size: 10px;
+    padding: 0.15rem 0.45rem;
+  }
+  .devblog-card-title {
+    font-size: 14px;
+    margin-bottom: 0.3rem;
+  }
+  .devblog-card-excerpt {
+    font-size: 11.5px;
+    line-height: 1.35;
+    margin-bottom: 0.4rem;
+  }
+  .devblog-card-tags {
+    gap: 0.25rem;
+    margin-bottom: 0.4rem;
+    max-height: 52px;
+  }
+  .devblog-card-tags .chip-tag {
+    font-size: 10px;
+    padding: 0.15rem 0.45rem;
+  }
+  .devblog-card-footer {
+    padding-top: 0.5rem !important;
+  }
+  .devblog-card-footer .btn-accent-pill {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+    min-height: 36px;
   }
   .devblog-card.is-prev {
     transform: translateX(-70%) scale(0.8) rotateY(6deg) translateZ(0);
@@ -5586,21 +5735,43 @@ body.modal-open {
     transform: translateX(120%) scale(0.65) rotateY(-8deg) translateZ(-100px);
     opacity: 0;
   }
-  .devblog-nav-arrow {
-    width: 38px;
-    height: 38px;
-    font-size: 0.95rem;
-    z-index: 40;
-  }
-  .devblog-nav-left {
-    left: 2px;
-  }
-  .devblog-nav-right {
-    right: 2px;
-  }
   .devblog-controls-strip {
     text-align: center;
     justify-content: center;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .devblog-stage-container {
+    min-height: 520px;
+  }
+  .devblog-track {
+    height: 505px;
+  }
+  .devblog-card {
+    width: calc(100vw - 20px);
+    max-width: 300px;
+    height: 485px;
+  }
+  .devblog-card-photo-wrap {
+    height: 120px;
+  }
+  .devblog-card-body {
+    padding: 0.75rem 0.85rem;
+  }
+  .devblog-card-title {
+    font-size: 13px;
+  }
+  .devblog-card-excerpt {
+    -webkit-line-clamp: 1;
+    font-size: 11px;
+    margin-bottom: 0.35rem;
+  }
+  .devblog-card-footer .btn-accent-pill {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.65rem;
+    min-height: 34px;
   }
 }
 
@@ -5663,4 +5834,83 @@ i.bi,
   justify-content: center;
   font-size: 14px;
   line-height: 1;
+}
+
+/* Dynamic Line Items Manager */
+.dynamic-lines-wrapper {
+  margin-bottom: 1.25rem;
+}
+
+.dynamic-line-item {
+  background-color: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dynamic-line-item:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(46, 204, 94, 0.2);
+}
+
+.dynamic-line-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--cream);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dynamic-line-btn-del {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+  color: var(--muted);
+  border-color: transparent;
+}
+
+.dynamic-line-btn-del:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.dynamic-empty-hint {
+  padding: 0.75rem 1rem;
+  background-color: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* Image Upload Preview */
+.flyer-preview-container {
+  max-width: 420px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background-color: var(--white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.flyer-preview-img {
+  width: 100%;
+  max-height: 230px;
+  object-fit: cover;
+  display: block;
 }

@@ -714,10 +714,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // 12. DEVBLOG & SPRINT CHRONICLES (3D Stage Coverflow & Reader Engine)
   // ------------------------------------------------------------------------
   const devblogTrack = document.getElementById('devblog-track');
-  const devblogPrevBtn = document.getElementById('devblog-prev-btn');
-  const devblogNextBtn = document.getElementById('devblog-next-btn');
+  const devblogPrevBtns = Array.from(document.querySelectorAll('.devblog-prev-btn, #devblog-prev-btn'));
+  const devblogNextBtns = Array.from(document.querySelectorAll('.devblog-next-btn, #devblog-next-btn'));
 
-  if (devblogTrack && devblogPrevBtn && devblogNextBtn) {
+  if (devblogTrack && (devblogPrevBtns.length > 0 || devblogNextBtns.length > 0)) {
     const cards = Array.from(devblogTrack.querySelectorAll('.devblog-card'));
     const dots = Array.from(document.querySelectorAll('.devblog-dot'));
     const counterCurrent = document.getElementById('devblog-counter-current');
@@ -771,9 +771,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // Update boundary button states
-      devblogPrevBtn.disabled = (currentIndex === 0);
-      devblogNextBtn.disabled = (currentIndex === totalCards - 1);
+      // Update boundary button states for all navigation buttons
+      document.querySelectorAll('.devblog-prev-btn, #devblog-prev-btn, #devblog-cluster-prev-btn').forEach(function (btn) {
+        btn.disabled = (currentIndex === 0);
+      });
+      document.querySelectorAll('.devblog-next-btn, #devblog-next-btn, #devblog-cluster-next-btn').forEach(function (btn) {
+        btn.disabled = (currentIndex === totalCards - 1);
+      });
 
       // Update dots
       dots.forEach(function (dot, idx) {
@@ -791,16 +795,36 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 260);
     }
 
-    // Arrow Button Handlers
-    devblogPrevBtn.addEventListener('click', function () {
+    // Expose global navigation functions
+    window.devblogGoPrev = function () {
       if (currentIndex > 0) {
         updateCoverflow(currentIndex - 1);
       }
-    });
+    };
 
-    devblogNextBtn.addEventListener('click', function () {
+    window.devblogGoNext = function () {
       if (currentIndex < totalCards - 1) {
         updateCoverflow(currentIndex + 1);
+      }
+    };
+
+    // Delegated click listener ensures any prev/next button works seamlessly
+    document.addEventListener('click', function (e) {
+      const prev = e.target.closest('.devblog-prev-btn, #devblog-prev-btn, #devblog-cluster-prev-btn');
+      if (prev) {
+        e.preventDefault();
+        if (!prev.disabled) {
+          window.devblogGoPrev();
+        }
+        return;
+      }
+      const next = e.target.closest('.devblog-next-btn, #devblog-next-btn, #devblog-cluster-next-btn');
+      if (next) {
+        e.preventDefault();
+        if (!next.disabled) {
+          window.devblogGoNext();
+        }
+        return;
       }
     });
 

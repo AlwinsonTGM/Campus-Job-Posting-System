@@ -1090,6 +1090,16 @@ function create_job($data, $photo_file = null) {
         $responsibilities = !empty($data['responsibilities']) ? (is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", $data['responsibilities'])))) : [];
         $qualifications = !empty($data['qualifications']) ? (is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", $data['qualifications'])))) : [];
 
+        // Dynamically resolve category_id from category name if not provided
+        $category_name = $data['category'] ?? 'Administrative & Clerical';
+        $category_id = (int)($data['category_id'] ?? 0);
+        if ($category_id <= 0) {
+            $stmt_cat = $pdo->prepare("SELECT `id` FROM `categories` WHERE `name` = :cname LIMIT 1");
+            $stmt_cat->execute([':cname' => $category_name]);
+            $found_id = $stmt_cat->fetchColumn();
+            $category_id = $found_id ? (int)$found_id : 3;
+        }
+
         $stmt = $pdo->prepare("
             INSERT INTO `jobs` (
                 `title`, `department`, `organization_name`, `category`, `category_id`,
@@ -1107,28 +1117,28 @@ function create_job($data, $photo_file = null) {
         ");
 
         $stmt->execute([
-            ':title'             => htmlspecialchars($data['title'] ?? ''),
+            ':title'             => $data['title'] ?? '',
             ':department'        => $data['department'] ?? $org_name,
             ':organization_name' => $org_name,
-            ':category'          => $data['category'] ?? 'Administrative & Clerical',
-            ':category_id'       => (int)($data['category_id'] ?? 3),
+            ':category'          => $category_name,
+            ':category_id'       => $category_id,
             ':employer_id'       => (int)($user['id'] ?? 0),
             ':employer_name'     => $user['name'] ?? 'Office Supervisor',
             ':employer_type'     => $employer_type,
             ':job_type'          => $job_type,
             ':work_setup'        => $work_setup,
             ':verified_employer' => $is_verified_employer,
-            ':location'          => htmlspecialchars($data['location'] ?? 'Campus Main Office'),
-            ':pay_rate'          => htmlspecialchars($data['pay_rate'] ?? '₱80.00 / hour'),
+            ':location'          => $data['location'] ?? 'Campus Main Office',
+            ':pay_rate'          => $data['pay_rate'] ?? '₱80.00 / hour',
             ':pay_type'          => $data['pay_type'] ?? 'Hourly',
-            ':hours_per_week'    => htmlspecialchars($data['hours_per_week'] ?? '10 - 20 hrs/week'),
+            ':hours_per_week'    => $data['hours_per_week'] ?? '10 - 20 hrs/week',
             ':vacancies'         => $vacancies_count,
             ':slots_total'       => $vacancies_count,
             ':deadline'          => !empty($data['deadline']) ? $data['deadline'] : date('Y-m-d', strtotime('+30 days')),
             ':image'             => $image_path,
             ':tags'              => json_encode($tags),
             ':badges'            => json_encode($badges),
-            ':description'       => htmlspecialchars($data['description'] ?? ''),
+            ':description'       => $data['description'] ?? '',
             ':responsibilities'  => json_encode($responsibilities),
             ':qualifications'    => json_encode($qualifications)
         ]);
@@ -1161,10 +1171,21 @@ function update_job($id, $data, $photo_file = null) {
 
         $vacancies_count = max(1, (int)($data['vacancies'] ?? $existing['vacancies']));
 
+        // Dynamically resolve category_id from category name
+        $category_name = $data['category'] ?? $existing['category'];
+        $category_id = (int)($data['category_id'] ?? 0);
+        if ($category_id <= 0) {
+            $stmt_cat = $pdo->prepare("SELECT `id` FROM `categories` WHERE `name` = :cname LIMIT 1");
+            $stmt_cat->execute([':cname' => $category_name]);
+            $found_id = $stmt_cat->fetchColumn();
+            $category_id = $found_id ? (int)$found_id : ($existing['category_id'] ?? 3);
+        }
+
         $stmt = $pdo->prepare("
             UPDATE `jobs` SET
                 `title` = :title,
                 `category` = :category,
+                `category_id` = :category_id,
                 `job_type` = :job_type,
                 `work_setup` = :work_setup,
                 `location` = :location,
@@ -1183,18 +1204,19 @@ function update_job($id, $data, $photo_file = null) {
         ");
 
         $stmt->execute([
-            ':title'            => htmlspecialchars($data['title'] ?? $existing['title']),
-            ':category'         => $data['category'] ?? $existing['category'],
+            ':title'            => $data['title'] ?? $existing['title'],
+            ':category'         => $category_name,
+            ':category_id'      => $category_id,
             ':job_type'         => $data['job_type'] ?? $existing['job_type'],
             ':work_setup'       => $data['work_setup'] ?? $existing['work_setup'],
-            ':location'         => htmlspecialchars($data['location'] ?? $existing['location']),
-            ':pay_rate'         => htmlspecialchars($data['pay_rate'] ?? $existing['pay_rate']),
-            ':hours_per_week'   => htmlspecialchars($data['hours_per_week'] ?? $existing['hours_per_week']),
+            ':location'         => $data['location'] ?? $existing['location'],
+            ':pay_rate'         => $data['pay_rate'] ?? $existing['pay_rate'],
+            ':hours_per_week'   => $data['hours_per_week'] ?? $existing['hours_per_week'],
             ':vacancies'        => $vacancies_count,
             ':slots_total'      => $vacancies_count,
             ':deadline'         => $data['deadline'] ?? $existing['deadline'],
             ':status'           => $data['status'] ?? $existing['status'],
-            ':description'      => htmlspecialchars($data['description'] ?? $existing['description']),
+            ':description'      => $data['description'] ?? $existing['description'],
             ':image'            => $image_path,
             ':responsibilities' => json_encode($responsibilities),
             ':qualifications'   => json_encode($qualifications),

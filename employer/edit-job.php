@@ -37,38 +37,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $job_type = $_POST['job_type'] ?? ($job['job_type'] ?? 'Student Assistant');
         $work_setup = $_POST['work_setup'] ?? ($job['work_setup'] ?? 'On-Campus');
         $location = trim($_POST['location'] ?? $job['location']);
-        $pay_rate = trim($_POST['pay_rate'] ?? $job['pay_rate']);
+        
+        // Separated stipend rate
+        $pay_amount = trim($_POST['pay_amount'] ?? '');
+        $pay_period = trim($_POST['pay_period'] ?? '/ hour');
+
+        if (is_numeric($pay_amount) && (float)$pay_amount > 0) {
+            $formatted_amt = number_format((float)$pay_amount, 2);
+            if ($pay_period === 'fixed stipend') {
+                $pay_rate = '₱' . $formatted_amt . ' fixed stipend';
+                $pay_type = 'Fixed Stipend';
+            } else {
+                $pay_rate = '₱' . $formatted_amt . ' ' . $pay_period;
+                if (stripos($pay_period, 'hour') !== false) {
+                    $pay_type = 'Hourly';
+                } elseif (stripos($pay_period, 'month') !== false) {
+                    $pay_type = 'Monthly';
+                } elseif (stripos($pay_period, 'day') !== false) {
+                    $pay_type = 'Daily';
+                } elseif (stripos($pay_period, 'sem') !== false) {
+                    $pay_type = 'Per Semester';
+                } else {
+                    $pay_type = 'Stipend';
+                }
+            }
+        } elseif (!empty($_POST['pay_rate'])) {
+            $pay_rate = trim($_POST['pay_rate']);
+            $pay_type = $job['pay_type'] ?? 'Hourly';
+        } else {
+            $pay_rate = $job['pay_rate'] ?? '₱80.00 / hour';
+            $pay_type = $job['pay_type'] ?? 'Hourly';
+        }
+
         $hours_per_week = trim($_POST['hours_per_week'] ?? $job['hours_per_week']);
         $vacancies = (int)($_POST['vacancies'] ?? $job['vacancies']);
         $deadline = $_POST['deadline'] ?? $job['deadline'];
         $status = $_POST['status'] ?? $job['status'];
         $description = trim($_POST['description'] ?? $job['description']);
-        $responsibilities = trim($_POST['responsibilities'] ?? '');
-        $qualifications = trim($_POST['qualifications'] ?? '');
+        
+        // Dynamic lines handling
+        $raw_resp = $_POST['responsibilities'] ?? [];
+        $responsibilities = is_array($raw_resp)
+            ? array_values(array_filter(array_map('trim', $raw_resp), fn($v) => $v !== ''))
+            : array_values(array_filter(array_map('trim', explode("\n", (string)$raw_resp)), fn($v) => $v !== ''));
+
+        $raw_qual = $_POST['qualifications'] ?? [];
+        $qualifications = is_array($raw_qual)
+            ? array_values(array_filter(array_map('trim', $raw_qual), fn($v) => $v !== ''))
+            : array_values(array_filter(array_map('trim', explode("\n", (string)$raw_qual)), fn($v) => $v !== ''));
 
         if (empty($title) || empty($description)) {
             $error = 'Please provide the vacancy title and detailed description.';
         } elseif ($vacancies < 1) {
             $error = 'Vacancy quota must be at least 1 position.';
         } else {
+            // Resolve category_id
+            $category_id = (int)($job['category_id'] ?? 3);
+            foreach ($categories as $cat) {
+                if (strcasecmp($cat['name'], $category) === 0) {
+                    $category_id = (int)$cat['id'];
+                    break;
+                }
+            }
+
             $photo_file = $_FILES['job_photo'] ?? null;
             $remove_photo = !empty($_POST['remove_photo']);
 
             update_job($job['id'], [
                 'title' => $title,
                 'category' => $category,
+                'category_id' => $category_id,
                 'job_type' => $job_type,
                 'work_setup' => $work_setup,
                 'location' => $location,
                 'pay_rate' => $pay_rate,
+                'pay_type' => $pay_type,
                 'hours_per_week' => $hours_per_week,
                 'vacancies' => $vacancies,
                 'deadline' => $deadline,
                 'status' => $status,
                 'description' => $description,
                 'remove_photo' => $remove_photo,
-                'responsibilities' => !empty($responsibilities) ? array_filter(array_map('trim', explode("\n", $responsibilities))) : ($job['responsibilities'] ?? []),
-                'qualifications' => !empty($qualifications) ? array_filter(array_map('trim', explode("\n", $qualifications))) : ($job['qualifications'] ?? [])
+                'responsibilities' => $responsibilities,
+                'qualifications' => $qualifications
             ], $photo_file);
 
             set_flash('success', "Vacancy '{$title}' updated successfully!");
@@ -78,8 +129,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$resp_str = is_array($job['responsibilities'] ?? null) ? implode("\n", $job['responsibilities']) : ($job['responsibilities'] ?? '');
-$qual_str = is_array($job['qualifications'] ?? null) ? implode("\n", $job['qualifications']) : ($job['qualifications'] ?? '');
+// Parse existing stipend amount and period
+$parsed_amount = '';
+$parsed_period = '/ hour';
+if (!empty($job['pay_rate'])) {
+    if (preg_match('/(?:₱|PHP)?\s*([\d,]+(?:\.\d+)?)\s*(?:\/|\bper\b)?\s*(.+)?/iu', $job['pay_rate'], $pm)) {
+        $parsed_amount = str_replace(',', '', trim($pm[1]));
+        $raw_period = trim($pm[2] ?? '');
+        if (stripos($raw_period, 'hour') !== false || stripos($raw_period, 'hr') !== false) {
+            $parsed_period = '/ hour';
+        } elseif (stripos($raw_period, 'day') !== false) {
+            $parsed_period = '/ day';
+        } elseif (stripos($raw_period, 'week') !== false) {
+            $parsed_period = '/ week';
+        } elseif (stripos($raw_period, 'month') !== false || stripos($raw_period, 'mo') !== false) {
+            $parsed_period = '/ month';
+        } elseif (stripos($raw_period, 'sem') !== false) {
+            $parsed_period = '/ semester';
+        } elseif (stripos($raw_period, 'fixed') !== false) {
+            $parsed_period = 'fixed stipend';
+        } elseif (!empty($raw_period)) {
+            $parsed_period = '/ ' . $raw_period;
+        }
+    }
+}
+
+$resp_items = is_array($job['responsibilities'] ?? null) ? $job['responsibilities'] : (!empty($job['responsibilities']) ? explode("\n", $job['responsibilities']) : []);
+$qual_items = is_array($job['qualifications'] ?? null) ? $job['qualifications'] : (!empty($job['qualifications']) ? explode("\n", $job['qualifications']) : []);
 
 $page_title = 'Edit ' . $job['title'];
 require_once __DIR__ . '/../includes/header.php';
@@ -116,7 +192,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 <?php endif; ?>
 
-                <form action="edit-job.php?id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data" class="form-paper">
+                <form action="edit-job.php?id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data" class="form-paper" id="edit-job-form">
                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                     <div class="row g-4 mb-5">
                         
@@ -172,14 +248,72 @@ require_once __DIR__ . '/../includes/header.php';
                                     <textarea name="description" id="edit-desc" rows="4" class="form-control" required><?= htmlspecialchars($job['description']) ?></textarea>
                                 </div>
 
+                                <!-- Key Duties & Responsibilities (Addable Input Bar) -->
                                 <div class="mb-4">
-                                    <label class="form-label" for="edit-resp">Key Duties & Responsibilities (1 per line)</label>
-                                    <textarea name="responsibilities" id="edit-resp" rows="3" class="form-control"><?= htmlspecialchars($resp_str) ?></textarea>
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <label class="form-label mb-0 fw-bold">Key Duties & Responsibilities</label>
+                                        <span class="small text-muted-custom">Add lines one by one</span>
+                                    </div>
+                                    <div class="small text-muted-custom mb-2">Type a task and click <strong class="text-ink">+</strong> (or press Enter) to add.</div>
+
+                                    <!-- Addable Input Bar -->
+                                    <div class="input-group mb-2">
+                                        <input type="text" id="resp-input-bar" class="form-control" placeholder="e.g. Assist student visitors with computer lab login...">
+                                        <button type="button" class="btn btn-accent px-3 fw-bold" id="btn-add-resp" title="Add Duty">
+                                            <i class="bi bi-plus-lg me-1"></i> Add Line
+                                        </button>
+                                    </div>
+
+                                    <!-- Dynamic Lines Container -->
+                                    <div class="dynamic-lines-wrapper" id="resp-items-container">
+                                        <div class="dynamic-empty-hint <?= !empty($resp_items) ? 'd-none' : '' ?>" id="resp-empty-hint">
+                                            <i class="bi bi-info-circle me-1"></i> No duties added yet. Use the bar above and click <strong>+ Add Line</strong>.
+                                        </div>
+                                        <?php foreach ($resp_items as $idx => $r_text): ?>
+                                            <?php $r_trimmed = trim((string)$r_text); if (empty($r_trimmed)) continue; ?>
+                                            <div class="dynamic-line-item d-flex align-items-center gap-2 mb-2">
+                                                <span class="dynamic-line-badge"><?= $idx + 1 ?></span>
+                                                <input type="text" name="responsibilities[]" class="form-control form-control-sm border-0 bg-transparent px-2" value="<?= htmlspecialchars($r_trimmed) ?>" placeholder="Key duty or responsibility...">
+                                                <button type="button" class="btn btn-outline-danger btn-sm dynamic-line-btn-del" title="Remove line">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
 
+                                <!-- Qualifications & Requirements (Addable Input Bar) -->
                                 <div class="mb-3">
-                                    <label class="form-label" for="edit-qual">Qualifications & Requirements (1 per line)</label>
-                                    <textarea name="qualifications" id="edit-qual" rows="3" class="form-control"><?= htmlspecialchars($qual_str) ?></textarea>
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <label class="form-label mb-0 fw-bold">Qualifications & Requirements</label>
+                                        <span class="small text-muted-custom">Add lines one by one</span>
+                                    </div>
+                                    <div class="small text-muted-custom mb-2">Type a requirement and click <strong class="text-ink">+</strong> (or press Enter) to add.</div>
+
+                                    <!-- Addable Input Bar -->
+                                    <div class="input-group mb-2">
+                                        <input type="text" id="qual-input-bar" class="form-control" placeholder="e.g. GWA of 2.25 or better...">
+                                        <button type="button" class="btn btn-accent px-3 fw-bold" id="btn-add-qual" title="Add Qualification">
+                                            <i class="bi bi-plus-lg me-1"></i> Add Line
+                                        </button>
+                                    </div>
+
+                                    <!-- Dynamic Lines Container -->
+                                    <div class="dynamic-lines-wrapper" id="qual-items-container">
+                                        <div class="dynamic-empty-hint <?= !empty($qual_items) ? 'd-none' : '' ?>" id="qual-empty-hint">
+                                            <i class="bi bi-info-circle me-1"></i> No qualifications added yet. Use the bar above and click <strong>+ Add Line</strong>.
+                                        </div>
+                                        <?php foreach ($qual_items as $idx => $q_text): ?>
+                                            <?php $q_trimmed = trim((string)$q_text); if (empty($q_trimmed)) continue; ?>
+                                            <div class="dynamic-line-item d-flex align-items-center gap-2 mb-2">
+                                                <span class="dynamic-line-badge"><?= $idx + 1 ?></span>
+                                                <input type="text" name="qualifications[]" class="form-control form-control-sm border-0 bg-transparent px-2" value="<?= htmlspecialchars($q_trimmed) ?>" placeholder="Qualification or requirement...">
+                                                <button type="button" class="btn btn-outline-danger btn-sm dynamic-line-btn-del" title="Remove line">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
                             </div>
 
@@ -257,9 +391,24 @@ require_once __DIR__ . '/../includes/header.php';
                                     <input type="text" name="location" id="edit-loc" class="form-control" value="<?= htmlspecialchars($job['location']) ?>" required>
                                 </div>
 
+                                <!-- Separated Stipend Rate & Compensation -->
                                 <div class="mb-3">
-                                    <label class="form-label" for="edit-pay">Stipend Rate</label>
-                                    <input type="text" name="pay_rate" id="edit-pay" class="form-control" value="<?= htmlspecialchars($job['pay_rate']) ?>" required>
+                                    <label class="form-label" for="edit-pay-amount">Stipend Rate &amp; Frequency <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light fw-bold text-muted">₱</span>
+                                        <input type="number" name="pay_amount" id="edit-pay-amount" class="form-control" placeholder="85.00" step="0.50" min="0" value="<?= htmlspecialchars($parsed_amount) ?>" required>
+                                        <select name="pay_period" id="edit-pay-period" class="form-select" style="max-width: 155px;" required>
+                                            <option value="/ hour" <?= ($parsed_period === '/ hour') ? 'selected' : '' ?>>/ hour</option>
+                                            <option value="/ day" <?= ($parsed_period === '/ day') ? 'selected' : '' ?>>/ day</option>
+                                            <option value="/ week" <?= ($parsed_period === '/ week') ? 'selected' : '' ?>>/ week</option>
+                                            <option value="/ month" <?= ($parsed_period === '/ month') ? 'selected' : '' ?>>/ month</option>
+                                            <option value="/ semester" <?= ($parsed_period === '/ semester') ? 'selected' : '' ?>>/ semester</option>
+                                            <option value="fixed stipend" <?= ($parsed_period === 'fixed stipend') ? 'selected' : '' ?>>fixed stipend</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-text text-muted-custom small mt-1">
+                                        <i class="bi bi-info-circle me-1"></i> Amount in PHP. Select frequency from the dropdown.
+                                    </div>
                                 </div>
 
                                 <div class="row g-2 mb-3">
@@ -296,3 +445,127 @@ require_once __DIR__ . '/../includes/header.php';
         <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>
 </div>
+
+<script>
+function setupDynamicList(inputBarId, btnAddId, containerId, emptyHintId, fieldName, placeholderText) {
+    const inputBar = document.getElementById(inputBarId);
+    const btnAdd = document.getElementById(btnAddId);
+    const container = document.getElementById(containerId);
+    const emptyHint = document.getElementById(emptyHintId);
+
+    function renumber() {
+        const rows = container.querySelectorAll('.dynamic-line-item');
+        if (rows.length === 0) {
+            if (emptyHint) emptyHint.classList.remove('d-none');
+        } else {
+            if (emptyHint) emptyHint.classList.add('d-none');
+            rows.forEach((row, idx) => {
+                const badge = row.querySelector('.dynamic-line-badge');
+                if (badge) badge.textContent = idx + 1;
+            });
+        }
+    }
+
+    // Attach delete listeners to existing rows
+    container.querySelectorAll('.dynamic-line-item').forEach(row => {
+        const delBtn = row.querySelector('.dynamic-line-btn-del');
+        if (delBtn) {
+            delBtn.addEventListener('click', function() {
+                row.remove();
+                renumber();
+            });
+        }
+        const inp = row.querySelector('input');
+        if (inp) {
+            inp.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (inputBar) inputBar.focus();
+                }
+            });
+        }
+    });
+
+    function addRow(valueText = '') {
+        const row = document.createElement('div');
+        row.className = 'dynamic-line-item d-flex align-items-center gap-2 mb-2';
+        row.innerHTML = `
+            <span class="dynamic-line-badge">1</span>
+            <input type="text" name="${fieldName}[]" class="form-control form-control-sm border-0 bg-transparent px-2" placeholder="${placeholderText}" value="${valueText.replace(/"/g, '&quot;')}">
+            <button type="button" class="btn btn-outline-danger btn-sm dynamic-line-btn-del" title="Remove line">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        `;
+
+        row.querySelector('.dynamic-line-btn-del').addEventListener('click', function() {
+            row.remove();
+            renumber();
+        });
+
+        row.querySelector('input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                inputBar.focus();
+            }
+        });
+
+        container.appendChild(row);
+        renumber();
+        return row;
+    }
+
+    function handleAdd() {
+        const text = inputBar.value.trim();
+        if (text) {
+            addRow(text);
+            inputBar.value = '';
+            inputBar.focus();
+        }
+    }
+
+    if (btnAdd && inputBar) {
+        btnAdd.addEventListener('click', handleAdd);
+        inputBar.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAdd();
+            }
+        });
+    }
+
+    return { addRow, renumber };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setupDynamicList(
+        'resp-input-bar',
+        'btn-add-resp',
+        'resp-items-container',
+        'resp-empty-hint',
+        'responsibilities',
+        'Key duty or responsibility...'
+    );
+
+    setupDynamicList(
+        'qual-input-bar',
+        'btn-add-qual',
+        'qual-items-container',
+        'qual-empty-hint',
+        'qualifications',
+        'Qualification or requirement...'
+    );
+
+    const editForm = document.getElementById('edit-job-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function() {
+            const submitBtn = editForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                setTimeout(() => {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving Changes...';
+                }, 10);
+            }
+        });
+    }
+});
+</script>

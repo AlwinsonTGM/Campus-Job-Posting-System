@@ -159,14 +159,14 @@ require_once __DIR__ . '/includes/header.php';
 
                     <!-- 3D Stage Container with Flanking Left/Right Floating Arrows -->
                     <div class="devblog-stage-container position-relative">
-                        <!-- Flanking Left Navigation Arrow (Newer / Latest) -->
-                        <button type="button" id="devblog-prev-btn" class="devblog-nav-arrow devblog-nav-left"
+                        <!-- Flanking Left Navigation Arrow (Newer / Latest) - Desktop View -->
+                        <button type="button" id="devblog-prev-btn" class="devblog-nav-arrow devblog-nav-left devblog-prev-btn d-none d-lg-inline-flex"
                             aria-label="Previous Day" title="Newer Log" disabled>
                             <i class="bi bi-chevron-left"></i>
                         </button>
 
-                        <!-- Flanking Right Navigation Arrow (Older / Project Kickoff) -->
-                        <button type="button" id="devblog-next-btn" class="devblog-nav-arrow devblog-nav-right"
+                        <!-- Flanking Right Navigation Arrow (Older / Project Kickoff) - Desktop View -->
+                        <button type="button" id="devblog-next-btn" class="devblog-nav-arrow devblog-nav-right devblog-next-btn d-none d-lg-inline-flex"
                             aria-label="Next Day" title="Older Log">
                             <i class="bi bi-chevron-right"></i>
                         </button>
@@ -191,7 +191,7 @@ require_once __DIR__ . '/includes/header.php';
                                     </div>
 
                                     <div class="devblog-card-body">
-                                        <div class="devblog-author-row mb-3">
+                                        <div class="devblog-author-row mb-2">
                                             <img src="<?= $base_url . ($blog['author_image'] ?? 'assets/img/developers/BUSTAMANTE.jpg') ?>" alt="<?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?>" class="devblog-author-img">
                                             <div class="devblog-author-info">
                                                 <div class="devblog-author-name"><?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?></div>
@@ -208,13 +208,13 @@ require_once __DIR__ . '/includes/header.php';
                                             <?= htmlspecialchars($blog['summary_excerpt'] ?? '') ?>
                                         </p>
 
-                                        <div class="devblog-card-tags mb-3">
+                                        <div class="devblog-card-tags mb-2">
                                             <?php foreach (($blog['tags'] ?? []) as $tag): ?>
                                                 <span class="chip-tag"><?= htmlspecialchars($tag) ?></span>
                                             <?php endforeach; ?>
                                         </div>
 
-                                        <div class="devblog-card-footer mt-auto pt-3 border-top border-line">
+                                        <div class="devblog-card-footer mt-auto pt-2 border-top border-line">
                                             <button type="button" class="btn-accent-pill w-100 justify-content-center py-2 devblog-read-trigger" data-blog-index="<?= $idx ?>">
                                                 <i class="bi bi-book-half me-1"></i> Read Full Daily Log
                                             </button>
@@ -232,14 +232,52 @@ require_once __DIR__ . '/includes/header.php';
                             Showing Day <strong id="devblog-counter-current" class="text-ink"><?= $devblogs[0]['sprint_number'] ?? '04' ?></strong> of <strong class="text-ink"><?= sprintf('%02d', count($devblogs)) ?></strong>
                         </div>
 
-                        <div class="devblog-step-dots" id="devblog-step-dots" role="tablist" aria-label="DevBlog day navigation">
-                            <?php foreach ($devblogs as $idx => $blog): ?>
-                                <button type="button" class="devblog-dot <?= ($idx === 0) ? 'is-active' : '' ?>"
-                                    data-dot-index="<?= $idx ?>"
-                                    aria-label="Day <?= htmlspecialchars($blog['sprint_number'] ?? ($idx + 1)) ?>"
-                                    title="Day <?= htmlspecialchars($blog['sprint_number'] ?? ($idx + 1)) ?>: <?= htmlspecialchars($blog['title'] ?? '') ?>"></button>
-                            <?php endforeach; ?>
+                        <!-- Tactile Navigation Cluster (Arrows + Dots) -->
+                        <div class="devblog-nav-cluster d-flex align-items-center gap-2">
+                            <button type="button" id="devblog-cluster-prev-btn" class="devblog-nav-cluster-btn devblog-prev-btn"
+                                aria-label="Previous Day" title="Newer Log" disabled
+                                onclick="if(window.devblogGoPrev){window.devblogGoPrev();}else{var b=document.getElementById('devblog-prev-btn');if(b)b.click();}">
+                                <i class="bi bi-chevron-left" style="pointer-events: none;"></i>
+                            </button>
+
+                            <div class="devblog-step-dots" id="devblog-step-dots" role="tablist" aria-label="DevBlog day navigation">
+                                <?php foreach ($devblogs as $idx => $blog): ?>
+                                    <button type="button" class="devblog-dot <?= ($idx === 0) ? 'is-active' : '' ?>"
+                                        data-dot-index="<?= $idx ?>"
+                                        aria-label="Day <?= htmlspecialchars($blog['sprint_number'] ?? ($idx + 1)) ?>"
+                                        title="Day <?= htmlspecialchars($blog['sprint_number'] ?? ($idx + 1)) ?>: <?= htmlspecialchars($blog['title'] ?? '') ?>"></button>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <button type="button" id="devblog-cluster-next-btn" class="devblog-nav-cluster-btn devblog-next-btn"
+                                aria-label="Next Day" title="Older Log"
+                                onclick="if(window.devblogGoNext){window.devblogGoNext();}else{var b=document.getElementById('devblog-next-btn');if(b)b.click();}">
+                                <i class="bi bi-chevron-right" style="pointer-events: none;"></i>
+                            </button>
                         </div>
+
+                        <script>
+                        (function() {
+                            function syncNavCluster() {
+                                var desktopPrev = document.getElementById('devblog-prev-btn');
+                                var desktopNext = document.getElementById('devblog-next-btn');
+                                var clusterPrev = document.getElementById('devblog-cluster-prev-btn');
+                                var clusterNext = document.getElementById('devblog-cluster-next-btn');
+                                if (desktopPrev && clusterPrev) clusterPrev.disabled = desktopPrev.disabled;
+                                if (desktopNext && clusterNext) clusterNext.disabled = desktopNext.disabled;
+                            }
+                            window.syncDevblogNavButtons = syncNavCluster;
+                            var prevEl = document.getElementById('devblog-prev-btn');
+                            var nextEl = document.getElementById('devblog-next-btn');
+                            if (window.MutationObserver && prevEl && nextEl) {
+                                var obs = new MutationObserver(syncNavCluster);
+                                obs.observe(prevEl, { attributes: true, attributeFilter: ['disabled'] });
+                                obs.observe(nextEl, { attributes: true, attributeFilter: ['disabled'] });
+                            }
+                            document.addEventListener('click', function() { setTimeout(syncNavCluster, 60); });
+                            document.addEventListener('touchend', function() { setTimeout(syncNavCluster, 60); }, { passive: true });
+                        })();
+                        </script>
 
                         <div class="small text-muted-custom d-none d-md-block">
                             <span class="badge bg-cream text-ink border border-line px-2 py-1">

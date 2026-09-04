@@ -50,5 +50,6 @@ pnpm-debug.log*
 # Temporary Test Upload Artifacts
 uploads/proofs/proof_*
 !uploads/proofs/proof_1787818447_8a7d0655.pdf
+uploads/jobs/job_*
 
 
