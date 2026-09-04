@@ -789,8 +789,23 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
         $req_birthdate = trim($requested_data['birthdate'] ?? ($current_user['birthdate'] ?? ''));
         $req_age = !empty($req_birthdate) ? calculate_age($req_birthdate) : (!empty($requested_data['age']) ? (int)$requested_data['age'] : ($current_user['age'] ?? 20));
 
+        $req_email = strtolower(trim($requested_data['email'] ?? ($current_user['email'] ?? '')));
+        if (empty($req_email) || !filter_var($req_email, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'message' => 'Please provide a valid institutional / student email address.'];
+        }
+
+        // If email is changing, check uniqueness against other users
+        if ($req_email !== strtolower($current_user['email'])) {
+            $stmt_chk = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
+            $stmt_chk->execute([':email' => $req_email, ':id' => (int)$user_id]);
+            if ($stmt_chk->fetch()) {
+                return ['success' => false, 'message' => 'The requested email address is already in use by another account.'];
+            }
+        }
+
         $current_profile = [
             'name'       => $current_user['name'] ?? '',
+            'email'      => $current_user['email'] ?? '',
             'department' => $current_user['department'] ?? '',
             'course'     => $current_user['course'] ?? '',
             'year_level' => $current_user['year_level'] ?? '1st Year',
@@ -801,6 +816,7 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
 
         $requested_profile = [
             'name'       => trim($requested_data['name'] ?? $current_user['name']),
+            'email'      => $req_email,
             'department' => trim($requested_data['department'] ?? $current_user['department']),
             'course'     => trim($requested_data['course'] ?? $current_user['course']),
             'year_level' => trim($requested_data['year_level'] ?? $current_user['year_level']),
@@ -874,6 +890,19 @@ function approve_profile_request($request_id, $admin_notes = '') {
         $user_params = [':id' => $user_id];
 
         if (!empty($requested['name'])) { $user_updates[] = "`name` = :name"; $user_params[':name'] = $requested['name']; }
+        
+        $new_email_applied = null;
+        if (!empty($requested['email'])) {
+            $candidate_email = strtolower(trim($requested['email']));
+            $chk_email = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
+            $chk_email->execute([':email' => $candidate_email, ':id' => $user_id]);
+            if (!$chk_email->fetch()) {
+                $user_updates[] = "`email` = :email";
+                $user_params[':email'] = $candidate_email;
+                $new_email_applied = $candidate_email;
+            }
+        }
+
         if (!empty($requested['department'])) { $user_updates[] = "`department` = :department"; $user_params[':department'] = $requested['department']; }
         if (!empty($requested['course'])) { $user_updates[] = "`course` = :course"; $user_params[':course'] = $requested['course']; }
         if (!empty($requested['year_level'])) { $user_updates[] = "`year_level` = :year_level"; $user_params[':year_level'] = $requested['year_level']; }
@@ -881,6 +910,13 @@ function approve_profile_request($request_id, $admin_notes = '') {
         if (!empty($requested['birthdate'])) { $user_updates[] = "`birthdate` = :birthdate"; $user_params[':birthdate'] = $requested['birthdate']; }
         if (!empty($requested['age'])) { $user_updates[] = "`age` = :age"; $user_params[':age'] = (int)$requested['age']; }
         if (!empty($target_req['proof_file'])) { $user_updates[] = "`registration_proof` = :proof"; $user_params[':proof'] = $target_req['proof_file']; }
+
+        // If the student's registration was rejected or awaiting revision, approving their official correction restores full verified status
+        $cur_user_row = get_user_by_id($user_id);
+        if ($cur_user_row && in_array($cur_user_row['verification_status'] ?? '', ['rejected', 'pending_approval'])) {
+            $user_updates[] = "`verification_status` = 'verified'";
+            $user_updates[] = "`rejection_reason` = NULL";
+        }
 
         if (!empty($user_updates)) {
             $user_sql = "UPDATE `users` SET " . implode(', ', $user_updates) . ", `updated_at` = NOW() WHERE `id` = :id";
@@ -892,6 +928,7 @@ function approve_profile_request($request_id, $admin_notes = '') {
         $app_updates = [];
         $app_params = [':student_id' => $user_id];
         if (!empty($requested['name'])) { $app_updates[] = "`student_name` = :name"; $app_params[':name'] = $requested['name']; }
+        if (!empty($new_email_applied)) { $app_updates[] = "`student_email` = :student_email"; $app_params[':student_email'] = $new_email_applied; }
         if (!empty($requested['course'])) { $app_updates[] = "`course` = :course"; $app_params[':course'] = $requested['course']; }
         if (!empty($requested['year_level'])) { $app_updates[] = "`year_level` = :year_level"; $app_params[':year_level'] = $requested['year_level']; }
         if (!empty($requested['sex'])) { $app_updates[] = "`sex` = :sex"; $app_params[':sex'] = $requested['sex']; }
@@ -901,6 +938,12 @@ function approve_profile_request($request_id, $admin_notes = '') {
             $app_sql = "UPDATE `applications` SET " . implode(', ', $app_updates) . ", `updated_at` = NOW() WHERE `student_id` = :student_id";
             $upd_app_stmt = $pdo->prepare($app_sql);
             $upd_app_stmt->execute($app_params);
+        }
+
+        // Update user_email in profile_requests if email was changed
+        if (!empty($new_email_applied)) {
+            $upd_pr_email = $pdo->prepare("UPDATE `profile_requests` SET `user_email` = :new_em WHERE `user_id` = :uid");
+            $upd_pr_email->execute([':new_em' => $new_email_applied, ':uid' => $user_id]);
         }
 
         // Mark request as approved

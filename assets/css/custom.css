@@ -5914,3 +5914,236 @@ i.bi,
   object-fit: cover;
   display: block;
 }
+
+/* ==========================================================================
+   HERO 3D INTERACTIVE ROBOT STAGE
+   ========================================================================== */
+.hero-3d-stage-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-robot-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  background: radial-gradient(circle at 50% 55%, rgba(46, 204, 94, 0.16) 0%, rgba(46, 204, 94, 0.04) 50%, transparent 72%);
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-robot-canvas-container:active {
+  cursor: grabbing;
+}
+
+.hero-robot-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+}
+
+/* 3D Model Loading Spinner */
+.hero-robot-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--line);
+}
+
+/* Interactive Floating Status Pill */
+.hero-3d-floating-pill {
+  position: absolute;
+  top: 14px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  color: var(--ink);
+  pointer-events: none;
+  animation: floatSubtle 4s ease-in-out infinite alternate;
+}
+
+.hero-3d-floating-pill .live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(46, 204, 94, 0.25);
+  animation: pulseGreen 2s infinite;
+}
+
+.hero-3d-floating-pill .badge-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* Floating Technology Badge Accents */
+.hero-3d-tag {
+  position: absolute;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  padding: 0.5rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.hero-3d-tag.tag-left {
+  left: 2%;
+  bottom: 12%;
+  animation: floatPillLeft 5s ease-in-out infinite alternate;
+}
+
+.hero-3d-tag.tag-right {
+  right: 2%;
+  top: 22%;
+  animation: floatPillRight 6s ease-in-out infinite alternate;
+}
+
+/* Quick Trust Stats under CTAs */
+.hero-quick-stats {
+  border-top: 1px dashed var(--line);
+  padding-top: 1rem;
+}
+
+.quick-stat-item {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.status-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(46, 204, 94, 0.3);
+  display: inline-block;
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 94, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(46, 204, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 94, 0);
+  }
+}
+
+@keyframes floatSubtle {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-5px); }
+}
+
+@keyframes floatPillLeft {
+  0% { transform: translateY(0) rotate(-1deg); }
+  100% { transform: translateY(-7px) rotate(1deg); }
+}
+
+@keyframes floatPillRight {
+  0% { transform: translateY(0) rotate(1deg); }
+  100% { transform: translateY(-9px) rotate(-1deg); }
+}
+
+/* Responsive Breakpoints for 3D Stage */
+@media (max-width: 1199.98px) {
+  .hero-robot-canvas-container {
+    height: 440px;
+  }
+  .hero-3d-tag.tag-left {
+    bottom: 6%;
+    left: 0;
+  }
+  .hero-3d-tag.tag-right {
+    top: 15%;
+    right: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .hero-3d-stage-wrapper {
+    max-width: 420px;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .hero-robot-canvas-container {
+    height: 340px;
+  }
+  .quick-stat-item {
+    font-size: 0.78rem;
+    padding: 0.28rem 0.65rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-3d-stage-wrapper {
+    max-width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .hero-robot-canvas-container {
+    height: 300px;
+  }
+  .hero-3d-tag {
+    display: none; /* Keep clean on small mobile devices */
+  }
+  .hero-3d-floating-pill {
+    top: 6px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.74rem;
+  }
+  .hero-3d-floating-pill .badge-hint {
+    display: none;
+  }
+}
+
+

@@ -90,8 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$upload_failed) {
+            $digits_only = preg_replace('/[^0-9]/', '', $phone);
             if (empty($cover_letter)) {
                 $error = 'Please provide a brief statement of intent / cover letter.';
+            } elseif (empty($phone) || preg_match('/[a-zA-Z]/', $phone) || !preg_match('/^[\+]?[0-9\s\-()]{7,20}$/', $phone) || strlen($digits_only) < 7 || strlen($digits_only) > 15) {
+                $error = 'Please provide a valid contact phone number consisting of numbers only (e.g., +63 917 123 4567 or 09171234567).';
             } elseif (empty($availability) || count($availability) === 0) {
                 $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one available weekly timeslot in the matrix.';
             } else {
@@ -205,7 +208,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <label class="form-label" for="app-phone">Mobile Phone (for SMS interview notices) <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                            <input type="text" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars(!empty($user['phone']) ? $user['phone'] : '+63 917 555 0192') ?>" required>
+                                            <input type="tel" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars(!empty($user['phone']) ? $user['phone'] : '+63 917 555 0192') ?>" pattern="[\+]?[0-9\s\-()]{7,20}" inputmode="tel" title="Please enter numbers only (e.g. 09171234567 or +63 917 123 4567)." required>
                                         </div>
                                         <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
                                             Department supervisors use this contact to confirm interview dates and duty room assignments.
@@ -339,6 +342,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+
+        // Restrict phone input to numbers and valid phone characters
+        const appPhone = document.getElementById('app-phone');
+        if (appPhone) {
+            appPhone.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
+            });
+        }
     }
 });
 </script>

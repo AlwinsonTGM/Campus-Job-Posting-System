@@ -83,6 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (empty($phone)) {
         $error = 'Please provide a valid contact phone number.';
         $initial_step = 1;
+    } elseif (preg_match('/[a-zA-Z]/', $phone) || !preg_match('/^[\+]?[0-9\s\-()]{7,20}$/', $phone) || strlen(preg_replace('/[^0-9]/', '', $phone)) < 7 || strlen(preg_replace('/[^0-9]/', '', $phone)) > 15) {
+        $error = 'Contact phone number must contain valid numbers only (e.g. 09171234567 or +63 917 123 4567). Alphabetic characters are not allowed.';
+        $initial_step = 1;
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please provide a valid email address.';
         $initial_step = 1;
@@ -458,7 +461,7 @@ require_once __DIR__ . '/includes/header.php';
                                         <label class="form-label" for="reg-phone">Contact Phone Number <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                            <input type="tel" name="phone" id="reg-phone" class="form-control" placeholder="+63 917 000 0000" value="<?= htmlspecialchars($phone ?? '') ?>" required>
+                                            <input type="tel" name="phone" id="reg-phone" class="form-control" placeholder="+63 917 000 0000" value="<?= htmlspecialchars($phone ?? '') ?>" pattern="[\+]?[0-9\s\-()]{7,20}" inputmode="tel" title="Please enter numbers only (e.g. 09170000000 or +63 917 000 0000)." required>
                                         </div>
                                     </div>
                                 </div>
@@ -1233,6 +1236,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Restrict contact phone input to numbers and valid phone characters
+    const regPhoneInput = document.getElementById('reg-phone');
+    if (regPhoneInput) {
+        regPhoneInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
+        });
+    }
 
     // Check if server initialized at a specific step
     const initialStepAttr = registerForm ? parseInt(registerForm.getAttribute('data-initial-step') || '1', 10) : 1;

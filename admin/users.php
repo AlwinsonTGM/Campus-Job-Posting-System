@@ -227,6 +227,13 @@ require_once __DIR__ . '/../includes/header.php';
                                                     <span><?= htmlspecialchars($req['student_id'] ?? '') ?></span> &bull; 
                                                     <span><?= htmlspecialchars($req['user_email']) ?></span>
                                                 </div>
+                                                <?php if (!empty($req['requested_profile']['email']) && strtolower($req['requested_profile']['email']) !== strtolower($req['user_email'])): ?>
+                                                    <div class="mt-1">
+                                                        <span class="badge bg-warning text-dark border border-warning" style="font-size: 10px;">
+                                                            <i class="bi bi-arrow-repeat me-1"></i><?= htmlspecialchars($req['requested_profile']['email']) ?>
+                                                        </span>
+                                                    </div>
+                                                <?php endif; ?>
                                             </td>
                                             <td data-label="Target Program" style="max-width: 260px;">
                                                 <div class="small fw-semibold text-ink text-truncate" title="<?= htmlspecialchars(($req['requested_profile']['course'] ?? '') . ' • ' . ($req['requested_profile']['year_level'] ?? '')) ?>">
@@ -479,6 +486,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             <?php
                                             $fields_to_compare = [
                                                 'name' => 'Full Name',
+                                                'email' => 'Institutional / Login Email',
                                                 'department' => 'Academic Institute',
                                                 'course' => 'Degree Program / Course',
                                                 'year_level' => 'Year Level / Standing',

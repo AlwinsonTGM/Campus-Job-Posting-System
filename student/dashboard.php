@@ -65,13 +65,23 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
                     <div class="alert-paper alert-paper--danger mb-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-exclamation-triangle-fill text-danger fs-3 flex-shrink-0"></i>
-                            <div>
-                                <strong class="text-ink d-block mb-1">Registration Revision Requested</strong>
-                                <span class="small text-muted-custom">
-                                    <?= htmlspecialchars($user['rejection_reason'] ?: 'Your submitted proof requires resubmission or did not match institutional records.') ?>
-                                </span>
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                            <div class="d-flex align-items-start gap-3">
+                                <i class="bi bi-exclamation-triangle-fill text-danger fs-4 flex-shrink-0 mt-1"></i>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <strong class="text-ink d-block">Registration Revision Requested</strong>
+                                        <span class="badge-status--declined" style="font-size: 10px;">Action Required</span>
+                                    </div>
+                                    <span class="small text-muted-custom">
+                                        <?= htmlspecialchars($user['rejection_reason'] ?: 'Your submitted proof requires resubmission or did not match institutional records.') ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <a href="../settings.php" class="btn-pill-outline btn-pill-sm">
+                                    <i class="bi bi-pencil-square me-1"></i> Request Change of Info
+                                </a>
                             </div>
                         </div>
                     </div>

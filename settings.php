@@ -22,7 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $phone = trim($_POST['phone'] ?? '');
             $availability = $_POST['availability'] ?? [];
 
-            if (($user['role'] ?? '') === 'student' && (empty($availability) || count($availability) === 0)) {
+            $digits_only = preg_replace('/[^0-9]/', '', $phone);
+            if (!empty($phone) && (preg_match('/[a-zA-Z]/', $phone) || !preg_match('/^[\+]?[0-9\s\-()]{7,20}$/', $phone) || strlen($digits_only) < 7 || strlen($digits_only) > 15)) {
+                $error = 'Contact phone number must contain valid numbers only (e.g. 09171234567 or +63 917 123 4567). Letters and arbitrary text are not allowed.';
+            } elseif (($user['role'] ?? '') === 'student' && (empty($availability) || count($availability) === 0)) {
                 $error = 'Candidate Shift Availability is required and cannot be empty. Please select at least one weekly timeslot.';
             } else {
                 try {
@@ -160,7 +163,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <?php if ($pending_req): ?>
                     <div class="alert-paper alert-paper--warning mb-4 reveal-fade-rise">
-                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap w-100">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="icon-circle icon-circle-sm icon-circle-warning flex-shrink-0 mt-1">
                                     <i class="bi bi-hourglass-split fs-5"></i>
@@ -172,6 +175,9 @@ require_once __DIR__ . '/includes/header.php';
                                     </span>
                                     <div class="mt-2 small bg-white p-2 px-3 rounded-3 border border-line text-ink">
                                         <strong>Requested Updates:</strong>
+                                        <?php if (!empty($pending_req['requested_profile']['email']) && strtolower($pending_req['requested_profile']['email']) !== strtolower($user['email'] ?? '')): ?>
+                                            <span class="text-accent fw-bold"><i class="bi bi-envelope me-1"></i><?= htmlspecialchars($pending_req['requested_profile']['email']) ?></span> &bull;
+                                        <?php endif; ?>
                                         <span class="ms-1"><?= htmlspecialchars($pending_req['requested_profile']['course']) ?></span> &bull;
                                         <span><?= htmlspecialchars($pending_req['requested_profile']['year_level']) ?></span> &bull;
                                         <span><?= htmlspecialchars($pending_req['requested_profile']['sex']) ?></span>
@@ -187,7 +193,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php elseif ($recent_notice): ?>
                     <?php if ($recent_notice['status'] === 'approved'): ?>
                         <div class="alert-paper alert-paper--success mb-4 reveal-fade-rise">
-                            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap w-100">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0">
                                         <i class="bi bi-check-lg fs-5"></i>
@@ -209,7 +215,7 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
                     <?php elseif ($recent_notice['status'] === 'rejected'): ?>
                         <div class="alert-paper alert-paper--danger mb-4 reveal-fade-rise">
-                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap w-100">
                                 <div class="d-flex align-items-start gap-3">
                                     <div class="icon-circle icon-circle-sm icon-circle-danger flex-shrink-0 mt-1">
                                         <i class="bi bi-x-lg fs-5"></i>
@@ -237,6 +243,53 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
                         </div>
                     <?php endif; ?>
+                <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
+                    <div class="alert-paper alert-paper--danger mb-4 reveal-fade-rise d-block p-3 p-md-4">
+                        <div class="row g-3 g-md-4 align-items-stretch">
+                            <div class="col-12 col-md-7">
+                                <div class="d-flex align-items-start gap-3 h-100">
+                                    <div class="icon-circle icon-circle-sm icon-circle-danger flex-shrink-0 mt-1">
+                                        <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1 d-flex flex-column justify-content-between h-100">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                                <strong class="text-ink fs-6">Registration Revision Required</strong>
+                                                <span class="badge-status--declined" style="font-size: 10px;">Action Required</span>
+                                            </div>
+                                            <p class="small text-muted-custom mb-2" style="font-size: 12px;">
+                                                Your account registration credentials or email were flagged for revision by the administrator:
+                                            </p>
+                                        </div>
+                                        <?php if (!empty($user['rejection_reason'])): ?>
+                                            <div class="p-2 px-3 rounded-3 bg-white border border-line small text-ink mt-1">
+                                                <strong class="text-danger me-1"><i class="bi bi-chat-left-quote me-1"></i>Admin Feedback:</strong>
+                                                <span><?= htmlspecialchars($user['rejection_reason']) ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <div class="bg-white p-3 rounded-3 border border-line h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <i class="bi bi-arrow-repeat text-danger"></i>
+                                            <strong class="text-ink small">Resubmit for Verification</strong>
+                                        </div>
+                                        <p class="small text-muted-custom mb-3" style="font-size: 11.5px;">
+                                            Update your student identity or correct your email and submit updated proof (COR/ID) to restore verified status.
+                                        </p>
+                                    </div>
+                                    <?php if (($user['role'] ?? '') === 'student'): ?>
+                                        <button type="button" class="btn-pill-outline btn-pill-sm w-100 text-center" data-bs-toggle="modal" data-bs-target="#requestProfileModal">
+                                            <i class="bi bi-pencil-square me-1"></i> Update Info &amp; Proof
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <div class="row g-4 mb-5">
@@ -247,7 +300,14 @@ require_once __DIR__ . '/includes/header.php';
                                 <h3 class="card-paper-title fs-5 mb-0">
                                     <i class="bi bi-person-circle text-accent me-2"></i> Profile &amp; Preferences
                                 </h3>
-                                <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle"><?= ucfirst($user['role'] ?? 'student') ?></span>
+                                <?php
+                                $role_badge_class = match ($user['role'] ?? 'student') {
+                                    'admin'    => 'bg-dark text-white',
+                                    'employer' => 'bg-secondary text-white',
+                                    default    => 'bg-success text-white',
+                                };
+                                ?>
+                                <span class="badge rounded-pill d-inline-flex align-items-center gap-1 <?= $role_badge_class ?>"><?= ucfirst($user['role'] ?? 'student') ?></span>
                             </div>
 
                             <form action="settings.php" method="POST" class="form-paper">
@@ -264,10 +324,10 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label" for="settings-phone">Contact Phone Number <span class="badge-status--accepted ms-1" style="font-size: 10px;">Self-Service</span></label>
+                                    <label class="form-label" for="settings-phone">Contact Phone Number</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                        <input type="text" name="phone" id="settings-phone" class="form-control" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+63 917 123 4567">
+                                        <input type="tel" name="phone" id="settings-phone" class="form-control" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+63 917 123 4567" pattern="[\+]?[0-9\s\-()]{7,20}" inputmode="tel" title="Please enter numbers only (e.g. 09171234567 or +63 917 123 4567).">
                                     </div>
                                     <span class="small text-muted-custom" style="font-size: 11px;">Used by department supervisors for scheduling interviews and duty dispatch notices.</span>
                                 </div>
@@ -524,6 +584,12 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <div class="mb-2">
+                            <label class="form-label small mb-1" for="req-email">Institutional / Student Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="req-email" class="form-control form-control-sm" value="<?= htmlspecialchars($user['email']) ?>" required>
+                            <span class="small text-muted-custom" style="font-size: 10px;">If registered with an incorrect email (e.g. invalid Gmail), enter your correct student email here.</span>
+                        </div>
+
+                        <div class="mb-2">
                             <label class="form-label small mb-1" for="req-dept">Academic Institute <span class="text-danger">*</span></label>
                             <select name="department" id="req-dept" class="form-select form-select-sm" required>
                                 <option value="">Select Academic Institute</option>
@@ -649,6 +715,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bindAgeCalc('settings-birthdate', 'settings-age');
     bindAgeCalc('req-birthdate', 'req-age');
+
+    // Restrict contact phone input to numbers and valid phone characters
+    const phoneInput = document.getElementById('settings-phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
+        });
+    }
 
     // Student Shift Availability Validation
     const profileForm = document.querySelector('form.form-paper input[name="action"][value="profile"]')?.closest('form');

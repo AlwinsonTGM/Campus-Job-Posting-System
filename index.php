@@ -30,6 +30,13 @@ $metric_partnered_offices = get_metrics_partnered_offices();
 $metric_students_hired = get_metrics_students_hired();
 $metric_avg_pay = get_metrics_avg_hourly_pay();
 
+// Interactive 3D Hero Scripts
+$extra_js = [
+    'assets/js/three.min.js',
+    'assets/js/GLTFLoader.js',
+    'assets/js/hero-robot.js?v=' . time()
+];
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -46,30 +53,89 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="hero-backdrop-bg"></div>
 
                 <div class="container-fluid px-lg-5 hero-backdrop-content">
-                    <div class="row align-items-center justify-content-center hero-center-body">
-                        <div class="col-12 col-xl-11 mx-auto text-center">
-                            <!-- Clean High-Impact Headline without Inline Image -->
+                    <div class="row align-items-center justify-content-between hero-center-body g-4 g-xl-5">
+                        <!-- Left Column: Headline, Copy & Actions -->
+                        <div class="col-12 col-lg-7 col-xl-7 text-center text-lg-start">
+                            <!-- Eyebrow Pill Badge -->
+                            <div class="mb-3 d-inline-block">
+                                <span class="badge rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 border bg-white text-dark shadow-sm">
+                                    <span class="status-pulse-dot"></span>
+                                    <span class="fw-bold tracking-tight text-uppercase small" style="font-size: 0.74rem; letter-spacing: 0.08em; color: var(--ink);">CAMPUS HIRE 3D INTERACTIVE PORTAL</span>
+                                </span>
+                            </div>
+
+                            <!-- High-Impact Headline -->
                             <h1 class="hero-headline mb-3">
                                 Empowering Students,<br class="d-none d-sm-block">
                                 Connecting Trusted Employers
                             </h1>
 
                             <!-- Subtitle -->
-                            <p class="lead text-muted-custom col-12 col-lg-10 col-xl-9 mx-auto mb-4">
+                            <p class="lead text-muted-custom mb-4 mx-auto mx-lg-0" style="max-width: 620px;">
                                 Discover on-campus student assistantships in university offices alongside accredited
                                 part-time jobs, academic internships (OJT), and project roles from verified partner
                                 employers, scheduled flexibly around your classes.
                             </p>
 
                             <!-- CTAs -->
-                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+                            <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 mb-4">
                                 <a href="student/jobs.php" class="btn-accent-pill">
                                     <i class="bi bi-search"></i> EXPLORE VACANCIES
                                 </a>
                                 <a href="employer/create-job.php" class="btn-outline-pill">
-                                    FOR EMPLOYERS & OFFICES <span class="btn-circle-arrow-accent"><i
+                                    FOR EMPLOYERS &amp; OFFICES <span class="btn-circle-arrow-accent"><i
                                             class="bi bi-arrow-up-right"></i></span>
                                 </a>
+                            </div>
+
+                            <!-- Quick Trust Points -->
+                            <div class="hero-quick-stats d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-2 gap-sm-3 pt-2">
+                                <div class="quick-stat-item d-flex align-items-center gap-2">
+                                    <i class="bi bi-patch-check-fill text-accent"></i>
+                                    <span class="small fw-semibold text-ink">Verified Campus Offices</span>
+                                </div>
+                                <div class="quick-stat-item d-flex align-items-center gap-2">
+                                    <i class="bi bi-calendar-range text-accent"></i>
+                                    <span class="small fw-semibold text-ink">Class-Friendly Hours</span>
+                                </div>
+                                <div class="quick-stat-item d-flex align-items-center gap-2">
+                                    <i class="bi bi-shield-check text-accent"></i>
+                                    <span class="small fw-semibold text-ink">Official University System</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Interactive 3D Robot Companion -->
+                        <div class="col-12 col-lg-5 col-xl-5">
+                            <div class="hero-3d-stage-wrapper">
+                                <!-- Interactive Floating Status Pill -->
+                                <div class="hero-3d-floating-pill">
+                                    <span class="live-dot"></span>
+                                    <span class="fw-bold">Campus AI Companion</span>
+                                    <span class="badge-hint">· Looking at cursor</span>
+                                </div>
+
+                                <!-- 3D WebGL Canvas Container -->
+                                <div id="hero-robot-canvas-container" class="hero-robot-canvas-container" data-model-path="<?= $base_url ?>assets/models/cute_robot.glb" title="Click or tap to bounce!">
+                                    <!-- Dynamic Progress & Loading Skeleton -->
+                                    <div id="hero-robot-loader" class="hero-robot-loader">
+                                        <div class="spinner-border text-success" role="status" style="width: 2rem; height: 2rem;">
+                                            <span class="visually-hidden">Loading 3D Model...</span>
+                                        </div>
+                                        <div class="loader-text mt-2 small text-dark fw-bold">Waking Up 3D Assistant...</div>
+                                        <div class="progress mt-2" style="width: 130px; height: 4px; background: #e2e8f0; border-radius: 99px;">
+                                            <div id="hero-robot-progress" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Decorative 3D Feature Tags -->
+                                <div class="hero-3d-tag tag-left">
+                                    <i class="bi bi-cpu-fill text-accent"></i> <span>Smart Matching</span>
+                                </div>
+                                <div class="hero-3d-tag tag-right">
+                                    <i class="bi bi-mortarboard-fill text-accent"></i> <span>Student Ready</span>
+                                </div>
                             </div>
                         </div>
                     </div>
