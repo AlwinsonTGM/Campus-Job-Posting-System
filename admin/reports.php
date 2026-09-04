@@ -17,8 +17,14 @@ $all_users = get_all_users();
 
 $total_jobs = count($all_jobs);
 $total_apps = count($all_apps);
-$total_hired = count(array_filter($all_apps, fn($a) => $a['status'] === 'accepted'));
-$total_interviews = count(array_filter($all_apps, fn($a) => $a['status'] === 'interview_scheduled'));
+$total_hired = count(array_filter($all_apps, function($a) {
+    $st = strtolower($a['status'] ?? '');
+    return in_array($st, ['accepted', 'accepted / hired', 'hired'], true);
+}));
+$total_interviews = count(array_filter($all_apps, function($a) {
+    $st = strtolower($a['status'] ?? '');
+    return in_array($st, ['interview_scheduled', 'interview scheduled', 'interview'], true);
+}));
 
 // Department aggregations
 $departments = [
@@ -44,7 +50,8 @@ foreach ($all_apps as $a) {
         $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4];
     }
     $departments[$dept_name]['apps']++;
-    if (($a['status'] ?? '') === 'accepted') {
+    $st = strtolower($a['status'] ?? '');
+    if (in_array($st, ['accepted', 'accepted / hired', 'hired'], true)) {
         $departments[$dept_name]['hired']++;
     }
 }
@@ -190,41 +197,57 @@ require_once __DIR__ . '/../includes/header.php';
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($departments as $dept_name => $stats): 
-                                    $ratio = $stats['apps'] > 0 ? round(($stats['hired'] / $stats['apps']) * 100) : 0;
-                                    $quota = $stats['quota'] ?? 6;
-                                    $filled = $stats['hired'];
-                                    $quota_pct = round(($filled / max(1, $quota)) * 100);
-                                ?>
+                                <?php if (empty($departments)): ?>
                                     <tr>
-                                        <td class="ps-4" data-label="Department">
-                                            <strong class="text-ink"><?= htmlspecialchars($dept_name) ?></strong>
-                                        </td>
-                                        <td data-label="Active Postings">
-                                            <span class="chip"><?= $stats['jobs'] ?> Openings</span>
-                                        </td>
-                                        <td data-label="Total Applicants">
-                                            <span class="fw-semibold text-ink"><?= $stats['apps'] ?> candidates</span>
-                                        </td>
-                                        <td data-label="Hiring Quota">
-                                            <span class="text-muted-custom"><?= $quota ?> slots</span>
-                                        </td>
-                                        <td data-label="Filled Positions">
-                                            <span class="badge-status--accepted"><?= $filled ?> / <?= $quota ?></span>
-                                        </td>
-                                        <td data-label="Placement Ratio">
-                                            <div class="d-flex align-items-center gap-2" style="min-width: 120px;">
-                                                <div class="progress-paper flex-grow-1">
-                                                    <div class="progress-paper-bar" style="width: <?= min(100, $quota_pct) ?>%;"></div>
-                                                </div>
-                                                <span class="small text-muted-custom"><?= $quota_pct ?>%</span>
-                                            </div>
-                                        </td>
-                                        <td class="text-end pe-4" data-label="Compliance">
-                                            <span class="badge-status--accepted">100% Compliant</span>
+                                        <td colspan="7" class="text-center py-4 text-muted-custom small">
+                                            <i class="bi bi-inbox me-1"></i> No departmental quota records available for this reporting period.
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php else: ?>
+                                    <?php foreach ($departments as $dept_name => $stats): 
+                                        $ratio = $stats['apps'] > 0 ? round(($stats['hired'] / $stats['apps']) * 100) : 0;
+                                        $quota = $stats['quota'] ?? 6;
+                                        $filled = $stats['hired'];
+                                        $quota_pct = round(($filled / max(1, $quota)) * 100);
+                                    ?>
+                                        <tr>
+                                            <td class="ps-4" data-label="Department">
+                                                <strong class="text-ink"><?= htmlspecialchars($dept_name) ?></strong>
+                                            </td>
+                                            <td data-label="Active Postings">
+                                                <span class="chip"><?= $stats['jobs'] ?> Openings</span>
+                                            </td>
+                                            <td data-label="Total Applicants">
+                                                <span class="fw-semibold text-ink"><?= $stats['apps'] ?> candidates</span>
+                                            </td>
+                                            <td data-label="Hiring Quota">
+                                                <span class="text-muted-custom"><?= $quota ?> slots</span>
+                                            </td>
+                                            <td data-label="Filled Positions">
+                                                <span class="<?= $filled >= $quota ? 'badge-status--accepted' : ($filled > 0 ? 'badge-status--pending' : 'chip') ?>"><?= $filled ?> / <?= $quota ?></span>
+                                            </td>
+                                            <td data-label="Placement Ratio">
+                                                <div class="d-flex align-items-center gap-2" style="min-width: 120px;">
+                                                    <div class="progress-paper flex-grow-1">
+                                                        <div class="progress-paper-bar" style="width: <?= min(100, $quota_pct) ?>%;"></div>
+                                                    </div>
+                                                    <span class="small text-muted-custom"><?= $quota_pct ?>%</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-end pe-4" data-label="Compliance">
+                                                <?php if ($filled > $quota): ?>
+                                                    <span class="badge-status--declined"><i class="bi bi-exclamation-triangle me-1"></i>Quota Exceeded</span>
+                                                <?php elseif ($filled === $quota): ?>
+                                                    <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>100% Filled</span>
+                                                <?php elseif ($filled > 0): ?>
+                                                    <span class="badge-status--pending"><i class="bi bi-clock-history me-1"></i>In Progress</span>
+                                                <?php else: ?>
+                                                    <span class="chip" style="font-size: 11px;"><i class="bi bi-dash-circle me-1"></i>Open Quota</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

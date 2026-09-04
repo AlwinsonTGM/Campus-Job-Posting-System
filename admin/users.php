@@ -32,21 +32,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'approve_user' || $action === 'approve_student' || $action === 'approve_employer') {
         $approve_id = (int)($_POST['id'] ?? 0);
+        $target_user = get_user_by_id($approve_id);
+        if ($target_user && ($target_user['role'] ?? '') === 'admin') {
+            set_flash('danger', 'Unauthorized operation: Administrator accounts cannot be modified through user verification.');
+            header('Location: users.php');
+            exit;
+        }
         if (update_user_verification($approve_id, 'verified')) {
-            $u = get_user_by_id($approve_id);
-            $u_name = $u['name'] ?? 'Account';
-            $role_label = ucfirst($u['role'] ?? 'User');
+            $u_name = $target_user['name'] ?? 'Account';
+            $role_label = ucfirst($target_user['role'] ?? 'User');
             set_flash('success', "{$role_label} '{$u_name}' has been officially approved & verified!");
             header('Location: users.php');
             exit;
         }
     } elseif ($action === 'reject_user' || $action === 'reject_student' || $action === 'reject_employer') {
         $reject_id = (int)($_POST['id'] ?? 0);
+        $target_user = get_user_by_id($reject_id);
+        if ($target_user && ($target_user['role'] ?? '') === 'admin') {
+            set_flash('danger', 'Unauthorized operation: Administrator accounts cannot be modified through user verification.');
+            header('Location: users.php');
+            exit;
+        }
         $notes = trim($_POST['notes'] ?? 'Submitted credentials did not match or require re-submission.');
         if (update_user_verification($reject_id, 'rejected', $notes)) {
-            $u = get_user_by_id($reject_id);
-            $u_name = $u['name'] ?? 'Account';
-            $role_label = ucfirst($u['role'] ?? 'User');
+            $u_name = $target_user['name'] ?? 'Account';
+            $role_label = ucfirst($target_user['role'] ?? 'User');
             set_flash('warning', "{$role_label} '{$u_name}' registration has been marked as rejected / revision requested.");
             header('Location: users.php');
             exit;
@@ -939,4 +949,18 @@ function copyCodeText(elementId, btnElement) {
         }, 1500);
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[action="users.php"][method="POST"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                setTimeout(() => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Processing...';
+                }, 10);
+            }
+        });
+    });
+});
 </script>

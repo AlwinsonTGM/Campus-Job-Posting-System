@@ -677,12 +677,12 @@ function register_user($data, $permit_file = null, $proof_file = null) {
         $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
 
         $stmt->execute([
-            ':name'                 => htmlspecialchars($data['name'] ?? ''),
+            ':name'                 => trim($data['name'] ?? ''),
             ':email'                => $email,
             ':password'             => $hashed_pass,
             ':role'                 => $role,
             ':employer_type'        => $employer_type,
-            ':organization_name'    => htmlspecialchars($org_name),
+            ':organization_name'    => trim($org_name),
             ':student_id'           => $data['student_id'] ?? ('2026-' . rand(10000, 99999)),
             ':department'           => $data['department'] ?? 'General Academics',
             ':course'               => $data['course'] ?? '',
@@ -800,12 +800,12 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
         ];
 
         $requested_profile = [
-            'name'       => htmlspecialchars($requested_data['name'] ?? $current_user['name']),
-            'department' => htmlspecialchars($requested_data['department'] ?? $current_user['department']),
-            'course'     => htmlspecialchars($requested_data['course'] ?? $current_user['course']),
-            'year_level' => htmlspecialchars($requested_data['year_level'] ?? $current_user['year_level']),
-            'sex'        => htmlspecialchars($requested_data['sex'] ?? ($current_user['sex'] ?? 'Male')),
-            'birthdate'  => htmlspecialchars($req_birthdate),
+            'name'       => trim($requested_data['name'] ?? $current_user['name']),
+            'department' => trim($requested_data['department'] ?? $current_user['department']),
+            'course'     => trim($requested_data['course'] ?? $current_user['course']),
+            'year_level' => trim($requested_data['year_level'] ?? $current_user['year_level']),
+            'sex'        => trim($requested_data['sex'] ?? ($current_user['sex'] ?? 'Male')),
+            'birthdate'  => trim($req_birthdate),
             'age'        => $req_age,
         ];
 
@@ -828,7 +828,7 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
             ':current_profile'   => json_encode($current_profile),
             ':requested_profile' => json_encode($requested_profile),
             ':proof_file'        => $proof_file,
-            ':reason'            => htmlspecialchars($reason)
+            ':reason'            => trim($reason)
         ]);
 
         $new_id = (int)$pdo->lastInsertId();
@@ -841,7 +841,7 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
             'current_profile'   => $current_profile,
             'requested_profile' => $requested_profile,
             'proof_file'        => $proof_file,
-            'reason'            => htmlspecialchars($reason),
+            'reason'            => trim($reason),
             'status'            => 'pending',
             'admin_notes'       => '',
             'dismissed_by_user' => false,
@@ -910,7 +910,7 @@ function approve_profile_request($request_id, $admin_notes = '') {
             WHERE `id` = :id AND `status` = 'pending'
         ");
         $stmt_req_upd->execute([
-            ':notes' => htmlspecialchars($admin_notes),
+            ':notes' => trim($admin_notes),
             ':id'    => (int)$request_id
         ]);
 
@@ -940,7 +940,7 @@ function reject_profile_request($request_id, $admin_notes = '') {
             WHERE `id` = :id AND `status` = 'pending'
         ");
         $stmt->execute([
-            ':notes' => htmlspecialchars($admin_notes),
+            ':notes' => trim($admin_notes),
             ':id'    => (int)$request_id
         ]);
         return $stmt->rowCount() > 0;
@@ -1589,7 +1589,7 @@ function get_categories() {
 function create_category($data) {
     try {
         $pdo = get_db_connection();
-        $name = htmlspecialchars($data['name'] ?? '');
+        $name = trim($data['name'] ?? '');
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name), '-'));
 
         $stmt = $pdo->prepare("
@@ -1601,7 +1601,7 @@ function create_category($data) {
             ':name'         => $name,
             ':slug'         => $slug,
             ':icon'         => $data['icon'] ?? 'bi-briefcase',
-            ':description'  => htmlspecialchars($data['description'] ?? ''),
+            ':description'  => trim($data['description'] ?? ''),
             ':theme'        => $data['theme'] ?? 'kld-green',
             ':badge_tag'    => $data['badge_tag'] ?? null,
             ':badge_icon'   => $data['badge_icon'] ?? null,

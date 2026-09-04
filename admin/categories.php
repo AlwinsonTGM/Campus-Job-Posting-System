@@ -89,35 +89,48 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Category Cards Grid -->
                 <div class="row g-4 mb-5">
-                    <?php foreach ($categories as $cat): 
-                        $cat_jobs = array_filter($all_jobs, fn($j) => ($j['category'] ?? '') === $cat['name']);
-                        $count = count($cat_jobs);
-                    ?>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="card-paper p-4 h-100 d-flex flex-column reveal-fade-rise">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="icon-circle icon-circle-success">
-                                        <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?>"></i>
-                                    </div>
-                                    <span class="chip">
-                                        <?= $count ?> <?= $count === 1 ? 'Vacancy' : 'Vacancies' ?>
-                                    </span>
-                                </div>
-
-                                <h3 class="card-paper-title fs-5 mb-2"><?= htmlspecialchars($cat['name']) ?></h3>
-                                <p class="text-muted-custom small mb-4 flex-grow-1">
-                                    <?= htmlspecialchars($cat['description'] ?? 'Campus assistantships and internships under this discipline.') ?>
-                                </p>
-
-                                <div class="mt-auto pt-3 border-top border-line d-flex justify-content-between align-items-center">
-                                    <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">Active Category</span>
-                                    <a href="../student/jobs.php?category=<?= urlencode($cat['name']) ?>" class="btn-pill-outline btn-pill-sm">
-                                        View Openings &rarr;
-                                    </a>
-                                </div>
+                    <?php if (empty($categories)): ?>
+                        <div class="col-12">
+                            <div class="card-paper p-5 text-center">
+                                <i class="bi bi-tags text-muted-custom fs-1 d-block mb-3"></i>
+                                <h4 class="fw-bold text-ink mb-1">No Categories Defined</h4>
+                                <p class="text-muted-custom small mb-4">No job family categories have been configured in the taxonomy yet.</p>
+                                <button type="button" class="btn-pill btn-pill-sm" data-bs-toggle="modal" data-bs-target="#newCatModal">
+                                    <i class="bi bi-plus-circle-fill"></i> Add First Category
+                                </button>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($categories as $cat): 
+                            $cat_jobs = array_filter($all_jobs, fn($j) => ($j['category'] ?? '') === $cat['name']);
+                            $count = count($cat_jobs);
+                        ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="card-paper p-4 h-100 d-flex flex-column reveal-fade-rise">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="icon-circle icon-circle-success">
+                                            <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?>"></i>
+                                        </div>
+                                        <span class="chip">
+                                            <?= $count ?> <?= $count === 1 ? 'Vacancy' : 'Vacancies' ?>
+                                        </span>
+                                    </div>
+
+                                    <h3 class="card-paper-title fs-5 mb-2"><?= htmlspecialchars($cat['name']) ?></h3>
+                                    <p class="text-muted-custom small mb-4 flex-grow-1">
+                                        <?= htmlspecialchars($cat['description'] ?? 'Campus assistantships and internships under this discipline.') ?>
+                                    </p>
+
+                                    <div class="mt-auto pt-3 border-top border-line d-flex justify-content-between align-items-center">
+                                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">Active Category</span>
+                                        <a href="../student/jobs.php?category=<?= urlencode($cat['name']) ?>" class="btn-pill-outline btn-pill-sm">
+                                            View Openings &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -140,7 +153,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <form action="categories.php" method="POST" class="form-paper">
+                    <form action="categories.php" method="POST" class="form-paper" id="newCatForm">
                         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                         <div class="modal-body p-4">
                             <div class="mb-3">
@@ -172,7 +185,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <div class="modal-footer bg-cream border-top border-line py-3 px-4">
                             <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn-pill btn-pill-sm">Create Category</button>
+                            <button type="submit" id="btn-create-cat" class="btn-pill btn-pill-sm">Create Category</button>
                         </div>
                     </form>
                 </div>
@@ -182,3 +195,20 @@ require_once __DIR__ . '/../includes/header.php';
         <?php require_once __DIR__ . '/../includes/footer.php'; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('newCatForm');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const btn = document.getElementById('btn-create-cat');
+            if (btn) {
+                setTimeout(() => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
+                }, 10);
+            }
+        });
+    }
+});
+</script>
