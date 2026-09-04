@@ -115,11 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$default_availability = (!empty($user['availability']) && is_array($user['availability'])) ? $user['availability'] : [
-    'Mon - Morning (8AM–12NN)',
-    'Wed - Morning (8AM–12NN)',
-    'Fri - Afternoon (1PM–5PM)'
-];
+$default_availability = (isset($_POST['availability']) && is_array($_POST['availability']))
+    ? $_POST['availability']
+    : ((!empty($user['availability']) && is_array($user['availability'])) ? $user['availability'] : [
+        'Mon - Morning (8AM–12NN)',
+        'Wed - Morning (8AM–12NN)',
+        'Fri - Afternoon (1PM–5PM)'
+    ]);
 
 $page_title = 'Apply for ' . $job['title'];
 require_once __DIR__ . '/../includes/header.php';
@@ -239,7 +241,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     </h3>
                                     <div>
                                         <label class="form-label" for="cover_letter">Statement of Interest</label>
-                                        <textarea name="cover_letter" id="cover_letter" rows="4" class="form-control" placeholder="Briefly state your motivation, relevant coursework, and availability for this assistantship role..." required>I am writing to express my strong interest in the <?= htmlspecialchars($job['title']) ?> position in <?= htmlspecialchars($job['department']) ?>. As a student in <?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?>, I have the requisite skills, organizational diligence, and vacant shift hours to fulfill the assigned duties reliably.</textarea>
+                                        <textarea name="cover_letter" id="cover_letter" rows="4" class="form-control" placeholder="Briefly state your motivation, relevant coursework, and availability for this assistantship role..." required><?= isset($_POST['cover_letter']) ? htmlspecialchars($_POST['cover_letter']) : ("I am writing to express my strong interest in the " . htmlspecialchars($job['title']) . " position in " . htmlspecialchars($job['department']) . ". As a student in " . htmlspecialchars($user['course'] ?? 'BS Information Systems') . ", I have the requisite skills, organizational diligence, and vacant shift hours to fulfill the assigned duties reliably.") ?></textarea>
                                     </div>
                                 </div>
 
@@ -314,6 +316,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (matrixContainer) {
                     matrixContainer.style.borderColor = '';
+                }
+
+                // Double submit prevention
+                const submitBtn = document.getElementById('submitAppBtn');
+                if (submitBtn) {
+                    setTimeout(() => {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Submitting Application...';
+                    }, 10);
                 }
             }
         });

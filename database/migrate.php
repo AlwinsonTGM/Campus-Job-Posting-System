@@ -7,7 +7,7 @@
 
 require_once dirname(__DIR__) . '/includes/db.php';
 
-function execute_migration_and_seed($verbose = false, $source_dir = null, $run_ddl = true) {
+function execute_migration_and_seed($verbose = false, $source_dir = null, $run_ddl = true, $truncate = false) {
     $is_cli = (php_sapi_name() === 'cli');
     $log_fn = function($message, $type = 'info') use ($verbose, $is_cli) {
         if (!$verbose) return;
@@ -47,6 +47,17 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $sql = file_get_contents($schema_file);
             $pdo->exec($sql);
             $log_fn("Tables created/verified successfully.", "success");
+        }
+
+        // Truncate tables if requested for a clean datastore reset
+        if ($truncate) {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+            $tables = ['devblogs', 'updates', 'profile_requests', 'applications', 'jobs', 'categories', 'users'];
+            foreach ($tables as $t) {
+                $pdo->exec("TRUNCATE TABLE `$t`;");
+            }
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+            $log_fn("All tables truncated.", "info");
         }
 
         $data_dir = $source_dir ?: (dirname(__DIR__) . '/data');

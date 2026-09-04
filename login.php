@@ -6,6 +6,27 @@
 require_once __DIR__ . '/includes/data-helper.php';
 require_once __DIR__ . '/includes/auth-check.php';
 
+// Handle Datastore Reset from URL params (used by E2E test suites & demo fixtures)
+if (isset($_GET['reset'])) {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        session_destroy();
+        session_start();
+    }
+    require_once __DIR__ . '/database/migrate.php';
+    execute_migration_and_seed(false, null, false, true);
+    set_flash('success', 'Datastore reset to pristine baseline.');
+    header('Location: login.php');
+    exit;
+}
+
 // Handle Quick Demo Login from URL params
 if (isset($_GET['demo'])) {
     $role = $_GET['demo'];

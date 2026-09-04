@@ -351,6 +351,13 @@ if (!function_exists('render_availability_matrix')) {
      * Renders Mon–Sat x Timeslots Availability Checkbox Matrix
      */
     function render_availability_matrix($selected = [], $name = 'availability[]', $readonly = false) {
+        if (is_string($selected)) {
+            $decoded = json_decode($selected, true);
+            $selected = is_array($decoded) ? $decoded : [];
+        } elseif (!is_array($selected)) {
+            $selected = [];
+        }
+
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         $slots = ['Morning (8AM–12NN)', 'Afternoon (1PM–5PM)', 'Evening (5PM–8PM)'];
         ?>

@@ -1389,7 +1389,7 @@ function create_application($data) {
             ':sex'             => $user['sex'] ?? 'Male',
             ':age'             => $user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20),
             ':phone'           => $data['phone'] ?? ($user['phone'] ?? '+63 917 123 4567'),
-            ':cover_letter'    => htmlspecialchars($data['cover_letter'] ?? ''),
+            ':cover_letter'    => $data['cover_letter'] ?? '',
             ':availability'    => json_encode($availability),
             ':resume_file'     => $resume_file,
             ':study_load_file' => $study_load
