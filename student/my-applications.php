@@ -98,6 +98,9 @@ require_once __DIR__ . '/../includes/header.php';
                     <a href="my-applications.php?status=accepted" class="chip chip-selectable <?= ($filter_status === 'accepted') ? 'active' : '' ?>">
                         <i class="bi bi-check-circle-fill text-accent"></i> Accepted / Hired
                     </a>
+                    <a href="my-applications.php?status=declined" class="chip chip-selectable <?= ($filter_status === 'declined') ? 'active' : '' ?>">
+                        <i class="bi bi-x-circle text-danger"></i> Declined / Filled
+                    </a>
                 </div>
 
                 <!-- Applications List -->
@@ -174,15 +177,38 @@ require_once __DIR__ . '/../includes/header.php';
                                         </p>
                                     </div>
                                 <?php endif; ?>
+                                
+                                <?php if (in_array(strtolower($app['status']), ['declined', 'rejected', 'declined / position filled'])): ?>
+                                    <div class="card-paper p-3 mb-3 border border-danger-subtle bg-danger-subtle bg-opacity-10">
+                                        <div class="d-flex align-items-center gap-2 fw-bold text-danger mb-1">
+                                            <i class="bi bi-info-circle-fill fs-5"></i>
+                                            <span>Requisition Update: Position Filled / Application Closed</span>
+                                        </div>
+                                        <p class="small text-muted-custom mb-0">
+                                            Thank you for applying. This vacancy has been filled or closed for the current academic term. We encourage you to browse other open assistantships on campus.
+                                            <?php if (!empty($app['supervisor_notes'])): ?>
+                                                <br><strong>Department Feedback:</strong> <?= htmlspecialchars($app['supervisor_notes']) ?>
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
 
                                 <!-- Availability & Attached Documents -->
                                 <div class="row g-3 small text-muted-custom mb-3 pt-2">
                                     <div class="col-md-7">
                                         <span class="fw-bold text-ink d-block mb-1">Indicated Free Class Shift Availability:</span>
                                         <div class="d-flex flex-wrap gap-1">
-                                            <?php foreach (($app['availability'] ?? []) as $av): ?>
-                                                <span class="chip" style="font-size: 11px;"><?= htmlspecialchars($av) ?></span>
-                                            <?php endforeach; ?>
+                                            <?php 
+                                            $app_avail = is_array($app['availability'] ?? null) 
+                                                ? $app['availability'] 
+                                                : (is_string($app['availability'] ?? null) ? (json_decode($app['availability'], true) ?: []) : []);
+                                            if (!empty($app_avail)):
+                                                foreach ($app_avail as $av): ?>
+                                                    <span class="chip" style="font-size: 11px;"><?= htmlspecialchars($av) ?></span>
+                                                <?php endforeach; 
+                                            else: ?>
+                                                <span class="text-muted-custom fst-italic" style="font-size: 11px;">Flexible schedule available</span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-md-5">
@@ -192,9 +218,14 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
                                                 <span class="text-ink small text-truncate"><?= htmlspecialchars($app['resume_file'] ?? 'Juan_Dela_Cruz_Resume.pdf') ?></span>
                                             </div>
-                                            <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px; white-space: nowrap;">
-                                                <i class="bi bi-box-arrow-up-right me-1"></i> View PDF
-                                            </a>
+                                            <div class="d-flex gap-1 flex-shrink-0">
+                                                <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px; white-space: nowrap;" title="View uploaded PDF">
+                                                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                                                </a>
+                                                <a href="../view-resume.php?app_id=<?= $app['id'] ?>&render_html=1" target="_blank" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px; white-space: nowrap;" title="View official printable digital curriculum vitae">
+                                                    <i class="bi bi-file-text me-1"></i> CV
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

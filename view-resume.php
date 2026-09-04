@@ -107,6 +107,12 @@ $availability = $app['availability'] ?? ($target_student['availability'] ?? [
     'Wednesday - Morning (8AM–12NN)',
     'Friday - Afternoon (1PM–5PM)'
 ]);
+if (is_string($availability)) {
+    $decoded = json_decode($availability, true);
+    $availability = is_array($decoded) ? $decoded : [];
+} elseif (!is_array($availability)) {
+    $availability = [];
+}
 
 $candidate_paths = [
     __DIR__ . '/uploads/resumes/' . basename($resume_filename)
