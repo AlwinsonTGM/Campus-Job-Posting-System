@@ -43,8 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
         ];
     }
 
-    update_application_status($app_id, $action_type, $notes, $interview_data);
-    set_flash('success', 'Applicant status has been updated successfully!');
+    $res = update_application_status($app_id, $action_type, $notes, $interview_data);
+    if ($res) {
+        set_flash('success', 'Applicant status has been updated successfully!');
+    } else {
+        set_flash('danger', 'Unable to update applicant status. Please ensure the interview date is today or in the future.');
+    }
     header('Location: applicants.php' . ($job_filter ? "?job_id={$job_filter}" : ''));
     exit;
 }

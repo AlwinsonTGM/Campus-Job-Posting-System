@@ -279,7 +279,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <textarea name="supervisor_notes" id="supervisor_notes" rows="3" class="form-control" placeholder="Add specific feedback, instructions, or internal notes..."><?= htmlspecialchars($target_app['supervisor_notes'] ?? '') ?></textarea>
                                 </div>
 
-                                <button type="submit" class="btn-pill w-100 mb-2">
+                                <button type="submit" id="btn-save-decision" class="btn-pill w-100 mb-2">
                                     <i class="bi bi-check2-circle"></i> Save Evaluation Decision
                                 </button>
                                 <a href="applicants.php" class="btn-pill-outline btn-pill-sm w-100 text-center">
@@ -354,6 +354,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const select = document.getElementById('eval-status');
     if (select) {
         toggleInterviewFields(select.value);
+    }
+
+    const decisionForm = document.querySelector('form.form-paper');
+    if (decisionForm) {
+        decisionForm.addEventListener('submit', function() {
+            const btn = document.getElementById('btn-save-decision');
+            if (btn) {
+                setTimeout(() => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving Decision...';
+                }, 10);
+            }
+        });
     }
 });
 </script>

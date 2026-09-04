@@ -1445,7 +1445,7 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
             }
             $interview_date = $raw_date ?: null;
             $interview_time = $interview_data['time'] ?? null;
-            $interview_venue = htmlspecialchars($interview_data['venue'] ?? '');
+            $interview_venue = trim($interview_data['venue'] ?? '');
         }
 
         $pdo->beginTransaction();
@@ -1467,7 +1467,7 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
             ':status'          => $status,
             ':status_label'    => $status_label,
             ':status_badge'    => $status_badge,
-            ':notes'           => htmlspecialchars($notes),
+            ':notes'           => $notes,
             ':interview_date'  => $interview_date,
             ':interview_time'  => $interview_time,
             ':interview_venue' => $interview_venue,
