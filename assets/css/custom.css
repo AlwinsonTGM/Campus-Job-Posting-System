@@ -5932,19 +5932,15 @@ i.bi,
 .hero-robot-canvas-container {
   position: relative;
   width: 100%;
-  height: 480px;
-  cursor: grab;
+  height: 420px;
+  cursor: pointer;
   user-select: none;
   touch-action: none;
-  background: radial-gradient(circle at 50% 55%, rgba(46, 204, 94, 0.16) 0%, rgba(46, 204, 94, 0.04) 50%, transparent 72%);
+  background: radial-gradient(circle at 50% 50%, rgba(46, 204, 94, 0.16) 0%, rgba(46, 204, 94, 0.04) 50%, transparent 72%);
   border-radius: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.hero-robot-canvas-container:active {
-  cursor: grabbing;
 }
 
 .hero-robot-canvas-container canvas {
@@ -5976,72 +5972,244 @@ i.bi,
   border: 1px solid var(--line);
 }
 
-/* Interactive Floating Status Pill */
-.hero-3d-floating-pill {
-  position: absolute;
-  top: 14px;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* ==========================================================================
+   Hero 3D Robot Interactive Speech Bubble & Dialogue Controller
+   ========================================================================== */
+
+.hero-robot-speech-bubble {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 0.25rem;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.speech-bubble-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-  padding: 0.4rem 0.95rem;
-  border-radius: 9999px;
-  font-size: 0.78rem;
-  color: var(--ink);
-  pointer-events: none;
-  animation: floatSubtle 4s ease-in-out infinite alternate;
+  border-radius: 18px;
+  padding: 0.95rem 1.15rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.hero-3d-floating-pill .live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(46, 204, 94, 0.25);
-  animation: pulseGreen 2s infinite;
+/* Header with Bot identity and quick mode chips */
+.speech-bubble-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.hero-3d-floating-pill .badge-hint {
-  font-size: 0.72rem;
-  color: var(--muted);
-}
-
-/* Floating Technology Badge Accents */
-.hero-3d-tag {
-  position: absolute;
-  z-index: 4;
+.speech-bot-identity {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-  padding: 0.5rem 0.85rem;
-  border-radius: 12px;
+}
+
+.speech-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+  animation: pulseGreen 2s infinite;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.speech-bot-identity.mode-boost .speech-live-dot {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35);
+}
+
+.speech-bot-identity.mode-grill .speech-live-dot {
+  background-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
+}
+
+.speech-bot-name {
   font-size: 0.78rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   color: var(--ink);
+}
+
+.speech-mode-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+}
+
+.speech-mode-badge.badge-talk {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid rgba(21, 128, 61, 0.15);
+}
+
+.speech-mode-badge.badge-boost {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+.speech-mode-badge.badge-grill {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid rgba(185, 28, 28, 0.2);
+}
+
+/* Mode chips */
+.speech-mode-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.mode-chip {
+  appearance: none;
+  background: #f1f5f9;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.mode-chip:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.mode-chip.active {
+  background: #15803d;
+  border-color: #15803d;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(21, 128, 61, 0.28);
+}
+
+.mode-chip.chip-boost.active {
+  background: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.28);
+}
+
+.mode-chip.chip-grill.active {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
+}
+
+/* Speech Bubble Body */
+.speech-bubble-body {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.speech-bubble-text {
+  font-size: 0.88rem;
+  line-height: 1.48;
+  color: var(--ink);
+  margin-bottom: 0;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+}
+
+.speech-bubble-text strong {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.speech-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: #15803d;
+  margin-left: 2px;
+  vertical-align: -2px;
+  animation: cursorBlink 0.8s infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Speech Bubble Footer */
+.speech-bubble-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.07);
+}
+
+.speech-hint-label {
+  font-size: 0.70rem;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.speech-next-btn {
+  appearance: none;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #334155;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.speech-next-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #0f172a;
+  transform: translateX(2px);
+}
+
+/* Downward speech pointer triangle pointing directly at robot head */
+.speech-bubble-tail {
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   pointer-events: none;
-  transition: transform 0.3s ease;
-}
-
-.hero-3d-tag.tag-left {
-  left: 2%;
-  bottom: 12%;
-  animation: floatPillLeft 5s ease-in-out infinite alternate;
-}
-
-.hero-3d-tag.tag-right {
-  right: 2%;
-  top: 22%;
-  animation: floatPillRight 6s ease-in-out infinite alternate;
+  z-index: 2;
 }
 
 /* Quick Trust Stats under CTAs */
@@ -6079,44 +6247,31 @@ i.bi,
   }
 }
 
-@keyframes floatSubtle {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-5px); }
-}
-
-@keyframes floatPillLeft {
-  0% { transform: translateY(0) rotate(-1deg); }
-  100% { transform: translateY(-7px) rotate(1deg); }
-}
-
-@keyframes floatPillRight {
-  0% { transform: translateY(0) rotate(1deg); }
-  100% { transform: translateY(-9px) rotate(-1deg); }
-}
-
-/* Responsive Breakpoints for 3D Stage */
+/* Responsive Breakpoints for 3D Stage & Speech Bubble */
 @media (max-width: 1199.98px) {
   .hero-robot-canvas-container {
-    height: 440px;
-  }
-  .hero-3d-tag.tag-left {
-    bottom: 6%;
-    left: 0;
-  }
-  .hero-3d-tag.tag-right {
-    top: 15%;
-    right: 0;
+    height: 400px;
   }
 }
 
 @media (max-width: 991.98px) {
   .hero-3d-stage-wrapper {
-    max-width: 420px;
+    max-width: 440px;
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
   }
   .hero-robot-canvas-container {
-    height: 340px;
+    height: 350px;
+  }
+  .hero-robot-speech-bubble {
+    max-width: 440px;
+    margin-bottom: 0.2rem;
+  }
+  .speech-bubble-card {
+    padding: 0.85rem 1rem;
+  }
+  .speech-bubble-text {
+    font-size: 0.84rem;
   }
   .quick-stat-item {
     font-size: 0.78rem;
@@ -6131,18 +6286,36 @@ i.bi,
     margin-bottom: 0.5rem;
   }
   .hero-robot-canvas-container {
-    height: 300px;
+    height: 320px;
   }
-  .hero-3d-tag {
-    display: none; /* Keep clean on small mobile devices */
+  .hero-robot-speech-bubble {
+    max-width: 100%;
+    margin-bottom: 0.15rem;
   }
-  .hero-3d-floating-pill {
-    top: 6px;
-    padding: 0.3rem 0.75rem;
-    font-size: 0.74rem;
-  }
-  .hero-3d-floating-pill .badge-hint {
+  .speech-mode-badge {
     display: none;
+  }
+  .speech-bubble-header {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+  .speech-mode-chips {
+    width: auto;
+    justify-content: flex-end;
+    gap: 0.2rem;
+  }
+  .mode-chip {
+    font-size: 0.68rem;
+    padding: 0.18rem 0.45rem;
+  }
+  .speech-bubble-card {
+    padding: 0.75rem 0.85rem;
+    border-radius: 14px;
+  }
+  .speech-bubble-text {
+    font-size: 0.80rem;
+    min-height: 46px;
   }
 }
 

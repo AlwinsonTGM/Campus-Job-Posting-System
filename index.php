@@ -56,13 +56,6 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="row align-items-center justify-content-between hero-center-body g-4 g-xl-5">
                         <!-- Left Column: Headline, Copy & Actions -->
                         <div class="col-12 col-lg-7 col-xl-7 text-center text-lg-start">
-                            <!-- Eyebrow Pill Badge -->
-                            <div class="mb-3 d-inline-block">
-                                <span class="badge rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 border bg-white text-dark shadow-sm">
-                                    <span class="status-pulse-dot"></span>
-                                    <span class="fw-bold tracking-tight text-uppercase small" style="font-size: 0.74rem; letter-spacing: 0.08em; color: var(--ink);">CAMPUS HIRE 3D INTERACTIVE PORTAL</span>
-                                </span>
-                            </div>
 
                             <!-- High-Impact Headline -->
                             <h1 class="hero-headline mb-3">
@@ -108,15 +101,51 @@ require_once __DIR__ . '/includes/header.php';
                         <!-- Right Column: Interactive 3D Robot Companion -->
                         <div class="col-12 col-lg-5 col-xl-5">
                             <div class="hero-3d-stage-wrapper">
-                                <!-- Interactive Floating Status Pill -->
-                                <div class="hero-3d-floating-pill">
-                                    <span class="live-dot"></span>
-                                    <span class="fw-bold">Campus AI Companion</span>
-                                    <span class="badge-hint">· Looking at cursor</span>
+                                <!-- Interactive Robot Message / Speech Bubble -->
+                                <div id="hero-robot-speech-bubble" class="hero-robot-speech-bubble" aria-live="polite">
+                                    <div class="speech-bubble-card">
+                                        <!-- Speech Bubble Header with bot identity and mode chips -->
+                                        <div class="speech-bubble-header">
+                                            <div class="speech-bot-identity">
+                                                <span class="speech-live-dot"></span>
+                                                <span class="speech-bot-name">Campus AI</span>
+                                                <span id="speech-mode-badge" class="speech-mode-badge badge-talk">TALK</span>
+                                            </div>
+                                            <div class="speech-mode-chips" role="tablist" aria-label="Bot Modes">
+                                                <button type="button" class="mode-chip active" data-mode="talk" title="Campus tips & advice">
+                                                    <i class="bi bi-chat-dots-fill"></i> Talk
+                                                </button>
+                                                <button type="button" class="mode-chip chip-boost" data-mode="boost" title="Career confidence booster">
+                                                    <i class="bi bi-lightning-charge-fill"></i> /boost
+                                                </button>
+                                                <button type="button" class="mode-chip chip-grill" data-mode="grill" title="Mock interview challenge">
+                                                    <i class="bi bi-fire"></i> /grill-me
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Spoken Text Content -->
+                                        <div class="speech-bubble-body">
+                                            <p id="speech-bubble-text" class="speech-bubble-text"></p>
+                                        </div>
+
+                                        <!-- Speech Bubble Footer with prompt hint & next button -->
+                                        <div class="speech-bubble-footer">
+                                            <span class="speech-hint-label">
+                                                <i class="bi bi-cursor-fill"></i> Click me or tap the buttons!
+                                            </span>
+                                            <button type="button" id="speech-next-btn" class="speech-next-btn" title="Next message">
+                                                <span>Next</span> <i class="bi bi-chevron-right"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Pointer arrow toward robot head -->
+                                        <div class="speech-bubble-tail"></div>
+                                    </div>
                                 </div>
 
                                 <!-- 3D WebGL Canvas Container -->
-                                <div id="hero-robot-canvas-container" class="hero-robot-canvas-container" data-model-path="<?= $base_url ?>assets/models/cute_robot.glb" title="Click or tap to bounce!">
+                                <div id="hero-robot-canvas-container" class="hero-robot-canvas-container" data-model-path="<?= $base_url ?>assets/models/cute_robot.glb" title="Click me to chat and see my animations!">
                                     <!-- Dynamic Progress & Loading Skeleton -->
                                     <div id="hero-robot-loader" class="hero-robot-loader">
                                         <div class="spinner-border text-success" role="status" style="width: 2rem; height: 2rem;">
@@ -127,14 +156,6 @@ require_once __DIR__ . '/includes/header.php';
                                             <div id="hero-robot-progress" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 15%"></div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Decorative 3D Feature Tags -->
-                                <div class="hero-3d-tag tag-left">
-                                    <i class="bi bi-cpu-fill text-accent"></i> <span>Smart Matching</span>
-                                </div>
-                                <div class="hero-3d-tag tag-right">
-                                    <i class="bi bi-mortarboard-fill text-accent"></i> <span>Student Ready</span>
                                 </div>
                             </div>
                         </div>
