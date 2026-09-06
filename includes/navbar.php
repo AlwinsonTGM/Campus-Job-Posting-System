@@ -163,9 +163,9 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
     </div>
 </nav>
 
-<!-- Flash Message Container -->
+<!-- Floating Flash Toast Container -->
 <?php if (isset($_SESSION['flash'])): ?>
-<div class="container-paper mt-3">
+<div class="flash-toast-wrapper" id="flashToastWrapper" role="region" aria-label="Notifications">
     <?php render_flash(); ?>
 </div>
 <?php endif; ?>

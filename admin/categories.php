@@ -188,8 +188,6 @@ require_once __DIR__ . '/../includes/header.php';
         <main class="py-5">
             <div class="container-paper">
 
-                <?php render_flash(); ?>
-
                 <?php if ($error): ?>
                     <div class="alert-paper alert-paper--danger mb-4">
                         <div class="d-flex align-items-center gap-2">

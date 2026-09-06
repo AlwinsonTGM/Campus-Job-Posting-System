@@ -1926,7 +1926,19 @@ section.py-5.py-lg-6 {
   text-align: left;
   word-break: break-word;
   line-height: 1.4;
-  padding: 0.35rem 0.75rem;
+  padding: 0.4rem 0.85rem;
+}
+
+.page-head .badge.bg-success {
+  background-color: #198754 !important;
+  color: #ffffff !important;
+  border: 1px solid #157347 !important;
+  box-shadow: 0 2px 8px rgba(25, 135, 84, 0.25);
+}
+
+.page-head .badge.bg-success i,
+.page-head .badge.bg-success .text-accent {
+  color: #a7f3d0 !important;
 }
 
 @media (max-width: 991.98px) {
@@ -2946,6 +2958,53 @@ section.py-5.py-lg-6 {
 .alert-paper--info {
   border-color: var(--st-review);
   background-color: var(--st-review-bg);
+}
+
+/* 16.12.1 Floating Flash Toast Wrapper (Zero layout reflow/jump) */
+.flash-toast-wrapper {
+  position: fixed;
+  top: 86px;
+  right: 24px;
+  z-index: 1095;
+  max-width: 480px;
+  width: calc(100% - 48px);
+  pointer-events: none;
+  animation: flashToastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.flash-toast-wrapper .alert-paper--floating {
+  pointer-events: auto;
+  box-shadow: 0 14px 38px rgba(22, 22, 22, 0.16), 0 4px 14px rgba(22, 22, 22, 0.08);
+  border-radius: 16px;
+  padding: 0.95rem 1.25rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  margin-bottom: 0 !important;
+}
+
+@keyframes flashToastSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .flash-toast-wrapper {
+    top: 74px;
+    left: 14px;
+    right: 14px;
+    width: auto;
+    max-width: none;
+  }
+  .flash-toast-wrapper .alert-paper--floating {
+    padding: 0.85rem 1rem;
+    font-size: 13.5px;
+  }
 }
 
 /* 16.13 Progress Paper */

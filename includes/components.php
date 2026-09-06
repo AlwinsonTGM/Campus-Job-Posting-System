@@ -8,13 +8,14 @@ if (!function_exists('render_page_head')) {
     /**
      * Renders standardized inner-page header
      */
-    function render_page_head($eyebrow, $title, $lead = '', $actionsHtml = '') {
+    function render_page_head($eyebrow, $title, $lead = '', $actionsHtml = '', $eyebrowClass = '') {
+        $badgeClass = !empty($eyebrowClass) ? $eyebrowClass : 'badge rounded-pill d-inline-flex align-items-center gap-1 bg-success text-white shadow-sm text-wrap text-start lh-sm py-2 px-3 border-0';
         ?>
         <div class="page-head reveal-fade-rise">
             <div class="page-head-content">
                 <?php if (!empty($eyebrow)): ?>
                     <div class="mb-2">
-                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle text-wrap text-start lh-sm py-2 px-3" style="max-width: 100%; white-space: normal; font-size: 12px;">
+                        <span class="<?= htmlspecialchars($badgeClass) ?>" style="max-width: 100%; white-space: normal; font-size: 12px; font-weight: 600; letter-spacing: 0.02em;">
                             <?= $eyebrow ?>
                         </span>
                     </div>
@@ -61,9 +62,9 @@ if (!function_exists('render_flash')) {
             default => 'bi-info-circle-fill text-primary'
         };
         ?>
-        <div class="alert-paper <?= $type_class ?> alert alert-dismissible fade show mb-4" role="alert">
+        <div class="alert-paper <?= $type_class ?> alert-paper--floating alert alert-dismissible alert-auto-dismiss fade show mb-0" role="alert">
             <div class="d-flex align-items-center gap-3">
-                <i class="bi <?= $icon ?> fs-5"></i>
+                <i class="bi <?= $icon ?> fs-5 flex-shrink-0"></i>
                 <div class="fw-semibold small text-ink"><?= htmlspecialchars($message) ?></div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
