@@ -1,0 +1,29 @@
+# ==============================================================================
+# Campus Job Posting System - Apache Security Hardening
+# ==============================================================================
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect sensitive environment and configuration files
+<FilesMatch "^\.env.*|\.git.*|composer\.(json|lock)|package(-lock)?\.json|tsconfig\.json">
+    Require all denied
+</FilesMatch>
+
+# Protect data JSON files from direct browser download (only PHP can access)
+<FilesMatch "\.(json|log|sql|md)$">
+    <If "%{REQUEST_URI} =~ m#^/data/#">
+        Require all denied
+    </If>
+    <If "%{REQUEST_URI} =~ m#^/database/#">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Security HTTP Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

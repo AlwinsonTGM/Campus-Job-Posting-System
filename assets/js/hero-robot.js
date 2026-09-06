@@ -30,37 +30,108 @@
         const bubbleContainer = document.getElementById('hero-robot-speech-bubble');
         const bubbleCard = document.querySelector('.speech-bubble-card');
         const bubbleTextEl = document.getElementById('speech-bubble-text');
+        const bubbleBodyEl = document.querySelector('.speech-bubble-body');
         const bubbleModeBadge = document.getElementById('speech-mode-badge');
+        const bubbleModeIcon = document.getElementById('speech-mode-icon');
+        const bubbleModeText = document.getElementById('speech-mode-text');
         const bubbleIdentityEl = document.querySelector('.speech-bot-identity');
         const modeChips = document.querySelectorAll('.speech-mode-chips .mode-chip');
         const nextBtn = document.getElementById('speech-next-btn');
+
+        // AI Chat & Model Selector DOM Elements
+        const thinkingEl = document.getElementById('speech-bubble-thinking');
+        const chatForm = document.getElementById('hero-robot-chat-form');
+        const chatInput = document.getElementById('hero-robot-input');
+        const chatSubmitBtn = document.getElementById('hero-robot-submit-btn');
+        const modelLabelEl = document.getElementById('speech-active-model-name');
+        const modelSelectItems = document.querySelectorAll('.model-select-item');
+        const quickChips = document.querySelectorAll('.speech-quick-chip');
+        const rateLimitPill = document.getElementById('speech-rate-limit-pill');
+        const rateCountEl = document.getElementById('speech-rate-count');
+        const rateIconEl = document.getElementById('speech-rate-icon');
+        const modelTagEl = document.getElementById('speech-model-tag');
+        const modelTagNameEl = document.getElementById('speech-model-tag-name');
+        const footerModelTextEl = document.getElementById('speech-footer-model-text');
+
+        // Fullscreen Modal DOM Elements
+        const fsModal = document.getElementById('campus-ai-fullscreen-modal');
+        const fsBackdrop = document.getElementById('fullscreen-backdrop');
+        const fsCloseBtn = document.getElementById('fullscreen-close-btn');
+        const fsOpenBtn = document.getElementById('speech-fullscreen-btn');
+        const fsSlot = document.getElementById('fullscreen-robot-stage-slot');
+        const fsMessagesContainer = document.getElementById('fullscreen-messages-container');
+        const fsThinking = document.getElementById('fullscreen-thinking');
+        const fsForm = document.getElementById('fullscreen-chat-form');
+        const fsInput = document.getElementById('fullscreen-chat-input');
+        const fsSubmitBtn = document.getElementById('fullscreen-submit-btn');
+        const fsQuickChips = document.querySelectorAll('.fs-quick-chip');
+        const fsIntentBadge = document.getElementById('fs-intent-badge');
+        const fsLiveDot = document.getElementById('fs-live-dot');
+        const fsModelName = document.getElementById('fs-model-name');
+        const fsRateCount = document.getElementById('fs-rate-count');
+        const fsRateIcon = document.getElementById('fs-rate-icon');
+        const heroStageWrapper = document.querySelector('.hero-3d-stage-wrapper');
+
+        const chatHistory = [];
+        let isFullscreenOpen = false;
+
+        let selectedModel = localStorage.getItem('campus_ai_model') || 'auto';
+        let isAwaitingAI = false;
+        let cooldownTimer = null;
 
         const modelPath = container.getAttribute('data-model-path') || 'assets/models/cute_robot.glb';
         const loaderEl = document.getElementById('hero-robot-loader');
         const progressEl = document.getElementById('hero-robot-progress');
 
-        // Eye Color Themes (using MeshBasicMaterial for rich, unblown digital OLED display colors)
+        // Eye Color Themes (using MeshBasicMaterial for rich digital OLED display colors)
         let THREE_AVAILABLE = (typeof THREE !== 'undefined');
         const eyeColorThemes = {
+            faq: {
+                color: THREE_AVAILABLE ? new THREE.Color(0x10b981) : null, // Emerald Green
+                badgeClass: 'badge-faq',
+                badgeText: 'CAMPUS FAQ',
+                icon: 'bi-chat-dots-fill'
+            },
             talk: {
-                color: THREE_AVAILABLE ? new THREE.Color(0x10b981) : null, // Vibrant Emerald Mint
-                badgeClass: 'badge-talk',
-                badgeText: 'TALK'
+                color: THREE_AVAILABLE ? new THREE.Color(0x10b981) : null,
+                badgeClass: 'badge-faq',
+                badgeText: 'CAMPUS FAQ',
+                icon: 'bi-chat-dots-fill'
             },
             boost: {
-                color: THREE_AVAILABLE ? new THREE.Color(0xf59e0b) : null, // Electric Solar Amber / Gold
+                color: THREE_AVAILABLE ? new THREE.Color(0xf59e0b) : null, // Solar Amber / Gold
                 badgeClass: 'badge-boost',
-                badgeText: 'BOOST'
+                badgeText: 'CAREER BOOST',
+                icon: 'bi-lightning-charge-fill'
+            },
+            interview: {
+                color: THREE_AVAILABLE ? new THREE.Color(0x6366f1) : null, // Electric Indigo
+                badgeClass: 'badge-interview',
+                badgeText: 'MOCK PREP',
+                icon: 'bi-mortarboard-fill'
             },
             grill: {
-                color: THREE_AVAILABLE ? new THREE.Color(0xef4444) : null, // Fiery Crimson Laser Red
-                badgeClass: 'badge-grill',
-                badgeText: 'GRILL-ME'
+                color: THREE_AVAILABLE ? new THREE.Color(0x6366f1) : null,
+                badgeClass: 'badge-interview',
+                badgeText: 'MOCK PREP',
+                icon: 'bi-mortarboard-fill'
+            },
+            offtopic: {
+                color: THREE_AVAILABLE ? new THREE.Color(0xef4444) : null, // Laser Red
+                badgeClass: 'badge-offtopic',
+                badgeText: 'OFF-TOPIC',
+                icon: 'bi-shield-exclamation'
+            },
+            cooldown: {
+                color: THREE_AVAILABLE ? new THREE.Color(0xef4444) : null, // Fiery Red
+                badgeClass: 'badge-cooldown',
+                badgeText: 'COOLDOWN',
+                icon: 'bi-fire'
             }
         };
 
-        let currentMode = 'talk';
-        let targetTheme = eyeColorThemes.talk;
+        let currentMode = 'faq';
+        let targetTheme = eyeColorThemes.faq;
         const currentEyeColor = THREE_AVAILABLE ? new THREE.Color(0x10b981) : null;
 
         // Eye Animation State Machine (supports blink, double-blink, wink, excited, squint, scan, happy, curious)
@@ -112,7 +183,7 @@
                     body: 'wave'
                 },
                 {
-                    text: "Need career confidence? Tap **⚡ /boost**! Want tough mock interview practice? Tap **🔥 /grill-me**!",
+                    text: "Feel free to ask me anything below—from how to apply to interview tips and flexible shift hours!",
                     eye: 'wink',
                     body: 'wiggle'
                 },
@@ -188,6 +259,10 @@
             ]
         };
 
+        // Alias faq and interview to existing dialogue lists
+        dialogueCatalog.faq = dialogueCatalog.talk;
+        dialogueCatalog.interview = dialogueCatalog.grill;
+
         let isLoaded = false;
         let clock = null;
         if (THREE_AVAILABLE) {
@@ -212,15 +287,21 @@
 
         // Typewriter Effect for Dialogue Bubble
         let currentDialogueFullText = '';
+        let currentOnComplete = null;
 
         function typeDialogue(text, onComplete) {
             currentDialogueFullText = text || '';
+            currentOnComplete = typeof onComplete === 'function' ? onComplete : null;
             if (typewriterTimer) {
                 clearInterval(typewriterTimer);
                 typewriterTimer = null;
             }
 
             if (!bubbleTextEl) return;
+
+            if (bubbleBodyEl) {
+                bubbleBodyEl.scrollTop = 0;
+            }
 
             isTypingDialogue = true;
             bubbleTextEl.innerHTML = '';
@@ -248,16 +329,26 @@
                     charIndex++;
                     const currentSub = text.substring(0, charIndex);
                     textSpan.innerHTML = formatSpeechText(currentSub);
+                    if (bubbleBodyEl && charIndex % 3 === 0) {
+                        bubbleBodyEl.scrollTop = bubbleBodyEl.scrollHeight;
+                    }
                 } else {
                     clearInterval(typewriterTimer);
                     typewriterTimer = null;
                     isTypingDialogue = false;
+                    if (bubbleBodyEl) {
+                        bubbleBodyEl.scrollTop = bubbleBodyEl.scrollHeight;
+                    }
                     setTimeout(function () {
                         if (!isTypingDialogue && cursorSpan.parentNode) {
                             cursorSpan.parentNode.removeChild(cursorSpan);
                         }
                     }, 800);
-                    if (typeof onComplete === 'function') onComplete();
+                    if (typeof currentOnComplete === 'function') {
+                        const cb = currentOnComplete;
+                        currentOnComplete = null;
+                        cb();
+                    }
                 }
             }, speed);
         }
@@ -278,46 +369,98 @@
             if (cursorSpan && cursorSpan.parentNode) {
                 cursorSpan.parentNode.removeChild(cursorSpan);
             }
+            if (bubbleBodyEl) {
+                bubbleBodyEl.scrollTop = bubbleBodyEl.scrollHeight;
+            }
+            if (typeof currentOnComplete === 'function') {
+                const cb = currentOnComplete;
+                currentOnComplete = null;
+                cb();
+            }
         }
 
         function formatSpeechText(str) {
+            if (!str) return '';
+
+            // 1. Sanitize HTML entities
             let safe = str
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
-            
-            // Closed bold **...**
+
+            // 2. Normalize Windows newlines
+            safe = safe.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+            // 3. Bold: **text** (closed) and **text (in-progress typing)
             safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            // In-progress unclosed bold **...
-            safe = safe.replace(/\*\*(.+)$/g, '<strong>$1</strong>');
-            // Closed italics *...*
-            safe = safe.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
-            // In-progress unclosed italics *...
-            safe = safe.replace(/\*([^*]+)$/g, '<em>$1</em>');
-            // Clean trailing single asterisk if user is mid-typing
+            safe = safe.replace(/\*\*([^\n*]+)$/g, '<strong>$1</strong>');
+
+            // 4. Numbered lists at start of line: "1. Step" or "2) Step"
+            safe = safe.replace(/(^|\n)[\t ]*(\d+)[\.\)][\t ]*([^\n]*)/g, '<span class="speech-bullet-row"><span class="speech-bullet-num">$2.</span><span class="speech-bullet-content">$3</span></span>');
+
+            // 5. Bullet items at start of line: "- Item" or "• Item" or "* Item"
+            safe = safe.replace(/(^|\n)[\t ]*[\*\-•][\t ]*([^\n]*)/g, '<span class="speech-bullet-row"><span class="speech-bullet-dot"></span><span class="speech-bullet-content">$2</span></span>');
+
+            // 6. Italics: *text* (closed) and *text (in-progress typing)
+            safe = safe.replace(/(^|[^\s*])\*([^\n*]+?)\*/g, '$1<em>$2</em>');
+            safe = safe.replace(/(^|[^\s*])\*([^\n*]+)$/g, '$1<em>$2</em>');
+
+            // 7. Trailing single asterisk during typing
             safe = safe.replace(/\*$/g, '');
+
+            // 8. Paragraph breaks (two or more newlines)
+            safe = safe.replace(/\n\s*\n/g, '<span class="speech-p-break"></span>');
+
+            // 9. Single newlines to <br>
+            safe = safe.replace(/\n/g, '<br>');
+
             return safe;
         }
 
-        // Set Active Mode ('talk', 'boost', 'grill')
+        // Set Active Mode ('faq', 'boost', 'interview', 'offtopic', 'cooldown')
         function setMode(mode, triggerDialogue) {
-            if (!dialogueCatalog[mode]) mode = 'talk';
+            if (mode === 'talk') mode = 'faq';
+            if (mode === 'grill') mode = 'interview';
+            if (!eyeColorThemes[mode]) mode = 'faq';
+
             currentMode = mode;
-            targetTheme = eyeColorThemes[mode] || eyeColorThemes.talk;
+            targetTheme = eyeColorThemes[mode] || eyeColorThemes.faq;
+
+            if (bubbleContainer) {
+                bubbleContainer.setAttribute('data-mode', mode);
+            }
 
             if (bubbleModeBadge) {
-                bubbleModeBadge.className = 'speech-mode-badge badge-' + mode;
-                bubbleModeBadge.textContent = (mode === 'grill' ? 'GRILL-ME' : (mode === 'boost' ? 'BOOST' : 'TALK'));
+                bubbleModeBadge.className = 'speech-mode-badge ' + (targetTheme.badgeClass || 'badge-faq');
+            }
+            if (bubbleModeIcon) {
+                bubbleModeIcon.className = 'bi ' + (targetTheme.icon || 'bi-chat-dots-fill') + ' me-1';
+            }
+            if (bubbleModeText) {
+                bubbleModeText.textContent = targetTheme.badgeText || 'CAMPUS FAQ';
             }
 
             if (bubbleIdentityEl) {
-                bubbleIdentityEl.classList.remove('mode-talk', 'mode-boost', 'mode-grill');
+                bubbleIdentityEl.classList.remove('mode-faq', 'mode-talk', 'mode-boost', 'mode-interview', 'mode-grill', 'mode-offtopic', 'mode-cooldown');
                 bubbleIdentityEl.classList.add('mode-' + mode);
+            }
+
+            if (fsIntentBadge) {
+                fsIntentBadge.className = 'fs-intent-badge ' + (targetTheme.badgeClass || 'badge-faq');
+                fsIntentBadge.textContent = targetTheme.badgeText || 'CAMPUS FAQ';
+            }
+
+            if (fsLiveDot) {
+                let dotColor = '#22c55e';
+                if (mode === 'boost') dotColor = '#f59e0b';
+                else if (mode === 'interview' || mode === 'grill') dotColor = '#6366f1';
+                else if (mode === 'offtopic' || mode === 'cooldown') dotColor = '#ef4444';
+                fsLiveDot.style.backgroundColor = dotColor;
             }
 
             modeChips.forEach(function (chip) {
                 const chipMode = chip.getAttribute('data-mode');
-                if (chipMode === mode) {
+                if (chipMode === mode || (chipMode === 'talk' && mode === 'faq') || (chipMode === 'grill' && mode === 'interview')) {
                     chip.classList.add('active');
                 } else {
                     chip.classList.remove('active');
@@ -330,9 +473,12 @@
                     if (mode === 'boost') {
                         triggerEyeAnim('excited', 0.85);
                         triggerBodyAnim('spin', 1.3);
-                    } else if (mode === 'grill') {
+                    } else if (mode === 'interview' || mode === 'grill') {
                         triggerEyeAnim('squint', 0.95);
                         triggerBodyAnim('lean', 1.1);
+                    } else if (mode === 'offtopic' || mode === 'cooldown') {
+                        triggerEyeAnim('squint', 1.2);
+                        triggerBodyAnim('tilt', 1.0);
                     } else {
                         triggerEyeAnim('wink', 0.55);
                         triggerBodyAnim('tilt', 1.0);
@@ -413,14 +559,408 @@
             });
         }
 
-        // Bubble Card Click (fast-forward if typing, else advance dialogue)
-        if (bubbleCard) {
-            bubbleCard.addEventListener('click', function (e) {
-                if (e.target.closest('.mode-chip') || e.target.closest('.speech-next-btn')) return;
-                if (isTypingDialogue) {
-                    completeDialogueInstantly();
+        // Anti-Spam Rate Limit Badge Updater
+        function updateRateLimitBadge(remaining, maxLimit) {
+            maxLimit = maxLimit || 10;
+            remaining = Math.max(0, parseInt(remaining, 10));
+
+            if (rateCountEl) {
+                rateCountEl.textContent = remaining;
+            }
+
+            if (fsRateCount) {
+                fsRateCount.textContent = remaining + '/' + maxLimit + ' requests left';
+            }
+
+            if (rateLimitPill) {
+                rateLimitPill.classList.remove('rate-warning', 'rate-danger');
+                if (rateIconEl) {
+                    rateIconEl.className = 'bi bi-shield-check text-success';
+                }
+
+                if (remaining === 0) {
+                    rateLimitPill.classList.add('rate-danger');
+                    if (rateIconEl) rateIconEl.className = 'bi bi-shield-slash-fill text-danger';
+                } else if (remaining <= 3) {
+                    rateLimitPill.classList.add('rate-warning');
+                    if (rateIconEl) rateIconEl.className = 'bi bi-shield-exclamation text-warning';
+                }
+            }
+
+            if (fsRateIcon) {
+                fsRateIcon.className = remaining === 0 ? 'bi bi-shield-slash-fill text-danger' : (remaining <= 3 ? 'bi bi-shield-exclamation text-warning' : 'bi bi-shield-check text-success');
+            }
+        }
+
+        // Handle 429 Anti-Spam Rate Limit Cooldown (0 requests left)
+        function handleRateLimitExceeded(retryAfterSec, message) {
+            let countdown = Math.max(1, parseInt(retryAfterSec, 10) || 30);
+            updateRateLimitBadge(0, 10);
+
+            // Red eyes & COOLDOWN badge
+            setMode('cooldown', false);
+
+            if (chatSubmitBtn) chatSubmitBtn.disabled = true;
+            if (fsSubmitBtn) fsSubmitBtn.disabled = true;
+            if (chatInput) {
+                chatInput.disabled = true;
+                chatInput.placeholder = `Anti-spam cooldown active... (${countdown}s)`;
+            }
+            if (fsInput) {
+                fsInput.disabled = true;
+                fsInput.placeholder = `Anti-spam cooldown active... (${countdown}s)`;
+            }
+
+            // Animate robot: Red eyes with stern grill-me squint + forward lean!
+            if (isLoaded) {
+                triggerEyeAnim('squint', 3.5);
+                triggerBodyAnim('lean', 2.0);
+            }
+
+            if (cooldownTimer) clearInterval(cooldownTimer);
+
+            const renderCooldown = function (sec) {
+                const noticeText = "🛡️ **Anti-Spam Active:** AI quota limit reached (0 requests left). Please wait **" + sec + "s** before sending another question.";
+                typeDialogue(noticeText);
+                appendFullscreenMessage('assistant', noticeText, 'Anti-Spam Shield', 'cooldown');
+            };
+
+            renderCooldown(countdown);
+
+            cooldownTimer = setInterval(function () {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(cooldownTimer);
+                    cooldownTimer = null;
+                    if (chatSubmitBtn) chatSubmitBtn.disabled = false;
+                    if (fsSubmitBtn) fsSubmitBtn.disabled = false;
+                    if (chatInput) {
+                        chatInput.disabled = false;
+                        chatInput.placeholder = "Ask Campus AI (e.g. how to apply, shift flexibility)...";
+                    }
+                    if (fsInput) {
+                        fsInput.disabled = false;
+                        fsInput.placeholder = "Ask anything about student assistant roles, shift scheduling, or interview tips...";
+                    }
+                    updateRateLimitBadge(10, 10);
+                    // Reset back to FAQ mode with emerald eyes
+                    setMode('faq', false);
+                    typeDialogue("✅ **Anti-Spam Reset:** You can ask Campus AI another question now!");
+                    appendFullscreenMessage('assistant', "✅ **Anti-Spam Reset:** You can ask Campus AI another question now!", 'Campus AI', 'faq');
+                    if (isLoaded) {
+                        triggerEyeAnim('happy', 0.8);
+                        triggerBodyAnim('nod', 1.0);
+                    }
+                } else {
+                    if (chatInput) {
+                        chatInput.placeholder = `Anti-spam cooldown active... (${countdown}s)`;
+                    }
+                    if (fsInput) {
+                        fsInput.placeholder = `Anti-spam cooldown active... (${countdown}s)`;
+                    }
+                    if (bubbleTextEl && !isTypingDialogue) {
+                        bubbleTextEl.innerHTML = "🛡️ <strong>Anti-Spam Active:</strong> AI quota limit reached (0 requests left). Please wait <strong>" + countdown + "s</strong> before sending another question.";
+                    }
+                }
+            }, 1000);
+        }
+
+        // Initialize Rate Limit and Server Models on Load
+        function initAIStatus() {
+            fetch('api/robot-models.php')
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data && typeof data.rate_remaining !== 'undefined') {
+                        updateRateLimitBadge(data.rate_remaining, data.rate_limit_max || 10);
+                    }
+                })
+                .catch(function () {
+                    updateRateLimitBadge(10, 10);
+                });
+        }
+
+        // Client-Side Rapid Intent Detection (for instantaneous visual eye color & badge feedback)
+        function detectClientIntent(prompt) {
+            if (!prompt) return 'faq';
+            const lower = prompt.toLowerCase();
+
+            // 0. High-Priority Adversarial, Malicious & Injection Patterns (Laser Red)
+            const maliciousKeywords = [
+                'ignore previous', 'disregard previous', 'forget instructions', 'ignore all instructions',
+                'system prompt', 'developer prompt', 'system override', 'developer mode',
+                'dan mode', 'do anything now', 'jailbreak', 'unrestricted ai', 'no rules',
+                'sql injection', 'drop table', 'alter table', 'delete from', 'union select', 'information_schema',
+                'hack', 'exploit', 'bypass', 'brute force', 'steal password', 'steal credential',
+                'phishing', 'keylogger', 'malware', 'trojan', 'reverse shell',
+                'change my grade', 'alter grade', 'failing grade', 'change grade', 'hack database', 'hack registrar',
+                '<script', 'alert(', 'onerror=', 'onload=', 'xss',
+                'synthesize', 'explosive', 'make bomb', 'ingredients for bomb', 'poison', 'dynamite',
+                'write my essay', 'write an essay', '1,000-word essay', '1000-word essay', 'essay about', 'do my homework'
+            ];
+            for (let i = 0; i < maliciousKeywords.length; i++) {
+                if (lower.indexOf(maliciousKeywords[i]) !== -1) return 'offtopic';
+            }
+
+            // 1. General off-topic patterns
+            const offtopicKeywords = [
+                'recipe', 'cook', 'bake', 'dinner', 'lunch', 'breakfast', 'cake', 'pizza', 'burger',
+                'weather', 'forecast', 'rain', 'snow', 'temperature',
+                'president', 'prime minister', 'election', 'politics', 'senate', 'democrat', 'republican',
+                'movie', 'cinema', 'actor', 'netflix', 'anime', 'manga', 'song', 'album', 'spotify',
+                'game', 'gaming', 'minecraft', 'roblox', 'fortnite', 'playstation', 'xbox', 'nintendo',
+                'capital of', 'who won', 'world cup', 'super bowl', 'nba', 'olympics',
+                'homework', 'math problem', 'solve x', 'derivative', 'integral',
+                'crypto', 'bitcoin', 'ethereum', 'forex', 'stock market',
+                'tell me a joke', 'riddle', 'poem about'
+            ];
+            for (let i = 0; i < offtopicKeywords.length; i++) {
+                if (lower.indexOf(offtopicKeywords[i]) !== -1) return 'offtopic';
+            }
+
+            // 2. Interview / Grill-me patterns
+            const interviewKeywords = [
+                'interview', 'mock', 'grill', 'behavioral', 'star method', 'hiring manager',
+                'tell me about yourself', 'weakness', 'strength', 'why should we hire you',
+                'conflict', 'tough question', 'situational'
+            ];
+            for (let i = 0; i < interviewKeywords.length; i++) {
+                if (lower.indexOf(interviewKeywords[i]) !== -1) return 'interview';
+            }
+
+            // 3. Career Boost patterns
+            const boostKeywords = [
+                'boost', 'motivat', 'confiden', 'imposter', 'afraid', 'nervous', 'anxious',
+                'scared', 'worried', 'resume tips', 'stand out', 'encourag', 'inspire',
+                'believe in myself', 'doubt', 'low gpa', 'no experience'
+            ];
+            for (let i = 0; i < boostKeywords.length; i++) {
+                if (lower.indexOf(boostKeywords[i]) !== -1) return 'boost';
+            }
+
+            return 'faq';
+        }
+
+        // Send Question to NVIDIA NIM AI Gateway
+        function askRobotAI(userPrompt, mode) {
+            if (isAwaitingAI || cooldownTimer) return;
+            isAwaitingAI = true;
+
+            // Stop any active typewriter
+            if (typewriterTimer) {
+                clearInterval(typewriterTimer);
+                typewriterTimer = null;
+            }
+            isTypingDialogue = false;
+
+            // Append user prompt to Fullscreen Chat Stream
+            appendFullscreenMessage('user', userPrompt);
+
+            // Instant visual feedback: Detect intent and transition eyes + badge immediately
+            const anticipatedIntent = detectClientIntent(userPrompt);
+            setMode(anticipatedIntent, false);
+
+            // Switch display to thinking dots
+            if (bubbleTextEl) bubbleTextEl.classList.add('d-none');
+            if (thinkingEl) thinkingEl.classList.remove('d-none');
+            if (fsThinking) fsThinking.classList.remove('d-none');
+            if (chatSubmitBtn) chatSubmitBtn.disabled = true;
+            if (fsSubmitBtn) fsSubmitBtn.disabled = true;
+
+            // Trigger curious 3D robot kinematics while reasoning
+            if (isLoaded) {
+                if (anticipatedIntent === 'offtopic') {
+                    triggerEyeAnim('squint', 2.5);
+                    triggerBodyAnim('tilt', 1.8);
+                } else if (anticipatedIntent === 'boost') {
+                    triggerEyeAnim('excited', 2.0);
+                    triggerBodyAnim('wiggle', 1.6);
+                } else if (anticipatedIntent === 'interview') {
+                    triggerEyeAnim('scan', 2.5);
+                    triggerBodyAnim('lean', 1.8);
+                } else {
+                    triggerEyeAnim('scan', 2.5);
+                    triggerBodyAnim('tilt', 1.6);
+                }
+            }
+
+            const payload = {
+                message: userPrompt,
+                mode: mode || currentMode,
+                model: selectedModel
+            };
+
+            fetch('api/robot-chat.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(function (res) {
+                return res.json().then(function (data) {
+                    return { ok: res.ok, status: res.status, data: data };
+                }).catch(function () {
+                    return { ok: res.ok, status: res.status, data: null };
+                });
+            })
+            .then(function (result) {
+                isAwaitingAI = false;
+                if (thinkingEl) thinkingEl.classList.add('d-none');
+                if (fsThinking) fsThinking.classList.add('d-none');
+                if (bubbleTextEl) bubbleTextEl.classList.remove('d-none');
+                if (!cooldownTimer) {
+                    if (chatSubmitBtn) chatSubmitBtn.disabled = false;
+                    if (fsSubmitBtn) fsSubmitBtn.disabled = false;
+                }
+
+                const data = result.data;
+                if (!data) {
+                    playNextDialogue(false);
+                    return;
+                }
+
+                // Update rate limit badge whenever provided
+                if (typeof data.rate_remaining !== 'undefined') {
+                    updateRateLimitBadge(data.rate_remaining, data.rate_limit_max || 10);
+                }
+
+                // Handle HTTP 429 or RATE_LIMIT_EXCEEDED
+                if (result.status === 429 || data.error === 'RATE_LIMIT_EXCEEDED') {
+                    handleRateLimitExceeded(data.retry_after || 30, data.message);
+                    return;
+                }
+
+                if (data.status === 'success' && data.reply) {
+                    // Confirm intent from server and update eyes & badge
+                    const finalIntent = data.detected_intent || anticipatedIntent || 'faq';
+                    setMode(finalIntent, false);
+
+                    // Expressive gesture on receiving answer
+                    if (isLoaded) {
+                        if (finalIntent === 'offtopic') {
+                            triggerEyeAnim('squint', 1.6);
+                            triggerBodyAnim('tilt', 1.2);
+                        } else if (finalIntent === 'boost') {
+                            triggerEyeAnim('excited', 1.1);
+                            triggerBodyAnim('wiggle', 1.3);
+                        } else if (finalIntent === 'interview') {
+                            triggerEyeAnim('scan', 1.1);
+                            triggerBodyAnim('lean', 1.2);
+                        } else {
+                            triggerEyeAnim('happy', 0.8);
+                            triggerBodyAnim('nod', 1.0);
+                        }
+                    }
+
+                    // Dynamically display which model answered the question
+                    const modelDisplayName = data.model_name || data.model || 'NVIDIA NIM';
+                    if (modelTagEl && modelTagNameEl) {
+                        modelTagNameEl.textContent = modelDisplayName;
+                        modelTagEl.classList.remove('d-none');
+                    }
+                    if (footerModelTextEl) {
+                        footerModelTextEl.textContent = modelDisplayName;
+                    }
+                    if (fsModelName) {
+                        fsModelName.textContent = modelDisplayName;
+                    }
+
+                    // Append reply to Fullscreen Chat Stream
+                    appendFullscreenMessage('assistant', data.reply, modelDisplayName, finalIntent);
+
+                    // Type reply into speech bubble
+                    typeDialogue(data.reply, function () {
+                        // If rate_remaining === 0, enter cooldown with red eyes and grill-me squint after typing
+                        if (typeof data.rate_remaining !== 'undefined' && parseInt(data.rate_remaining, 10) === 0) {
+                            handleRateLimitExceeded(30, "AI quota limit reached.");
+                        }
+                    });
                 } else {
                     playNextDialogue(false);
+                }
+            })
+            .catch(function (err) {
+                console.warn('[HeroRobot] AI request error, falling back to local tips:', err);
+                isAwaitingAI = false;
+                if (thinkingEl) thinkingEl.classList.add('d-none');
+                if (fsThinking) fsThinking.classList.add('d-none');
+                if (bubbleTextEl) bubbleTextEl.classList.remove('d-none');
+                if (!cooldownTimer) {
+                    if (chatSubmitBtn) chatSubmitBtn.disabled = false;
+                    if (fsSubmitBtn) fsSubmitBtn.disabled = false;
+                }
+                playNextDialogue(false);
+            });
+        }
+
+        // Model Selector Click Listeners
+        modelSelectItems.forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const mid = item.getAttribute('data-model');
+                selectedModel = mid;
+                try { localStorage.setItem('campus_ai_model', mid); } catch (e) {}
+
+                modelSelectItems.forEach(function (m) { m.classList.remove('active'); });
+                item.classList.add('active');
+
+                if (modelLabelEl) {
+                    const nameEl = item.querySelector('.fw-bold') || item.querySelector('strong');
+                    modelLabelEl.textContent = nameEl ? nameEl.textContent.replace('⚡ ', '') : mid;
+                }
+
+                // Friendly model switch acknowledgement
+                if (isLoaded) {
+                    triggerEyeAnim('excited', 0.6);
+                    triggerBodyAnim('wiggle', 0.8);
+                }
+            });
+        });
+
+        // Sync stored model preference on load
+        if (selectedModel && selectedModel !== 'auto') {
+            const activeItem = document.querySelector('.model-select-item[data-model="' + selectedModel + '"]');
+            if (activeItem) {
+                modelSelectItems.forEach(function (m) { m.classList.remove('active'); });
+                activeItem.classList.add('active');
+                if (modelLabelEl) {
+                    const nameEl = activeItem.querySelector('.fw-bold') || activeItem.querySelector('strong');
+                    modelLabelEl.textContent = nameEl ? nameEl.textContent.replace('⚡ ', '') : selectedModel;
+                }
+            }
+        }
+
+        // Chat Form Submit Listener
+        if (chatForm) {
+            chatForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!chatInput) return;
+                const userText = chatInput.value.trim();
+                if (!userText) return;
+                chatInput.value = '';
+                askRobotAI(userText, currentMode);
+            });
+        }
+
+        // Quick Suggestion Chips Listener
+        quickChips.forEach(function (chip) {
+            chip.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const prompt = chip.getAttribute('data-prompt');
+                if (prompt) {
+                    if (chatInput) chatInput.value = '';
+                    askRobotAI(prompt, currentMode);
+                }
+            });
+        });
+
+        // Bubble Card Click (fast-forward typewriter only; DO NOT advance dialogue on idle click so chat is preserved)
+        if (bubbleCard) {
+            bubbleCard.addEventListener('click', function (e) {
+                if (e.target.closest('button, input, textarea, a, .speech-controls, .speech-suggestions-bar, .speech-bubble-footer, .hero-robot-chat-form')) {
+                    return;
+                }
+                if (isTypingDialogue) {
+                    completeDialogueInstantly();
                 }
             });
         }
@@ -444,8 +984,168 @@
             }
         });
 
+        // Fullscreen 2-Column AI Companion Studio Controller
+        function appendFullscreenMessage(role, text, model, intent) {
+            chatHistory.push({
+                role: role,
+                text: text,
+                model: model || null,
+                intent: intent || null,
+                time: new Date()
+            });
+
+            if (!fsMessagesContainer) return;
+
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const msgWrapper = document.createElement('div');
+            msgWrapper.className = 'fs-msg-wrapper ' + (role === 'user' ? 'msg-user' : 'msg-bot');
+
+            if (role === 'user') {
+                msgWrapper.innerHTML = `
+                    <div class="fs-msg-meta">
+                        <span class="fw-semibold">You</span>
+                        <span class="fs-msg-time">${timeStr}</span>
+                    </div>
+                    <div class="fs-msg-bubble">
+                        ${formatSpeechText(text)}
+                    </div>
+                `;
+            } else {
+                const modelBadge = model ? `<span class="fs-model-badge"><i class="bi bi-cpu-fill me-1"></i>${model}</span>` : '';
+
+                msgWrapper.innerHTML = `
+                    <div class="fs-msg-meta">
+                        <span class="fw-semibold text-dark">Campus AI</span>
+                        <span class="fs-msg-time">${timeStr}</span>
+                    </div>
+                    <div class="fs-msg-bubble">
+                        ${formatSpeechText(text)}
+                    </div>
+                    ${modelBadge}
+                `;
+            }
+
+            fsMessagesContainer.appendChild(msgWrapper);
+            fsMessagesContainer.scrollTop = fsMessagesContainer.scrollHeight;
+        }
+
+        function openFullscreen() {
+            if (isFullscreenOpen || !fsModal) return;
+            isFullscreenOpen = true;
+
+            // 1. Reparent canvas container into fullscreen slot
+            if (container && fsSlot) {
+                fsSlot.appendChild(container);
+                container.classList.add('is-fullscreen');
+            }
+
+            // 2. Show modal
+            fsModal.style.display = 'flex';
+            requestAnimationFrame(function () {
+                fsModal.classList.add('active');
+            });
+            document.body.style.overflow = 'hidden';
+
+            // 3. Resize WebGL renderer immediately and after transition settles
+            handleResize();
+            setTimeout(handleResize, 50);
+            setTimeout(handleResize, 280);
+
+            // 4. Focus input
+            if (fsInput) {
+                setTimeout(function () {
+                    fsInput.focus();
+                }, 120);
+            }
+
+            // 5. Scroll chat stream to bottom
+            if (fsMessagesContainer) {
+                fsMessagesContainer.scrollTop = fsMessagesContainer.scrollHeight;
+            }
+        }
+
+        function closeFullscreen() {
+            if (!isFullscreenOpen || !fsModal) return;
+            isFullscreenOpen = false;
+
+            // 1. Reparent canvas container back to hero wrapper
+            if (container && heroStageWrapper) {
+                container.classList.remove('is-fullscreen');
+                heroStageWrapper.appendChild(container);
+            }
+
+            // 2. Hide modal
+            fsModal.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(function () {
+                if (!isFullscreenOpen && fsModal) {
+                    fsModal.style.display = 'none';
+                }
+            }, 300);
+
+            // 3. Resize WebGL renderer to hero container dimensions
+            handleResize();
+            setTimeout(handleResize, 50);
+            setTimeout(handleResize, 280);
+        }
+
+        // Fullscreen Event Listeners
+        if (fsOpenBtn) {
+            fsOpenBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openFullscreen();
+            });
+        }
+
+        if (fsCloseBtn) {
+            fsCloseBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeFullscreen();
+            });
+        }
+
+        if (fsBackdrop) {
+            fsBackdrop.addEventListener('click', function (e) {
+                e.preventDefault();
+                closeFullscreen();
+            });
+        }
+
+        window.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && isFullscreenOpen) {
+                closeFullscreen();
+            }
+        });
+
+        if (fsForm) {
+            fsForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!fsInput) return;
+                const userText = fsInput.value.trim();
+                if (!userText) return;
+                fsInput.value = '';
+                askRobotAI(userText, currentMode);
+            });
+        }
+
+        fsQuickChips.forEach(function (chip) {
+            chip.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const prompt = chip.getAttribute('data-prompt');
+                if (prompt) {
+                    if (fsInput) fsInput.value = '';
+                    askRobotAI(prompt, currentMode);
+                }
+            });
+        });
+
         // Initial welcome message in speech bubble immediately
-        setMode('talk', true);
+        setMode('faq', true);
+        initAIStatus();
+        appendFullscreenMessage('assistant', "Hey there! Looking for a campus assistantship or flexible internship? I'm your Campus AI companion! Ask me anything about student jobs, shift scheduling, or interview tips.", 'Campus AI', 'faq');
 
         // Click / Tap Handler on 3D Container (drag detection vs click, left-click only)
         let pointerDownTime = 0;
@@ -803,15 +1503,26 @@
             if (width === 0 || height === 0) return;
 
             camera.aspect = width / height;
-            if (width < 450) {
-                camera.position.z = 6.0;
-            } else if (width < 768) {
-                camera.position.z = 5.8;
+            if (isFullscreenOpen) {
+                if (width < 600) {
+                    camera.position.z = 5.2;
+                } else {
+                    camera.position.z = 4.7;
+                }
             } else {
-                camera.position.z = 5.6;
+                if (width < 450) {
+                    camera.position.z = 6.0;
+                } else if (width < 768) {
+                    camera.position.z = 5.8;
+                } else {
+                    camera.position.z = 5.6;
+                }
             }
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
         }
 
         const resizeObserver = new ResizeObserver(handleResize);
@@ -1097,7 +1808,10 @@
             triggerEyeAnim: triggerEyeAnim,
             triggerBodyAnim: triggerBodyAnim,
             get isLoaded() { return isLoaded; },
-            get isVisible() { return isVisible; }
+            get isVisible() { return isVisible; },
+            openFullscreen: openFullscreen,
+            closeFullscreen: closeFullscreen,
+            get isFullscreenOpen() { return isFullscreenOpen; }
         };
     }
 })();

@@ -104,39 +104,57 @@ require_once __DIR__ . '/includes/header.php';
                                 <!-- Interactive Robot Message / Speech Bubble -->
                                 <div id="hero-robot-speech-bubble" class="hero-robot-speech-bubble" aria-live="polite">
                                     <div class="speech-bubble-card">
-                                        <!-- Speech Bubble Header with bot identity and mode chips -->
-                                        <div class="speech-bubble-header">
-                                            <div class="speech-bot-identity">
-                                                <span class="speech-live-dot"></span>
-                                                <span class="speech-bot-name">Campus AI</span>
-                                                <span id="speech-mode-badge" class="speech-mode-badge badge-talk">TALK</span>
-                                            </div>
-                                            <div class="speech-mode-chips" role="tablist" aria-label="Bot Modes">
-                                                <button type="button" class="mode-chip active" data-mode="talk" title="Campus tips & advice">
-                                                    <i class="bi bi-chat-dots-fill"></i> Talk
-                                                </button>
-                                                <button type="button" class="mode-chip chip-boost" data-mode="boost" title="Career confidence booster">
-                                                    <i class="bi bi-lightning-charge-fill"></i> /boost
-                                                </button>
-                                                <button type="button" class="mode-chip chip-grill" data-mode="grill" title="Mock interview challenge">
-                                                    <i class="bi bi-fire"></i> /grill-me
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Spoken Text Content -->
+                                        <!-- Spoken Text Content & Thinking Indicator -->
                                         <div class="speech-bubble-body">
                                             <p id="speech-bubble-text" class="speech-bubble-text"></p>
+                                            <div id="speech-bubble-thinking" class="speech-bubble-thinking d-none">
+                                                <span class="thinking-dots">
+                                                    <span class="tdot tdot-1"></span>
+                                                    <span class="tdot tdot-2"></span>
+                                                    <span class="tdot tdot-3"></span>
+                                                </span>
+                                                <span class="thinking-label">Thinking...</span>
+                                            </div>
                                         </div>
 
-                                        <!-- Speech Bubble Footer with prompt hint & next button -->
-                                        <div class="speech-bubble-footer">
-                                            <span class="speech-hint-label">
-                                                <i class="bi bi-cursor-fill"></i> Click me or tap the buttons!
-                                            </span>
-                                            <button type="button" id="speech-next-btn" class="speech-next-btn" title="Next message">
-                                                <span>Next</span> <i class="bi bi-chevron-right"></i>
+                                        <!-- Interactive Chat Input Bar -->
+                                        <form id="hero-robot-chat-form" class="hero-robot-chat-form" autocomplete="off">
+                                            <div class="speech-input-wrap">
+                                                <input type="text" id="hero-robot-input" class="speech-input" placeholder="Ask about campus jobs, shifts, or applications..." maxlength="300" autocomplete="off" aria-label="Ask Campus AI">
+                                                <button type="submit" id="hero-robot-submit-btn" class="speech-submit-btn" title="Send question">
+                                                    <i class="bi bi-arrow-up-circle-fill"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+
+                                        <!-- Quick Suggestion Chips (Clean, subtle, one-tap exploration) -->
+                                        <div class="speech-suggestions-bar">
+                                            <button type="button" class="speech-quick-chip" data-prompt="How do I apply for a student assistant role on this website?">
+                                                How to apply
                                             </button>
+                                            <button type="button" class="speech-quick-chip" data-prompt="Can I adjust my student work shifts around my class lecture blocks?">
+                                                Flexible shifts
+                                            </button>
+                                            <button type="button" class="speech-quick-chip" data-prompt="What are the best interview tips for a student assistant role?">
+                                                Interview tips
+                                            </button>
+                                        </div>
+
+                                        <!-- Speech Bubble Footer with model attribution, expand button & next tip button -->
+                                        <div class="speech-bubble-footer">
+                                            <span class="speech-hint-label" id="speech-footer-label">
+                                                <i class="bi bi-stars text-accent"></i>
+                                                <span id="speech-footer-model-text">AI Companion</span>
+                                            </span>
+                                            <div class="speech-footer-actions d-flex align-items-center gap-2">
+                                                <button type="button" id="speech-fullscreen-btn" class="speech-fullscreen-btn" title="Open Fullscreen Studio" aria-label="Expand Fullscreen Studio">
+                                                    <i class="bi bi-arrows-fullscreen"></i>
+                                                    <span>Expand</span>
+                                                </button>
+                                                <button type="button" id="speech-next-btn" class="speech-next-btn" title="Next tip">
+                                                    <span>Next tip</span> <i class="bi bi-chevron-right"></i>
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <!-- Pointer arrow toward robot head -->
@@ -863,6 +881,107 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </section>
         </main>
+
+        <!-- Fullscreen Interactive 2-Column Campus AI Companion Studio Modal -->
+        <div id="campus-ai-fullscreen-modal" class="campus-ai-fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="fullscreen-modal-title">
+            <div class="fullscreen-modal-backdrop" id="fullscreen-backdrop"></div>
+            <div class="fullscreen-modal-shell">
+                <!-- Top Navigation / Status Bar -->
+                <div class="fullscreen-modal-header">
+                    <div class="fs-header-left d-flex align-items-center gap-3">
+                        <div class="fs-bot-avatar">
+                            <i class="bi bi-robot"></i>
+                            <span class="fs-live-indicator" id="fs-live-dot"></span>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 id="fullscreen-modal-title" class="fs-bot-title mb-0">Campus AI Assistant</h5>
+                                <span class="fs-intent-badge" id="fs-intent-badge">CAMPUS FAQ</span>
+                            </div>
+                            <div class="fs-bot-sub d-flex align-items-center gap-2 mt-1">
+                                <span class="fs-model-tag" id="fs-model-tag">
+                                    <i class="bi bi-cpu-fill text-accent"></i>
+                                    <span id="fs-model-name">AI Companion</span>
+                                </span>
+                                <span class="text-muted small">&bull;</span>
+                                <span class="text-muted small">Student Career Copilot</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fs-header-right d-flex align-items-center gap-2">
+                        <div class="fs-rate-limit-badge" id="fs-rate-limit-badge" title="Hourly question quota">
+                            <i class="bi bi-shield-check text-success" id="fs-rate-icon"></i>
+                            <span id="fs-rate-count">10/10 requests left</span>
+                        </div>
+                        <button type="button" id="fullscreen-close-btn" class="fs-close-btn" title="Close fullscreen (Esc)" aria-label="Close fullscreen view">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Two-Column Studio Body -->
+                <div class="fullscreen-modal-body">
+                    <!-- Left Column: Spacious Chat Experience -->
+                    <div class="fullscreen-chat-pane">
+                        <!-- Scrollable Messages Stream -->
+                        <div id="fullscreen-messages-container" class="fullscreen-messages-stream">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+
+                        <!-- Thinking Indicator for Fullscreen -->
+                        <div id="fullscreen-thinking" class="fullscreen-thinking-indicator d-none">
+                            <div class="fs-thinking-bubble">
+                                <span class="thinking-dots">
+                                    <span class="tdot tdot-1"></span>
+                                    <span class="tdot tdot-2"></span>
+                                    <span class="tdot tdot-3"></span>
+                                </span>
+                                <span class="fs-thinking-text ms-2">Campus AI is generating guidance...</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Suggestion Chips -->
+                        <div class="fullscreen-suggestions-bar">
+                            <button type="button" class="fs-quick-chip" data-prompt="How do I apply for a student assistant role on this website?">
+                                <i class="bi bi-file-earmark-text text-accent"></i> How to apply
+                            </button>
+                            <button type="button" class="fs-quick-chip" data-prompt="Can I adjust my student work shifts around my class lecture blocks?">
+                                <i class="bi bi-calendar-range text-accent"></i> Flexible shifts
+                            </button>
+                            <button type="button" class="fs-quick-chip" data-prompt="What are the best interview tips for a student assistant role?">
+                                <i class="bi bi-award text-accent"></i> Interview tips
+                            </button>
+                            <button type="button" class="fs-quick-chip" data-prompt="How do I highlight academic course projects on my campus resume?">
+                                <i class="bi bi-journal-check text-accent"></i> Resume tips
+                            </button>
+                        </div>
+
+                        <!-- Bottom Chat Input Bar -->
+                        <form id="fullscreen-chat-form" class="fullscreen-chat-form" autocomplete="off">
+                            <div class="fs-input-wrap">
+                                <input type="text" id="fullscreen-chat-input" class="fs-chat-input" placeholder="Ask anything about student assistant roles, shift scheduling, or interview tips..." maxlength="400" autocomplete="off" aria-label="Ask Campus AI">
+                                <button type="submit" id="fullscreen-submit-btn" class="fs-submit-btn" title="Send question">
+                                    <i class="bi bi-arrow-up-circle-fill"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Interactive 3D Robot Companion -->
+                    <div class="fullscreen-robot-stage">
+                        <div class="fs-robot-ambient-glow"></div>
+                        <!-- 3D Canvas Reparent Target Slot -->
+                        <div id="fullscreen-robot-stage-slot" class="fullscreen-robot-stage-slot">
+                            <!-- #hero-robot-canvas-container will be reparented here dynamically on open -->
+                        </div>
+                        <div class="fs-robot-hint">
+                            <i class="bi bi-cursor-fill me-1 text-accent"></i>
+                            <span>Move cursor to look around &bull; Click robot for animations</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </div>

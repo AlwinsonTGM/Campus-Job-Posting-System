@@ -140,6 +140,7 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/updates.php"><i class="bi bi-newspaper me-2 text-accent"></i> Career Dispatches</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/categories.php"><i class="bi bi-grid-fill me-2"></i> Job Categories</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-bar-chart-fill me-2"></i> System Reports</a></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/ai-settings.php"><i class="bi bi-cpu-fill me-2 text-success"></i> NVIDIA AI &amp; Robot</a></li>
                             <?php endif; ?>
                             <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2"></i> Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
