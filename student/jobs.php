@@ -34,6 +34,31 @@ $all_work_setups = get_work_setups();
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
+<style>
+.category-visual-tile {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--white);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+}
+.category-visual-tile:hover {
+    transform: translateY(-4px);
+    border-color: rgba(13, 59, 46, 0.4);
+    box-shadow: 0 12px 28px rgba(13, 59, 46, 0.1) !important;
+}
+.category-visual-tile:hover .cat-tile-img {
+    transform: scale(1.08);
+}
+.category-visual-tile--active {
+    border: 2px solid var(--accent) !important;
+    box-shadow: 0 10px 26px rgba(13, 59, 46, 0.14) !important;
+    background: var(--surface) !important;
+}
+.cat-tile-img {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+</style>
+
 <div class="sheet-perspective-wrapper">
     <div class="sheet flat-sheet">
         <?php require_once __DIR__ . '/../includes/navbar.php'; ?>
@@ -41,21 +66,125 @@ require_once __DIR__ . '/../includes/header.php';
         <main class="py-5">
             <div class="container-paper">
                 
-                <!-- Page Head -->
-                <?php
-                render_page_head(
-                    '',
-                    'Find On-Campus Jobs & Assistantships',
-                    'Browse verified student assistant openings, academic lab assignments, library assistantships, and peer tutoring opportunities.'
-                );
-                ?>
+                <!-- Student Opportunity Discovery Banner -->
+                <div class="card-paper p-0 overflow-hidden mb-4 reveal-fade-rise border-line position-relative shadow-sm" style="background: linear-gradient(135deg, #0d3b2e 0%, #175343 55%, #1e6955 100%); color: #ffffff;">
+                    <div style="position: absolute; right: -25px; bottom: -25px; opacity: 0.08; pointer-events: none;">
+                        <i class="bi bi-compass-fill" style="font-size: 220px; line-height: 1;"></i>
+                    </div>
+                    <div class="p-4 p-md-5 position-relative">
+                        <div class="row align-items-center g-4">
+                            <div class="col-lg-8">
+                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;">
+                                    <i class="bi bi-stars text-warning"></i> Campus Opportunity Directory
+                                </div>
+                                <h1 class="display-6 fw-bold mb-2 text-white" style="letter-spacing: -0.02em;">Find Your On-Campus Opportunity</h1>
+                                <p class="mb-3 text-white-50" style="max-width: 620px; font-size: 14.5px; line-height: 1.6;">
+                                    Explore verified student assistantships, academic laboratory assignments, library roles, and peer tutoring opportunities designed to work smoothly around your class schedule.
+                                </p>
+                                <div class="d-flex flex-wrap align-items-center gap-2 pt-1">
+                                    <span class="badge rounded-pill" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
+                                        <i class="bi bi-briefcase-fill text-warning me-1"></i> <?= count($jobs) ?> Positions Live
+                                    </span>
+                                    <span class="badge rounded-pill" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
+                                        <i class="bi bi-clock-history text-accent me-1"></i> Max 20 hrs/week Safe Cap
+                                    </span>
+                                    <span class="badge rounded-pill" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
+                                        <i class="bi bi-cash-stack text-warning me-1"></i> ₱80 – ₱120 / hr Verified Pay
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 text-lg-end d-none d-lg-block">
+                                <div class="p-3 rounded-4 text-start d-inline-block shadow-sm" style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); min-width: 240px;">
+                                    <div class="small text-white-50 text-uppercase fw-bold mb-1" style="font-size: 11px;">Active Filter</div>
+                                    <div class="fw-bold text-white fs-6 mb-2">
+                                        <?= !empty($category) ? htmlspecialchars($category) : 'All Job Families' ?>
+                                    </div>
+                                    <?php if (!empty($category) || !empty($keyword) || !empty($department) || !empty($job_type) || !empty($work_setup)): ?>
+                                        <a href="jobs.php" class="btn btn-sm btn-light py-1 px-3 rounded-pill fw-semibold text-dark" style="font-size: 12px;">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="small text-white-50"><i class="bi bi-check2-circle text-success me-1"></i> Browsing All Openings</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Category Discovery Section -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="h6 fw-bold text-ink mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-grid-3x3-gap-fill text-accent"></i> Explore by Job Family
+                            </h2>
+                            <span class="small text-muted-custom">Select a discipline family to filter verified openings</span>
+                        </div>
+                        <?php if (!empty($category)): ?>
+                            <a href="jobs.php" class="small text-accent text-decoration-none fw-semibold">
+                                Clear Category Filter &times;
+                            </a>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="row g-3">
+                        <?php foreach ($categories as $cat): 
+                            $is_active_cat = (strcasecmp($category, $cat['name']) === 0 || strcasecmp($category, (string)$cat['id']) === 0);
+                            $cat_cover = !empty($cat['image']) ? $cat['image'] : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';
+                            $cat_job_count = (int)($cat['job_count'] ?? 0);
+                        ?>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <a href="jobs.php?category=<?= urlencode($cat['name']) ?>" 
+                                   class="card-paper p-0 overflow-hidden d-flex flex-column text-decoration-none h-100 position-relative category-visual-tile <?= $is_active_cat ? 'category-visual-tile--active' : '' ?>">
+                                    
+                                    <!-- Tile Cover Photo -->
+                                    <div class="position-relative overflow-hidden" style="height: 85px; background: #e5e7eb;">
+                                        <img src="<?= htmlspecialchars($cat_cover) ?>" 
+                                             alt="<?= htmlspecialchars($cat['name']) ?>" 
+                                             class="w-100 h-100 cat-tile-img" 
+                                             loading="lazy"
+                                             style="object-fit: cover; object-position: center;"
+                                             onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';">
+                                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 100%);"></div>
+                                        
+                                        <!-- Tile Icon Badge -->
+                                        <div class="position-absolute bottom-0 start-0 m-2">
+                                            <div class="icon-circle icon-circle-sm bg-white shadow-sm" style="width: 28px; height: 28px; font-size: 13px;">
+                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?> text-accent"></i>
+                                            </div>
+                                        </div>
+
+                                        <?php if ($is_active_cat): ?>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge rounded-pill bg-success text-white shadow-sm" style="font-size: 10px;">
+                                                    <i class="bi bi-check-lg"></i> Active
+                                                </span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <!-- Tile Text -->
+                                    <div class="p-2 text-center d-flex flex-column flex-grow-1 bg-white">
+                                        <span class="fw-bold text-ink line-clamp-1 small mb-1" style="font-size: 12px; line-height: 1.25;" title="<?= htmlspecialchars($cat['name']) ?>">
+                                            <?= htmlspecialchars($cat['name']) ?>
+                                        </span>
+                                        <span class="text-muted-custom small mt-auto" style="font-size: 11px;">
+                                            <?= $cat_job_count ?> <?= $cat_job_count === 1 ? 'Opening' : 'Openings' ?>
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
                 <!-- Search & Filters Container -->
                 <div class="card-paper mb-4 p-4">
                     <form action="jobs.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
                             <!-- Keyword Input -->
-                            <div class="col-lg-4 col-md-6">
+                            <div class="col-lg-3 col-md-6">
                                 <label class="form-label" for="filter-kw">Search Keywords</label>
                                 <div class="search-input-wrap">
                                     <i class="bi bi-search text-muted-custom"></i>
@@ -70,21 +199,34 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
                             </div>
 
-                            <!-- Department Dropdown -->
+                            <!-- Category Dropdown -->
                             <div class="col-lg-3 col-md-6">
-                                <label class="form-label" for="filter-dept">Department / Office</label>
+                                <label class="form-label" for="filter-cat">Job Category</label>
+                                <select name="category" id="filter-cat" class="form-select">
+                                    <option value="">All Job Categories</option>
+                                    <?php foreach ($categories as $c): ?>
+                                        <option value="<?= htmlspecialchars($c['name']) ?>" <?= (strcasecmp($category, $c['name']) === 0 || $category == $c['id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($c['name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- Department Dropdown -->
+                            <div class="col-lg-2 col-md-4">
+                                <label class="form-label" for="filter-dept">Department</label>
                                 <select name="department" id="filter-dept" class="form-select">
-                                    <option value="">All Departments & Offices</option>
+                                    <option value="">All Offices</option>
                                     <optgroup label="Academic Institutes">
                                         <?php foreach (get_kld_institutes_and_courses() as $inst => $courses): ?>
                                             <option value="<?= htmlspecialchars($inst) ?>" <?= ($department === $inst) ? 'selected' : '' ?>><?= htmlspecialchars($inst) ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                     <optgroup label="Administrative Offices">
-                                        <option value="Office of the University Registrar" <?= ($department === 'Office of the University Registrar') ? 'selected' : '' ?>>Office of the University Registrar</option>
-                                        <option value="Student Affairs & Services Office (SASO)" <?= ($department === 'Student Affairs & Services Office (SASO)') ? 'selected' : '' ?>>Student Affairs & Services Office (SASO)</option>
-                                        <option value="Management Information Systems (MIS)" <?= ($department === 'Management Information Systems (MIS)') ? 'selected' : '' ?>>Management Information Systems (MIS)</option>
-                                        <option value="KLD University Library" <?= ($department === 'KLD University Library') ? 'selected' : '' ?>>KLD University Library</option>
+                                        <option value="Office of the University Registrar" <?= ($department === 'Office of the University Registrar') ? 'selected' : '' ?>>Registrar</option>
+                                        <option value="Student Affairs & Services Office (SASO)" <?= ($department === 'Student Affairs & Services Office (SASO)') ? 'selected' : '' ?>>SASO</option>
+                                        <option value="Management Information Systems (MIS)" <?= ($department === 'Management Information Systems (MIS)') ? 'selected' : '' ?>>MIS & Tech</option>
+                                        <option value="KLD University Library" <?= ($department === 'KLD University Library') ? 'selected' : '' ?>>Library</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -103,10 +245,10 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
 
                             <!-- Work Setup Dropdown -->
-                            <div class="col-lg-2 col-md-4">
-                                <label class="form-label" for="filter-setup">Work Setup</label>
+                            <div class="col-lg-1 col-md-2">
+                                <label class="form-label" for="filter-setup">Setup</label>
                                 <select name="work_setup" id="filter-setup" class="form-select">
-                                    <option value="">Any Setup</option>
+                                    <option value="">Any</option>
                                     <?php foreach ($all_work_setups as $k => $label): ?>
                                         <option value="<?= htmlspecialchars($k) ?>" <?= ($work_setup === $k) ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($k) ?>
@@ -116,7 +258,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
 
                             <!-- Filter Reset Button -->
-                            <div class="col-lg-1 col-md-4 d-flex justify-content-md-start justify-content-lg-end">
+                            <div class="col-lg-1 col-md-2 d-flex justify-content-md-start justify-content-lg-end">
                                 <div>
                                     <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
                                     <a href="jobs.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
@@ -129,7 +271,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Quick Filter Chips -->
                         <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top border-line">
                             <span class="small fw-bold text-muted-custom text-uppercase" style="font-size: 11px;">Quick Filters:</span>
-                            <a href="jobs.php" class="chip chip-selectable <?= (empty($job_type) && empty($work_setup) && empty($employer_type) && empty($pay_type)) ? 'active' : '' ?>">
+                            <a href="jobs.php" class="chip chip-selectable <?= (empty($job_type) && empty($work_setup) && empty($employer_type) && empty($pay_type) && empty($category)) ? 'active' : '' ?>">
                                 All Roles
                             </a>
                             <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>">

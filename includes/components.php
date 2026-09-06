@@ -164,99 +164,140 @@ if (!function_exists('render_job_card')) {
             $pay_amount = trim($m[1]);
             $pay_unit = isset($m[2]) ? trim($m[2]) : '';
         }
+        // Resolve cover photo:
+        $cover_image = '';
+        if (!empty($job['image'])) {
+            $img = $job['image'];
+            if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://') || str_starts_with($img, '/')) {
+                $cover_image = $img;
+            } else {
+                $cover_image = $base_url . ltrim($img, '/');
+            }
+        } else {
+            // Curated domain fallbacks
+            $cat_name = strtolower($job['category'] ?? '');
+            if (str_contains($cat_name, 'tech') || str_contains($cat_name, 'it') || str_contains($cat_name, 'computer')) {
+                $cover_image = 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop';
+            } elseif (str_contains($cat_name, 'lib') || str_contains($cat_name, 'book')) {
+                $cover_image = 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop';
+            } elseif (str_contains($cat_name, 'admin') || str_contains($cat_name, 'clerk') || str_contains($cat_name, 'office')) {
+                $cover_image = 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop';
+            } elseif (str_contains($cat_name, 'sci') || str_contains($cat_name, 'lab')) {
+                $cover_image = 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop';
+            } elseif (str_contains($cat_name, 'tutor') || str_contains($cat_name, 'peer')) {
+                $cover_image = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop';
+            } elseif (str_contains($cat_name, 'sport') || str_contains($cat_name, 'athletic')) {
+                $cover_image = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop';
+            } else {
+                $cover_image = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';
+            }
+        }
         ?>
-        <div class="card-paper card-hover d-flex flex-column h-100 position-relative">
-            <!-- 1. Top Header: Partner / Office Chip & Featured Status -->
-            <div class="job-card-top-header d-flex align-items-center justify-content-between mb-3">
-                <div>
+        <div class="card-paper p-0 overflow-hidden card-hover d-flex flex-column h-100 position-relative shadow-sm" style="border-radius: var(--radius-card, 16px);">
+            <!-- 1. Top Cover Picture Section -->
+            <div class="position-relative overflow-hidden" style="height: 165px; background-color: #f1f3f4;">
+                <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="d-block w-100 h-100 text-decoration-none">
+                    <img src="<?= htmlspecialchars($cover_image) ?>" 
+                         alt="<?= htmlspecialchars($title) ?>" 
+                         class="w-100 h-100" 
+                         loading="lazy"
+                         style="object-fit: cover; object-position: center; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);"
+                         onmouseover="this.style.transform='scale(1.06)'"
+                         onmouseout="this.style.transform='scale(1.0)'"
+                         onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';">
+                </a>
+                
+                <!-- Subtle Gradient Overlay -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none" style="background: linear-gradient(180deg, rgba(17, 24, 39, 0.55) 0%, rgba(17, 24, 39, 0.05) 45%, rgba(17, 24, 39, 0.72) 100%);"></div>
+
+                <!-- Top Badges Overlay -->
+                <div class="position-absolute top-0 start-0 end-0 p-3 d-flex justify-content-between align-items-start pointer-events-none">
                     <?php if ($is_partner): ?>
-                        <span class="job-card-partner-chip job-card-partner-chip--partner">
+                        <span class="badge rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-1 px-2 py-1 fw-bold" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.95); color: #0d3b2e;">
                             <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
                         </span>
                     <?php else: ?>
-                        <span class="job-card-partner-chip job-card-partner-chip--office">
+                        <span class="badge rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-1 px-2 py-1 fw-bold" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.95); color: #0d3b2e;">
                             <i class="bi bi-bank text-accent"></i> University Office
                         </span>
                     <?php endif; ?>
+
+                    <?php if (!empty($job['image']) || !empty($job['is_featured'])): ?>
+                        <span class="badge rounded-pill shadow-sm border border-white-50 d-inline-flex align-items-center gap-1 px-2 py-1 fw-semibold text-white" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(17, 24, 39, 0.75);">
+                            <i class="bi bi-stars text-warning"></i> Featured
+                        </span>
+                    <?php else: ?>
+                        <span class="badge rounded-pill shadow-sm border border-white-50 d-inline-flex align-items-center gap-1 px-2 py-1 fw-semibold text-white" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(17, 24, 39, 0.75);">
+                            <i class="bi bi-geo-alt-fill text-white-50"></i> <?= htmlspecialchars($job['work_setup'] ?? 'On-Campus') ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
-                <?php if (!empty($job['image']) || !empty($job['is_featured'])): ?>
-                    <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border" style="background-color: var(--surface); color: var(--ink); border-color: var(--line) !important; font-size: 11px; font-weight: 600; padding: 4px 8px;">
-                        <i class="bi bi-stars text-accent"></i> Featured
-                    </span>
-                <?php endif; ?>
-            </div>
 
-            <!-- 2. Job Title and Employer Info -->
-            <div class="job-card-heading mb-3">
-                <h3 class="card-paper-title mb-2">
-                    <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="text-decoration-none text-ink">
-                        <?= htmlspecialchars($title) ?>
-                    </a>
-                </h3>
-
-                <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small">
-                    <span class="d-inline-flex align-items-center gap-1">
-                        <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-building' ?>"></i>
-                        <span class="fw-semibold text-ink"><?= htmlspecialchars($org_name) ?></span>
+                <!-- Bottom Badges Overlay: Category & Pay Rate -->
+                <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex justify-content-between align-items-end pointer-events-none">
+                    <span class="badge rounded-pill text-white border border-white-50 px-2 py-1 text-truncate" style="font-size: 11px; max-width: 170px; background: rgba(0, 0, 0, 0.72) !important;">
+                        <i class="bi bi-tag-fill text-accent me-1"></i><?= htmlspecialchars($job['category'] ?? 'Campus Role') ?>
                     </span>
-                    <span>&bull;</span>
-                    <span class="d-inline-flex align-items-center gap-1 text-truncate">
-                        <i class="bi bi-geo-alt"></i>
-                        <span><?= htmlspecialchars($location) ?></span>
+                    <span class="badge rounded-pill text-white border border-white-50 px-2 py-1 fw-bold" style="font-size: 11px; background: rgba(13, 59, 46, 0.9) !important;">
+                        <?= htmlspecialchars($pay_raw) ?>
                     </span>
                 </div>
             </div>
 
-            <!-- 3. Tags Section -->
-            <?php if (!empty($display_badges)): ?>
-                <div class="job-card-tags d-flex flex-wrap gap-1 mb-3">
-                    <?php foreach ($display_badges as $b): ?>
-                        <span class="chip chip-sm"><?= htmlspecialchars($b) ?></span>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+            <!-- 2. Card Body Content -->
+            <div class="p-4 d-flex flex-column flex-grow-1">
+                <!-- Job Title and Employer Info -->
+                <div class="job-card-heading mb-3">
+                    <h3 class="card-paper-title fs-5 mb-2">
+                        <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="text-decoration-none text-ink">
+                            <?= htmlspecialchars($title) ?>
+                        </a>
+                    </h3>
 
-            <!-- 4. Creative Pay Rate Box -->
-            <div class="job-card-pay mt-auto mb-3">
-                <div class="job-card-pay-box">
-                    <div class="d-flex align-items-center gap-2 min-w-0">
-                        <div class="job-card-pay-icon flex-shrink-0">
-                            <i class="bi bi-cash-stack"></i>
-                        </div>
-                        <div class="d-flex align-items-baseline gap-1 min-w-0 text-truncate">
-                            <span class="job-card-pay-amount"><?= htmlspecialchars($pay_amount) ?></span>
-                            <?php if (!empty($pay_unit)): ?>
-                                <span class="job-card-pay-unit">/ <?= htmlspecialchars($pay_unit) ?></span>
-                            <?php endif; ?>
-                        </div>
+                    <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small">
+                        <span class="d-inline-flex align-items-center gap-1">
+                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-building' ?>"></i>
+                            <span class="fw-semibold text-ink"><?= htmlspecialchars($org_name) ?></span>
+                        </span>
+                        <span>&bull;</span>
+                        <span class="d-inline-flex align-items-center gap-1 text-truncate">
+                            <i class="bi bi-geo-alt"></i>
+                            <span><?= htmlspecialchars($location) ?></span>
+                        </span>
                     </div>
-                    <span class="job-card-pay-tag">
-                        <i class="bi bi-shield-check text-accent"></i> Verified Rate
-                    </span>
-                </div>
-            </div>
-
-            <!-- 5. Footer: Slots, Progress, Deadline, Actions -->
-            <div class="pt-3 border-top border-line">
-                <div class="d-flex justify-content-between small text-muted-custom mb-1">
-                    <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
-                    <span class="fw-bold text-ink"><?= $pct ?>%</span>
-                </div>
-                <div class="progress-paper mb-3">
-                    <div class="progress-paper-bar" style="width: <?= $pct ?>%;"></div>
                 </div>
 
-                <div class="d-flex align-items-center justify-content-between gap-2">
-                    <span class="small text-muted-custom text-truncate">
-                        <i class="bi bi-calendar-event me-1"></i> <?= htmlspecialchars($deadline) ?>
-                    </span>
-                    <div class="d-flex gap-2 flex-shrink-0">
-                        <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="btn-pill-outline btn-pill-sm">
-                            Details
-                        </a>
-                        <a href="<?= $base_url ?>student/apply.php?id=<?= $id ?>&job_id=<?= $id ?>" class="btn-pill btn-pill-sm">
-                            Apply
-                        </a>
+                <!-- Tags Section -->
+                <?php if (!empty($display_badges)): ?>
+                    <div class="job-card-tags d-flex flex-wrap gap-1 mb-3">
+                        <?php foreach ($display_badges as $b): ?>
+                            <span class="chip chip-sm"><?= htmlspecialchars($b) ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Slots, Progress, Deadline, Actions -->
+                <div class="mt-auto pt-3 border-top border-line">
+                    <div class="d-flex justify-content-between small text-muted-custom mb-1">
+                        <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
+                        <span class="fw-bold text-ink"><?= $pct ?>%</span>
+                    </div>
+                    <div class="progress-paper mb-3">
+                        <div class="progress-paper-bar" style="width: <?= $pct ?>%;"></div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <span class="small text-muted-custom text-truncate">
+                            <i class="bi bi-calendar-event me-1"></i> <?= htmlspecialchars($deadline) ?>
+                        </span>
+                        <div class="d-flex gap-2 flex-shrink-0">
+                            <a href="<?= $base_url ?>student/job-details.php?id=<?= $id ?>" class="btn-pill-outline btn-pill-sm text-decoration-none">
+                                Details
+                            </a>
+                            <a href="<?= $base_url ?>student/apply.php?id=<?= $id ?>&job_id=<?= $id ?>" class="btn-pill btn-pill-sm text-decoration-none">
+                                Apply
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
