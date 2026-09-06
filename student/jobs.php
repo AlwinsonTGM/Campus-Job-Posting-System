@@ -74,9 +74,6 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="p-4 p-md-5 position-relative">
                         <div class="row align-items-center g-4">
                             <div class="col-lg-8">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;">
-                                    <i class="bi bi-stars text-warning"></i> Campus Opportunity Directory
-                                </div>
                                 <h1 class="display-6 fw-bold mb-2 text-white" style="letter-spacing: -0.02em;">Find Your On-Campus Opportunity</h1>
                                 <p class="mb-3 text-white-50" style="max-width: 620px; font-size: 14.5px; line-height: 1.6;">
                                     Explore verified student assistantships, academic laboratory assignments, library roles, and peer tutoring opportunities designed to work smoothly around your class schedule.
@@ -93,7 +90,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-lg-4 text-lg-end d-none d-lg-block">
+                            <div class="col-lg-4 text-lg-end d-none d-lg-block" id="hero-active-filter-card">
                                 <div class="p-3 rounded-4 text-start d-inline-block shadow-sm" style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); min-width: 240px;">
                                     <div class="small text-white-50 text-uppercase fw-bold mb-1" style="font-size: 11px;">Active Filter</div>
                                     <div class="fw-bold text-white fs-6 mb-2">
@@ -113,7 +110,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <!-- Visual Category Discovery Section -->
-                <div class="mb-4">
+                <div class="mb-4" id="category-discovery-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <h2 class="h6 fw-bold text-ink mb-0 d-flex align-items-center gap-2">
@@ -122,13 +119,13 @@ require_once __DIR__ . '/../includes/header.php';
                             <span class="small text-muted-custom">Select a discipline family to filter verified openings</span>
                         </div>
                         <?php if (!empty($category)): ?>
-                            <a href="jobs.php" class="small text-accent text-decoration-none fw-semibold">
+                            <a href="jobs.php" class="small text-accent text-decoration-none fw-semibold category-clear-btn" id="clear-category-filter">
                                 Clear Category Filter &times;
                             </a>
                         <?php endif; ?>
                     </div>
 
-                    <div class="row g-3">
+                    <div class="row g-3" id="category-tiles-grid">
                         <?php foreach ($categories as $cat): 
                             $is_active_cat = (strcasecmp($category, $cat['name']) === 0 || strcasecmp($category, (string)$cat['id']) === 0);
                             $cat_cover = !empty($cat['image']) ? $cat['image'] : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';
@@ -136,7 +133,11 @@ require_once __DIR__ . '/../includes/header.php';
                         ?>
                             <div class="col-6 col-md-4 col-lg-2">
                                 <a href="jobs.php?category=<?= urlencode($cat['name']) ?>" 
-                                   class="card-paper p-0 overflow-hidden d-flex flex-column text-decoration-none h-100 position-relative category-visual-tile <?= $is_active_cat ? 'category-visual-tile--active' : '' ?>">
+                                   class="card-paper p-0 overflow-hidden d-flex flex-column text-decoration-none h-100 position-relative category-visual-tile <?= $is_active_cat ? 'category-visual-tile--active' : '' ?>"
+                                   data-category="<?= htmlspecialchars($cat['name']) ?>"
+                                   role="button"
+                                   tabindex="0"
+                                   title="Filter by <?= htmlspecialchars($cat['name']) ?>">
                                     
                                     <!-- Tile Cover Photo -->
                                     <div class="position-relative overflow-hidden" style="height: 85px; background: #e5e7eb;">
@@ -257,6 +258,10 @@ require_once __DIR__ . '/../includes/header.php';
                                 </select>
                             </div>
 
+                            <!-- Hidden filter states for full AJAX persistence -->
+                            <input type="hidden" name="employer_type" id="filter-employer-type" value="<?= htmlspecialchars($employer_type) ?>">
+                            <input type="hidden" name="pay_type" id="filter-pay-type" value="<?= htmlspecialchars($pay_type) ?>">
+
                             <!-- Filter Reset Button -->
                             <div class="col-lg-1 col-md-2 d-flex justify-content-md-start justify-content-lg-end">
                                 <div>
@@ -269,27 +274,27 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
 
                         <!-- Quick Filter Chips -->
-                        <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top border-line">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top border-line" id="quick-filter-chips">
                             <span class="small fw-bold text-muted-custom text-uppercase" style="font-size: 11px;">Quick Filters:</span>
-                            <a href="jobs.php" class="chip chip-selectable <?= (empty($job_type) && empty($work_setup) && empty($employer_type) && empty($pay_type) && empty($category)) ? 'active' : '' ?>">
+                            <a href="jobs.php" class="chip chip-selectable <?= (empty($job_type) && empty($work_setup) && empty($employer_type) && empty($pay_type) && empty($category)) ? 'active' : '' ?>" data-filter-type="reset">
                                 All Roles
                             </a>
-                            <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>">
+                            <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Student Assistant">
                                 Student Assistant
                             </a>
-                            <a href="jobs.php?job_type=Lab+Assistant" class="chip chip-selectable <?= ($job_type === 'Lab Assistant') ? 'active' : '' ?>">
+                            <a href="jobs.php?job_type=Lab+Assistant" class="chip chip-selectable <?= ($job_type === 'Lab Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Lab Assistant">
                                 Lab Assistant
                             </a>
-                            <a href="jobs.php?job_type=Library+Aide" class="chip chip-selectable <?= ($job_type === 'Library Aide') ? 'active' : '' ?>">
+                            <a href="jobs.php?job_type=Library+Aide" class="chip chip-selectable <?= ($job_type === 'Library Aide') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Library Aide">
                                 Library Aide
                             </a>
-                            <a href="jobs.php?work_setup=On-Campus" class="chip chip-selectable <?= ($work_setup === 'On-Campus') ? 'active' : '' ?>">
+                            <a href="jobs.php?work_setup=On-Campus" class="chip chip-selectable <?= ($work_setup === 'On-Campus') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="On-Campus">
                                 <i class="bi bi-geo-alt"></i> On-Campus
                             </a>
-                            <a href="jobs.php?work_setup=Hybrid" class="chip chip-selectable <?= ($work_setup === 'Hybrid') ? 'active' : '' ?>">
+                            <a href="jobs.php?work_setup=Hybrid" class="chip chip-selectable <?= ($work_setup === 'Hybrid') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="Hybrid">
                                 <i class="bi bi-laptop"></i> Hybrid
                             </a>
-                            <a href="jobs.php?employer_type=approved_partner" class="chip chip-selectable <?= ($employer_type === 'approved_partner') ? 'active' : '' ?>">
+                            <a href="jobs.php?employer_type=approved_partner" class="chip chip-selectable <?= ($employer_type === 'approved_partner') ? 'active' : '' ?>" data-filter-name="employer_type" data-filter-val="approved_partner">
                                 <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
                             </a>
                         </div>

@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ------------------------------------------------------------------------
-  // 7. REAL-TIME INSTANT FILTERING & LIVE SEARCH ENGINE
+  // 7. REAL-TIME INSTANT FILTERING & LIVE SEARCH ENGINE (ZERO-RELOAD AJAX)
   // ------------------------------------------------------------------------
   const autoFilterForms = document.querySelectorAll('.auto-filter-form');
 
@@ -558,7 +558,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let debounceTimer = null;
     let currentAbortController = null;
 
-    function executeLiveFilter() {
+    function executeLiveFilter(usePushState, smoothScrollToSection) {
+      if (typeof usePushState === 'undefined') usePushState = false;
+      if (typeof smoothScrollToSection === 'undefined') smoothScrollToSection = false;
+
       const formData = new FormData(form);
       const params = new URLSearchParams();
 
@@ -573,9 +576,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const queryString = params.toString();
       const targetUrl = actionUrl + (queryString ? '?' + queryString : '');
 
-      // Seamlessly sync browser address bar URL
-      if (window.history && window.history.replaceState) {
-        window.history.replaceState(null, '', targetUrl);
+      // Seamlessly sync browser address bar URL without refreshing page
+      if (window.history) {
+        if (usePushState && window.history.pushState) {
+          window.history.pushState(null, '', targetUrl);
+        } else if (window.history.replaceState) {
+          window.history.replaceState(null, '', targetUrl);
+        }
       }
 
       // Cancel any ongoing fetch request
@@ -587,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const resultsContainer = document.getElementById('filter-results-container');
       if (resultsContainer) {
         resultsContainer.style.transition = 'opacity 0.15s ease';
-        resultsContainer.style.opacity = '0.5';
+        resultsContainer.style.opacity = '0.45';
       }
 
       fetch(targetUrl, {
@@ -602,6 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
           const parser = new DOMParser();
           const doc = parser.parseFromString(htmlText, 'text/html');
 
+          // 1. Update Results Container
           const newTargetEl = doc.getElementById('filter-results-container');
           const currentTargetEl = document.getElementById('filter-results-container');
 
@@ -622,9 +630,57 @@ document.addEventListener('DOMContentLoaded', function () {
             tooltips.forEach(function (el) {
               new bootstrap.Tooltip(el);
             });
-          } else {
-            // Fallback: standard navigation
-            window.location.href = targetUrl;
+          } else if (currentTargetEl) {
+            currentTargetEl.style.opacity = '1';
+          }
+
+          // 2. Update Category Visual Tiles Discovery Section
+          const newCategorySec = doc.getElementById('category-discovery-section');
+          const currentCategorySec = document.getElementById('category-discovery-section');
+          if (newCategorySec && currentCategorySec) {
+            currentCategorySec.innerHTML = newCategorySec.innerHTML;
+          }
+
+          // 3. Update Hero Banner Active Filter Card
+          const newHeroCard = doc.getElementById('hero-active-filter-card');
+          const currentHeroCard = document.getElementById('hero-active-filter-card');
+          if (newHeroCard && currentHeroCard) {
+            currentHeroCard.innerHTML = newHeroCard.innerHTML;
+          }
+
+          // 4. Update Quick Filter Chips
+          const newChips = doc.getElementById('quick-filter-chips');
+          const currentChips = document.getElementById('quick-filter-chips');
+          if (newChips && currentChips) {
+            currentChips.innerHTML = newChips.innerHTML;
+          }
+
+          // 5. Sync Form Controls from doc
+          const newForm = doc.querySelector('.auto-filter-form');
+          if (newForm) {
+            form.querySelectorAll('select').forEach(function (sel) {
+              const matchingNew = newForm.querySelector(`select[name="${sel.name}"]`);
+              if (matchingNew && sel.value !== matchingNew.value) {
+                sel.value = matchingNew.value;
+              }
+            });
+            form.querySelectorAll('input[type="hidden"]').forEach(function (hid) {
+              const matchingNew = newForm.querySelector(`input[type="hidden"][name="${hid.name}"]`);
+              if (matchingNew && hid.value !== matchingNew.value) {
+                hid.value = matchingNew.value;
+              }
+            });
+          }
+
+          // Optional smooth scroll if requested and out of view
+          if (smoothScrollToSection) {
+            const targetSection = document.getElementById('category-discovery-section') || resultsContainer;
+            if (targetSection) {
+              const rect = targetSection.getBoundingClientRect();
+              if (rect.top < 0 || rect.top > window.innerHeight) {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
           }
         })
         .catch(function (err) {
@@ -637,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.querySelectorAll('select').forEach(function (selectEl) {
       selectEl.addEventListener('change', function () {
         clearTimeout(debounceTimer);
-        executeLiveFilter();
+        executeLiveFilter(true /* pushState */);
       });
     });
 
@@ -645,18 +701,118 @@ document.addEventListener('DOMContentLoaded', function () {
     form.querySelectorAll('input[type="text"], input[type="search"]').forEach(function (inputEl) {
       inputEl.addEventListener('input', function () {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(executeLiveFilter, 220);
+        debounceTimer = setTimeout(function () {
+          executeLiveFilter(false /* replaceState while typing */);
+        }, 220);
       });
 
       inputEl.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
           clearTimeout(debounceTimer);
-          executeLiveFilter();
+          executeLiveFilter(true /* pushState */);
         }
       });
     });
+
+    // 3. Category tile and filter chip click delegation (Zero-Reload)
+    document.addEventListener('click', function (e) {
+      // Category visual tile
+      const catTile = e.target.closest('.category-visual-tile');
+      if (catTile) {
+        e.preventDefault();
+        const catName = catTile.getAttribute('data-category') || '';
+        const catSelect = form.querySelector('select[name="category"]');
+        if (catSelect) {
+          // Toggle off if already selected
+          if (catSelect.value.toLowerCase() === catName.toLowerCase()) {
+            catSelect.value = '';
+          } else {
+            catSelect.value = catName;
+          }
+
+          // Instant optimistic UI state
+          document.querySelectorAll('.category-visual-tile').forEach(function (t) {
+            t.classList.remove('category-visual-tile--active');
+          });
+          if (catSelect.value !== '') {
+            catTile.classList.add('category-visual-tile--active');
+          }
+
+          clearTimeout(debounceTimer);
+          executeLiveFilter(true /* pushState */);
+        }
+        return;
+      }
+
+      // Clear Category Link
+      const clearCat = e.target.closest('.category-clear-btn, #clear-category-filter');
+      if (clearCat) {
+        e.preventDefault();
+        const catSelect = form.querySelector('select[name="category"]');
+        if (catSelect) {
+          catSelect.value = '';
+          clearTimeout(debounceTimer);
+          executeLiveFilter(true);
+        }
+        return;
+      }
+
+      // Quick filter chips
+      const chip = e.target.closest('#quick-filter-chips .chip-selectable');
+      if (chip) {
+        e.preventDefault();
+        const filterName = chip.getAttribute('data-filter-name');
+        const filterVal = chip.getAttribute('data-filter-val');
+        const isReset = chip.getAttribute('data-filter-type') === 'reset' || (!filterName && !filterVal);
+
+        if (isReset) {
+          form.reset();
+          form.querySelectorAll('select').forEach(function (s) { s.value = ''; });
+          form.querySelectorAll('input[type="text"], input[type="search"], input[type="hidden"]').forEach(function (i) { i.value = ''; });
+        } else if (filterName) {
+          const input = form.querySelector(`[name="${filterName}"]`);
+          if (input) {
+            input.value = (input.value === filterVal) ? '' : filterVal;
+          }
+        }
+        clearTimeout(debounceTimer);
+        executeLiveFilter(true);
+        return;
+      }
+
+      // Reset buttons in filter bar or banner
+      const resetBtn = e.target.closest('.btn-filter-reset, #hero-active-filter-card a');
+      if (resetBtn) {
+        e.preventDefault();
+        form.reset();
+        form.querySelectorAll('select').forEach(function (s) { s.value = ''; });
+        form.querySelectorAll('input[type="text"], input[type="search"], input[type="hidden"]').forEach(function (i) { i.value = ''; });
+        clearTimeout(debounceTimer);
+        executeLiveFilter(true);
+        return;
+      }
+    });
+
+    // 4. Popstate support for browser Back and Forward navigation
+    window.addEventListener('popstate', function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      form.querySelectorAll('select, input[type="text"], input[type="search"], input[type="hidden"]').forEach(function (el) {
+        el.value = urlParams.get(el.name) || '';
+      });
+      executeLiveFilter(false /* skip pushState on popstate */);
+    });
   });
+
+  // 5. On initial landing with filter parameters, smoothly scroll to category / filter section
+  if (window.location.search && (window.location.search.includes('category=') || window.location.search.includes('job_type=') || window.location.search.includes('keyword='))) {
+    const targetSection = document.getElementById('category-discovery-section') || document.getElementById('filter-results-container');
+    if (targetSection && !window.location.hash) {
+      setTimeout(function () {
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+    }
+  }
 
   // Global Keyboard Shortcut: Ctrl+K / Cmd+K to toggle Spotlight Search
   document.addEventListener('keydown', function (e) {
