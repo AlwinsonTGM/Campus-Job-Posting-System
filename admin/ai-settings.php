@@ -53,7 +53,7 @@ $is_configured = !empty($current_key) && !str_contains($current_key, 'YOUR_API_K
 $current_model = get_ai_env('NVIDIA_DEFAULT_MODEL', 'nvidia/nemotron-3.5-lightning-30b-a3b');
 $current_rate_limit = (int)get_ai_env('AI_RATE_LIMIT_PER_MINUTE', 10);
 $current_temp = (float)get_ai_env('AI_TEMPERATURE', 0.6);
-$models = get_nvidia_free_models();
+$models = get_nvidia_models();
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -80,7 +80,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <i class="bi bi-cpu-fill text-success me-2"></i>NVIDIA NIM &amp; 3D Robot Settings
                     </h1>
                     <p class="text-muted-custom mb-0 small">
-                        Manage your NVIDIA account API key, configure all free chat endpoints, rate limits, and test model responses live.
+                        Manage your NVIDIA account API key, configure all chat endpoints, rate limits, and test model responses live.
                     </p>
                 </div>
                 <div>
@@ -107,7 +107,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <div>
                                 <h6 class="fw-bold mb-0 text-success-emphasis">NVIDIA NIM API Key Configured &amp; Active</h6>
-                                <small class="text-secondary">Key: <code><?= htmlspecialchars(substr($current_key, 0, 10)) . '...' . htmlspecialchars(substr($current_key, -4)) ?></code> • <?= count($models) ?> Free Chat Endpoints Ready</small>
+                                <small class="text-secondary">Key: <code><?= htmlspecialchars(substr($current_key, 0, 10)) . '...' . htmlspecialchars(substr($current_key, -4)) ?></code> • <?= count($models) ?> Chat Endpoints Ready</small>
                             </div>
                         </div>
                         <span class="badge bg-success px-3 py-2 rounded-pill">Status: Online</span>
@@ -123,10 +123,10 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <h6 class="fw-bold mb-1 text-warning-emphasis">Local Guided Mode Active (Awaiting NVIDIA API Key)</h6>
                                 <p class="small text-secondary mb-2">
-                                    The 3D robot on the homepage is currently operating in <strong>Local Guided Mode</strong> using verified campus advice. To enable real-time generative AI across all free models:
+                                    The 3D robot on the homepage is currently operating in <strong>Local Guided Mode</strong> using verified campus advice. To enable real-time generative AI across all models:
                                 </p>
                                 <ol class="small text-secondary mb-2 ps-3">
-                                    <li>Log into your free account at <a href="https://build.nvidia.com" target="_blank" class="fw-bold text-dark text-decoration-underline">build.nvidia.com <i class="bi bi-box-arrow-up-right"></i></a> (comes with 1,000 free credits).</li>
+                                    <li>Log into your account at <a href="https://build.nvidia.com" target="_blank" class="fw-bold text-dark text-decoration-underline">build.nvidia.com <i class="bi bi-box-arrow-up-right"></i></a> (comes with 1,000 credits).</li>
                                     <li>Click any model and tap <strong>"Get API Key"</strong>. Copy your key starting with <code>nvapi-...</code>.</li>
                                     <li>Paste it below and click <strong>Save Configuration</strong>. All 10 models unlock instantly!</li>
                                 </ol>
@@ -223,7 +223,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                min="1" 
                                                max="60" 
                                                value="<?= $current_rate_limit ?>">
-                                        <div class="form-text small text-muted">Protects free credits from bots.</div>
+                                        <div class="form-text small text-muted">Protects credits from bots.</div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label for="temperature" class="form-label fw-bold text-ink small">
@@ -299,11 +299,11 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
 
-            <!-- Free Models Catalog Matrix -->
+            <!-- Models Catalog Matrix -->
             <div class="card border-0 shadow-sm rounded-4 mt-4">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h5 class="card-title mb-0 fw-bold text-ink">
-                        <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>NVIDIA Free Chat Models Catalog
+                        <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>NVIDIA Chat Models Catalog
                     </h5>
                     <span class="badge bg-secondary rounded-pill"><?= count($models) ?> Models Loaded</span>
                 </div>

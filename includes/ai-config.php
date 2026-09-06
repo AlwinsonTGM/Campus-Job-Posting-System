@@ -237,6 +237,15 @@ function get_nvidia_free_models() {
 }
 
 /**
+ * Alias for get_nvidia_free_models
+ * 
+ * @return array
+ */
+function get_nvidia_models() {
+    return get_nvidia_free_models();
+}
+
+/**
  * Validate and sanitize user prompt
  * 
  * @param mixed $raw_input
