@@ -594,6 +594,31 @@ function save_uploaded_job_photo($file) {
     return null;
 }
 
+function save_uploaded_category_photo($file) {
+    if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    $allowed_exts = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
+    $allowed_mimes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
+        return null;
+    }
+    if ($file['size'] > 5 * 1024 * 1024) {
+        return null;
+    }
+    $upload_dir = dirname(__DIR__) . '/uploads/categories';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+    $filename = 'cat_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $target = $upload_dir . '/' . $filename;
+    if (move_uploaded_file($file['tmp_name'], $target)) {
+        return 'uploads/categories/' . $filename;
+    }
+    return null;
+}
+
 function update_user_verification($id, $status, $notes = '') {
     try {
         $pdo = get_db_connection();
@@ -1629,15 +1654,23 @@ function get_categories() {
     }
 }
 
-function create_category($data) {
+function create_category($data, $photo_file = null) {
     try {
         $pdo = get_db_connection();
         $name = trim($data['name'] ?? '');
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name), '-'));
 
+        $image_path = null;
+        if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $image_path = save_uploaded_category_photo($photo_file);
+        }
+        if (empty($image_path) && !empty($data['image'])) {
+            $image_path = trim($data['image']);
+        }
+
         $stmt = $pdo->prepare("
-            INSERT INTO `categories` (`name`, `slug`, `icon`, `description`, `theme`, `badge_tag`, `badge_icon`, `job_count`, `hourly_range`, `created_at`)
-            VALUES (:name, :slug, :icon, :description, :theme, :badge_tag, :badge_icon, 0, :hourly_range, NOW())
+            INSERT INTO `categories` (`name`, `slug`, `icon`, `description`, `theme`, `badge_tag`, `badge_icon`, `job_count`, `hourly_range`, `image`, `created_at`)
+            VALUES (:name, :slug, :icon, :description, :theme, :badge_tag, :badge_icon, 0, :hourly_range, :image, NOW())
         ");
 
         $stmt->execute([
@@ -1648,13 +1681,82 @@ function create_category($data) {
             ':theme'        => $data['theme'] ?? 'kld-green',
             ':badge_tag'    => $data['badge_tag'] ?? null,
             ':badge_icon'   => $data['badge_icon'] ?? null,
-            ':hourly_range' => $data['hourly_range'] ?? null
+            ':hourly_range' => $data['hourly_range'] ?? null,
+            ':image'        => $image_path
         ]);
 
         return (int)$pdo->lastInsertId();
     } catch (Exception $e) {
         error_log("create_category error: " . $e->getMessage());
         return 0;
+    }
+}
+
+function update_category($id, $data, $photo_file = null) {
+    try {
+        $pdo = get_db_connection();
+        $id = (int)$id;
+        if ($id <= 0) return false;
+
+        $name = trim($data['name'] ?? '');
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name), '-'));
+
+        $image_path = null;
+        if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $image_path = save_uploaded_category_photo($photo_file);
+        }
+        if (empty($image_path) && isset($data['image']) && $data['image'] !== '') {
+            $image_path = trim($data['image']);
+        }
+
+        $params = [
+            ':id'           => $id,
+            ':name'         => $name,
+            ':slug'         => $slug,
+            ':icon'         => $data['icon'] ?? 'bi-briefcase',
+            ':description'  => trim($data['description'] ?? ''),
+            ':theme'        => $data['theme'] ?? 'kld-green',
+            ':badge_tag'    => $data['badge_tag'] ?? null,
+            ':badge_icon'   => $data['badge_icon'] ?? null,
+            ':hourly_range' => $data['hourly_range'] ?? null
+        ];
+
+        $image_clause = "";
+        if ($image_path !== null) {
+            $image_clause = ", `image` = :image";
+            $params[':image'] = $image_path;
+        }
+
+        $sql = "
+            UPDATE `categories`
+            SET `name` = :name,
+                `slug` = :slug,
+                `icon` = :icon,
+                `description` = :description,
+                `theme` = :theme,
+                `badge_tag` = :badge_tag,
+                `badge_icon` = :badge_icon,
+                `hourly_range` = :hourly_range
+                {$image_clause}
+            WHERE `id` = :id
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute($params);
+    } catch (Exception $e) {
+        error_log("update_category error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function delete_category($id) {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("DELETE FROM `categories` WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("delete_category error: " . $e->getMessage());
+        return false;
     }
 }
 
