@@ -112,6 +112,14 @@ function hydrate_devblog($row) {
     return $row;
 }
 
+function hydrate_notification($row) {
+    if (!$row) return null;
+    $row['id'] = (int)$row['id'];
+    $row['user_id'] = (int)$row['user_id'];
+    $row['is_read'] = !empty($row['is_read']);
+    return $row;
+}
+
 // ============================================================================
 // ENUMS & SELECT OPTION HELPERS
 // ============================================================================
@@ -622,6 +630,7 @@ function save_uploaded_category_photo($file) {
 function update_user_verification($id, $status, $notes = '') {
     try {
         $pdo = get_db_connection();
+        $target_user = get_user_by_id($id);
         $stmt = $pdo->prepare("
             UPDATE `users` 
             SET `verification_status` = :status, `rejection_reason` = :notes, `updated_at` = NOW() 
@@ -632,7 +641,39 @@ function update_user_verification($id, $status, $notes = '') {
             ':notes'  => $notes,
             ':id'     => (int)$id
         ]);
-        return $stmt->rowCount() > 0;
+        $success = $stmt->rowCount() > 0 || ($target_user && $target_user['verification_status'] === $status);
+
+        if ($target_user && $success) {
+            if ($status === 'verified') {
+                $msg = ($target_user['role'] === 'employer') 
+                    ? "Congratulations! Your partner organization accreditation has been approved. You can now post campus job vacancies."
+                    : "Your account verification has been approved. You now have full access to campus opportunities.";
+                $link = ($target_user['role'] === 'employer') ? "employer/create-job.php" : "student/jobs.php";
+                create_notification(
+                    $id,
+                    'verification',
+                    'Account Verified & Approved! 🎉',
+                    $msg,
+                    $link,
+                    'bi-patch-check-fill',
+                    'success'
+                );
+            } elseif ($status === 'rejected') {
+                $reason_snippet = !empty($notes) ? " Note: {$notes}" : "";
+                $msg = "Your verification request requires attention or was declined.{$reason_snippet} Please check your profile credentials.";
+                create_notification(
+                    $id,
+                    'verification',
+                    'Verification Status Update',
+                    $msg,
+                    'settings.php',
+                    'bi-exclamation-triangle-fill',
+                    'danger'
+                );
+            }
+        }
+
+        return $success;
     } catch (Exception $e) {
         error_log("update_user_verification error: " . $e->getMessage());
         return false;
@@ -727,6 +768,19 @@ function register_user($data, $permit_file = null, $proof_file = null) {
         $new_user = get_user_by_id($new_id);
         if ($new_user) unset($new_user['password']);
         $_SESSION['user'] = $new_user;
+
+        if ($verification === 'pending_approval') {
+            $applicant_name = trim($data['name'] ?? 'New Partner');
+            $type_label = $role === 'employer' ? 'Employer Accreditation' : 'Student Verification';
+            notify_all_admins(
+                'verification_request',
+                "New {$type_label} Pending",
+                "{$applicant_name} ({$role}) registered and is awaiting credential verification.",
+                'admin/users.php?ver_status=pending_approval',
+                'bi-shield-exclamation',
+                'warning'
+            );
+        }
 
         return ['success' => true, 'user' => $new_user];
     } catch (Exception $e) {
@@ -890,6 +944,15 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
             'resolved_at'       => null
         ];
 
+        notify_all_admins(
+            'profile_request',
+            'Profile Correction Request',
+            "{$current_user['name']} submitted a profile change request for administrative review.",
+            'admin/users.php?ver_status=all',
+            'bi-person-gear',
+            'info'
+        );
+
         return ['success' => true, 'request' => $new_req];
     } catch (Exception $e) {
         return ['success' => false, 'message' => 'Request creation failed: ' . $e->getMessage()];
@@ -989,6 +1052,17 @@ function approve_profile_request($request_id, $admin_notes = '') {
             $_SESSION['user'] = get_user_by_id($user_id);
         }
 
+        // Notify student of approval
+        create_notification(
+            $user_id,
+            'profile_request',
+            'Profile Update Approved! 🎉',
+            'Your institutional record change request has been verified and updated by the administrator.',
+            'settings.php',
+            'bi-person-check-fill',
+            'success'
+        );
+
         return true;
     } catch (Exception $e) {
         if (isset($pdo) && $pdo->inTransaction()) {
@@ -1002,6 +1076,10 @@ function approve_profile_request($request_id, $admin_notes = '') {
 function reject_profile_request($request_id, $admin_notes = '') {
     try {
         $pdo = get_db_connection();
+        $chk_stmt = $pdo->prepare("SELECT `user_id` FROM `profile_requests` WHERE `id` = :id LIMIT 1");
+        $chk_stmt->execute([':id' => (int)$request_id]);
+        $user_id = (int)$chk_stmt->fetchColumn();
+
         $stmt = $pdo->prepare("
             UPDATE `profile_requests` 
             SET `status` = 'rejected', `admin_notes` = :notes, `resolved_at` = NOW(), `dismissed_by_user` = 0 
@@ -1011,7 +1089,22 @@ function reject_profile_request($request_id, $admin_notes = '') {
             ':notes' => trim($admin_notes),
             ':id'    => (int)$request_id
         ]);
-        return $stmt->rowCount() > 0;
+        $success = $stmt->rowCount() > 0;
+
+        if ($success && $user_id > 0) {
+            $notes_snip = !empty($admin_notes) ? " Note: " . trim($admin_notes) : "";
+            create_notification(
+                $user_id,
+                'profile_request',
+                'Profile Update Request Declined',
+                "Your profile change request was declined by the administrator.{$notes_snip}",
+                'settings.php',
+                'bi-person-x-fill',
+                'warning'
+            );
+        }
+
+        return $success;
     } catch (Exception $e) {
         error_log("reject_profile_request error: " . $e->getMessage());
         return false;
@@ -1464,6 +1557,21 @@ function create_application($data) {
         ]);
 
         $new_id = (int)$pdo->lastInsertId();
+
+        // Dispatch notification to hiring employer
+        if ($new_id > 0 && !empty($job['employer_id'])) {
+            $student_disp = $user['name'] ?? 'A student';
+            create_notification(
+                (int)$job['employer_id'],
+                'new_application',
+                'New Candidate Application',
+                "{$student_disp} submitted an application for '{$job['title']}'.",
+                "employer/review-app.php?id={$new_id}",
+                'bi-file-earmark-person',
+                'info'
+            );
+        }
+
         return ['success' => true, 'id' => $new_id];
     } catch (PDOException $e) {
         if ($e->getCode() == 23000 || strpos($e->getMessage(), 'unique_student_job') !== false) {
@@ -1566,6 +1674,56 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
         }
 
         $pdo->commit();
+
+        // Dispatch notification to student regarding application status
+        $student_id = (int)($target_app['student_id'] ?? 0);
+        $job_title = $target_app['job_title'] ?? 'Campus Job';
+        if ($student_id > 0) {
+            $notif_title = "Application Update: " . $job_title;
+            $notif_icon = 'bi-bell';
+            $notif_badge = 'primary';
+            $notif_msg = "Your application for '{$job_title}' has been updated to {$status_label}.";
+
+            if ($status === 'interview_scheduled') {
+                $notif_title = "Interview Scheduled: " . $job_title;
+                $notif_icon = 'bi-calendar-check-fill';
+                $notif_badge = 'info';
+                $date_str = $interview_date ?: 'TBA';
+                $time_str = $interview_time ? ' at ' . $interview_time : '';
+                $venue_str = $interview_venue ? ' (' . $interview_venue . ')' : '';
+                $notif_msg = "You have an interview scheduled on {$date_str}{$time_str}{$venue_str}.";
+            } elseif ($status === 'accepted') {
+                $notif_title = "Application Accepted! 🎉";
+                $notif_icon = 'bi-check-circle-fill';
+                $notif_badge = 'success';
+                $notif_msg = "Congratulations! You have been accepted for the position '{$job_title}'.";
+            } elseif ($status === 'declined') {
+                $notif_title = "Application Update: " . $job_title;
+                $notif_icon = 'bi-x-circle';
+                $notif_badge = 'secondary';
+                $notif_msg = "The hiring supervisor has completed review for '{$job_title}'. The position has been filled or closed.";
+            } elseif ($status === 'under_review') {
+                $notif_title = "Application Under Review";
+                $notif_icon = 'bi-hourglass-split';
+                $notif_badge = 'primary';
+                $notif_msg = "Your application for '{$job_title}' is now being evaluated by the hiring department.";
+            }
+
+            if (!empty($notes)) {
+                $notif_msg .= " Supervisor Note: " . trim($notes);
+            }
+
+            create_notification(
+                $student_id,
+                'application_status',
+                $notif_title,
+                $notif_msg,
+                'student/my-applications.php',
+                $notif_icon,
+                $notif_badge
+            );
+        }
+
         return true;
     } catch (Exception $e) {
         if (isset($pdo) && $pdo->inTransaction()) {
@@ -2109,6 +2267,157 @@ function delete_application($id, $student_id = null) {
         error_log("delete_application error: " . $e->getMessage());
         return false;
     }
+}
+
+// ============================================================================
+// NOTIFICATIONS API & DATA HELPERS
+// ============================================================================
+
+function create_notification($user_id, $type, $title, $message, $link = null, $icon = 'bi-bell', $badge_color = 'primary') {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("
+            INSERT INTO `notifications` (`user_id`, `type`, `title`, `message`, `link`, `icon`, `badge_color`, `is_read`, `created_at`)
+            VALUES (:user_id, :type, :title, :message, :link, :icon, :badge_color, 0, NOW())
+        ");
+        $stmt->execute([
+            ':user_id'     => (int)$user_id,
+            ':type'        => substr($type, 0, 50),
+            ':title'       => substr($title, 0, 255),
+            ':message'     => $message,
+            ':link'        => $link ? substr($link, 0, 255) : null,
+            ':icon'        => substr($icon, 0, 100),
+            ':badge_color' => substr($badge_color, 0, 50)
+        ]);
+        return (int)$pdo->lastInsertId();
+    } catch (Exception $e) {
+        error_log("create_notification error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+function notify_all_admins($type, $title, $message, $link = null, $icon = 'bi-shield-check', $badge_color = 'warning') {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'");
+        $admin_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $count = 0;
+        foreach ($admin_ids as $aid) {
+            if (create_notification($aid, $type, $title, $message, $link, $icon, $badge_color)) {
+                $count++;
+            }
+        }
+        return $count;
+    } catch (Exception $e) {
+        error_log("notify_all_admins error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+function get_user_notifications($user_id, $limit = 30, $unread_only = false) {
+    try {
+        $pdo = get_db_connection();
+        $sql = "SELECT * FROM `notifications` WHERE `user_id` = :user_id";
+        if ($unread_only) {
+            $sql .= " AND `is_read` = 0";
+        }
+        $sql .= " ORDER BY `created_at` DESC LIMIT :limit";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':user_id', (int)$user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        return array_map('hydrate_notification', $rows);
+    } catch (Exception $e) {
+        error_log("get_user_notifications error: " . $e->getMessage());
+        return [];
+    }
+}
+
+function get_unread_notifications_count($user_id) {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM `notifications` WHERE `user_id` = :user_id AND `is_read` = 0");
+        $stmt->execute([':user_id' => (int)$user_id]);
+        return (int)$stmt->fetchColumn();
+    } catch (Exception $e) {
+        error_log("get_unread_notifications_count error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+function mark_notification_as_read($notification_id, $user_id = null) {
+    try {
+        $pdo = get_db_connection();
+        if ($user_id !== null) {
+            $stmt = $pdo->prepare("UPDATE `notifications` SET `is_read` = 1 WHERE `id` = :id AND `user_id` = :user_id");
+            return $stmt->execute([':id' => (int)$notification_id, ':user_id' => (int)$user_id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE `notifications` SET `is_read` = 1 WHERE `id` = :id");
+            return $stmt->execute([':id' => (int)$notification_id]);
+        }
+    } catch (Exception $e) {
+        error_log("mark_notification_as_read error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function mark_all_notifications_as_read($user_id) {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("UPDATE `notifications` SET `is_read` = 1 WHERE `user_id` = :user_id AND `is_read` = 0");
+        return $stmt->execute([':user_id' => (int)$user_id]);
+    } catch (Exception $e) {
+        error_log("mark_all_notifications_as_read error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function delete_notification($notification_id, $user_id = null) {
+    try {
+        $pdo = get_db_connection();
+        if ($user_id !== null) {
+            $stmt = $pdo->prepare("DELETE FROM `notifications` WHERE `id` = :id AND `user_id` = :user_id");
+            return $stmt->execute([':id' => (int)$notification_id, ':user_id' => (int)$user_id]);
+        } else {
+            $stmt = $pdo->prepare("DELETE FROM `notifications` WHERE `id` = :id");
+            return $stmt->execute([':id' => (int)$notification_id]);
+        }
+    } catch (Exception $e) {
+        error_log("delete_notification error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function get_notification_by_id($notification_id, $user_id = null) {
+    try {
+        $pdo = get_db_connection();
+        if ($user_id !== null) {
+            $stmt = $pdo->prepare("SELECT * FROM `notifications` WHERE `id` = :id AND `user_id` = :user_id LIMIT 1");
+            $stmt->execute([':id' => (int)$notification_id, ':user_id' => (int)$user_id]);
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM `notifications` WHERE `id` = :id LIMIT 1");
+            $stmt->execute([':id' => (int)$notification_id]);
+        }
+        $row = $stmt->fetch();
+        return $row ? hydrate_notification($row) : null;
+    } catch (Exception $e) {
+        error_log("get_notification_by_id error: " . $e->getMessage());
+        return null;
+    }
+}
+
+function time_ago_short($datetime) {
+    if (!$datetime) return '';
+    $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
+    if (!$timestamp) return '';
+    $diff = time() - $timestamp;
+    if ($diff < 60) return 'Just now';
+    if ($diff < 3600) return floor($diff / 60) . 'm ago';
+    if ($diff < 86400) return floor($diff / 3600) . 'h ago';
+    if ($diff < 172800) return 'Yesterday';
+    if ($diff < 604800) return floor($diff / 86400) . 'd ago';
+    return date('M j', $timestamp);
 }
 
 // Legacy JSON Compatibility Shims

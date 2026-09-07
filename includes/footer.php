@@ -104,6 +104,11 @@ if (!defined('SITE_NAME')) {
 <!-- Global Main JS (Paper Sheet 3D Tilt & Interaction Engine) -->
 <script src="<?= $base_url ?>assets/js/main.js?v=<?= time() ?>"></script>
 
+<?php if (function_exists('get_logged_user') && get_logged_user()): ?>
+<!-- Real-time Notifications Client -->
+<script src="<?= $base_url ?>assets/js/notifications.js?v=<?= time() ?>"></script>
+<?php endif; ?>
+
 <?php if (isset($extra_js) && is_array($extra_js)): ?>
     <?php foreach ($extra_js as $script): ?>
         <script src="<?= $base_url ?><?= htmlspecialchars($script) ?>"></script>

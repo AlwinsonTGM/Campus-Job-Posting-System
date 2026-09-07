@@ -11,6 +11,8 @@ if (!defined('SITE_NAME')) {
 
 $current_user = get_current_auth_user();
 $current_script = basename($_SERVER['PHP_SELF'] ?? '');
+$user_unread_notifs_count = ($current_user && function_exists('get_unread_notifications_count')) ? get_unread_notifications_count($current_user['id']) : 0;
+$user_recent_notifs = ($current_user && function_exists('get_user_notifications')) ? get_user_notifications($current_user['id'], 5) : [];
 ?>
 <nav class="navbar navbar-expand-lg paper-navbar sticky-top">
     <div class="container-fluid px-lg-4">
@@ -26,11 +28,19 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
             <span class="fw-extrabold text-ink tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
         </a>
 
-        <!-- Mobile Controls (Search Button to the left of the Hamburger) -->
+        <!-- Mobile Controls (Search & Notifications to the left of the Hamburger) -->
         <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
             <button type="button" class="btn-circle-icon btn-nav-search-mobile" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs" aria-label="Search Jobs">
                 <i class="bi bi-search"></i>
             </button>
+            <?php if ($current_user): ?>
+                <a href="<?= $base_url ?>notifications.php" class="btn-circle-icon position-relative text-decoration-none" title="Notifications" aria-label="View Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="nav-notif-badge <?= ($user_unread_notifs_count > 0) ? '' : 'd-none' ?>" id="navNotificationBadgeMobile">
+                        <?= $user_unread_notifs_count > 99 ? '99+' : $user_unread_notifs_count ?>
+                    </span>
+                </a>
+            <?php endif; ?>
             <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -110,6 +120,61 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                 </button>
 
                 <?php if ($current_user): ?>
+                    <!-- Notification Bell Dropdown (Desktop) -->
+                    <div class="dropdown d-none d-lg-block">
+                        <button type="button" class="btn-circle-icon position-relative" id="navNotificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications" aria-label="Notifications">
+                            <i class="bi bi-bell"></i>
+                            <span class="nav-notif-badge <?= ($user_unread_notifs_count > 0) ? '' : 'd-none' ?>" id="navNotificationBadge">
+                                <?= $user_unread_notifs_count > 99 ? '99+' : $user_unread_notifs_count ?>
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notification-dropdown-menu shadow border-line p-0" aria-labelledby="navNotificationDropdown">
+                            <div class="notification-dropdown-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h6 class="mb-0 fw-extrabold text-ink small text-uppercase tracking-wider">Notifications</h6>
+                                    <span class="badge bg-cream text-ink border border-line small py-0 px-2" style="font-size: 11px;">Inbox</span>
+                                </div>
+                                <button type="button" class="btn btn-link p-0 text-muted-custom small text-decoration-none" id="navNotificationMarkAllBtn" style="font-size: 12px;">
+                                    <i class="bi bi-check2-all me-1"></i>Mark all read
+                                </button>
+                            </div>
+                            <div class="notification-list-scroll" id="navNotificationList">
+                                <?php if (empty($user_recent_notifs)): ?>
+                                    <div class="p-4 text-center text-muted-custom">
+                                        <i class="bi bi-bell-slash fs-2 mb-2 d-block text-muted opacity-50"></i>
+                                        <p class="small mb-0">No notifications yet</p>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($user_recent_notifs as $item): 
+                                        $is_unread = empty($item['is_read']);
+                                        $item_link = $base_url . 'api/notifications.php?action=click&id=' . $item['id'];
+                                    ?>
+                                        <a href="<?= $item_link ?>" class="notification-item d-flex align-items-start gap-3 p-3 border-bottom border-line text-decoration-none <?= $is_unread ? 'bg-cream-tint' : '' ?>">
+                                            <div class="notif-icon-circle bg-<?= htmlspecialchars($item['badge_color'] ?? 'primary') ?>-subtle text-<?= htmlspecialchars($item['badge_color'] ?? 'primary') ?> flex-shrink-0">
+                                                <i class="bi <?= htmlspecialchars($item['icon'] ?? 'bi-bell') ?>"></i>
+                                            </div>
+                                            <div class="flex-grow-1 min-w-0">
+                                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                                    <h6 class="small fw-bold text-ink mb-0 text-truncate pe-2"><?= htmlspecialchars($item['title']) ?></h6>
+                                                    <span class="text-muted-custom x-small"><?= htmlspecialchars(time_ago_short($item['created_at'])) ?></span>
+                                                </div>
+                                                <p class="small text-muted-custom mb-0 line-clamp-2"><?= htmlspecialchars($item['message']) ?></p>
+                                            </div>
+                                            <?php if ($is_unread): ?>
+                                                <span class="badge-dot-unread" title="Unread"></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="p-2 text-center bg-cream border-top border-line">
+                                <a href="<?= $base_url ?>notifications.php" class="btn btn-sm btn-link text-ink fw-bold text-decoration-none small py-1">
+                                    View All Notifications <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Logged-in: Dashboard link + Avatar chip -->
                     <?php
                     $dashboard_link = $base_url . 'student/dashboard.php';
@@ -129,6 +194,7 @@ $current_script = basename($_SERVER['PHP_SELF'] ?? '');
                         <ul class="dropdown-menu dropdown-menu-end shadow border-line p-2 rounded-4">
                             <li><h6 class="dropdown-header small text-muted-custom"><?= htmlspecialchars($current_user['email']) ?> (<?= htmlspecialchars(ucfirst($current_user['role'])) ?>)</h6></li>
                             <li><a class="dropdown-item rounded-3" href="<?= $dashboard_link ?>"><i class="bi bi-speedometer2 me-2 text-accent"></i> My Dashboard</a></li>
+                            <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>notifications.php"><i class="bi bi-bell me-2 text-accent"></i> Notifications Center</a></li>
                             <?php if ($current_user['role'] === 'employer'): ?>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/create-job.php"><i class="bi bi-plus-circle me-2 text-accent"></i> Post a Vacancy</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/updates.php"><i class="bi bi-megaphone me-2 text-accent"></i> Post Dispatch</a></li>
