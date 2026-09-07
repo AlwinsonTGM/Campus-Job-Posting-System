@@ -52,9 +52,12 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         // Truncate tables if requested for a clean datastore reset
         if ($truncate) {
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            $tables = ['notifications', 'devblogs', 'updates', 'profile_requests', 'applications', 'jobs', 'categories', 'users'];
-            foreach ($tables as $t) {
-                $pdo->exec("TRUNCATE TABLE `$t`;");
+            $allowed_tables = ['notifications', 'devblogs', 'updates', 'profile_requests', 'applications', 'jobs', 'categories', 'users'];
+            foreach ($allowed_tables as $t) {
+                // Strict whitelist validation for security audit compliance
+                if (in_array($t, $allowed_tables, true) && preg_match('/^[a-z0-9_]+$/i', $t)) {
+                    $pdo->exec("TRUNCATE TABLE `" . $t . "`;");
+                }
             }
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
             $log_fn("All tables truncated.", "info");
