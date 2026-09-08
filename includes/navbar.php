@@ -11,13 +11,22 @@ if (!defined('SITE_NAME')) {
 
 $current_user = get_current_auth_user();
 $current_script = basename($_SERVER['PHP_SELF'] ?? '');
+$dashboard_link = $base_url . 'student/dashboard.php';
+if ($current_user) {
+    if (($current_user['role'] ?? '') === 'employer') {
+        $dashboard_link = $base_url . 'employer/dashboard.php';
+    } elseif (($current_user['role'] ?? '') === 'admin') {
+        $dashboard_link = $base_url . 'admin/reports.php';
+    }
+}
 $user_unread_notifs_count = ($current_user && function_exists('get_unread_notifications_count')) ? get_unread_notifications_count($current_user['id']) : 0;
 $user_recent_notifs = ($current_user && function_exists('get_user_notifications')) ? get_user_notifications($current_user['id'], 5) : [];
 ?>
 <nav class="navbar navbar-expand-lg paper-navbar sticky-top">
     <div class="container-fluid px-lg-4">
         <!-- Left: SVG Mark + SITE_NAME -->
-        <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base_url ?>index.php">
+        <?php $brand_url = $current_user ? $dashboard_link : ($base_url . 'index.php'); ?>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $brand_url ?>" title="<?= $current_user ? 'Go to My Dashboard' : 'Go to Home' ?>">
             <span class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-3 p-2 shadow-sm" style="width: 36px; height: 36px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#2ECC5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -48,18 +57,18 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
 
         <!-- Navbar Links & Right Actions -->
         <div class="collapse navbar-collapse" id="navbarMain">
-            <!-- Center/Left Navigation Links -->
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 gap-xl-2 align-items-lg-center">
-                <?php if ($current_user && ($current_user['role'] ?? '') === 'admin'): 
-                    $nav_pending_count = 0;
-                    if (function_exists('get_profile_requests')) {
-                        $all_pr = get_profile_requests();
-                        $pending_pr = count(array_filter($all_pr, fn($r) => ($r['status'] ?? '') === 'pending'));
-                        $all_u = $_SESSION['users'] ?? (function_exists('load_json_file') ? load_json_file('users.json') : []);
-                        $pending_emp = count(array_filter($all_u, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
-                        $nav_pending_count = $pending_pr + $pending_emp;
-                    }
-                ?>
+            <?php if ($current_user && ($current_user['role'] ?? '') === 'admin'): 
+                $nav_pending_count = 0;
+                if (function_exists('get_profile_requests')) {
+                    $all_pr = get_profile_requests();
+                    $pending_pr = count(array_filter($all_pr, fn($r) => ($r['status'] ?? '') === 'pending'));
+                    $all_u = $_SESSION['users'] ?? (function_exists('load_json_file') ? load_json_file('users.json') : []);
+                    $pending_emp = count(array_filter($all_u, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+                    $nav_pending_count = $pending_pr + $pending_emp;
+                }
+            ?>
+                <!-- Center/Left Navigation Links for Admin -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 gap-xl-2 align-items-lg-center">
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center gap-1 <?= ($current_script === 'users.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/users.php">
                             USERS &amp; VERIFICATION
@@ -88,15 +97,22 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                             JOBS DIRECTORY
                         </a>
                     </li>
-                <?php else: ?>
+                </ul>
+            <?php elseif ($current_user): ?>
+                <!-- Center: Wide Google-Style Search Bar for Logged-In Users -->
+                <div class="paper-nav-search-wrap mx-lg-auto my-2 my-lg-0">
+                    <div class="paper-google-search-bar" data-bs-toggle="modal" data-bs-target="#globalSearchModal" role="button" tabindex="0" title="Search opportunities (Ctrl+K)" aria-label="Search campus jobs and opportunities">
+                        <i class="bi bi-search search-bar-icon"></i>
+                        <input type="text" class="paper-search-input" placeholder="Search opportunities, titles, skills, departments..." readonly tabindex="-1">
+                        <span class="search-kbd-pill d-none d-md-inline-flex">Ctrl K</span>
+                    </div>
+                </div>
+            <?php else: ?>
+                <!-- Center/Left Navigation Links for Guests on index.php -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 gap-xl-2 align-items-lg-center">
                     <li class="nav-item">
-                        <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
+                        <a class="nav-link <?= in_array($current_script, ['jobs.php', 'job-details.php', 'apply.php']) ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
                             FIND JOBS
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($current_script === 'dashboard.php' && strpos($_SERVER['REQUEST_URI'] ?? '', 'employer') !== false) ? 'active' : '' ?>" href="<?= $base_url ?>employer/dashboard.php">
-                            FOR EMPLOYERS
                         </a>
                     </li>
                     <li class="nav-item">
@@ -109,15 +125,17 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                             ABOUT
                         </a>
                     </li>
-                <?php endif; ?>
-            </ul>
+                </ul>
+            <?php endif; ?>
 
             <!-- Right Action Items -->
             <div class="paper-nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                <?php if (!$current_user || ($current_user['role'] ?? '') === 'admin'): ?>
                 <!-- Circular Search-Icon Button (Desktop only; mobile is in top bar beside hamburger) -->
                 <button type="button" class="btn-circle-icon d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
                     <i class="bi bi-search"></i>
                 </button>
+                <?php endif; ?>
 
                 <?php if ($current_user): ?>
                     <!-- Notification Bell Dropdown (Desktop) -->
@@ -175,14 +193,8 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                         </div>
                     </div>
 
-                    <!-- Logged-in: Dashboard link + Avatar chip -->
+                    <!-- Logged-in: Avatar chip -->
                     <?php
-                    $dashboard_link = $base_url . 'student/dashboard.php';
-                    if ($current_user['role'] === 'employer') {
-                        $dashboard_link = $base_url . 'employer/dashboard.php';
-                    } elseif ($current_user['role'] === 'admin') {
-                        $dashboard_link = $base_url . 'admin/reports.php';
-                    }
                     $user_initial = strtoupper(substr($current_user['name'] ?? 'U', 0, 1));
                     ?>
                     <div class="dropdown nav-user-mobile-wrap">
