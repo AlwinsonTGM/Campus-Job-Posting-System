@@ -99,8 +99,8 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                     </li>
                 </ul>
             <?php elseif ($current_user): ?>
-                <!-- Center: Wide Google-Style Search Bar for Logged-In Users -->
-                <div class="paper-nav-search-wrap mx-lg-auto my-2 my-lg-0">
+                <!-- Center: Wide Google-Style Search Bar for Logged-In Users (Desktop only) -->
+                <div class="paper-nav-search-wrap d-none d-lg-block mx-lg-auto my-2 my-lg-0">
                     <div class="paper-google-search-bar" data-bs-toggle="modal" data-bs-target="#globalSearchModal" role="button" tabindex="0" title="Search opportunities (Ctrl+K)" aria-label="Search campus jobs and opportunities">
                         <i class="bi bi-search search-bar-icon"></i>
                         <input type="text" class="paper-search-input" placeholder="Search opportunities, titles, skills, departments..." readonly tabindex="-1">

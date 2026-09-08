@@ -677,6 +677,33 @@ document.addEventListener('DOMContentLoaded', function () {
             currentChips.innerHTML = newChips.innerHTML;
           }
 
+          // 4b. Update Mobile Filter Summary and Badge
+          const newSummary = doc.getElementById('mobileFilterSummary');
+          const currentSummary = document.getElementById('mobileFilterSummary');
+          if (newSummary && currentSummary) {
+            currentSummary.innerHTML = newSummary.innerHTML;
+          }
+          const newToggleBtn = doc.getElementById('mobileFilterToggleBtn');
+          const currentToggleBtn = document.getElementById('mobileFilterToggleBtn');
+          if (newToggleBtn && currentToggleBtn) {
+            const newBadge = newToggleBtn.querySelector('.badge');
+            let currentBadge = currentToggleBtn.querySelector('.badge');
+            if (newBadge) {
+              if (!currentBadge) {
+                currentBadge = document.createElement('span');
+                currentBadge.className = newBadge.className;
+                currentBadge.style.cssText = newBadge.style.cssText;
+                const chevron = currentToggleBtn.querySelector('.mobile-filter-chevron');
+                if (chevron && chevron.parentNode) {
+                  chevron.parentNode.insertBefore(currentBadge, chevron);
+                }
+              }
+              currentBadge.innerHTML = newBadge.innerHTML;
+            } else if (currentBadge) {
+              currentBadge.remove();
+            }
+          }
+
           // 5. Sync Form Controls from doc
           const newForm = doc.querySelector('.auto-filter-form');
           if (newForm) {

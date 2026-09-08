@@ -78,7 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $hours_per_week = trim($_POST['hours_per_week'] ?? '10 - 20 hrs/week');
-        $vacancies = (int)($_POST['vacancies'] ?? 1);
+        $valid_hours = ['10 - 20 hrs/week', 'Up to 15 hrs/week', 'Up to 20 hrs/week', 'Flexible Schedule (Max 20 hrs/week)', 'Flexible Schedule'];
+        if (!in_array($hours_per_week, $valid_hours) || preg_match('/\b(2[1-9]|[3-9]\d)\b/', $hours_per_week)) {
+            $hours_per_week = 'Up to 20 hrs/week';
+        }
         $deadline = trim($_POST['deadline'] ?? '');
         $description = trim($_POST['description'] ?? '');
 
@@ -561,9 +564,8 @@ require_once __DIR__ . '/../includes/header.php';
                                             <select name="hours_per_week" id="job-hours" class="form-select" required>
                                                 <option value="10 - 20 hrs/week" <?= $cur_hours === '10 - 20 hrs/week' ? 'selected' : '' ?>>10 - 20 hrs/week (Standard Student Assistant)</option>
                                                 <option value="Up to 15 hrs/week" <?= $cur_hours === 'Up to 15 hrs/week' ? 'selected' : '' ?>>Up to 15 hrs/week</option>
-                                                <option value="Up to 20 hrs/week" <?= $cur_hours === 'Up to 20 hrs/week' ? 'selected' : '' ?>>Up to 20 hrs/week</option>
-                                                <option value="Up to 30 hrs/week" <?= $cur_hours === 'Up to 30 hrs/week' ? 'selected' : '' ?>>Up to 30 hrs/week (Partner Placement)</option>
-                                                <option value="Flexible Schedule" <?= $cur_hours === 'Flexible Schedule' ? 'selected' : '' ?>>Flexible Schedule</option>
+                                                <option value="Up to 20 hrs/week" <?= $cur_hours === 'Up to 20 hrs/week' ? 'selected' : '' ?>>Up to 20 hrs/week (Maximum Cap)</option>
+                                                <option value="Flexible Schedule (Max 20 hrs/week)" <?= ($cur_hours === 'Flexible Schedule (Max 20 hrs/week)' || $cur_hours === 'Flexible Schedule') ? 'selected' : '' ?>>Flexible Schedule (Max 20 hrs/week)</option>
                                             </select>
                                         </div>
                                     </div>

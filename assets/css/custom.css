@@ -612,6 +612,12 @@
     height: 17px !important;
   }
 
+  .paper-navbar .btn-circle-icon {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.95rem !important;
+  }
+
   .paper-navbar .navbar-collapse {
     margin-top: 0.65rem;
     padding-top: 0.75rem;
@@ -4683,4 +4689,20 @@ body.modal-open {
   border-color: var(--ink);
   box-shadow: 0 2px 8px rgba(22, 22, 22, 0.15);
 }
+
+/* Mobile Filter Accordion in Jobs Directory */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.mobile-filter-chevron {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.95rem;
+}
+
+#mobileFilterToggleBtn[aria-expanded="true"] .mobile-filter-chevron,
+#mobileFilterToggleBtn:not(.collapsed) .mobile-filter-chevron {
+  transform: rotate(180deg);
+}
+
 

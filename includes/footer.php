@@ -9,7 +9,7 @@ if (!defined('SITE_NAME')) {
 ?>
 <footer class="paper-footer mt-auto">
     <div class="container-fluid px-lg-4">
-        <div class="row g-4 pb-4">
+        <div class="row g-4">
             <!-- Brand & Mission Column -->
             <div class="col-lg-4 col-md-6">
                 <div class="d-flex align-items-center gap-2 mb-3">
@@ -26,11 +26,14 @@ if (!defined('SITE_NAME')) {
                     Dedicated campus employment network empowering undergraduate students to find flexible on-campus assistantships while supporting university departments and academic laboratories.
                 </p>
                 <!-- Social Icon Circles -->
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 mb-3">
                     <a href="https://www.facebook.com/alwinson.bustamante" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="Facebook" title="Facebook"><i class="bi bi-facebook"></i></a>
                     <a href="https://x.com/alwinson1000" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="X (formerly Twitter)" title="X (formerly Twitter)"><i class="bi bi-twitter-x"></i></a>
                     <a href="https://www.linkedin.com/in/AlwinsonTGM" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="LinkedIn" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                     <a href="https://github.com/AlwinsonTGM" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="GitHub" title="GitHub"><i class="bi bi-github"></i></a>
+                </div>
+                <div class="text-muted-custom small">
+                    &copy; <?= date('Y') ?> <strong><?= htmlspecialchars(SITE_NAME) ?></strong>. All Rights Reserved.
                 </div>
             </div>
 
@@ -71,25 +74,6 @@ if (!defined('SITE_NAME')) {
                 <p class="text-muted-custom small mb-0">
                     <i class="bi bi-telephone me-2 text-accent"></i> (02) 8920-1000 loc. 402
                 </p>
-            </div>
-        </div>
-
-        <!-- Accreditation note line -->
-        <div class="border-top border-line pt-3 pb-2 text-center text-muted-custom small">
-            <span class="d-inline-flex align-items-center gap-1">
-                <i class="bi bi-shield-check text-accent"></i> Official University Student Employment Portal · Approved for Academic Year 2026–2027
-            </span>
-        </div>
-
-        <!-- Bottom Bar -->
-        <div class="border-top border-line pt-3 mt-2 d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start small text-muted-custom">
-            <div>
-                &copy; <?= date('Y') ?> <strong><?= htmlspecialchars(SITE_NAME) ?></strong>. All Rights Reserved.
-            </div>
-            <div class="mt-2 mt-md-0 d-flex gap-3">
-                <a href="<?= $base_url ?>privacy.php" class="text-muted-custom">Data Privacy Policy</a>
-                <span>·</span>
-                <a href="<?= $base_url ?>terms.php" class="text-muted-custom">Terms of Service</a>
             </div>
         </div>
     </div>

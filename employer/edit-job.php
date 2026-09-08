@@ -70,7 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $hours_per_week = trim($_POST['hours_per_week'] ?? $job['hours_per_week']);
-        $vacancies = (int)($_POST['vacancies'] ?? $job['vacancies']);
+        $valid_hours = ['10 - 20 hrs/week', 'Up to 15 hrs/week', 'Up to 20 hrs/week', 'Flexible Schedule (Max 20 hrs/week)', 'Flexible Schedule'];
+        if (!in_array($hours_per_week, $valid_hours) || preg_match('/\b(2[1-9]|[3-9]\d)\b/', $hours_per_week)) {
+            $hours_per_week = 'Up to 20 hrs/week';
+        }
         $deadline = $_POST['deadline'] ?? $job['deadline'];
         $status = $_POST['status'] ?? $job['status'];
         $description = trim($_POST['description'] ?? $job['description']);
@@ -418,7 +421,15 @@ require_once __DIR__ . '/../includes/header.php';
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label" for="edit-hours">Weekly Limit</label>
-                                        <input type="text" name="hours_per_week" id="edit-hours" class="form-control" value="<?= htmlspecialchars($job['hours_per_week']) ?>" required>
+                                        <select name="hours_per_week" id="edit-hours" class="form-select" required>
+                                            <option value="10 - 20 hrs/week" <?= $job['hours_per_week'] === '10 - 20 hrs/week' ? 'selected' : '' ?>>10 - 20 hrs/week (Standard)</option>
+                                            <option value="Up to 15 hrs/week" <?= $job['hours_per_week'] === 'Up to 15 hrs/week' ? 'selected' : '' ?>>Up to 15 hrs/week</option>
+                                            <option value="Up to 20 hrs/week" <?= $job['hours_per_week'] === 'Up to 20 hrs/week' ? 'selected' : '' ?>>Up to 20 hrs/week (Maximum Cap)</option>
+                                            <option value="Flexible Schedule (Max 20 hrs/week)" <?= ($job['hours_per_week'] === 'Flexible Schedule (Max 20 hrs/week)' || $job['hours_per_week'] === 'Flexible Schedule') ? 'selected' : '' ?>>Flexible Schedule (Max 20 hrs/week)</option>
+                                            <?php if (!in_array($job['hours_per_week'], ['10 - 20 hrs/week', 'Up to 15 hrs/week', 'Up to 20 hrs/week', 'Flexible Schedule (Max 20 hrs/week)', 'Flexible Schedule'])): ?>
+                                                <option value="<?= htmlspecialchars($job['hours_per_week']) ?>" selected><?= htmlspecialchars($job['hours_per_week']) ?></option>
+                                            <?php endif; ?>
+                                        </select>
                                     </div>
                                 </div>
 

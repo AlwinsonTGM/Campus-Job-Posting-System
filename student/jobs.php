@@ -17,6 +17,14 @@ $work_setup = trim($_GET['work_setup'] ?? '');
 $pay_type = trim($_GET['pay_type'] ?? '');
 $employer_type = trim($_GET['employer_type'] ?? '');
 
+$active_filters_count = 0;
+if (!empty($keyword)) $active_filters_count++;
+if (!empty($category)) $active_filters_count++;
+if (!empty($department)) $active_filters_count++;
+if (!empty($job_type)) $active_filters_count++;
+if (!empty($work_setup)) $active_filters_count++;
+if (!empty($employer_type)) $active_filters_count++;
+
 $jobs = get_jobs(
     $category ?: null,
     $keyword ?: null,
@@ -181,8 +189,38 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <!-- Search & Filters Container -->
-                <div class="card-paper mb-4 p-4">
-                    <form action="jobs.php" method="GET" class="form-paper auto-filter-form">
+                <div class="card-paper mb-4 p-3 p-md-4" id="jobs-filter-card">
+                    <!-- Mobile Dropdown Toggle Header (visible on mobile < lg) -->
+                    <div class="d-flex align-items-center justify-content-between cursor-pointer d-lg-none py-1" 
+                         id="mobileFilterToggleBtn"
+                         data-bs-toggle="collapse" 
+                         data-bs-target="#jobsFilterCollapse" 
+                         aria-expanded="false" 
+                         aria-controls="jobsFilterCollapse">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="d-inline-flex align-items-center justify-content-center bg-cream border border-line rounded-circle flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="bi bi-funnel-fill text-accent" style="font-size: 14px;"></i>
+                            </span>
+                            <div>
+                                <div class="fw-bold text-ink" style="font-size: 14.5px; line-height: 1.25;">Filter &amp; Search Opportunities</div>
+                                <div class="small text-muted-custom" style="font-size: 11.5px;" id="mobileFilterSummary">
+                                    <?= $active_filters_count > 0 ? ($active_filters_count . ' active filter' . ($active_filters_count > 1 ? 's' : '') . ' · Tap to adjust') : 'Tap to expand search &amp; filters' ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <?php if ($active_filters_count > 0): ?>
+                                <span class="badge bg-accent text-dark rounded-pill px-2" style="font-size: 11px;">
+                                    <?= $active_filters_count ?>
+                                </span>
+                            <?php endif; ?>
+                            <i class="bi bi-chevron-down mobile-filter-chevron text-muted-custom"></i>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Filter Form (Desktop: always visible d-lg-block; Mobile: collapse) -->
+                    <div class="collapse d-lg-block mt-3 mt-lg-0" id="jobsFilterCollapse">
+                        <form action="jobs.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
                             <!-- Keyword Input -->
                             <div class="col-lg-3 col-md-6">
@@ -298,8 +336,19 @@ require_once __DIR__ . '/../includes/header.php';
                                 <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
                             </a>
                         </div>
+
+                        <!-- Mobile Action to Minimize / Apply -->
+                        <div class="d-lg-none mt-3 pt-3 border-top border-line d-flex gap-2">
+                            <a href="jobs.php" class="btn btn-sm btn-outline-secondary rounded-pill py-2 flex-grow-1 fw-semibold text-center" style="font-size: 13px;">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                            </a>
+                            <button type="button" class="btn btn-sm btn-dark rounded-pill py-2 flex-grow-1 fw-semibold" data-bs-toggle="collapse" data-bs-target="#jobsFilterCollapse" style="font-size: 13px;">
+                                <i class="bi bi-check2 me-1"></i> Done &amp; Minimize
+                            </button>
+                        </div>
                     </form>
                 </div>
+            </div>
 
                 <!-- Dynamic Filter Results Container -->
                 <div id="filter-results-container">
