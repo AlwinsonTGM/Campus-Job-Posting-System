@@ -18,6 +18,7 @@ aliases: [Campus Job Posting System Blueprint, Job Board Project Plan, COAL101 P
 > * **Approved Tech Stack:** ==Native PHP 8.2== (Modular Architecture), ==Bootstrap 5.3== (Local Assets / CDN) + ==Bootstrap Icons==, and ==Vanilla JavaScript (ES6)==.
 > * **Database Constraint:** ==NO DATABASE / NO XAMPP MySQL YET==. All dynamic features, session persistence, and data rendering rely on ==PHP Sessions (`$_SESSION`)==, ==Flat-File JSON datastores (`data/*.json` backed by `data/.htaccess`)==, and structured PHP helper functions (`includes/data-helper.php`).
 > * **Aesthetic Theme:** ==Tactile Paper Sheet Design System== (Warm neutrals `#f8f7f2`, subtle paper borders, elevated card stacks, and KLD institutional green `#0d5c3a` / gold accents).
+> * **Design Rule (Anti-Pattern Ban):** ==NO DECORATIVE CIRCLE PILL BADGES==. Do NOT generate random rounded-pill badges or eyebrow tags above titles (`h1`/`h2`) or section headings. Badges are strictly reserved for functional status metrics (e.g., Application Status: Pending/Accepted).
 > * **Project Deadline:** ==September 2, 2026== (Strict 7-day sprint).
 > * **Development Team:** ==6 Members (BSIS201 — ICDI)==.
 

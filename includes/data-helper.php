@@ -684,21 +684,69 @@ function update_employer_verification($id, $status, $notes = '') {
     return update_user_verification($id, $status, $notes);
 }
 
+/**
+ * Check if an email address is already registered
+ */
+function is_email_registered($email) {
+    $email = strtolower(trim((string)$email));
+    if (empty($email)) return false;
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
+        $stmt->execute([':email' => $email]);
+        return (bool)$stmt->fetch();
+    } catch (Exception $e) {
+        $users = get_users();
+        foreach ($users as $u) {
+            if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * Check if a student ID is already registered
+ */
+function is_student_id_registered($student_id) {
+    $sid = strtolower(trim((string)$student_id));
+    if (empty($sid)) return false;
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(TRIM(`student_id`)) = LOWER(TRIM(:sid)) AND `role` = 'student' LIMIT 1");
+        $stmt->execute([':sid' => $student_id]);
+        return (bool)$stmt->fetch();
+    } catch (Exception $e) {
+        $users = get_users();
+        foreach ($users as $u) {
+            if (isset($u['student_id']) && strtolower(trim($u['student_id'])) === $sid && ($u['role'] ?? '') === 'student') {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
 function register_user($data, $permit_file = null, $proof_file = null) {
     try {
         $pdo = get_db_connection();
         $email = strtolower(trim($data['email'] ?? ''));
 
         // Check if email already exists
-        $check_stmt = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
-        $check_stmt->execute([':email' => $email]);
-        if ($check_stmt->fetch()) {
-            return ['success' => false, 'message' => 'Email address is already registered.'];
+        if (is_email_registered($email)) {
+            return ['success' => false, 'message' => 'This KLD account / email address is already registered.'];
         }
 
-        // Strictly prevent public registration of admin accounts
         $allowed_roles = ['student', 'employer'];
         $role = in_array($data['role'] ?? '', $allowed_roles, true) ? $data['role'] : 'student';
+
+        // Check if student ID already exists
+        if ($role === 'student' && !empty($data['student_id'])) {
+            if (is_student_id_registered($data['student_id'])) {
+                return ['success' => false, 'message' => 'This Student ID Number is already registered to an existing account.'];
+            }
+        }
 
         $employer_type = $data['employer_type'] ?? 'university_office';
         $org_name = $data['organization_name'] ?? ($data['department'] ?? 'Campus Organization');

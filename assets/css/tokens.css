@@ -1,0 +1,83 @@
+﻿/* ==========================================================================
+   Campus Job Posting System — Design Tokens (:root)
+   Unified Single Source of Truth
+   Theme: Paper Sheet Aesthetic (COAL101 Blueprint)
+   ========================================================================== */
+
+:root {
+  /* Surface & Color Palette */
+  --canvas: #CDC0AB;         /* Outer background desk/canvas */
+  --surface: #F5F4F0;        /* Main paper sheet base color */
+  --cream: #F1EBDC;          /* Warm alternating section cream */
+  --ink: #161616;            /* Deep black ink text & primary icons */
+  --muted: #6E6A61;          /* Subtle secondary text */
+  --accent: #2ECC5E;         /* Vibrant brand green accent */
+  --accent-hover: #26b150;   /* Accent interactive hover */
+  --accent-soft: #DDF3E2;    /* Soft mint tint for pills & backgrounds */
+  --line: #E5E0D4;           /* Delicate sheet border rules */
+  --white: #FFFFFF;
+
+  /* Primary Theme Tokens */
+  --kld-green-dark: #161616;
+  --kld-green-primary: #2ECC5E;
+  --kld-green-hover: #26b150;
+  --kld-green-secondary: #161616;
+  --kld-green-light: #2ECC5E;
+  --kld-green-soft: #DDF3E2;
+
+  /* Secondary Accents */
+  --kld-gold: #F1EBDC;
+  --kld-gold-hover: #e5ded0;
+  --kld-gold-accent: #2ECC5E;
+  --kld-gold-light: #F1EBDC;
+  --kld-gold-text: #161616;
+
+  /* Backward-compatible Theme Aliases */
+  --primary-blue: #2ECC5E;
+  --primary-blue-hover: #26b150;
+  --secondary-blue: #161616;
+  --accent-gold: #2ECC5E;
+  --accent-gold-hover: #26b150;
+  --accent-gold-light: #DDF3E2;
+
+  /* Neutrals & Layout */
+  --bg-light: #F5F4F0;
+  --text-dark: #161616;
+  --text-muted: #6E6A61;
+  --card-border: #E5E0D4;
+  --sidebar-width: 260px;
+
+  /* Status Tokens (Used ONLY for status semantics) */
+  --st-pending: #F2B33D;
+  --st-pending-bg: #FBEBD3;
+  --st-review: #4C9EEB;
+  --st-review-bg: #E1EDFB;
+  --st-interview: #0284C7;
+  --st-interview-bg: #E0F2FE;
+  --st-accepted: var(--accent);
+  --st-accepted-bg: var(--accent-soft);
+  --st-declined: #E5484D;
+  --st-declined-bg: #FBE1E1;
+  
+  /* Radii */
+  --radius-card: 24px;
+  --radius-input: 16px;
+  --radius-widget: 28px;
+  --radius-pill: 999px;
+  --radius-badge: 8px;
+  
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Bootstrap Bridge Overrides */
+  --bs-body-bg: var(--surface);
+  --bs-body-color: var(--ink);
+  --bs-font-sans-serif: var(--font-family);
+  --bs-border-color: var(--line);
+  --bs-primary: #2ECC5E;
+  --bs-primary-rgb: 46, 204, 94;
+  --bs-link-color: var(--ink);
+  --bs-link-hover-color: var(--accent);
+  --bs-focus-ring-color: rgba(46, 204, 94, 0.25);
+  --bs-highlight-bg: var(--accent-soft);
+}

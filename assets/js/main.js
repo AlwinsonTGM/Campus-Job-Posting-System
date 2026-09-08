@@ -8,6 +8,28 @@ window.triggerPrintReport = function () {
   window.print();
 };
 
+// Global Smart Go Back Helper (handles new tabs, popups, and history traversal)
+window.smartGoBack = function (fallbackUrl) {
+  var targetFallback = fallbackUrl || 'index.php';
+  
+  // Attempt window.close if opened in separate window/tab
+  try {
+    if (window.opener && !window.opener.closed) {
+      window.close();
+    }
+    window.close();
+  } catch (e) {}
+
+  // If window.close was prevented by browser policy, use history or fallback
+  setTimeout(function () {
+    if (window.history.length > 1 && document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+      window.history.back();
+    } else {
+      window.location.href = targetFallback;
+    }
+  }, 120);
+};
+
 document.addEventListener('DOMContentLoaded', function () {
   // ------------------------------------------------------------------------
   // 1. BOOTSTRAP TOOLTIPS & AUTO-DISMISS ALERTS

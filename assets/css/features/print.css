@@ -1,0 +1,169 @@
+﻿/* 16.24 Print Stylesheet */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 12mm 12mm 12mm;
+  }
+
+  *, *::before, *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body, html {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  .sheet-perspective-wrapper {
+    background-color: transparent !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .sheet, .flat-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .container-paper,
+  .printable-report {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Force all reveal elements visible and in place */
+  .reveal-fade-rise {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    visibility: visible !important;
+  }
+
+  .paper-navbar,
+  .paper-footer,
+  .no-print,
+  .btn,
+  .btn-pill,
+  .btn-pill-outline,
+  .btn-soft,
+  .dropdown,
+  .page-head-actions,
+  .search-blob,
+  .floating-photo-circle,
+  .modal,
+  .alert-paper {
+    display: none !important;
+  }
+
+  /* Compact margins for printing */
+  .mb-5 {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .py-5 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .card-paper {
+    box-shadow: none !important;
+    border: 1px solid #d0d0d0 !important;
+    background: #ffffff !important;
+    padding: 1rem !important;
+    margin-bottom: 1.25rem !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .metric {
+    box-shadow: none !important;
+    border: 1px solid #d0d0d0 !important;
+    background: #ffffff !important;
+    padding: 0.85rem 1rem !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .table-paper {
+    box-shadow: none !important;
+    border: 1px solid #d0d0d0 !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .table-paper thead th {
+    background-color: #f0f0f0 !important;
+    color: #111111 !important;
+    padding: 0.6rem 0.75rem !important;
+  }
+
+  .table-paper tbody td {
+    padding: 0.6rem 0.75rem !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+  }
+
+  .table-paper tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .bar-chart-track {
+    border: 1px solid #999999 !important;
+    background-color: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bar-chart-fill {
+    background-color: #2ECC5E !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .progress-paper {
+    border: 1px solid #cccccc !important;
+    background-color: #eeeeee !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .progress-paper-bar {
+    background-color: #2ECC5E !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .badge-status--accepted,
+  .badge-status--pending,
+  .badge-status--review,
+  .badge-status--interview,
+  .badge-status--declined {
+    border: 1px solid #999999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .d-print-block {
+    display: block !important;
+  }
+}

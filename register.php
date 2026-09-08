@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     $course = trim($_POST['course'] ?? '');
-    $year_level = $_POST['year_level'] ?? '1st Year';
+    $year_level = trim($_POST['year_level'] ?? '');
     $sex = trim($_POST['sex'] ?? '');
     $birthdate = trim($_POST['birthdate'] ?? '');
     $age = !empty($birthdate) ? calculate_age($birthdate) : 20;
@@ -89,6 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please provide a valid email address.';
         $initial_step = 1;
+    } elseif (is_email_registered($email)) {
+        $error = 'This KLD account / email address is already registered. Please sign in or use another email.';
+        $initial_step = 1;
     } elseif ($role === 'employer' && $employer_type === 'university_office' && !preg_match('/@kld\.edu\.ph$/i', $email)) {
         $error = 'University Office accounts must use an official @kld.edu.ph institutional email address. External partners must select "Industry Partner".';
         $initial_step = 1;
@@ -98,8 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm_password) {
         $error = 'Password and Confirm Password do not match.';
         $initial_step = 3;
-    } elseif ($role === 'student' && (empty($student_id) || empty($department) || empty($course) || empty($sex) || empty($birthdate))) {
-        $error = 'Please complete all student profile fields (Student ID, Academic Institute, Degree Program, Biological Sex, and Date of Birth).';
+    } elseif ($role === 'student' && (empty($student_id) || empty($department) || empty($course) || empty($year_level) || empty($sex) || empty($birthdate))) {
+        $error = 'Please complete all student profile fields (Student ID, Academic Institute, Degree Program, Year Level, Biological Sex, and Date of Birth).';
+        $initial_step = 2;
+    } elseif ($role === 'student' && is_student_id_registered($student_id)) {
+        $error = 'This Student ID Number (' . htmlspecialchars($student_id) . ') is already registered. If this is your account, please sign in.';
         $initial_step = 2;
     } else {
         $permit_file_path = null;
@@ -453,6 +459,7 @@ require_once __DIR__ . '/includes/header.php';
                                             <span class="input-group-text"><i class="bi bi-envelope-at"></i></span>
                                             <input type="email" name="email" id="reg-email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email ?? '') ?>" required>
                                         </div>
+                                        <div id="email-duplicate-feedback" class="mt-1 small" style="display: none;"></div>
                                         <span class="small text-muted-custom mt-1 d-block" id="email-hint" style="font-size: 11px;">
                                             Use your official <strong>@kld.edu.ph</strong> email for automatic verification.
                                         </span>
@@ -487,6 +494,7 @@ require_once __DIR__ . '/includes/header.php';
                                     <div class="col-md-6">
                                         <label class="form-label" for="student_id">Student ID Number <span class="text-danger">*</span></label>
                                         <input type="text" name="student_id" id="student_id" class="form-control" placeholder="2024-00123" value="<?= htmlspecialchars($student_id ?? '') ?>">
+                                        <div id="student-id-duplicate-feedback" class="mt-1 small" style="display: none;"></div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="department-select">Academic Institute <span class="text-danger">*</span></label>
@@ -513,12 +521,13 @@ require_once __DIR__ . '/includes/header.php';
                                                     <?php endforeach; ?>
                                                 </optgroup>
                                             <?php endforeach; ?>
-                                            <option value="Other Degree Program" <?= (isset($course) && $course === 'Other Degree Program') ? 'selected' : '' ?>>Other Degree Program / Outsider</option>
+                                             <option value="Other Degree Program" <?= (isset($course) && $course === 'Other Degree Program') ? 'selected' : '' ?>>Other Degree Program / Outsider</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="year_level">Year Level / Academic Status <span class="text-danger">*</span></label>
-                                        <select name="year_level" id="year_level" class="form-select">
+                                        <select name="year_level" id="year_level" class="form-select" required>
+                                            <option value="" <?= empty($year_level) ? 'selected' : '' ?> disabled>-- Select Year Level / Academic Status --</option>
                                             <?php foreach (get_year_levels() as $val => $label): ?>
                                                 <option value="<?= htmlspecialchars($val) ?>" <?= (isset($year_level) && $year_level === $val) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                                             <?php endforeach; ?>
@@ -709,7 +718,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <div class="mb-4 form-check">
                                     <input type="checkbox" class="form-check-input" id="termsCheck" required checked>
                                     <label class="form-check-label small text-muted-custom" for="termsCheck">
-                                        I agree to the <a href="terms.php" target="_blank" class="text-ink fw-bold text-decoration-none">Terms of Service</a> and have read the <a href="privacy.php" target="_blank" class="text-ink fw-bold text-decoration-none">Data Privacy Policy (RA 10173)</a>.
+                                        I agree to the <a href="terms.php?from=register" target="_blank" class="text-ink fw-bold text-decoration-underline">Terms of Service</a> and have read the <a href="privacy.php?from=register" target="_blank" class="text-ink fw-bold text-decoration-underline">Data Privacy Policy (RA 10173)</a>.
                                     </label>
                                 </div>
 
@@ -982,7 +991,151 @@ function selectPersona(personaKey) {
     updateWizardUI();
 }
 
-function validateCurrentStep() {
+// Account availability check cache and pending requests
+const accountCheckCache = {
+    email: { value: '', exists: false, checked: false },
+    studentId: { value: '', exists: false, checked: false }
+};
+let pendingEmailPromise = null;
+let pendingStudentIdPromise = null;
+
+async function verifyEmailAvailability(emailVal) {
+    emailVal = (emailVal || '').trim().toLowerCase();
+    const feedback = document.getElementById('email-duplicate-feedback');
+    const emailInput = document.getElementById('reg-email');
+
+    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        if (feedback) { feedback.innerHTML = ''; feedback.style.display = 'none'; }
+        if (emailInput) emailInput.classList.remove('is-invalid');
+        accountCheckCache.email = { value: '', exists: false, checked: false };
+        return true;
+    }
+
+    if (accountCheckCache.email.checked && accountCheckCache.email.value === emailVal) {
+        return !accountCheckCache.email.exists;
+    }
+
+    if (pendingEmailPromise && accountCheckCache.email.value === emailVal) {
+        return await pendingEmailPromise;
+    }
+
+    if (feedback) {
+        feedback.innerHTML = '<span class="text-muted"><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Checking institutional account...</span>';
+        feedback.style.display = 'block';
+    }
+
+    accountCheckCache.email.value = emailVal;
+    pendingEmailPromise = (async () => {
+        try {
+            const res = await fetch(`api/check-account.php?email=${encodeURIComponent(emailVal)}`);
+            const data = await res.json();
+            const currentVal = document.getElementById('reg-email')?.value.trim().toLowerCase();
+            if (currentVal !== emailVal) {
+                return true;
+            }
+
+            accountCheckCache.email = {
+                value: emailVal,
+                exists: !!data.email_exists,
+                checked: true
+            };
+
+            if (data.email_exists) {
+                if (emailInput) emailInput.classList.add('is-invalid');
+                if (feedback) {
+                    feedback.innerHTML = '<div class="text-danger fw-semibold d-flex align-items-center justify-content-between mt-1"><span><i class="bi bi-exclamation-circle-fill me-1"></i> This KLD account / email is already registered.</span><a href="login.php" class="text-accent fw-bold ms-2 text-decoration-underline text-nowrap">Sign in &rarr;</a></div>';
+                    feedback.style.display = 'block';
+                }
+                return false;
+            } else {
+                if (emailInput) emailInput.classList.remove('is-invalid');
+                if (feedback) {
+                    feedback.innerHTML = '<div class="text-success mt-1"><i class="bi bi-check-circle-fill me-1"></i> Institutional email is available.</div>';
+                    feedback.style.display = 'block';
+                }
+                return true;
+            }
+        } catch (e) {
+            console.warn('Account check error:', e);
+            if (feedback) { feedback.innerHTML = ''; feedback.style.display = 'none'; }
+            return true;
+        } finally {
+            pendingEmailPromise = null;
+        }
+    })();
+
+    return await pendingEmailPromise;
+}
+
+async function verifyStudentIdAvailability(studentIdVal) {
+    studentIdVal = (studentIdVal || '').trim();
+    const feedback = document.getElementById('student-id-duplicate-feedback');
+    const sidInput = document.getElementById('student_id');
+
+    if (!studentIdVal || currentPersona !== 'student') {
+        if (feedback) { feedback.innerHTML = ''; feedback.style.display = 'none'; }
+        if (sidInput) sidInput.classList.remove('is-invalid');
+        accountCheckCache.studentId = { value: '', exists: false, checked: false };
+        return true;
+    }
+
+    if (accountCheckCache.studentId.checked && accountCheckCache.studentId.value === studentIdVal) {
+        return !accountCheckCache.studentId.exists;
+    }
+
+    if (pendingStudentIdPromise && accountCheckCache.studentId.value === studentIdVal) {
+        return await pendingStudentIdPromise;
+    }
+
+    if (feedback) {
+        feedback.innerHTML = '<span class="text-muted"><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Checking Student ID...</span>';
+        feedback.style.display = 'block';
+    }
+
+    accountCheckCache.studentId.value = studentIdVal;
+    pendingStudentIdPromise = (async () => {
+        try {
+            const res = await fetch(`api/check-account.php?student_id=${encodeURIComponent(studentIdVal)}`);
+            const data = await res.json();
+            const currentVal = document.getElementById('student_id')?.value.trim();
+            if (currentVal !== studentIdVal) {
+                return true;
+            }
+
+            accountCheckCache.studentId = {
+                value: studentIdVal,
+                exists: !!data.student_id_exists,
+                checked: true
+            };
+
+            if (data.student_id_exists) {
+                if (sidInput) sidInput.classList.add('is-invalid');
+                if (feedback) {
+                    feedback.innerHTML = '<div class="text-danger fw-semibold mt-1"><i class="bi bi-exclamation-circle-fill me-1"></i> This Student ID Number is already registered.</div>';
+                    feedback.style.display = 'block';
+                }
+                return false;
+            } else {
+                if (sidInput) sidInput.classList.remove('is-invalid');
+                if (feedback) {
+                    feedback.innerHTML = '<div class="text-success mt-1"><i class="bi bi-check-circle-fill me-1"></i> Student ID is available.</div>';
+                    feedback.style.display = 'block';
+                }
+                return true;
+            }
+        } catch (e) {
+            console.warn('Student ID check error:', e);
+            if (feedback) { feedback.innerHTML = ''; feedback.style.display = 'none'; }
+            return true;
+        } finally {
+            pendingStudentIdPromise = null;
+        }
+    })();
+
+    return await pendingStudentIdPromise;
+}
+
+async function validateCurrentStep() {
     hideStepError();
 
     if (currentStep === 1) {
@@ -1044,6 +1197,14 @@ function validateCurrentStep() {
             return false;
         }
 
+        // Live check email uniqueness
+        const emailAvailable = await verifyEmailAvailability(email.value.trim());
+        if (!emailAvailable) {
+            showStepError("This KLD account / email address is already registered. Please sign in or use another email.");
+            email.focus();
+            return false;
+        }
+
         return true;
     }
 
@@ -1053,6 +1214,7 @@ function validateCurrentStep() {
             const deptSelect = document.getElementById('department-select');
             const otherInst = document.getElementById('other_institute');
             const courseSelect = document.getElementById('course-select');
+            const yearLevelSelect = document.getElementById('year_level');
             const sexSelect = document.getElementById('reg-sex');
             const birthdate = document.getElementById('reg-birthdate');
 
@@ -1080,6 +1242,12 @@ function validateCurrentStep() {
                 return false;
             }
 
+            if (!yearLevelSelect || !yearLevelSelect.value) {
+                showStepError("Please select your Year Level / Academic Status.");
+                if (yearLevelSelect) yearLevelSelect.focus();
+                return false;
+            }
+
             if (!sexSelect || !sexSelect.value) {
                 showStepError("Please select your Biological Sex / Gender.");
                 if (sexSelect) sexSelect.focus();
@@ -1089,6 +1257,14 @@ function validateCurrentStep() {
             if (!birthdate || !birthdate.value) {
                 showStepError("Please enter your Date of Birth.");
                 if (birthdate) birthdate.focus();
+                return false;
+            }
+
+            // Live check student ID uniqueness
+            const sidAvailable = await verifyStudentIdAvailability(studentId.value.trim());
+            if (!sidAvailable) {
+                showStepError("This Student ID Number is already registered.");
+                studentId.focus();
                 return false;
             }
         } else if (currentPersona === 'university_office') {
@@ -1123,8 +1299,9 @@ function goToStep(targetStep) {
     hideStepError();
 }
 
-function nextStep() {
-    if (validateCurrentStep()) {
+async function nextStep() {
+    const isValid = await validateCurrentStep();
+    if (isValid) {
         goToStep(currentStep + 1);
     }
 }
@@ -1134,11 +1311,11 @@ function prevStep() {
     goToStep(currentStep - 1);
 }
 
-function handleStepNavClick(step) {
+async function handleStepNavClick(step) {
     if (step <= maxVisitedStep || step === currentStep) {
         goToStep(step);
     } else if (step === currentStep + 1) {
-        nextStep();
+        await nextStep();
     }
 }
 
@@ -1242,6 +1419,59 @@ document.addEventListener('DOMContentLoaded', function() {
     if (regPhoneInput) {
         regPhoneInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
+        });
+    }
+
+    // Live account check listeners
+    const regEmailInput = document.getElementById('reg-email');
+    if (regEmailInput) {
+        let emailTimer = null;
+        regEmailInput.addEventListener('input', function() {
+            clearTimeout(emailTimer);
+            accountCheckCache.email.checked = false;
+            const val = this.value.trim();
+            if (val.length >= 5 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                emailTimer = setTimeout(() => {
+                    verifyEmailAvailability(val);
+                }, 500);
+            } else {
+                const feedback = document.getElementById('email-duplicate-feedback');
+                if (feedback) { feedback.innerHTML = ''; feedback.style.display = 'none'; }
+                regEmailInput.classList.remove('is-invalid');
+            }
+        });
+        regEmailInput.addEventListener('blur', function() {
+            clearTimeout(emailTimer);
+            const val = this.value.trim();
+            if (val.length >= 5 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                verifyEmailAvailability(val);
+            }
+        });
+    }
+
+    const regStudentIdInput = document.getElementById('student_id');
+    if (regStudentIdInput) {
+        let sidTimer = null;
+        regStudentIdInput.addEventListener('input', function() {
+            clearTimeout(sidTimer);
+            accountCheckCache.studentId.checked = false;
+            const val = this.value.trim();
+            if (val.length >= 3 && currentPersona === 'student') {
+                sidTimer = setTimeout(() => {
+                    verifyStudentIdAvailability(val);
+                }, 500);
+            } else {
+                const feedback = document.getElementById('student-id-duplicate-feedback');
+                if (feedback) { feedback.innerHTML = ''; feedback.style.display = 'none'; }
+                regStudentIdInput.classList.remove('is-invalid');
+            }
+        });
+        regStudentIdInput.addEventListener('blur', function() {
+            clearTimeout(sidTimer);
+            const val = this.value.trim();
+            if (val.length >= 3 && currentPersona === 'student') {
+                verifyStudentIdAvailability(val);
+            }
         });
     }
 
