@@ -45,16 +45,42 @@ if (is_array($json_data)) {
     $raw_prompt = $json_data['message'] ?? $json_data['prompt'] ?? '';
     $raw_mode = $json_data['mode'] ?? 'talk';
     $raw_model = $json_data['model'] ?? null;
+    $raw_history = $json_data['history'] ?? [];
 } else {
     $raw_prompt = $_POST['message'] ?? $_POST['prompt'] ?? '';
     $raw_mode = $_POST['mode'] ?? 'talk';
     $raw_model = $_POST['model'] ?? null;
+    $raw_history = (isset($_POST['history']) && is_array($_POST['history'])) ? $_POST['history'] : [];
 }
+
+// Ensure session is available to identify user role
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    @session_start();
+}
+$user_role = $_SESSION['user']['role'] ?? 'guest';
 
 // Sanitize user prompt
 $raw_trimmed = trim((string)$raw_prompt);
 $prompt = sanitize_ai_prompt($raw_prompt, 800);
 $model = validate_ai_model($raw_model);
+
+// Validate and sanitize sliding conversation history (capped at last 6 messages)
+$history = [];
+if (is_array($raw_history) && !empty($raw_history)) {
+    $sliced_history = array_slice($raw_history, -6);
+    foreach ($sliced_history as $item) {
+        if (!is_array($item)) continue;
+        $role = ($item['role'] ?? '') === 'assistant' ? 'assistant' : (($item['role'] ?? '') === 'user' ? 'user' : '');
+        $raw_content = (string)($item['content'] ?? $item['text'] ?? '');
+        $clean_content = sanitize_ai_prompt($raw_content, 800);
+        if ($role !== '' && $clean_content !== '') {
+            $history[] = [
+                'role' => $role,
+                'content' => $clean_content
+            ];
+        }
+    }
+}
 
 if (!empty($raw_trimmed) && empty($prompt)) {
     // User sent tags or stripped control chars (e.g. <script>alert(1)</script>)
@@ -68,15 +94,18 @@ if (!empty($raw_trimmed) && empty($prompt)) {
     $detected_intent = detect_ai_prompt_intent($raw_trimmed);
 }
 
-// Build messages payload
-$system_prompt = build_robot_system_prompt($detected_intent);
+// Build messages payload with system prompt, history turns, and active prompt
+$system_prompt = build_robot_system_prompt($detected_intent, $user_role);
 $messages = [
-    ['role' => 'system', 'content' => $system_prompt],
-    ['role' => 'user', 'content' => $prompt]
+    ['role' => 'system', 'content' => $system_prompt]
 ];
+foreach ($history as $h) {
+    $messages[] = $h;
+}
+$messages[] = ['role' => 'user', 'content' => $prompt];
 
-// Call NVIDIA NIM API with auto-fallback
-$result = call_nvidia_nim_chat($messages, $model);
+// Call NVIDIA NIM API with auto-fallback and role-awareness
+$result = call_nvidia_nim_chat($messages, $model, ['user_role' => $user_role]);
 $model_name = get_model_display_name($result['model']);
 
 echo json_encode([

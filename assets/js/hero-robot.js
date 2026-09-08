@@ -391,6 +391,16 @@
             // 2. Normalize Windows newlines
             safe = safe.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
+            // 2.5 Safe Markdown links: [label](url)
+            safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, label, url) {
+                const trimmedUrl = url.trim();
+                if (/^(https?:\/\/|[a-zA-Z0-9_\-\.\/]+\.php(\?[a-zA-Z0-9_=&-]*)?)/i.test(trimmedUrl)) {
+                    const isExt = trimmedUrl.startsWith('http');
+                    return `<a href="${trimmedUrl}" class="chat-link" ${isExt ? 'target="_blank" rel="noopener"' : ''}>${label}</a>`;
+                }
+                return label;
+            });
+
             // 3. Bold: **text** (closed) and **text (in-progress typing)
             safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             safe = safe.replace(/\*\*([^\n*]+)$/g, '<strong>$1</strong>');
@@ -783,10 +793,18 @@
                 }
             }
 
+            const historyPayload = chatHistory.slice(-7, -1).map(function (item) {
+                return {
+                    role: item.role === 'assistant' ? 'assistant' : 'user',
+                    content: item.text || ''
+                };
+            });
+
             const payload = {
                 message: userPrompt,
                 mode: mode || currentMode,
-                model: selectedModel
+                model: selectedModel,
+                history: historyPayload
             };
 
             fetch('api/robot-chat.php', {

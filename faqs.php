@@ -319,6 +319,7 @@ require_once __DIR__ . '/includes/header.php';
             const chips = document.querySelectorAll('.faq-chip-btn');
 
             let isWaiting = false;
+            let faqChatHistory = [];
 
             // Auto-open modal if URL contains ?chat=1 or hash #chatbot
             if (window.location.search.indexOf('chat=1') !== -1 || window.location.hash === '#chatbot') {
@@ -344,6 +345,17 @@ require_once __DIR__ . '/includes/header.php';
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
                 safe = safe.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
+                // Safe Markdown links: [label](url)
+                safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, label, url) {
+                    const trimmedUrl = url.trim();
+                    if (/^(https?:\/\/|[a-zA-Z0-9_\-\.\/]+\.php(\?[a-zA-Z0-9_=&-]*)?)/i.test(trimmedUrl)) {
+                        const isExt = trimmedUrl.startsWith('http');
+                        return `<a href="${trimmedUrl}" class="chat-link" ${isExt ? 'target="_blank" rel="noopener"' : ''}>${label}</a>`;
+                    }
+                    return label;
+                });
+
                 safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
                 safe = safe.replace(/(^|\n)[\t ]*(\d+)[\.\)][\t ]*([^\n]*)/g, '<br><strong>$2.</strong> $3');
                 safe = safe.replace(/(^|\n)[\t ]*[\*\-•][\t ]*([^\n]*)/g, '<br>&bull; $2');
@@ -406,17 +418,29 @@ require_once __DIR__ . '/includes/header.php';
                     chatInput.disabled = true;
                 }
 
+                // Add to history and display
                 appendMessage('user', trimmed);
+                faqChatHistory.push({ role: 'user', content: trimmed });
+                if (faqChatHistory.length > 8) {
+                    faqChatHistory = faqChatHistory.slice(-8);
+                }
 
                 if (thinkingEl) {
                     thinkingEl.classList.remove('d-none');
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
 
+                // Send history of prior messages (excluding the active user message which is sent in 'message')
+                const historyPayload = faqChatHistory.slice(0, -1);
+
                 fetch('<?= $base_url ?>api/robot-chat.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: trimmed, mode: 'faq' })
+                    body: JSON.stringify({ 
+                        message: trimmed, 
+                        mode: 'faq',
+                        history: historyPayload
+                    })
                 })
                 .then(function (res) {
                     return res.json().then(function (data) {
@@ -442,6 +466,10 @@ require_once __DIR__ . '/includes/header.php';
 
                     if (data && data.status === 'success' && data.reply) {
                         appendMessage('bot', data.reply, data.model_name || data.model || 'Campus AI');
+                        faqChatHistory.push({ role: 'assistant', content: data.reply });
+                        if (faqChatHistory.length > 8) {
+                            faqChatHistory = faqChatHistory.slice(-8);
+                        }
                     } else {
                         appendMessage('bot', "I'm having a little trouble connecting to my knowledge base right now. Feel free to reach out directly to the Student Affairs & Career Services Office or browse the FAQ questions above! 🏫");
                     }
