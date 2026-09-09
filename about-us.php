@@ -364,7 +364,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="modal-header border-bottom border-line pb-3 bg-surface">
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge bg-ink text-white px-2 py-1 small fw-bold" id="devblog-modal-sprint-badge">
-                                <i class="bi bi-flag-fill text-accent me-1"></i>DAY 04 · TACTILE UX &amp; SYSTEM HARMONY
+                                <i class="bi bi-flag-fill text-accent me-1"></i>DAY 11 · MODULAR CSS &amp; 20H POLICY SAFEGUARDS
                             </span>
                             <span class="badge bg-cream text-muted-custom border border-line small" id="devblog-modal-readtime">
                                 <i class="bi bi-clock-history me-1 text-accent"></i>5 min read
