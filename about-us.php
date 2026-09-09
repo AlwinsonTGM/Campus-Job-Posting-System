@@ -148,9 +148,6 @@ require_once __DIR__ . '/includes/header.php';
                      ============================================================ -->
                 <section class="devblog-section mb-5 py-4 reveal-fade-rise" id="devblog">
                     <div class="text-center mb-4">
-                        <span class="eyebrow-badge mb-2 d-inline-flex align-items-center gap-1">
-                            <i class="bi bi-journal-code text-accent"></i> DEVBLOG CHRONICLES
-                        </span>
                         <h2 class="h1 fw-extrabold text-ink mb-2">Behind the Code: Lead Developer DevBlog</h2>
                         <p class="text-muted-custom col-lg-8 mx-auto">
                             Follow Alwinson's daily engineering chronicles—from initial topic selection, architecture planning, and all-night coding marathons to collaborative Git mentoring and UI/UX design refinements.
@@ -182,10 +179,10 @@ require_once __DIR__ . '/includes/header.php';
                                             alt="<?= htmlspecialchars($blog['title'] ?? 'DevBlog') ?>" loading="lazy">
                                         <div class="devblog-card-badges">
                                             <span class="badge-tag-overlay" style="background-color: var(--ink); color: #fff;">
-                                                <i class="bi bi-flag-fill text-accent me-1"></i><?= htmlspecialchars($blog['sprint_badge'] ?? ('DAY ' . ($blog['sprint_number'] ?? ($idx + 1)))) ?>
+                                                <i class="bi bi-flag-fill text-accent me-1"></i>DAY <?= sprintf('%02d', (int)($blog['sprint_number'] ?? ($idx + 1))) ?>
                                             </span>
                                             <span class="badge-tag-overlay">
-                                                <i class="bi bi-clock-history me-1"></i><?= htmlspecialchars($blog['read_time'] ?? '5 min read') ?>
+                                                <i class="bi bi-clock-history me-1 text-accent"></i><?= htmlspecialchars($blog['read_time'] ?? '5 min read') ?>
                                             </span>
                                         </div>
                                     </div>
@@ -198,7 +195,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <div class="devblog-author-role"><?= htmlspecialchars($blog['author_role'] ?? 'Lead Developer & System Architect') ?></div>
                                             </div>
                                             <span class="devblog-date-pill ms-auto">
-                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars($blog['date'] ?? 'Aug 2026') ?>
+                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars(!empty($blog['date']) ? date('M j, Y', strtotime($blog['date'])) : 'Aug 2026') ?>
                                             </span>
                                         </div>
 
@@ -208,14 +205,8 @@ require_once __DIR__ . '/includes/header.php';
                                             <?= htmlspecialchars($blog['summary_excerpt'] ?? '') ?>
                                         </p>
 
-                                        <div class="devblog-card-tags mb-2">
-                                            <?php foreach (($blog['tags'] ?? []) as $tag): ?>
-                                                <span class="chip-tag"><?= htmlspecialchars($tag) ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-
                                         <div class="devblog-card-footer mt-auto pt-2 border-top border-line">
-                                            <button type="button" class="btn-accent-pill w-100 justify-content-center py-2 devblog-read-trigger" data-blog-index="<?= $idx ?>">
+                                            <button type="button" class="btn btn-accent w-100 justify-content-center py-2 devblog-read-trigger" data-blog-index="<?= $idx ?>">
                                                 <i class="bi bi-book-half me-1"></i> Read Full Daily Log
                                             </button>
                                         </div>
@@ -280,9 +271,9 @@ require_once __DIR__ . '/includes/header.php';
                         </script>
 
                         <div class="small text-muted-custom d-none d-md-block">
-                            <span class="badge bg-cream text-ink border border-line px-2 py-1">
+                            <kbd class="bg-surface text-ink border border-line px-2 py-1 small rounded-1 font-monospace">
                                 <i class="bi bi-keyboard me-1"></i> &larr; &rarr; Arrow Keys
-                            </span>
+                            </kbd>
                         </div>
                     </div>
                 </section>
@@ -290,8 +281,8 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Mission & Vision and Tech Stack -->
                 <div class="row g-4 pt-2">
                     <!-- Project Mission & Vision -->
-                    <div class="col-lg-6">
-                        <div class="card-paper h-100 reveal-fade-rise">
+                    <div class="col-lg-5">
+                        <div class="card-paper h-100 reveal-fade-rise d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
                                 <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
                                     <i class="bi bi-compass"></i>
@@ -301,7 +292,7 @@ require_once __DIR__ . '/includes/header.php';
                             <p class="text-muted-custom mb-3">
                                 To simplify and digitize the student assistantship application workflow across KLD institutes and offices. By replacing manual paperwork and unorganized bulletin boards with an automated portal, we empower KLD students to gain valuable workplace experience while prioritizing their studies.
                             </p>
-                            <div class="p-3 bg-cream rounded-3 border border-line">
+                            <div class="p-3 bg-cream rounded-3 border border-line mb-3">
                                 <span class="d-block small fw-bold text-ink mb-1">Academic Alignment</span>
                                 <div class="small text-muted-custom d-flex flex-column gap-1">
                                     <div>Course: <strong>COAL101 - Web Systems and Technologies</strong></div>
@@ -310,43 +301,171 @@ require_once __DIR__ . '/includes/header.php';
                                     <div>Institution: <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong></div>
                                 </div>
                             </div>
+                            <div class="p-3 bg-surface rounded-3 border border-line mt-auto">
+                                <span class="d-block small fw-bold text-ink mb-2">Institutional Safeguards &amp; Compliance</span>
+                                <ul class="list-unstyled small text-muted-custom mb-0 d-flex flex-column gap-1">
+                                    <li><i class="bi bi-shield-check text-accent me-1"></i> RA 10173 Data Privacy Act (2012) compliant storage</li>
+                                    <li><i class="bi bi-clock-history text-accent me-1"></i> Statutory 20-hour weekly academic labor cap enforcement</li>
+                                    <li><i class="bi bi-calendar-check text-accent me-1"></i> Class schedule conflict prevention matrix</li>
+                                    <li><i class="bi bi-person-check text-accent me-1"></i> Equal-opportunity, transparent hiring audit trail</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Tech Stack Showcase -->
-                    <div class="col-lg-6">
+                    <div class="col-lg-7">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex align-items-center gap-3 mb-3">
                                 <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
                                     <i class="bi bi-stack"></i>
                                 </div>
-                                <h3 class="card-paper-title mb-0">Technical Architecture</h3>
+                                <div>
+                                    <h3 class="card-paper-title mb-0">Technical Architecture</h3>
+                                    <span class="small text-muted-custom">Engineered with modern web standards, relational ACID persistence, and 3D AI kinematics</span>
+                                </div>
                             </div>
-                            <p class="text-muted-custom mb-3">
-                                Built adhering strictly to the required project stack constraints without external heavy frameworks:
-                            </p>
                             
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-filetype-php text-ink fs-5"></i>
-                                    <strong>Native PHP 8.x</strong> — Backend &amp; Session State
-                                </span>
-                                <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-bootstrap-fill text-ink fs-5"></i>
-                                    <strong>Bootstrap 5.3 + Icons</strong> — Responsive UI &amp; Layout
-                                </span>
-                                <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-filetype-css text-ink fs-5"></i>
-                                    <strong>CSS3 Tokens</strong> — Custom Styling &amp; Theme
-                                </span>
-                                <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-filetype-js text-ink fs-5"></i>
-                                    <strong>Vanilla JavaScript (ES6)</strong> — Real-time Password Meter &amp; UI
-                                </span>
-                                <span class="chip chip-selectable p-2 px-3">
-                                    <i class="bi bi-database-slash text-ink fs-5"></i>
-                                    <strong>JSON Datastore</strong> — Zero-DB Persistence
-                                </span>
+                            <div class="tech-spec-grid">
+                                <!-- 1. Three.js & GLTF 3D Mascot -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-boxes"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">3D Engine &amp; Mascot</span>
+                                        <div class="tech-spec-title">Three.js WebGL &amp; GLTFLoader</div>
+                                        <div class="tech-spec-detail">Hardware-accelerated 3D mascot (<code>cute_robot.glb</code>) with 13 procedural kinematics &amp; OLED visor shader</div>
+                                    </div>
+                                </div>
+
+                                <!-- 2. MySQL / MariaDB Relational Engine -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-database-fill-check"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Relational Persistence</span>
+                                        <div class="tech-spec-title">MySQL 8.0 / MariaDB (InnoDB)</div>
+                                        <div class="tech-spec-detail">ACID transactional integrity, foreign key cascades, and utf8mb4 full unicode persistence</div>
+                                    </div>
+                                </div>
+
+                                <!-- 3. PHP PDO Layer -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-link-45deg"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Database Abstraction</span>
+                                        <div class="tech-spec-title">PHP PDO Prepared Statements</div>
+                                        <div class="tech-spec-detail">Strict parameter binding (zero SQL injection vulnerabilities) with singleton connection pool</div>
+                                    </div>
+                                </div>
+
+                                <!-- 4. Atomic Migrations & Dual Mode -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-arrow-repeat"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Database Pipeline</span>
+                                        <div class="tech-spec-title">Atomic Migrations &amp; Seeding</div>
+                                        <div class="tech-spec-detail">Transactional migration engine (<code>migrate.php</code>) with Demo vs. Clean Slate dataset switcher</div>
+                                    </div>
+                                </div>
+
+                                <!-- 5. Native PHP 8.2+ Backend -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-filetype-php"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Core Backend</span>
+                                        <div class="tech-spec-title">Native PHP 8.2+ Architecture</div>
+                                        <div class="tech-spec-detail">Modular template hierarchy, strict session lifecycle, and multi-role RBAC authorization boundaries</div>
+                                    </div>
+                                </div>
+
+                                <!-- 6. Apache & HTTP Security Headers -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-hdd-network"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Web Server</span>
+                                        <div class="tech-spec-title">Apache 2.4 &amp; XAMPP Stack</div>
+                                        <div class="tech-spec-detail">URL rewrite rules and strict HTTP security headers (X-Frame-Options, CSP, Referrer)</div>
+                                    </div>
+                                </div>
+
+                                <!-- 7. NVIDIA NIM AI Gateway -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-cpu"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Campus AI Assistant</span>
+                                        <div class="tech-spec-title">NVIDIA NIM AI Cloud Gateway</div>
+                                        <div class="tech-spec-detail">Streaming inference via Llama-3.3-70B &amp; DeepSeek-R1 with sliding multi-turn conversational memory</div>
+                                    </div>
+                                </div>
+
+                                <!-- 8. Offline Fallback AI Engine -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-shield-shaded"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Resilience Engine</span>
+                                        <div class="tech-spec-title">Local Heuristic Fallback</div>
+                                        <div class="tech-spec-detail">Zero-downtime offline intelligence via plural-aware regex and curated campus knowledge rules</div>
+                                    </div>
+                                </div>
+
+                                <!-- 9. Tactile Paper Sheet Design Tokens -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-palette"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Design System</span>
+                                        <div class="tech-spec-title">Modular CSS3 Design Tokens</div>
+                                        <div class="tech-spec-detail">7 scoped domain stylesheets, tactile paper palette (<code>#FBF9F4</code> canvas, <code>#161616</code> ink), and zero pill clutter</div>
+                                    </div>
+                                </div>
+
+                                <!-- 10. Bootstrap 5.3 + Icons -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-bootstrap-fill"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">UI Framework</span>
+                                        <div class="tech-spec-title">Bootstrap 5.3 + Icons 1.11</div>
+                                        <div class="tech-spec-detail">Accessible 12-column responsive layout, candidate review drawers, paper modals, and vector iconography</div>
+                                    </div>
+                                </div>
+
+                                <!-- 11. Vanilla JavaScript ES6+ -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-filetype-js"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Client Runtime</span>
+                                        <div class="tech-spec-title">Vanilla JavaScript (ES6+)</div>
+                                        <div class="tech-spec-detail">Client-side Shannon password entropy meter, debounced spotlight search (<code>Ctrl+K</code>), and 3D Coverflow</div>
+                                    </div>
+                                </div>
+
+                                <!-- 12. Real-Time Notification Poller -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-bell"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Live State Sync</span>
+                                        <div class="tech-spec-title">Real-Time Notification Poller</div>
+                                        <div class="tech-spec-detail">30-second interval polling with <code>visibilitychange</code> lifecycle pause and floating alert toasts</div>
+                                    </div>
+                                </div>
+
+                                <!-- 13. Security & Anti-CSRF Protection -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">Security Architecture</span>
+                                        <div class="tech-spec-title">Bcrypt &amp; Anti-CSRF Tokens</div>
+                                        <div class="tech-spec-detail">Bcrypt password hashing, cryptographic session tokens on all state mutations, and IDOR boundary checks</div>
+                                    </div>
+                                </div>
+
+                                <!-- 14. Playwright E2E Automation -->
+                                <div class="tech-spec-item">
+                                    <div class="tech-spec-icon"><i class="bi bi-check-all"></i></div>
+                                    <div class="tech-spec-content">
+                                        <span class="tech-spec-tag">QA &amp; Automation</span>
+                                        <div class="tech-spec-title">Playwright E2E Test Suite</div>
+                                        <div class="tech-spec-detail">TypeScript automated test suites across smoke, security fuzzing, half-screen viewports, and multi-role auth</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -409,20 +528,6 @@ require_once __DIR__ . '/includes/header.php';
                         <div>
                             <span class="small fw-bold text-ink d-block mb-2">Technologies &amp; Modules Applied:</span>
                             <div class="d-flex flex-wrap gap-2" id="devblog-modal-techstack"></div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer border-top border-line bg-surface d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">
-                            <i class="bi bi-x-lg me-1"></i> Close Story
-                        </button>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3" id="devblog-modal-prev-btn">
-                                <i class="bi bi-arrow-left me-1"></i> Newer Log
-                            </button>
-                            <button type="button" class="btn btn-accent-pill btn-sm px-3" id="devblog-modal-next-btn">
-                                Older Log <i class="bi bi-arrow-right ms-1"></i>
-                            </button>
                         </div>
                     </div>
                 </div>

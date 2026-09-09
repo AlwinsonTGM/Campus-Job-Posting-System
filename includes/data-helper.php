@@ -1848,9 +1848,7 @@ function get_categories() {
         }
 
         foreach ($cats as &$cat) {
-            if (isset($counts[$cat['name']])) {
-                $cat['job_count'] = $counts[$cat['name']];
-            }
+            $cat['job_count'] = $counts[$cat['name']] ?? 0;
         }
 
         return $cats;

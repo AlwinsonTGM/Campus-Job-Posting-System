@@ -87,30 +87,24 @@ require_once __DIR__ . '/../includes/header.php';
                                     Explore verified student assistantships, academic laboratory assignments, library roles, and peer tutoring opportunities designed to work smoothly around your class schedule.
                                 </p>
                                 <div class="d-flex flex-wrap align-items-center gap-2 pt-1">
-                                    <span class="badge rounded-pill" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
+                                    <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
                                         <i class="bi bi-briefcase-fill text-warning me-1"></i> <?= count($jobs) ?> Positions Live
                                     </span>
-                                    <span class="badge rounded-pill" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
+                                    <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
                                         <i class="bi bi-clock-history text-accent me-1"></i> Max 20 hrs/week Safe Cap
                                     </span>
-                                    <span class="badge rounded-pill" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
+                                    <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
                                         <i class="bi bi-cash-stack text-warning me-1"></i> ₱80 – ₱120 / hr Verified Pay
                                     </span>
                                 </div>
                             </div>
                             <div class="col-lg-4 text-lg-end d-none d-lg-block" id="hero-active-filter-card">
-                                <div class="p-3 rounded-4 text-start d-inline-block shadow-sm" style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); min-width: 240px;">
-                                    <div class="small text-white-50 text-uppercase fw-bold mb-1" style="font-size: 11px;">Active Filter</div>
-                                    <div class="fw-bold text-white fs-6 mb-2">
-                                        <?= !empty($category) ? htmlspecialchars($category) : 'All Job Families' ?>
+                                <div class="p-3 rounded-3 text-start d-inline-block shadow-sm" style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); min-width: 220px;">
+                                    <div class="small text-white-50 text-uppercase fw-bold mb-1" style="font-size: 11px;">Active Discipline</div>
+                                    <div class="fw-bold text-white fs-6 mb-0 d-flex align-items-center gap-1">
+                                        <i class="bi bi-funnel-fill text-accent"></i>
+                                        <span><?= !empty($category) ? htmlspecialchars($category) : 'All Job Families' ?></span>
                                     </div>
-                                    <?php if (!empty($category) || !empty($keyword) || !empty($department) || !empty($job_type) || !empty($work_setup)): ?>
-                                        <a href="jobs.php" class="btn btn-sm btn-light py-1 px-3 rounded-pill fw-semibold text-dark" style="font-size: 12px;">
-                                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
-                                        </a>
-                                    <?php else: ?>
-                                        <span class="small text-white-50"><i class="bi bi-check2-circle text-success me-1"></i> Browsing All Openings</span>
-                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -126,11 +120,6 @@ require_once __DIR__ . '/../includes/header.php';
                             </h2>
                             <span class="small text-muted-custom">Select a discipline family to filter verified openings</span>
                         </div>
-                        <?php if (!empty($category)): ?>
-                            <a href="jobs.php" class="small text-accent text-decoration-none fw-semibold category-clear-btn" id="clear-category-filter">
-                                Clear Category Filter &times;
-                            </a>
-                        <?php endif; ?>
                     </div>
 
                     <div class="row g-3" id="category-tiles-grid">
