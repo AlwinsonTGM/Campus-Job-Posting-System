@@ -3140,6 +3140,48 @@ section.py-5.py-lg-6 {
   min-width: 0;
 }
 
+/* 16.12.3 Theme Segmented Control (Settings + About page preview) */
+.theme-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--cream);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+}
+
+.theme-segment button {
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 1rem;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.theme-segment button:hover {
+  color: var(--ink);
+}
+
+.theme-segment button.is-active,
+.theme-segment button[aria-pressed="true"] {
+  background-color: var(--ink);
+  color: var(--surface);
+}
+
+.theme-segment button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @keyframes flashToastSlideIn {
   0% {
     opacity: 0;

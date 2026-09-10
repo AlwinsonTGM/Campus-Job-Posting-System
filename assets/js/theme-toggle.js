@@ -158,13 +158,16 @@
 
   /**
    * Applies the given theme to the document root and developer photos.
+   * Syncs every theme control on the page: legacy nav button, Settings /
+   * About segmented controls ([data-theme-set]), cycle buttons
+   * ([data-theme-toggle]) and the Settings dark-mode switch.
    */
   function applyTheme(theme, isGlitch) {
     var html = document.documentElement;
     html.setAttribute('data-theme', theme);
     html.setAttribute('data-bs-theme', theme);
 
-    // Update toggle button icon if it exists
+    // Update legacy nav toggle button icon if it exists (backward compat)
     var icon = document.getElementById('themeToggleIcon');
     if (icon) {
       if (theme === DARK) {
@@ -174,15 +177,50 @@
       }
     }
 
-    // Update aria-label on toggle button
+    // Update aria-label on legacy toggle button (backward compat)
     var btn = document.getElementById('themeToggleBtn');
     if (btn) {
       btn.setAttribute('aria-label', theme === DARK ? 'Switch to Light Mode' : 'Switch to Dark Mode');
       btn.setAttribute('title', theme === DARK ? 'Switch to Light Mode' : 'Switch to Dark Mode');
     }
 
+    // Sync generic cycle-button icons (e.g. About page preview toggle)
+    var toggleIcons = document.querySelectorAll('[data-theme-toggle-icon]');
+    toggleIcons.forEach(function (el) {
+      el.className = theme === DARK ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
+    var toggleBtns = document.querySelectorAll('[data-theme-toggle]');
+    toggleBtns.forEach(function (b) {
+      b.setAttribute('aria-label', theme === DARK ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+      b.setAttribute('title', theme === DARK ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+    });
+
+    // Sync segmented Light/Dark controls (Settings + About page)
+    var setBtns = document.querySelectorAll('[data-theme-set]');
+    setBtns.forEach(function (b) {
+      var isActive = b.getAttribute('data-theme-set') === theme;
+      b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      b.classList.toggle('is-active', isActive);
+    });
+
+    // Sync Settings dark-mode switch, if present
+    var modeSwitch = document.getElementById('themeModeSwitch');
+    if (modeSwitch && modeSwitch.checked !== (theme === DARK)) {
+      modeSwitch.checked = (theme === DARK);
+    }
+
     // Sync developer photos
     syncDeveloperPhotos(theme, !!isGlitch);
+  }
+
+  /**
+   * Sets an explicit theme and saves the preference.
+   */
+  function setTheme(theme, isGlitch) {
+    if (theme !== DARK && theme !== LIGHT) return;
+    if (typeof isGlitch === 'undefined') isGlitch = true;
+    localStorage.setItem(STORAGE_KEY, theme);
+    applyTheme(theme, isGlitch);
   }
 
   /**
@@ -210,6 +248,26 @@
     if (btn) {
       btn.addEventListener('click', toggleTheme);
     }
+
+    // Generic cycle buttons (e.g. About page preview toggle)
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
+      b.addEventListener('click', toggleTheme);
+    });
+
+    // Segmented Light/Dark controls (Settings + About page)
+    document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        setTheme(b.getAttribute('data-theme-set'), true);
+      });
+    });
+
+    // Settings dark-mode switch
+    var modeSwitch = document.getElementById('themeModeSwitch');
+    if (modeSwitch) {
+      modeSwitch.addEventListener('change', function () {
+        setTheme(modeSwitch.checked ? DARK : LIGHT, true);
+      });
+    }
   });
 
   // Listen for OS-level preference changes (if user has no explicit preference saved)
@@ -221,5 +279,6 @@
 
   // Expose toggleTheme globally
   window.toggleTheme = toggleTheme;
+  window.setTheme = setTheme;
   window.syncDeveloperPhotos = syncDeveloperPhotos;
 })();

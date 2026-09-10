@@ -132,12 +132,6 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
             <!-- Right Action Items -->
             <div class="paper-nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
 
-                <!-- Theme Toggle Button -->
-                <button type="button" class="btn-circle-icon theme-toggle-btn" id="themeToggleBtn"
-                        title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
-                    <i class="bi bi-moon-fill" id="themeToggleIcon"></i>
-                </button>
-
                 <?php if (!$current_user || ($current_user['role'] ?? '') === 'admin'): ?>
                 <!-- Circular Search-Icon Button (Desktop only; mobile is in top bar beside hamburger) -->
                 <button type="button" class="btn-circle-icon d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">

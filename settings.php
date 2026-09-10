@@ -533,6 +533,33 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                             </div>
 
+                            <hr class="border-line my-4">
+
+                            <h4 class="card-paper-title fs-6 mb-3">
+                                <i class="bi bi-palette text-accent me-2"></i> Appearance
+                            </h4>
+                            <p class="small text-muted-custom mb-3">
+                                Choose how Campus Hire looks on this device. Your choice is saved in this browser.
+                            </p>
+                            <div class="d-flex flex-column gap-3 mb-4">
+                                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                                    <div class="theme-segment" role="group" aria-label="Color theme">
+                                        <button type="button" data-theme-set="light" aria-pressed="true">
+                                            <i class="bi bi-sun-fill"></i> Light
+                                        </button>
+                                        <button type="button" data-theme-set="dark" aria-pressed="false">
+                                            <i class="bi bi-moon-fill"></i> Dark
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-0">
+                                    <input class="form-check-input flex-shrink-0 ms-0 mt-0" type="checkbox" id="themeModeSwitch">
+                                    <label class="form-check-label small text-ink cursor-pointer mb-0" for="themeModeSwitch">
+                                        Dark mode
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="p-3 bg-cream rounded-3 border border-line small text-muted-custom">
                                 <i class="bi bi-shield-check text-accent me-1"></i>
                                 Account data is strictly governed under the <strong>Data Privacy Act of 2012 (RA 10173)</strong>.

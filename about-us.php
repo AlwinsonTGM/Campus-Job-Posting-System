@@ -91,6 +91,19 @@ require_once __DIR__ . '/includes/header.php';
             <div class="container-paper">
                 <!-- Page Head & Photo Standards Policy Split Header -->
                 <div class="page-head-split reveal-fade-rise mb-5 pb-4 border-bottom border-line">
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <span class="small text-muted-custom"><i class="bi bi-palette me-1"></i>Preview theme:</span>
+                            <div class="theme-segment" role="group" aria-label="Preview color theme">
+                                <button type="button" data-theme-set="light" aria-pressed="true">
+                                    <i class="bi bi-sun-fill"></i> Light
+                                </button>
+                                <button type="button" data-theme-set="dark" aria-pressed="false">
+                                    <i class="bi bi-moon-fill"></i> Dark
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <h1 class="page-head-title mb-3">Meet the Development Team</h1>
                     <div class="row g-4 align-items-start">
                         <div class="col-lg-7">
