@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Campus Job Posting System — Design Tokens (:root)
    Unified Single Source of Truth
    Theme: Paper Sheet Aesthetic (COAL101 Blueprint)
@@ -80,4 +80,124 @@
   --bs-link-hover-color: var(--accent);
   --bs-focus-ring-color: rgba(46, 204, 94, 0.25);
   --bs-highlight-bg: var(--accent-soft);
+}
+
+/* ==========================================================================
+   Dark Mode Token Overrides — [data-theme="dark"]
+   Applied by JS on <html> element; FOUC-prevention inline script in header.php
+   ========================================================================== */
+
+[data-theme="dark"] {
+  /* Surface & Color Palette */
+  --canvas: #0F0F10;
+  --surface: #1A1A1E;
+  --cream: #232328;
+  --ink: #E8E6E3;
+  --muted: #9B978F;
+  --accent: #34D865;
+  --accent-hover: #2ECC5E;
+  --accent-soft: #1B3324;
+  --line: #2E2E33;
+  --white: #232328;
+
+  /* Primary Theme Tokens */
+  --kld-green-dark: #E8E6E3;
+  --kld-green-primary: #34D865;
+  --kld-green-hover: #2ECC5E;
+  --kld-green-secondary: #E8E6E3;
+  --kld-green-light: #34D865;
+  --kld-green-soft: #1B3324;
+
+  /* Secondary Accents */
+  --kld-gold: #232328;
+  --kld-gold-hover: #2A2A30;
+  --kld-gold-accent: #34D865;
+  --kld-gold-light: #232328;
+  --kld-gold-text: #E8E6E3;
+
+  /* Backward-compatible Theme Aliases */
+  --primary-blue: #34D865;
+  --primary-blue-hover: #2ECC5E;
+  --secondary-blue: #E8E6E3;
+  --accent-gold: #34D865;
+  --accent-gold-hover: #2ECC5E;
+  --accent-gold-light: #1B3324;
+
+  /* Neutrals & Layout */
+  --bg-light: #1A1A1E;
+  --text-dark: #E8E6E3;
+  --text-muted: #9B978F;
+  --card-border: #2E2E33;
+
+  /* Status Tokens — darkened tints for readability on dark surfaces */
+  --st-pending: #F2B33D;
+  --st-pending-bg: #2E2210;
+  --st-review: #5EB5FF;
+  --st-review-bg: #0E1E35;
+  --st-interview: #38BDF8;
+  --st-interview-bg: #0B1D2A;
+  --st-accepted: #34D865;
+  --st-accepted-bg: #1B3324;
+  --st-declined: #F87171;
+  --st-declined-bg: #2D1010;
+
+  /* Bootstrap Bridge Overrides */
+  --bs-body-bg: var(--surface);
+  --bs-body-color: var(--ink);
+  --bs-border-color: var(--line);
+  --bs-primary: #34D865;
+  --bs-primary-rgb: 52, 216, 101;
+  --bs-link-color: var(--ink);
+  --bs-link-hover-color: var(--accent);
+  --bs-focus-ring-color: rgba(52, 216, 101, 0.25);
+  --bs-highlight-bg: var(--accent-soft);
+
+  /* Bootstrap surface variables */
+  --bs-secondary-bg: #232328;
+  --bs-tertiary-bg: #2A2A30;
+  --bs-secondary-color: #9B978F;
+  --bs-tertiary-color: #6B6763;
+  --bs-emphasis-color: #F0EEE9;
+  --bs-heading-color: #E8E6E3;
+
+  /* Bootstrap component tokens */
+  --bs-card-bg: #232328;
+  --bs-card-border-color: #2E2E33;
+  --bs-modal-bg: #232328;
+  --bs-modal-border-color: #2E2E33;
+  --bs-dropdown-bg: #232328;
+  --bs-dropdown-border-color: #2E2E33;
+  --bs-dropdown-link-color: #E8E6E3;
+  --bs-dropdown-link-hover-bg: #2A2A30;
+  --bs-dropdown-link-hover-color: #E8E6E3;
+  --bs-input-bg: #1A1A1E;
+  --bs-input-border-color: #2E2E33;
+  --bs-input-color: #E8E6E3;
+  --bs-input-placeholder-color: #6B6763;
+  --bs-form-select-bg: #1A1A1E;
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: #232328;
+  --bs-table-hover-bg: #232328;
+  --bs-table-border-color: #2E2E33;
+  --bs-nav-tabs-border-color: #2E2E33;
+  --bs-nav-tabs-link-active-bg: #1A1A1E;
+  --bs-pagination-bg: #1A1A1E;
+  --bs-pagination-border-color: #2E2E33;
+  --bs-pagination-color: #E8E6E3;
+  --bs-pagination-hover-bg: #232328;
+  --bs-pagination-hover-color: #E8E6E3;
+  --bs-accordion-bg: #1A1A1E;
+  --bs-accordion-border-color: #2E2E33;
+  --bs-accordion-button-bg: #232328;
+  --bs-accordion-button-active-bg: #1B3324;
+  --bs-accordion-button-active-color: #34D865;
+  --bs-list-group-bg: #232328;
+  --bs-list-group-border-color: #2E2E33;
+  --bs-toast-bg: #232328;
+  --bs-toast-border-color: #2E2E33;
+  --bs-offcanvas-bg: #232328;
+  --bs-popover-bg: #232328;
+  --bs-popover-border-color: #2E2E33;
+  --bs-tooltip-bg: #E8E6E3;
+  --bs-tooltip-color: #1A1A1E;
 }

@@ -869,7 +869,13 @@
                     }
 
                     // Dynamically display which model answered the question
-                    const modelDisplayName = data.model_name || data.model || 'NVIDIA NIM';
+                    let modelDisplayName = data.model_name || data.model || 'NVIDIA NIM';
+                    if (data.is_model_fallback) {
+                        modelDisplayName += ' (Fallback)';
+                        if (data.fallback_notice) {
+                            console.info('[HeroRobot] Model Fallback:', data.fallback_notice);
+                        }
+                    }
                     if (modelTagEl && modelTagNameEl) {
                         modelTagNameEl.textContent = modelDisplayName;
                         modelTagEl.classList.remove('d-none');
@@ -1051,9 +1057,11 @@
             if (isFullscreenOpen || !fsModal) return;
             isFullscreenOpen = true;
 
-            // 1. Reparent canvas container into fullscreen slot
-            if (container && fsSlot) {
+            // 1. Reparent canvas container into fullscreen slot (if not already inside)
+            if (container && fsSlot && container.parentNode !== fsSlot) {
                 fsSlot.appendChild(container);
+            }
+            if (container) {
                 container.classList.add('is-fullscreen');
             }
 
@@ -1064,19 +1072,26 @@
             });
             document.body.style.overflow = 'hidden';
 
-            // 3. Resize WebGL renderer immediately and after transition settles
+            // 3. Ensure render loop is active
+            isVisible = true;
+            if (isLoaded && isTabActive) {
+                startRenderLoop();
+            }
+
+            // 4. Resize WebGL renderer immediately and after transition settles
             handleResize();
             setTimeout(handleResize, 50);
+            setTimeout(handleResize, 150);
             setTimeout(handleResize, 280);
 
-            // 4. Focus input
+            // 5. Focus input
             if (fsInput) {
                 setTimeout(function () {
                     fsInput.focus();
                 }, 120);
             }
 
-            // 5. Scroll chat stream to bottom
+            // 6. Scroll chat stream to bottom
             if (fsMessagesContainer) {
                 fsMessagesContainer.scrollTop = fsMessagesContainer.scrollHeight;
             }
@@ -1086,7 +1101,7 @@
             if (!isFullscreenOpen || !fsModal) return;
             isFullscreenOpen = false;
 
-            // 1. Reparent canvas container back to hero wrapper
+            // 1. Reparent canvas container back to hero wrapper if one exists on the page
             if (container && heroStageWrapper) {
                 container.classList.remove('is-fullscreen');
                 heroStageWrapper.appendChild(container);
@@ -1098,13 +1113,18 @@
             setTimeout(function () {
                 if (!isFullscreenOpen && fsModal) {
                     fsModal.style.display = 'none';
+                    if (!heroStageWrapper) {
+                        stopRenderLoop();
+                    }
                 }
             }, 300);
 
-            // 3. Resize WebGL renderer to hero container dimensions
-            handleResize();
-            setTimeout(handleResize, 50);
-            setTimeout(handleResize, 280);
+            // 3. Resize WebGL renderer to hero container dimensions if on hero page
+            if (heroStageWrapper) {
+                handleResize();
+                setTimeout(handleResize, 50);
+                setTimeout(handleResize, 280);
+            }
         }
 
         // Fullscreen Event Listeners
@@ -1114,6 +1134,20 @@
                 e.stopPropagation();
                 openFullscreen();
             });
+        }
+
+        const faqTriggerBtn = document.getElementById('faqChatbotTriggerBtn');
+        if (faqTriggerBtn) {
+            faqTriggerBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openFullscreen();
+            });
+        }
+
+        // Auto-open modal if URL contains ?chat=1 or hash #chatbot
+        if (window.location.search.indexOf('chat=1') !== -1 || window.location.hash === '#chatbot') {
+            setTimeout(openFullscreen, 250);
         }
 
         if (fsCloseBtn) {
@@ -1196,7 +1230,9 @@
 
         // Scene, Camera, Renderer
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100);
+        const initW = container.clientWidth || 420;
+        const initH = container.clientHeight || 480;
+        const camera = new THREE.PerspectiveCamera(38, initW / initH, 0.1, 100);
         camera.position.set(0, 0, 5.8);
 
         let renderer;
@@ -1212,7 +1248,7 @@
             return;
         }
 
-        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setSize(initW, initH);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1516,8 +1552,8 @@
         // Responsive Resize Handler
         function handleResize() {
             if (!container || !renderer || !camera) return;
-            const width = container.clientWidth;
-            const height = container.clientHeight;
+            const width = container.clientWidth || (isFullscreenOpen ? 420 : 0);
+            const height = container.clientHeight || (isFullscreenOpen ? 480 : 0);
             if (width === 0 || height === 0) return;
 
             camera.aspect = width / height;

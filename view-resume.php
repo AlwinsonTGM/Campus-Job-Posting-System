@@ -152,7 +152,13 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
     <link rel=preconnect href=https://fonts.gstatic.com crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script>
+    (function(){
+      var t = localStorage.getItem('campus_hire_theme');
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
     <style>
         :root {
             --canvas: #CDC0AB;
@@ -290,6 +296,79 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
                 border-radius: 0;
                 border: none;
             }
+        }
+        [data-theme="dark"] {
+            --canvas: #0F0F10;
+            --surface: #1A1A1E;
+            --cream: #232328;
+            --ink: #E8E6E3;
+            --muted: #A39E93;
+            --line: #2E2E33;
+            --white: #1A1A1E;
+            --accent: #34D865;
+            --accent-soft: #1B3324;
+        }
+        [data-theme="dark"] body {
+            background-color: #0F0F10;
+            color: #E8E6E3;
+        }
+        [data-theme="dark"] .resume-page {
+            background: #1A1A1E;
+            border-color: #2E2E33;
+            color: #E8E6E3;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        }
+        [data-theme="dark"] .resume-name {
+            color: #FFFFFF;
+        }
+        [data-theme="dark"] .resume-sub {
+            color: #A39E93;
+        }
+        [data-theme="dark"] .section-heading {
+            border-bottom-color: #2E2E33;
+            color: #FFFFFF;
+        }
+        [data-theme="dark"] .section-heading i {
+            color: var(--accent);
+        }
+        [data-theme="dark"] .resume-header {
+            border-bottom-color: #2E2E33;
+        }
+        [data-theme="dark"] .text-dark {
+            color: #FFFFFF !important;
+        }
+        [data-theme="dark"] .text-muted {
+            color: #A39E93 !important;
+        }
+        [data-theme="dark"] .text-secondary {
+            color: #C8C5BD !important;
+        }
+        [data-theme="dark"] .border {
+            border-color: #2E2E33 !important;
+        }
+        [data-theme="dark"] .bg-light {
+            background-color: #232328 !important;
+            border-color: #2E2E33 !important;
+        }
+        [data-theme="dark"] .matrix-pill {
+            background: #232328;
+            border-color: #2E2E33;
+            color: #E8E6E3;
+        }
+        [data-theme="dark"] .badge-tag {
+            background-color: #1B3324;
+            color: #34D865;
+            border-color: rgba(52, 216, 101, 0.3);
+        }
+        [data-theme="dark"] .floating-controls .btn-dark {
+            background-color: #232328;
+            border-color: #2E2E33;
+            color: #FFFFFF;
+        }
+        [data-theme="dark"] .floating-controls .btn-light {
+            background-color: #1A1A1E;
+            border-color: #2E2E33;
+            color: #E8E6E3;
         }
     </style>
 </head>

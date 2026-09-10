@@ -1,5 +1,41 @@
 [
     {
+        "id": "day-13",
+        "sprint_number": "13",
+        "sprint_badge": "DAY 13 · DUAL PERSONAS & CYBER GLITCH ENGINE",
+        "title": "Dual-Persona Developer Photography, Cyber Glitch & RGB Split Transitions, Unified Chatbot Modal & Global Dark Overrides",
+        "date": "September 10, 2026",
+        "read_time": "7 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Engineered dynamic dual-persona developer photography with light/dark portraits across all team touchpoints, crafted a 300ms hardware-accelerated Cyber Glitch & RGB Split transition with Hover Peek preview, unified the FAQ Chatbot with the index 3D robot companion modal, and resolved global dark mode contrast anomalies.",
+        "tags": [
+            "Dual-Persona Photos",
+            "Cyber Glitch Transition",
+            "RGB Split FX",
+            "Hover Peek",
+            "Unified Chatbot Modal",
+            "Dark Mode Polish"
+        ],
+        "cover_image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop",
+        "full_story": "<p class='lead text-ink fw-semibold'>Today brought our system's visual identity, responsiveness, and interactive polish to an unprecedented level. We engineered dynamic dual-persona developer photography with custom Cyber Glitch and RGB Split transitions, unified our Campus AI assistant modal across pages, and resolved complex dark mode contrast edge cases.</p><p>As part of our mission to deliver a world-class institutional experience, our team needed to embody the dual character of our platform: clean, crisp institutional day-to-day operations in daytime mode, and high-performance engineering focus in dark mode. We introduced formal dual-persona 2x2 institutional portraits for all six developers—featuring daytime institutional attire and sleek dark mode photography across the About Us team grid, the DevBlog coverflow, and the floating landing page circles.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-lightning-charge-fill text-accent me-2'></i>Cyber Glitch & RGB Split Transition Engine</h5><p>Rather than settling for a standard opacity fade when toggling themes, I designed and coded a custom, hardware-accelerated <strong>Cyber Glitch & RGB Split Transition</strong>. Built using CSS3 <code>drop-shadow</code> chromatic aberration (splitting into cyan <code>#00F0FF</code> and neon crimson <code>#FF1E56</code> channels), horizontal slice jitter (<code>skewX</code> and subpixel displacements), and an animated scanline sweep, the 320ms transition delivers a tactile, sci-fi cyberpunk feel without any audio intrusion or performance hitching.</p><p>To eliminate any perceptual latency or white flicker during rapid toggling, the engine runs an asset preloading cycle on DOM ready, caching both light and dark portraits in browser memory. The image source swap executes at the exact 140ms midpoint peak of maximum jitter distortion, ensuring a seamless visual transformation. Furthermore, I engineered an interactive <strong>Hover Peek</strong> capability: hovering over any developer card or floating bubble triggers a micro-glitch preview revealing the alternate persona, smoothly restoring when the cursor leaves.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-robot text-accent me-2'></i>Unified Campus AI Assistant Modal</h5><p>On <code class='bg-cream text-ink px-1 rounded'>faqs.php</code>, the chatbot previously rendered as an isolated offcanvas drawer that conflicted with our paper design language. Today, I completely unified the FAQ chatbot interface with our flagship full-screen 2-column modal from the index page. Powered by our Three.js 3D GLTF robot companion and NVIDIA NIM AI Cloud Gateway, the unified assistant modal delivers full multi-turn conversational intelligence, instant topic suggestions, and zero-reload responsiveness across the portal.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-moon-stars-fill text-accent me-2'></i>Dark Mode Typography & Contrast Hardening</h5><p>We audited all interface surfaces in dark mode, curing contrast regressions across badge indicators, numeric counters, form inputs, call-to-action buttons, and calendar icons. Buttons such as the index CTA now boast high-contrast dark text on bright KLD Green, and secondary buttons feature clear luminous borders and crisp icons. Our automated Playwright suite confirmed 100% test success with zero regressions across both light and dark themes!</p>",
+        "key_takeaways": [
+            "Engineered dual-persona developer photography with light and dark portraits across all team touchpoints.",
+            "Created 300ms hardware-accelerated Cyber Glitch & RGB Split transition with instant preloading and Hover Peek preview.",
+            "Unified FAQ chatbot with the index 3D robot companion modal for a seamless multi-turn AI experience.",
+            "Hardened global dark mode styling, curing contrast anomalies across badges, counters, and action buttons."
+        ],
+        "tech_stack": [
+            "CSS3 Chromatic Aberration",
+            "Hardware-Accelerated Glitch",
+            "Vanilla JS Theme Engine",
+            "Dual-Persona Photography",
+            "Three.js Robot Companion",
+            "Playwright E2E Suite"
+        ]
+    },
+    {
         "id": "day-12",
         "sprint_number": "12",
         "sprint_badge": "DAY 12 · DE-PILLING, ARCHITECTURE & GPU RENDERING",

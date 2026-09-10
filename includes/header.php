@@ -41,7 +41,17 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?> | <?= htmlspecialchars(SITE_NAME) ?></title>
-    
+
+    <!-- Anti-FOUC: Apply saved theme before CSS paint to prevent white flash -->
+    <script>
+    (function(){
+      var t = localStorage.getItem('campus_hire_theme');
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.setAttribute('data-bs-theme', t);
+    })();
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="<?= $base_url ?>assets/img/favicon.svg">
     <link rel="apple-touch-icon" href="<?= $base_url ?>assets/img/favicon.svg">

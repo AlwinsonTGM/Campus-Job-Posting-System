@@ -832,29 +832,59 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="container-fluid px-lg-5">
                     <div class="cta-section-wrap">
                         <!-- Floating Circular Developer Photos -->
-                        <div class="floating-photo-circle photo-pos-1"
-                            title="Alwinson Bustamante - Lead System Architect">
-                            <img src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg" alt="Alwinson Bustamante">
+                        <div class="floating-photo-circle photo-pos-1 dev-photo-glitch-frame"
+                            title="Alwinson Bustamante - Lead System Architect"
+                            data-light-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg"
+                            data-dark-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE_dark.jpg">
+                            <img src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg" 
+                                 data-light-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg"
+                                 data-dark-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE_dark.jpg"
+                                 alt="Alwinson Bustamante" class="dev-photo-target">
                         </div>
-                        <div class="floating-photo-circle photo-pos-2"
-                            title="Nico Baco - Public Suite & Compliance Specialist">
-                            <img src="<?= $base_url ?>assets/img/developers/BACO.jpg" alt="Nico Baco">
+                        <div class="floating-photo-circle photo-pos-2 dev-photo-glitch-frame"
+                            title="Nico Baco - Public Suite & Compliance Specialist"
+                            data-light-src="<?= $base_url ?>assets/img/developers/BACO.jpg"
+                            data-dark-src="<?= $base_url ?>assets/img/developers/BACO_dark.jpg">
+                            <img src="<?= $base_url ?>assets/img/developers/BACO.jpg" 
+                                 data-light-src="<?= $base_url ?>assets/img/developers/BACO.jpg"
+                                 data-dark-src="<?= $base_url ?>assets/img/developers/BACO_dark.jpg"
+                                 alt="Nico Baco" class="dev-photo-target">
                         </div>
-                        <div class="floating-photo-circle photo-pos-3"
-                            title="Julius Robert Cruzpe - Authentication & Client Validation Engineer">
-                            <img src="<?= $base_url ?>assets/img/developers/CRUZPE.jpg" alt="Julius Robert Cruzpe">
+                        <div class="floating-photo-circle photo-pos-3 dev-photo-glitch-frame"
+                            title="Julius Robert Cruzpe - Authentication & Client Validation Engineer"
+                            data-light-src="<?= $base_url ?>assets/img/developers/CRUZPE.jpg"
+                            data-dark-src="<?= $base_url ?>assets/img/developers/CRUZPE_dark.jpg">
+                            <img src="<?= $base_url ?>assets/img/developers/CRUZPE.jpg" 
+                                 data-light-src="<?= $base_url ?>assets/img/developers/CRUZPE.jpg"
+                                 data-dark-src="<?= $base_url ?>assets/img/developers/CRUZPE_dark.jpg"
+                                 alt="Julius Robert Cruzpe" class="dev-photo-target">
                         </div>
-                        <div class="floating-photo-circle photo-pos-4"
-                            title="Andrei Von Breydan Layco - Student Portal & Application Flow Engineer">
-                            <img src="<?= $base_url ?>assets/img/developers/LAYCO.jpg" alt="Andrei Von Breydan Layco">
+                        <div class="floating-photo-circle photo-pos-4 dev-photo-glitch-frame"
+                            title="Andrei Von Breydan Layco - Student Portal & Application Flow Engineer"
+                            data-light-src="<?= $base_url ?>assets/img/developers/LAYCO.jpg"
+                            data-dark-src="<?= $base_url ?>assets/img/developers/LAYCO_dark.jpg">
+                            <img src="<?= $base_url ?>assets/img/developers/LAYCO.jpg" 
+                                 data-light-src="<?= $base_url ?>assets/img/developers/LAYCO.jpg"
+                                 data-dark-src="<?= $base_url ?>assets/img/developers/LAYCO_dark.jpg"
+                                 alt="Andrei Von Breydan Layco" class="dev-photo-target">
                         </div>
-                        <div class="floating-photo-circle photo-pos-5"
-                            title="Joeven Salognon - Department & Hiring Workflow Engineer">
-                            <img src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg" alt="Joeven Salognon">
+                        <div class="floating-photo-circle photo-pos-5 dev-photo-glitch-frame"
+                            title="Joeven Salognon - Department & Hiring Workflow Engineer"
+                            data-light-src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg"
+                            data-dark-src="<?= $base_url ?>assets/img/developers/SOLOGNON_dark.jpg">
+                            <img src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg" 
+                                 data-light-src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg"
+                                 data-dark-src="<?= $base_url ?>assets/img/developers/SOLOGNON_dark.jpg"
+                                 alt="Joeven Salognon" class="dev-photo-target">
                         </div>
-                        <div class="floating-photo-circle photo-pos-6"
-                            title="Marl Jordan Jurado - System Administration & QA Lead">
-                            <img src="<?= $base_url ?>assets/img/developers/JURADO.jpg" alt="Marl Jordan Jurado">
+                        <div class="floating-photo-circle photo-pos-6 dev-photo-glitch-frame"
+                            title="Marl Jordan Jurado - System Administration & QA Lead"
+                            data-light-src="<?= $base_url ?>assets/img/developers/JURADO.jpg"
+                            data-dark-src="<?= $base_url ?>assets/img/developers/JURADO_dark.jpg">
+                            <img src="<?= $base_url ?>assets/img/developers/JURADO.jpg" 
+                                 data-light-src="<?= $base_url ?>assets/img/developers/JURADO.jpg"
+                                 data-dark-src="<?= $base_url ?>assets/img/developers/JURADO_dark.jpg"
+                                 alt="Marl Jordan Jurado" class="dev-photo-target">
                         </div>
 
                         <div class="position-relative z-2 max-w-640 mx-auto" style="max-width: 620px;">

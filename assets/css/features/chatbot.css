@@ -1781,3 +1781,172 @@
 }
 
 
+
+/* ==========================================================================
+   Dark Mode Overrides — Hero 3D Robot & AI Chat
+   ========================================================================== */
+
+[data-theme="dark"] .speech-bubble-card {
+  background: var(--cream);
+  border-color: var(--line);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .speech-bubble-header {
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .speech-bubble-text {
+  color: var(--ink);
+}
+[data-theme="dark"] .speech-bubble-text strong {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .speech-model-tag {
+  color: var(--muted);
+  border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .mode-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+}
+[data-theme="dark"] .mode-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+}
+
+[data-theme="dark"] .speech-bubble-body {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+[data-theme="dark"] .speech-bubble-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .speech-bubble-tail {
+  background: var(--cream);
+  border-right-color: var(--line);
+  border-bottom-color: var(--line);
+}
+
+[data-theme="dark"] .speech-bubble-footer {
+  border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .speech-model-bar {
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .speech-model-pill {
+  background: rgba(52, 216, 101, 0.1);
+  border-color: rgba(52, 216, 101, 0.25);
+  color: var(--accent);
+}
+[data-theme="dark"] .speech-model-pill:hover,
+[data-theme="dark"] .speech-model-pill:focus {
+  background: rgba(52, 216, 101, 0.18);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .speech-models-menu {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .speech-models-menu .dropdown-item:hover {
+  background-color: var(--surface);
+}
+[data-theme="dark"] .speech-models-menu .dropdown-item.active {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .speech-input-wrap {
+  background: var(--surface);
+  border-color: var(--line);
+}
+[data-theme="dark"] .speech-input-wrap:focus-within {
+  background: var(--cream);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(52, 216, 101, 0.18);
+}
+
+[data-theme="dark"] .speech-input {
+  color: var(--ink);
+}
+[data-theme="dark"] .speech-input::placeholder {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .speech-quick-chip {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+[data-theme="dark"] .speech-quick-chip:hover {
+  background: var(--cream);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .speech-hint-label {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .speech-fullscreen-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+}
+[data-theme="dark"] .speech-fullscreen-btn:hover {
+  background: var(--cream);
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 6px rgba(52, 216, 101, 0.2);
+}
+
+[data-theme="dark"] .speech-next-btn {
+  color: var(--muted);
+}
+[data-theme="dark"] .speech-next-btn:hover {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .speech-anti-spam-text {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .quick-stat-item {
+  background: rgba(35, 35, 40, 0.85);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .speech-bubble-thinking {
+  color: var(--muted);
+}
+
+/* Speech mode badges dark adjustments */
+[data-theme="dark"] .speech-mode-badge.badge-faq,
+[data-theme="dark"] .speech-mode-badge.badge-talk {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: rgba(52, 216, 101, 0.25);
+}
+[data-theme="dark"] .speech-mode-badge.badge-boost {
+  background: var(--st-pending-bg);
+  color: var(--st-pending);
+  border-color: rgba(242, 179, 61, 0.3);
+}
+[data-theme="dark"] .speech-mode-badge.badge-interview {
+  background: var(--st-interview-bg);
+  color: var(--st-interview);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+[data-theme="dark"] .speech-mode-badge.badge-offtopic,
+[data-theme="dark"] .speech-mode-badge.badge-cooldown,
+[data-theme="dark"] .speech-mode-badge.badge-grill {
+  background: var(--st-declined-bg);
+  color: var(--st-declined);
+  border-color: rgba(248, 113, 113, 0.3);
+}

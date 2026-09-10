@@ -104,20 +104,28 @@ foreach ($history as $h) {
 }
 $messages[] = ['role' => 'user', 'content' => $prompt];
 
-// Call NVIDIA NIM API with auto-fallback and role-awareness
+// Call NVIDIA NIM API with tiered fallback and role-awareness
 $result = call_nvidia_nim_chat($messages, $model, ['user_role' => $user_role]);
 $model_name = get_model_display_name($result['model']);
+$original_model = $result['original_model'] ?? $model;
+$original_model_name = get_model_display_name($original_model);
 
 echo json_encode([
     'status' => 'success',
     'reply' => $result['reply'],
     'model' => $result['model'],
     'model_name' => $model_name,
+    'original_model' => $original_model,
+    'original_model_name' => $original_model_name,
     'detected_intent' => $detected_intent,
     'mode' => $detected_intent,
     'latency_ms' => $result['latency_ms'] ?? 0,
     'is_fallback' => $result['is_fallback'] ?? false,
-    'notice' => $result['notice'] ?? null,
+    'is_model_fallback' => $result['is_model_fallback'] ?? false,
+    'is_local_fallback' => $result['is_local_fallback'] ?? false,
+    'fallback_notice' => $result['fallback_notice'] ?? null,
+    'fallback_chain' => $result['fallback_chain'] ?? [],
+    'notice' => $result['notice'] ?? ($result['fallback_notice'] ?? null),
     'rate_remaining' => $rate_status['remaining'] ?? 0,
     'rate_limit_max' => $rate_status['limit_max'] ?? 10
 ], JSON_UNESCAPED_UNICODE);

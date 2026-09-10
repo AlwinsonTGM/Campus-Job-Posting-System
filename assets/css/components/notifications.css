@@ -113,3 +113,30 @@
 }
 
 
+
+/* ==========================================================================
+   Dark Mode Overrides — Notifications
+   ========================================================================== */
+
+[data-theme="dark"] .notification-dropdown-menu {
+  background-color: var(--cream);
+  border-color: var(--line);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .notification-dropdown-header {
+  background-color: var(--surface);
+  border-bottom-color: var(--line);
+}
+
+[data-theme="dark"] .notification-item:hover {
+  background-color: var(--surface);
+}
+
+[data-theme="dark"] .bg-cream-tint {
+  background-color: rgba(52, 216, 101, 0.06);
+}
+
+[data-theme="dark"] .notification-item h6 {
+  color: var(--ink);
+}

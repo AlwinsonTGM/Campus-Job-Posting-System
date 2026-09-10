@@ -481,3 +481,154 @@
   }
 }
 
+
+/* ==========================================================================
+   Dark Mode Overrides — Auth (Registration Wizard & Stepper)
+   ========================================================================== */
+
+[data-theme="dark"] .auth-role-badge {
+  background-color: var(--ink);
+  color: var(--surface);
+}
+
+[data-theme="dark"] .reg-stepper-track {
+  background-color: var(--line);
+}
+
+[data-theme="dark"] .reg-step-item:hover.is-clickable {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .reg-step-item.is-active {
+  background-color: var(--cream);
+  border-color: var(--line);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .reg-step-badge {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .reg-step-item.is-active .reg-step-badge {
+  background-color: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(52, 216, 101, 0.25);
+}
+
+[data-theme="dark"] .reg-step-item.is-completed .reg-step-badge {
+  background-color: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .reg-step-item.is-completed .reg-step-title {
+  color: var(--accent);
+}
+
+[data-theme="dark"] .reg-hint-box {
+  background-color: var(--cream);
+  border-color: var(--line);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .reg-hint-badge {
+  background-color: var(--ink);
+  color: var(--surface);
+}
+
+[data-theme="dark"] .reg-progress-track {
+  background-color: var(--line);
+}
+
+[data-theme="dark"] .reg-progress-fill {
+  background-color: var(--accent);
+}
+
+[data-theme="dark"] .reg-persona-card {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .reg-persona-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .reg-persona-card.is-selected {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+  box-shadow: 0 0 0 1px rgba(52, 216, 101, 0.2), 0 4px 12px rgba(52, 216, 101, 0.12);
+}
+
+[data-theme="dark"] .reg-persona-icon {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+}
+
+[data-theme="dark"] .reg-persona-card.is-selected .reg-persona-icon {
+  background-color: var(--accent);
+  color: #000;
+}
+
+[data-theme="dark"] .reg-persona-tag {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .reg-persona-card.is-selected .reg-persona-tag {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .reg-step-actions {
+  border-top-color: var(--line);
+}
+
+[data-theme="dark"] .btn-step-prev {
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .btn-step-prev:hover:not(:disabled) {
+  background-color: var(--cream);
+  border-color: var(--muted);
+}
+
+[data-theme="dark"] .btn-step-next {
+  background-color: var(--ink);
+  color: var(--surface);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .btn-step-next:hover {
+  background-color: var(--muted);
+}
+
+[data-theme="dark"] .reg-mobile-stepper {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .reg-mobile-step.is-completed {
+  color: var(--accent);
+}
+
+[data-theme="dark"] .reg-mobile-dot {
+  background-color: var(--surface);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .reg-mobile-step.is-active .reg-mobile-dot {
+  background-color: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+}
+
+[data-theme="dark"] .reg-mobile-step.is-completed .reg-mobile-dot {
+  background-color: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}

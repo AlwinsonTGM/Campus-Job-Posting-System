@@ -1,0 +1,1707 @@
+/* ==========================================================================
+   Campus Job Posting System — Dark Mode Component Overrides
+   Theme: Paper Sheet Aesthetic (COAL101 Blueprint) — Dark Variant
+   Loaded after tokens.css; only active when [data-theme="dark"] is set.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL BODY & HTML SHELL
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] html,
+[data-theme="dark"] body {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+[data-theme="dark"] main {
+  background-color: var(--surface);
+}
+
+/* Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #3A3A40;
+  border-radius: 4px;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #50505A;
+}
+
+/* --------------------------------------------------------------------------
+   2. SHEET & PAPER SHELLS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .sheet-perspective-wrapper,
+[data-theme="dark"] .sheet,
+[data-theme="dark"] .flat-sheet {
+  background-color: var(--surface);
+}
+
+[data-theme="dark"] .card-paper {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+
+[data-theme="dark"] .container-paper {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   3. NAVBAR
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .paper-navbar {
+  background-color: rgba(26, 26, 30, 0.94) !important;
+  border-bottom-color: var(--line) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .paper-navbar .navbar-brand .fw-extrabold {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .paper-navbar .nav-link {
+  color: var(--muted);
+}
+[data-theme="dark"] .paper-navbar .nav-link:hover,
+[data-theme="dark"] .paper-navbar .nav-link.active {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+[data-theme="dark"] .paper-google-search-bar {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .paper-search-input {
+  background: transparent;
+  color: var(--ink);
+}
+[data-theme="dark"] .paper-search-input::placeholder {
+  color: var(--muted);
+}
+[data-theme="dark"] .search-kbd-pill {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .btn-circle-icon {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .btn-circle-icon:hover {
+  background-color: var(--line);
+  color: var(--ink);
+}
+
+[data-theme="dark"] .btn-paper-nav-login {
+  background-color: transparent !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .btn-paper-nav-login:hover,
+[data-theme="dark"] .btn-paper-nav-login:focus,
+[data-theme="dark"] .btn-paper-nav-login:active {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #0F0F10 !important;
+}
+[data-theme="dark"] .btn-paper-nav-login:hover i,
+[data-theme="dark"] .btn-paper-nav-login:focus i,
+[data-theme="dark"] .btn-paper-nav-login:active i,
+[data-theme="dark"] .btn-paper-nav-login:hover .text-ink,
+[data-theme="dark"] .btn-paper-nav-login:focus .text-ink {
+  color: #0F0F10 !important;
+}
+[data-theme="dark"] .btn-paper-nav-post {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #000000 !important;
+}
+[data-theme="dark"] .btn-paper-nav-post:hover,
+[data-theme="dark"] .btn-paper-nav-post:focus,
+[data-theme="dark"] .btn-paper-nav-post:active {
+  background-color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: #000000 !important;
+}
+[data-theme="dark"] .btn-paper-nav-post i,
+[data-theme="dark"] .btn-paper-nav-post:hover i,
+[data-theme="dark"] .btn-paper-nav-post:focus i {
+  color: #000000 !important;
+}
+
+/* User avatar chip */
+[data-theme="dark"] .user-avatar-chip {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .user-avatar-chip:hover {
+  background-color: var(--line);
+}
+[data-theme="dark"] .avatar-circle {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .nav-notif-badge {
+  border-color: var(--surface);
+}
+
+/* --------------------------------------------------------------------------
+   4. DROPDOWNS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .dropdown-menu {
+  background-color: var(--cream);
+  border-color: var(--line);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+[data-theme="dark"] .dropdown-item {
+  color: var(--ink);
+}
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+[data-theme="dark"] .dropdown-divider {
+  border-color: var(--line);
+}
+[data-theme="dark"] .dropdown-header {
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   5. FOOTER
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .paper-footer {
+  background-color: var(--cream);
+  border-top-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .paper-footer a {
+  color: var(--muted);
+}
+[data-theme="dark"] .paper-footer a:hover {
+  color: var(--accent);
+}
+[data-theme="dark"] .social-circle-link {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .social-circle-link:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+/* --------------------------------------------------------------------------
+   6. BUTTONS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .btn-pill,
+[data-theme="dark"] .btn-paper-primary,
+[data-theme="dark"] .btn-accent,
+[data-theme="dark"] .btn-accent-pill,
+[data-theme="dark"] .btn-primary {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-pill:hover,
+[data-theme="dark"] .btn-pill:focus,
+[data-theme="dark"] .btn-pill:focus-visible,
+[data-theme="dark"] .btn-pill:active,
+[data-theme="dark"] .btn-paper-primary:hover,
+[data-theme="dark"] .btn-paper-primary:focus,
+[data-theme="dark"] .btn-paper-primary:focus-visible,
+[data-theme="dark"] .btn-paper-primary:active,
+[data-theme="dark"] .btn-accent:hover,
+[data-theme="dark"] .btn-accent:focus,
+[data-theme="dark"] .btn-accent:focus-visible,
+[data-theme="dark"] .btn-accent:active,
+[data-theme="dark"] .btn-accent-pill:hover,
+[data-theme="dark"] .btn-accent-pill:focus,
+[data-theme="dark"] .btn-accent-pill:focus-visible,
+[data-theme="dark"] .btn-accent-pill:active,
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn-primary:focus,
+[data-theme="dark"] .btn-primary:focus-visible,
+[data-theme="dark"] .btn-primary:active {
+  background-color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-pill i,
+[data-theme="dark"] .btn-paper-primary i,
+[data-theme="dark"] .btn-accent i,
+[data-theme="dark"] .btn-accent-pill i,
+[data-theme="dark"] .btn-primary i,
+[data-theme="dark"] .btn-pill:hover i,
+[data-theme="dark"] .btn-paper-primary:hover i,
+[data-theme="dark"] .btn-accent:hover i,
+[data-theme="dark"] .btn-accent-pill:hover i,
+[data-theme="dark"] .btn-primary:hover i,
+[data-theme="dark"] .btn-pill .text-ink,
+[data-theme="dark"] .btn-paper-primary .text-ink,
+[data-theme="dark"] .btn-accent .text-ink,
+[data-theme="dark"] .btn-accent-pill .text-ink {
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-pill-outline {
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  background-color: transparent !important;
+}
+[data-theme="dark"] .btn-pill-outline:hover,
+[data-theme="dark"] .btn-pill-outline:focus,
+[data-theme="dark"] .btn-pill-outline:active {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #0F0F10 !important;
+}
+[data-theme="dark"] .btn-pill-outline:hover i,
+[data-theme="dark"] .btn-pill-outline:focus i,
+[data-theme="dark"] .btn-pill-outline:active i {
+  color: #0F0F10 !important;
+}
+[data-theme="dark"] .btn-secondary {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .btn-secondary:hover {
+  background-color: var(--line);
+}
+[data-theme="dark"] .btn-outline-secondary {
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .btn-outline-secondary:hover {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+[data-theme="dark"] .btn-light {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .btn-link {
+  color: var(--ink);
+}
+[data-theme="dark"] .btn-link:hover {
+  color: var(--accent);
+}
+[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+[data-theme="dark"] .btn-toggle-password {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   7. FORM CONTROLS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: var(--surface);
+  border-color: var(--accent);
+  color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(52, 216, 101, 0.18);
+}
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--muted);
+}
+[data-theme="dark"] .form-control[readonly],
+[data-theme="dark"] .form-control:disabled {
+  background-color: var(--cream) !important;
+  color: var(--muted);
+}
+[data-theme="dark"] .form-select option {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+[data-theme="dark"] .input-group-text {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .form-label {
+  color: var(--ink);
+}
+[data-theme="dark"] .form-check-input {
+  background-color: var(--surface);
+  border-color: var(--line);
+}
+[data-theme="dark"] .form-check-input:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+[data-theme="dark"] .form-check-input:focus {
+  box-shadow: 0 0 0 3px rgba(52, 216, 101, 0.18);
+  border-color: var(--accent);
+}
+[data-theme="dark"] .form-check-label {
+  color: var(--ink);
+}
+[data-theme="dark"] .form-switch .form-check-input:checked {
+  background-color: var(--accent);
+}
+[data-theme="dark"] .reg-upload-dropzone,
+[data-theme="dark"] .dropzone-paper {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .reg-upload-dropzone:hover,
+[data-theme="dark"] .dropzone-paper:hover {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+}
+[data-theme="dark"] .reg-upload-dropzone.has-file {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+/* --------------------------------------------------------------------------
+   8. ALERTS & PAPER ALERTS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .alert-paper {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .alert-paper--danger {
+  background-color: var(--st-declined-bg);
+  border-color: rgba(248, 113, 113, 0.25);
+}
+[data-theme="dark"] .alert-paper--warning {
+  background-color: var(--st-pending-bg);
+  border-color: rgba(242, 179, 61, 0.25);
+}
+[data-theme="dark"] .alert-paper--success {
+  background-color: var(--st-accepted-bg);
+  border-color: rgba(52, 216, 101, 0.25);
+}
+[data-theme="dark"] .alert-paper--info {
+  background-color: var(--st-review-bg);
+  border-color: rgba(94, 181, 255, 0.25);
+}
+[data-theme="dark"] .alert-success {
+  background-color: var(--st-accepted-bg);
+  border-color: rgba(52, 216, 101, 0.3);
+  color: #86efac;
+}
+[data-theme="dark"] .alert-danger {
+  background-color: var(--st-declined-bg);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: #fca5a5;
+}
+[data-theme="dark"] .alert-warning {
+  background-color: var(--st-pending-bg);
+  border-color: rgba(242, 179, 61, 0.3);
+  color: #fcd34d;
+}
+[data-theme="dark"] .alert-info {
+  background-color: var(--st-review-bg);
+  border-color: rgba(94, 181, 255, 0.3);
+  color: #93c5fd;
+}
+
+/* --------------------------------------------------------------------------
+   9. MODALS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .modal-content {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .modal-header {
+  background-color: var(--surface);
+  border-bottom-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .modal-footer {
+  background-color: var(--surface);
+  border-top-color: var(--line);
+}
+[data-theme="dark"] .modal-body {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+[data-theme="dark"] .modal-title {
+  color: var(--ink);
+}
+[data-theme="dark"] .modal-backdrop.show {
+  opacity: 0.7;
+}
+[data-theme="dark"] .paper-modal-content {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   10. TABLES
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .table-paper,
+[data-theme="dark"] .table {
+  color: var(--ink);
+  border-color: var(--line);
+}
+[data-theme="dark"] .table-paper thead,
+[data-theme="dark"] .table thead {
+  background-color: var(--cream);
+  color: var(--muted);
+  border-bottom-color: var(--line);
+}
+[data-theme="dark"] .table-paper tbody tr:hover,
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: var(--cream) !important;
+}
+[data-theme="dark"] .table > :not(caption) > * > * {
+  background-color: transparent;
+  color: var(--ink);
+  border-bottom-color: var(--line);
+}
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* --------------------------------------------------------------------------
+   11. BADGES & STATUS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .badge.bg-dark {
+  background-color: #232328 !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--line) !important;
+}
+[data-theme="dark"] .badge.bg-dark i,
+[data-theme="dark"] .badge.bg-dark .text-white {
+  color: var(--accent) !important;
+}
+[data-theme="dark"] a.badge.bg-dark:hover {
+  background-color: #2E2E35 !important;
+  color: #FFFFFF !important;
+  border-color: var(--accent) !important;
+}
+[data-theme="dark"] a.badge.bg-dark:hover i,
+[data-theme="dark"] a.badge.bg-dark:hover .text-white {
+  color: var(--accent-hover) !important;
+}
+[data-theme="dark"] .badge.bg-secondary {
+  background-color: var(--cream) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .badge.bg-light,
+[data-theme="dark"] .badge.bg-cream {
+  background-color: var(--surface) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .badge.bg-success {
+  background-color: var(--st-accepted-bg) !important;
+  color: var(--accent) !important;
+}
+[data-theme="dark"] .badge.bg-danger {
+  background-color: var(--st-declined-bg) !important;
+  color: var(--st-declined) !important;
+}
+[data-theme="dark"] .badge.bg-warning {
+  background-color: var(--st-pending-bg) !important;
+  color: var(--st-pending) !important;
+}
+
+/* --------------------------------------------------------------------------
+   12. ICON CIRCLES
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .icon-circle {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+[data-theme="dark"] .icon-circle-success {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+[data-theme="dark"] .icon-circle-danger {
+  background-color: var(--st-declined-bg);
+  color: var(--st-declined);
+}
+[data-theme="dark"] .icon-circle-warning {
+  background-color: var(--st-pending-bg);
+  color: var(--st-pending);
+}
+[data-theme="dark"] .icon-circle-info {
+  background-color: var(--st-review-bg);
+  color: var(--st-review);
+}
+
+/* --------------------------------------------------------------------------
+   13. CARDS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .card {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .card-header {
+  background-color: var(--surface);
+  border-bottom-color: var(--line);
+}
+[data-theme="dark"] .card-footer {
+  background-color: var(--surface);
+  border-top-color: var(--line);
+}
+[data-theme="dark"] .featured-job-card {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .featured-job-card.is-active {
+  border-color: var(--ink);
+}
+[data-theme="dark"] .category-mini-card {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .category-mini-card:hover {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+/* --------------------------------------------------------------------------
+   14. PROGRESS BARS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .progress {
+  background-color: var(--surface);
+}
+[data-theme="dark"] .progress-paper {
+  background-color: var(--surface);
+}
+[data-theme="dark"] .password-meter-bar {
+  background-color: var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   15. ACCORDIONS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .accordion-item {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .accordion-button {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+[data-theme="dark"] .accordion-button:not(.collapsed) {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: none;
+}
+[data-theme="dark"] .accordion-button::after {
+  filter: invert(1);
+}
+[data-theme="dark"] .accordion-button:not(.collapsed)::after {
+  filter: none;
+}
+[data-theme="dark"] .accordion-body {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   16. LIST GROUPS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .list-group-item {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .list-group-item.active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+[data-theme="dark"] .list-group-item:hover {
+  background-color: var(--surface);
+}
+
+/* --------------------------------------------------------------------------
+   17. PAGINATION
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .page-item .page-link {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .page-item .page-link:hover {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+[data-theme="dark"] .page-item.active .page-link {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+[data-theme="dark"] .page-item.disabled .page-link {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   18. TABS & NAV
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .nav-tabs {
+  border-bottom-color: var(--line);
+}
+[data-theme="dark"] .nav-tabs .nav-link {
+  color: var(--muted);
+  border-color: transparent;
+}
+[data-theme="dark"] .nav-tabs .nav-link:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .nav-tabs .nav-link.active {
+  background-color: var(--surface);
+  border-color: var(--line) var(--line) var(--surface);
+  color: var(--ink);
+}
+[data-theme="dark"] .nav-pills .nav-link {
+  color: var(--muted);
+}
+[data-theme="dark"] .nav-pills .nav-link.active {
+  background-color: var(--accent);
+  color: #000;
+}
+[data-theme="dark"] .paper-nav-pills .nav-link {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .paper-nav-pills .nav-link:hover {
+  background-color: var(--surface);
+}
+[data-theme="dark"] .paper-nav-pills .nav-link.active {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: var(--surface) !important;
+}
+
+/* --------------------------------------------------------------------------
+   19. HERO SECTION
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .hero-robot-canvas-container {
+  background: radial-gradient(circle at 50% 50%, rgba(52, 216, 101, 0.12) 0%, rgba(52, 216, 101, 0.04) 50%, transparent 72%);
+}
+[data-theme="dark"] .hero-robot-loader {
+  background: rgba(26, 26, 30, 0.88);
+  border-color: var(--line);
+}
+[data-theme="dark"] .quick-stat-item {
+  background: rgba(35, 35, 40, 0.8);
+  border-color: var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   20. SPOTLIGHT SEARCH MODAL
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] #globalSearchModal .modal-content {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .spotlight-search-input-wrap {
+  background-color: var(--surface);
+  border-color: var(--line);
+}
+[data-theme="dark"] .spotlight-search-input {
+  background-color: transparent;
+  color: var(--ink);
+}
+[data-theme="dark"] .spotlight-search-input::placeholder {
+  color: var(--muted);
+}
+[data-theme="dark"] .spotlight-result-item {
+  background-color: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .spotlight-result-item:hover {
+  background-color: var(--surface);
+}
+[data-theme="dark"] .spotlight-chip {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .spotlight-chip.active {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--surface);
+}
+[data-theme="dark"] .spotlight-kbd {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .spotlight-footer {
+  background-color: var(--surface);
+  border-top-color: var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   21. AVAILABILITY MATRIX
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .matrix-table {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .matrix-table th {
+  background-color: var(--surface);
+  color: var(--muted);
+  border-color: var(--line);
+}
+[data-theme="dark"] .matrix-table td {
+  border-color: var(--line);
+}
+[data-theme="dark"] .matrix-check {
+  border-color: var(--line);
+  background-color: var(--surface);
+}
+[data-theme="dark"] .matrix-check:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+[data-theme="dark"] .matrix-cell-selected {
+  background-color: var(--accent-soft);
+}
+[data-theme="dark"] .matrix-cell-label {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   22. APPLICATION STEPPER
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .stepper-track {
+  background-color: var(--line);
+}
+[data-theme="dark"] .stepper-dot {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .stepper-dot.is-active,
+[data-theme="dark"] .stepper-dot.is-completed {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+[data-theme="dark"] .stepper-label {
+  color: var(--muted);
+}
+[data-theme="dark"] .stepper-label.is-active {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   23. FLASH TOASTS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .flash-toast {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+[data-theme="dark"] .flash-toast--success { border-left-color: var(--accent); }
+[data-theme="dark"] .flash-toast--danger  { border-left-color: var(--st-declined); }
+[data-theme="dark"] .flash-toast--warning { border-left-color: var(--st-pending); }
+
+/* --------------------------------------------------------------------------
+   24. CHIPS & TAGS
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .chip,
+[data-theme="dark"] .chip-sm,
+[data-theme="dark"] .chip-tag {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .chip:hover {
+  background-color: var(--cream);
+  border-color: var(--muted);
+}
+[data-theme="dark"] .updates-filter-pill {
+  background-color: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+}
+[data-theme="dark"] .updates-filter-pill.active {
+  background-color: var(--ink);
+  color: var(--surface);
+}
+
+/* --------------------------------------------------------------------------
+   25. THEME TOGGLE BUTTON
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .theme-toggle-btn {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background-color: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   26. BOOTSTRAP UTILITY OVERRIDES
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .bg-white {
+  background-color: var(--cream) !important;
+}
+[data-theme="dark"] .bg-light {
+  background-color: var(--cream) !important;
+}
+[data-theme="dark"] .text-dark {
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .text-black {
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .text-muted {
+  color: var(--muted) !important;
+}
+[data-theme="dark"] .border,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-start,
+[data-theme="dark"] .border-end {
+  border-color: var(--line) !important;
+}
+[data-theme="dark"] .bg-kld-gradient {
+  background: linear-gradient(135deg, #1A1A1E 0%, #1b3324 100%) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .bg-kld-soft {
+  background-color: var(--accent-soft) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .bg-surface  { background-color: var(--surface) !important; }
+[data-theme="dark"] .bg-cream    { background-color: var(--cream) !important; }
+[data-theme="dark"] .bg-accent-soft { background-color: var(--accent-soft) !important; }
+[data-theme="dark"] .bg-primary  { background-color: var(--accent) !important; color: #000 !important; }
+[data-theme="dark"] .bg-primary-subtle { background-color: var(--accent-soft) !important; color: var(--ink) !important; }
+[data-theme="dark"] .bg-secondary { background-color: var(--cream) !important; color: var(--ink) !important; }
+[data-theme="dark"] .bg-dark     { background-color: var(--ink) !important; color: var(--surface) !important; }
+
+[data-theme="dark"] hr,
+[data-theme="dark"] .dropdown-divider {
+  border-color: var(--line);
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   27. TOASTS, OFFCANVAS, POPOVER
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .toast {
+  background-color: var(--cream);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .toast-header {
+  background-color: var(--surface);
+  border-bottom-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .offcanvas {
+  background-color: var(--cream);
+  color: var(--ink);
+}
+[data-theme="dark"] .offcanvas-header {
+  border-bottom-color: var(--line);
+}
+[data-theme="dark"] .popover {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .popover-header {
+  background-color: var(--surface);
+  border-bottom-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .popover-body {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   28. INLINE STYLE OVERRIDES (hardcoded bg-white in PHP templates)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] [style*="background-color: #fff"],
+[data-theme="dark"] [style*="background-color:#fff"],
+[data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: #fff"] {
+  background-color: var(--cream) !important;
+}
+
+/* --------------------------------------------------------------------------
+   29. PRINT — suppress dark mode in print
+   -------------------------------------------------------------------------- */
+@media print {
+  [data-theme="dark"] * {
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+}
+
+/* ==========================================================================
+   Additional Dark Mode Overrides — Status Badges text colors & job card elements
+   ========================================================================== */
+
+/* Status badge text colors — hardcoded in custom.css, need dark override */
+[data-theme="dark"] .badge-status--pending {
+  color: var(--st-pending);
+  border-color: rgba(242, 179, 61, 0.35);
+}
+[data-theme="dark"] .badge-status--review {
+  color: var(--st-review);
+  border-color: rgba(94, 181, 255, 0.35);
+}
+[data-theme="dark"] .badge-status--interview {
+  color: var(--st-interview);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+[data-theme="dark"] .badge-status--accepted {
+  color: var(--accent);
+  border-color: rgba(52, 216, 101, 0.35);
+}
+[data-theme="dark"] .badge-status--declined {
+  color: var(--st-declined);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+/* Metric card */
+[data-theme="dark"] .metric {
+  background-color: var(--cream);
+  border-color: var(--line);
+}
+[data-theme="dark"] .metric:hover {
+  border-color: var(--ink);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Job card pay box dark overrides */
+[data-theme="dark"] .job-card-pay-box {
+  background-color: var(--surface);
+  border-color: var(--line);
+}
+[data-theme="dark"] .card-paper:hover .job-card-pay-box {
+  background-color: var(--accent-soft);
+  border-color: rgba(52, 216, 101, 0.35);
+}
+[data-theme="dark"] .job-card-pay-icon {
+  background-color: var(--cream);
+  color: var(--accent);
+}
+[data-theme="dark"] .job-card-pay-tag {
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  border-color: rgba(52, 216, 101, 0.35);
+}
+
+/* Job card partner chip */
+[data-theme="dark"] .job-card-partner-chip--partner {
+  background-color: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+}
+[data-theme="dark"] .job-card-partner-chip--office {
+  background-color: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+/* Btn-soft hover */
+[data-theme="dark"] .btn-soft:hover,
+[data-theme="dark"] .btn-soft:focus-visible {
+  background-color: rgba(52, 216, 101, 0.25);
+}
+
+/* Page head verified badge */
+[data-theme="dark"] .page-head .badge.bg-success {
+  background-color: var(--st-accepted-bg) !important;
+  color: var(--accent) !important;
+  border-color: rgba(52, 216, 101, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(52, 216, 101, 0.15);
+}
+[data-theme="dark"] .page-head .badge.bg-success i,
+[data-theme="dark"] .page-head .badge.bg-success .text-accent {
+  color: var(--accent) !important;
+}
+
+/* ==========================================================================
+   TARGETED FIXES FOR REPORTED ISSUES (Images 1 - 5)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Issue 1: Hero Section Backdrop & Elements
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .hero-backdrop-bg {
+  background-image: 
+    radial-gradient(ellipse at center, rgba(26, 26, 30, 0.85) 0%, rgba(26, 26, 30, 0.95) 65%, rgba(26, 26, 30, 1) 100%),
+    url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop') !important;
+  opacity: 0.95 !important;
+}
+
+[data-theme="dark"] .hero-headline {
+  color: #F5F4F0 !important;
+}
+
+[data-theme="dark"] .hero-inline-pill-img {
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .btn-outline-pill {
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .btn-outline-pill:hover,
+[data-theme="dark"] .btn-outline-pill:focus {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #0F0F10 !important;
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .btn-circle-arrow-accent {
+  background-color: var(--cream) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] .btn-circle-arrow-accent i {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .btn-outline-pill:hover .btn-circle-arrow-accent,
+[data-theme="dark"] .btn-outline-pill:focus .btn-circle-arrow-accent,
+[data-theme="dark"] .btn-outline-pill:active .btn-circle-arrow-accent,
+[data-theme="dark"] a:hover .btn-circle-arrow-accent {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-outline-pill:hover .btn-circle-arrow-accent i,
+[data-theme="dark"] .btn-outline-pill:focus .btn-circle-arrow-accent i,
+[data-theme="dark"] .btn-outline-pill:active .btn-circle-arrow-accent i,
+[data-theme="dark"] a:hover .btn-circle-arrow-accent i {
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .hero-partner-strip {
+  border-top-color: var(--line) !important;
+}
+
+[data-theme="dark"] .hero-partner-label {
+  border-right-color: var(--line) !important;
+}
+
+[data-theme="dark"] .hero-partner-action {
+  border-left-color: var(--line) !important;
+}
+
+[data-theme="dark"] .partner-logo-item {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .partner-logo-item:hover {
+  color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   Issue 2: Partner Accreditation Pass Card (Treasure Map / Journey Trail)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .map-preview-card {
+  background-color: var(--cream) !important;
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .map-preview-topbar {
+  background-color: #121215 !important;
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+[data-theme="dark"] .map-preview-topbar span {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .map-preview-topbar .text-white-50 {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .map-preview-row {
+  border-bottom-color: var(--line) !important;
+}
+
+[data-theme="dark"] .map-preview-label {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .map-preview-val {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .map-step-card {
+  background-color: var(--cream) !important;
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .map-waypoint-badge {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .map-waypoint-badge i,
+[data-theme="dark"] .map-waypoint-badge .text-accent {
+  color: var(--accent) !important;
+}
+
+[data-theme="dark"] .map-waypoint-badge .step-num {
+  background: transparent !important;
+  border: none !important;
+  color: var(--ink) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .map-card-icon-wrap {
+  background-color: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .map-journey-row:hover .map-step-card {
+  background-color: var(--cream) !important;
+  border-color: var(--accent) !important;
+}
+
+[data-theme="dark"] .map-journey-row:hover .map-card-icon-wrap {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  border-color: var(--accent) !important;
+}
+
+[data-theme="dark"] .map-journey-row:hover .map-card-icon-wrap i {
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .map-journey-row:hover .map-waypoint-badge {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  border-color: var(--accent) !important;
+}
+
+[data-theme="dark"] .map-journey-row:hover .map-waypoint-badge i,
+[data-theme="dark"] .map-journey-row:hover .map-waypoint-badge .text-accent,
+[data-theme="dark"] .map-journey-row:hover .map-waypoint-badge .step-num {
+  background: transparent !important;
+  border: none !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .map-journey-row:hover .map-preview-card {
+  border-color: var(--accent) !important;
+}
+
+[data-theme="dark"] .map-stamp-watermark {
+  border: 1.5px dashed rgba(52, 216, 101, 0.5) !important;
+  color: var(--accent) !important;
+  background-color: rgba(27, 51, 36, 0.85) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Issue 3: Key Metrics Section ("Together, We're Building Careers")
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .metrics-section {
+  background: radial-gradient(circle at 80% 20%, rgba(52, 216, 101, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 10% 90%, rgba(52, 216, 101, 0.05) 0%, transparent 60%),
+              #121215 !important;
+  color: #E8E6E3 !important;
+  border: 1px solid var(--line) !important;
+}
+
+[data-theme="dark"] .metrics-section h2.text-white,
+[data-theme="dark"] .metrics-section .h1.text-white {
+  color: #F0EEE9 !important;
+}
+
+[data-theme="dark"] .metrics-section p.text-white-50 {
+  color: #9B978F !important;
+}
+
+[data-theme="dark"] .metrics-section .badge.bg-white {
+  background-color: #232328 !important;
+  color: #E8E6E3 !important;
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .metric-counter-number {
+  color: var(--accent) !important;
+}
+
+[data-theme="dark"] .metric-counter-label {
+  color: #9B978F !important;
+}
+
+/* --------------------------------------------------------------------------
+   Issue 4: Campus AI Fullscreen Studio Modal
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-modal-backdrop {
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-modal-shell {
+  background: #1A1A1E !important;
+  border-color: var(--line) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7) !important;
+}
+
+[data-theme="dark"] .fullscreen-modal-header,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-modal-header {
+  background: #232328 !important;
+  border-bottom-color: var(--line) !important;
+}
+
+[data-theme="dark"] .fs-bot-title,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-bot-title {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .fs-model-tag,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-model-tag {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .fs-rate-limit-badge,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-rate-limit-badge {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .fs-close-btn,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-close-btn {
+  background: var(--surface) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--line) !important;
+}
+
+[data-theme="dark"] .fs-close-btn:hover,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-close-btn:hover {
+  background: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-modal-body {
+  background: #1A1A1E !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-chat-pane {
+  background: #1A1A1E !important;
+  border-right-color: var(--line) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-messages-stream {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-messages-stream::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-msg-wrapper.msg-bot .fs-msg-bubble {
+  background: #232328 !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-msg-wrapper.msg-bot .fs-msg-bubble strong {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-msg-meta {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-msg-time {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-thinking-bubble {
+  background: #232328 !important;
+  border: 1px solid var(--line) !important;
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-suggestions-bar {
+  background: #1A1A1E !important;
+  border-top-color: var(--line) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-quick-chip {
+  background: #232328 !important;
+  border-color: var(--line) !important;
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-quick-chip:hover {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-chat-form {
+  background: #1A1A1E !important;
+}
+
+[data-theme="dark"] .fs-input-wrap,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-input-wrap {
+  background: #232328 !important;
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .fs-input-wrap:focus-within,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-input-wrap:focus-within {
+  background: #232328 !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(52, 216, 101, 0.18) !important;
+}
+
+[data-theme="dark"] .fs-chat-input,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-chat-input {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .fs-chat-input::placeholder,
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-chat-input::placeholder {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-robot-stage {
+  background: radial-gradient(circle at 50% 50%, rgba(52, 216, 101, 0.12) 0%, rgba(52, 216, 101, 0.03) 55%, transparent 75%) !important;
+}
+
+[data-theme="dark"] .campus-ai-fullscreen-modal .fs-robot-hint {
+  background: rgba(35, 35, 40, 0.88) !important;
+  border-color: var(--line) !important;
+  color: var(--muted) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Issue 5: Outline Buttons (Weekly Availability Matrix & all .btn-pill-outline)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .btn-pill-outline {
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .btn-pill-outline:hover,
+[data-theme="dark"] .btn-pill-outline:focus-visible {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #0F0F10 !important;
+  transform: scale(1.02);
+}
+
+[data-theme="dark"] .btn-paper-secondary {
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .btn-paper-secondary:hover,
+[data-theme="dark"] .btn-paper-secondary:focus-visible {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #0F0F10 !important;
+  transform: scale(1.02);
+}
+
+/* Job card photo placeholder */
+[data-theme="dark"] [style*="background-color: #f1f3f4"] {
+  background-color: var(--cream) !important;
+}
+
+/* ==========================================================================
+   TARGETED FIXES FOR USER BATCH 2 & DEVBLOG ISSUES
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Fix 1: Brand Logo Box in Navbar & Footer (media_1788999982558.png)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .bg-dark {
+  background-color: #121215 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .navbar-brand .bg-dark,
+[data-theme="dark"] .paper-footer .bg-dark {
+  background-color: #121215 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fix 2: Candidate Resume Preview Modal (media_1788999980228.png)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] #resumeModal .modal-header {
+  background-color: var(--surface) !important;
+  border-bottom-color: var(--line) !important;
+}
+
+[data-theme="dark"] #resumeModal .modal-body {
+  background-color: #121215 !important;
+}
+
+[data-theme="dark"] #resumeModal iframe {
+  background-color: #121215 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fix 3: Admin Categories "+ Add Category with Picture" (media_1788999978862.png)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .btn-pill[style*="background: #ffffff"],
+[data-theme="dark"] .btn-pill[style*="background:#ffffff"],
+[data-theme="dark"] .btn-pill[style*="color: #0d3b2e"],
+[data-theme="dark"] .btn-pill[style*="color:#0d3b2e"] {
+  background-color: #FFFFFF !important;
+  color: #0d3b2e !important;
+}
+
+[data-theme="dark"] .btn-pill[style*="background: #ffffff"]:hover,
+[data-theme="dark"] .btn-pill[style*="color: #0d3b2e"]:hover {
+  background-color: #E2FBE8 !important;
+  color: #0d3b2e !important;
+  transform: scale(1.02);
+}
+
+[data-theme="dark"] .btn-pill-outline[style*="color: #ffffff"],
+[data-theme="dark"] .btn-pill-outline[style*="color:#ffffff"] {
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .btn-pill-outline[style*="color: #ffffff"]:hover,
+[data-theme="dark"] .btn-pill-outline[style*="color:#ffffff"]:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fix 4: All Outline Button Hover States (media_1788999975112 & 1788999976708)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .btn-pill-outline,
+[data-theme="dark"] .btn-paper-secondary,
+[data-theme="dark"] .btn-outline-pill,
+[data-theme="dark"] .btn-paper-nav-login {
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .btn-pill-outline:hover,
+[data-theme="dark"] .btn-pill-outline:focus,
+[data-theme="dark"] .btn-pill-outline:active,
+[data-theme="dark"] .btn-paper-secondary:hover,
+[data-theme="dark"] .btn-paper-secondary:focus,
+[data-theme="dark"] .btn-paper-secondary:active,
+[data-theme="dark"] .btn-outline-pill:hover,
+[data-theme="dark"] .btn-outline-pill:focus,
+[data-theme="dark"] .btn-outline-pill:active,
+[data-theme="dark"] .btn-paper-nav-login:hover,
+[data-theme="dark"] .btn-paper-nav-login:focus,
+[data-theme="dark"] .btn-paper-nav-login:active {
+  background-color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  color: #0F0F10 !important;
+}
+
+[data-theme="dark"] .btn-pill-outline:hover i,
+[data-theme="dark"] .btn-pill-outline:focus i,
+[data-theme="dark"] .btn-pill-outline:active i,
+[data-theme="dark"] .btn-paper-secondary:hover i,
+[data-theme="dark"] .btn-paper-secondary:focus i,
+[data-theme="dark"] .btn-paper-secondary:active i,
+[data-theme="dark"] .btn-outline-pill:hover i,
+[data-theme="dark"] .btn-outline-pill:focus i,
+[data-theme="dark"] .btn-outline-pill:active i,
+[data-theme="dark"] .btn-paper-nav-login:hover i,
+[data-theme="dark"] .btn-paper-nav-login:focus i,
+[data-theme="dark"] .btn-paper-nav-login:active i,
+[data-theme="dark"] .btn-pill-outline:hover .text-ink,
+[data-theme="dark"] .btn-paper-secondary:hover .text-ink,
+[data-theme="dark"] .btn-outline-pill:hover .text-ink,
+[data-theme="dark"] .btn-paper-nav-login:hover .text-ink {
+  color: #0F0F10 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fix 5: DevBlog Card Top Badges (Devblog 2 text at the top)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .devblog-card-badges .badge-tag-overlay,
+[data-theme="dark"] .devblog-card-badges [style*="background-color: var(--ink)"],
+[data-theme="dark"] .badge-tag-overlay {
+  background-color: rgba(18, 18, 22, 0.92) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+[data-theme="dark"] .devblog-card-badges .badge-tag-overlay i,
+[data-theme="dark"] .devblog-card-badges .badge-tag-overlay .text-accent,
+[data-theme="dark"] .badge-tag-overlay i,
+[data-theme="dark"] .badge-tag-overlay .text-accent {
+  color: var(--accent) !important;
+}
+
+/* Generic rule for any badge or card using inline background-color: var(--ink) with white text */
+[data-theme="dark"] [style*="background-color: var(--ink)"][style*="color: #fff"],
+[data-theme="dark"] [style*="background-color: var(--ink)"][style*="color:#fff"],
+[data-theme="dark"] [style*="background-color:var(--ink)"][style*="color: #fff"],
+[data-theme="dark"] [style*="background-color:var(--ink)"][style*="color:#fff"] {
+  background-color: #121215 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fix 6: DevBlog Reader Modal Header Badges & Body
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] #devblogModal .modal-header {
+  background-color: var(--surface) !important;
+  border-bottom-color: var(--line) !important;
+}
+
+[data-theme="dark"] #devblog-modal-sprint-badge,
+[data-theme="dark"] #devblogModal .badge.bg-ink {
+  background-color: #121215 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+[data-theme="dark"] #devblog-modal-sprint-badge i {
+  color: var(--accent) !important;
+}
+
+[data-theme="dark"] #devblog-modal-readtime,
+[data-theme="dark"] #devblogModal .badge.bg-cream {
+  background-color: var(--surface) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--line) !important;
+}
+
+[data-theme="dark"] #devblog-modal-body {
+  background-color: var(--cream) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] #devblog-modal-title {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .devblog-modal-content p,
+[data-theme="dark"] .devblog-modal-content li,
+[data-theme="dark"] .devblog-modal-content div {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .devblog-modal-content strong {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .devblog-modal-content code {
+  background-color: var(--surface) !important;
+  color: var(--accent) !important;
+  border: 1px solid var(--line) !important;
+}
+
+[data-theme="dark"] .devblog-card-tags .chip-tag {
+  background-color: var(--surface) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fix 8: Enforce Solid Black Text/Icons on All Green Elements & Buttons
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] [style*="background-color: var(--accent)"],
+[data-theme="dark"] [style*="background-color:var(--accent)"],
+[data-theme="dark"] [style*="background: var(--accent)"],
+[data-theme="dark"] [style*="background:var(--accent)"] {
+  color: #000000 !important;
+}
+
+[data-theme="dark"] [style*="background-color: var(--accent)"] i,
+[data-theme="dark"] [style*="background-color:var(--accent)"] i,
+[data-theme="dark"] [style*="background: var(--accent)"] i,
+[data-theme="dark"] [style*="background:var(--accent)"] i,
+[data-theme="dark"] [style*="background-color: var(--accent)"] .text-ink,
+[data-theme="dark"] [style*="background-color:var(--accent)"] .text-ink {
+  color: #000000 !important;
+}
+
+/* Stepper dot completed state */
+[data-theme="dark"] .stepper-step.is-completed .stepper-dot {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #000000 !important;
+}
+[data-theme="dark"] .stepper-step.is-completed .stepper-dot i {
+  color: #000000 !important;
+}
+
+/* Carousel nav button on hover when accent */
+[data-theme="dark"] .carousel-nav-btn:hover {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #000000 !important;
+}
+[data-theme="dark"] .carousel-nav-btn:hover i {
+  color: #000000 !important;
+}
+
+

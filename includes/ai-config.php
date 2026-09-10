@@ -293,6 +293,39 @@ function validate_ai_model($model_id) {
 }
 
 /**
+ * Get validated secondary/fallback model ID
+ * 
+ * @param string|null $exclude_model Optional model ID to avoid falling back to itself
+ * @return string
+ */
+function get_ai_fallback_model($exclude_model = null) {
+    $catalog = get_nvidia_free_models();
+    $configured_fallback = get_ai_env('NVIDIA_FALLBACK_MODEL', 'openai/gpt-oss-20b');
+
+    if (!empty($configured_fallback) && isset($catalog[$configured_fallback])) {
+        if ($exclude_model === null || $configured_fallback !== $exclude_model) {
+            return $configured_fallback;
+        }
+    }
+
+    // High-reliability ordered defaults for cloud fallback
+    $reliable_defaults = [
+        'openai/gpt-oss-20b',
+        'meta/llama-3.2-11b-vision-instruct',
+        'nvidia/nemotron-3.5-lightning-30b-a3b',
+        'mistralai/mistral-nemotron'
+    ];
+
+    foreach ($reliable_defaults as $cand) {
+        if ($exclude_model === null || $cand !== $exclude_model) {
+            return $cand;
+        }
+    }
+
+    return 'openai/gpt-oss-20b';
+}
+
+/**
  * Get rate limit status without recording an API request hit
  * 
  * @param int|null $limit_per_minute
@@ -454,12 +487,18 @@ function detect_ai_prompt_intent($prompt) {
  * @return string
  */
 function get_model_display_name($model_id) {
-    $catalog = get_nvidia_free_models();
-    if (isset($catalog[$model_id]['name'])) {
-        return $catalog[$model_id]['name'];
+    if (empty($model_id)) {
+        return 'Campus AI';
     }
-    $parts = explode('/', $model_id);
-    return end($parts);
+    $clean_id = preg_replace('/\s*\(.*?\)$/', '', $model_id);
+    $catalog = get_nvidia_free_models();
+    $has_local_suffix = str_contains($model_id, '(Local Guided Mode)');
+    if (isset($catalog[$clean_id]['name'])) {
+        return $catalog[$clean_id]['name'] . ($has_local_suffix ? ' (Local Guided Mode)' : '');
+    }
+    $parts = explode('/', $clean_id);
+    $base_name = end($parts);
+    return $base_name . ($has_local_suffix ? ' (Local Guided Mode)' : '');
 }
 
 /**
@@ -543,34 +582,53 @@ function call_nvidia_nim_chat($messages, $model = null, $options = []) {
 
     // If no API key configured or placeholder key, return curated local response
     if (empty($api_key) || str_contains($api_key, 'YOUR_API_KEY') || str_contains($api_key, 'YOUR_KEY')) {
-        return get_curated_local_reply($messages, $model, 'Please add your free NVIDIA API Key in .env or Admin AI Settings to enable live AI reasoning!', $user_role);
+        $local_reply = get_curated_local_reply($messages, $model, 'Please add your free NVIDIA API Key in .env or Admin AI Settings to enable live AI reasoning!', $user_role);
+        $local_reply['is_model_fallback'] = false;
+        $local_reply['is_local_fallback'] = true;
+        return $local_reply;
     }
 
     $target_model = validate_ai_model($model);
-    $models_to_try = [$target_model];
+    $configured_fallback = get_ai_fallback_model($target_model);
 
-    // Add fallback models in case the chosen model hits a rate limit, queue, or outage
-    $fallback_candidates = [
+    // Build intelligent multi-tier model cascade:
+    // Tier 1: Target / primary model requested
+    // Tier 2: Configured secondary fallback model
+    // Tier 3: Resilient high-speed cloud candidates
+    $models_to_try = [$target_model];
+    if (!in_array($configured_fallback, $models_to_try)) {
+        $models_to_try[] = $configured_fallback;
+    }
+
+    $resilient_candidates = [
         'openai/gpt-oss-20b',
         'meta/llama-3.2-11b-vision-instruct',
-        'mistralai/mistral-nemotron',
-        'nvidia/nemotron-3.5-lightning-30b-a3b'
+        'nvidia/nemotron-3.5-lightning-30b-a3b',
+        'mistralai/mistral-nemotron'
     ];
-    foreach ($fallback_candidates as $fb) {
-        if (!in_array($fb, $models_to_try)) {
-            $models_to_try[] = $fb;
+    foreach ($resilient_candidates as $rc) {
+        if (!in_array($rc, $models_to_try)) {
+            $models_to_try[] = $rc;
         }
     }
 
+    // Limit to max 3 cloud attempts to guarantee low latency before safety net
+    $max_attempts = isset($options['max_model_attempts']) ? max(1, (int)$options['max_model_attempts']) : 3;
+    $models_to_try = array_slice($models_to_try, 0, $max_attempts);
+
+    $model_failures = [];
     $last_error = null;
     $start_time = microtime(true);
 
     foreach ($models_to_try as $idx => $current_model) {
+        // Generous inference timeout: Primary model gets up to 16.0s (or custom), fallback models get 15.0s
+        $timeout = ($idx === 0) ? (float)($options['timeout'] ?? 16.0) : 15.0;
+
         $payload = [
             'model' => $current_model,
             'messages' => $messages,
             'temperature' => $options['temperature'] ?? (float)get_ai_env('AI_TEMPERATURE', 0.6),
-            'max_tokens' => $options['max_tokens'] ?? (int)get_ai_env('AI_MAX_TOKENS', 1024),
+            'max_tokens' => $options['max_tokens'] ?? (int)get_ai_env('AI_MAX_TOKENS', 384),
             'stream' => false
         ];
 
@@ -592,7 +650,7 @@ function call_nvidia_nim_chat($messages, $model = null, $options = []) {
                 CURLOPT_POSTFIELDS => $json_payload,
                 CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 7,
+                CURLOPT_TIMEOUT => (int)ceil($timeout),
                 CURLOPT_SSL_VERIFYPEER => true
             ]);
             $response_body = curl_exec($ch);
@@ -601,22 +659,29 @@ function call_nvidia_nim_chat($messages, $model = null, $options = []) {
             curl_close($ch);
 
             if ($response_body === false) {
-                $last_error = "cURL error: $curl_err";
+                $err_desc = !empty($curl_err) ? $curl_err : 'Connection timeout / network error';
+                $model_failures[] = [
+                    'model' => $current_model,
+                    'error' => $err_desc,
+                    'http_code' => 0
+                ];
+                $last_error = "cURL error on $current_model: $err_desc";
                 continue;
             }
         } else {
-            // Stream context fallback
+            // Stream context fallback (with permissive SSL for environments lacking root certs)
             $header_str = implode("\r\n", $headers) . "\r\n";
             $opts = [
                 'http' => [
                     'method' => 'POST',
                     'header' => $header_str,
                     'content' => $json_payload,
-                    'timeout' => 20,
+                    'timeout' => $timeout,
                     'ignore_errors' => true
                 ],
                 'ssl' => [
-                    'verify_peer' => true
+                    'verify_peer' => false,
+                    'verify_peer_name' => false
                 ]
             ];
             $context = stream_context_create($opts);
@@ -626,6 +691,15 @@ function call_nvidia_nim_chat($messages, $model = null, $options = []) {
                     $http_code = (int)$m[1];
                 }
             }
+            if ($response_body === false) {
+                $model_failures[] = [
+                    'model' => $current_model,
+                    'error' => 'HTTP stream failed to open',
+                    'http_code' => $http_code
+                ];
+                $last_error = "Stream error on $current_model (HTTP $http_code)";
+                continue;
+            }
         }
 
         if ($http_code === 200 && !empty($response_body)) {
@@ -634,27 +708,71 @@ function call_nvidia_nim_chat($messages, $model = null, $options = []) {
 
             if (!empty($reply_text)) {
                 $latency_ms = (int)round((microtime(true) - $start_time) * 1000);
+                $is_model_fallback = ($idx > 0);
+
+                $fallback_notice = null;
+                if ($is_model_fallback) {
+                    $orig_name = get_model_display_name($target_model);
+                    $curr_name = get_model_display_name($current_model);
+                    $primary_failure = $model_failures[0]['error'] ?? 'Unresponsive';
+                    $fallback_notice = "Primary model ($orig_name) was unavailable ($primary_failure). Smoothly switched to fallback model ($curr_name).";
+                }
+
                 return [
                     'success' => true,
                     'reply' => trim($reply_text),
                     'model' => $current_model,
+                    'original_model' => $target_model,
                     'latency_ms' => $latency_ms,
-                    'is_fallback' => ($idx > 0),
+                    'is_fallback' => $is_model_fallback,
+                    'is_model_fallback' => $is_model_fallback,
+                    'is_local_fallback' => false,
+                    'fallback_notice' => $fallback_notice,
+                    'fallback_chain' => $model_failures,
                     'error' => null
                 ];
+            } else {
+                $model_failures[] = [
+                    'model' => $current_model,
+                    'error' => 'Empty completion content received from API',
+                    'http_code' => 200
+                ];
+                $last_error = "Empty response choices from $current_model";
+                continue;
             }
         }
 
-        // If rate limited or unavailable, continue to next model in cascade
-        $last_error = "HTTP $http_code from NVIDIA ($current_model)";
+        // Handle HTTP error codes
+        $err_details = "HTTP $http_code";
+        if (!empty($response_body)) {
+            $err_data = json_decode($response_body, true);
+            if (!empty($err_data['error']['message'])) {
+                $err_details .= ": " . $err_data['error']['message'];
+            }
+        }
+
+        $model_failures[] = [
+            'model' => $current_model,
+            'error' => $err_details,
+            'http_code' => $http_code
+        ];
+        $last_error = "$err_details on $current_model";
+
         if ($http_code === 401) {
-            // Invalid key, do not cascade
+            // Invalid API key: cascading will also fail, break immediately
             break;
         }
     }
 
-    // Fallback to local curated answer if all models failed
-    return get_curated_local_reply($messages, $target_model, "NVIDIA API status: $last_error. Displaying curated advice.", $user_role);
+    // Tier 4 Safety Net: Fallback to local curated answer ONLY if all online models failed
+    $local_reply = get_curated_local_reply($messages, $target_model, "NVIDIA cloud status: $last_error. Displaying verified campus guidance.", $user_role);
+    $local_reply['original_model'] = $target_model;
+    $local_reply['is_fallback'] = true;
+    $local_reply['is_model_fallback'] = false;
+    $local_reply['is_local_fallback'] = true;
+    $local_reply['fallback_chain'] = $model_failures;
+    $local_reply['fallback_notice'] = "All cloud models temporarily unavailable ($last_error). Activated local offline guidance engine.";
+    return $local_reply;
 }
 
 /**
@@ -792,9 +910,13 @@ function get_curated_local_reply($messages, $model = 'nvidia/nemotron-3.5-lightn
         'success' => true,
         'reply' => $reply,
         'model' => $model . ' (Local Guided Mode)',
+        'original_model' => $model,
         'latency_ms' => 45,
         'is_fallback' => true,
+        'is_model_fallback' => false,
+        'is_local_fallback' => true,
         'notice' => $notice,
+        'fallback_notice' => $notice,
         'error' => null
     ];
 }

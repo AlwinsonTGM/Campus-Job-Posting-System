@@ -85,6 +85,9 @@ if (!defined('SITE_NAME')) {
 <!-- Bootstrap 5 Bundle JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+<!-- Theme Toggle Controller (dark/light mode + localStorage persistence) -->
+<script src="<?= $base_url ?>assets/js/theme-toggle.js?v=<?= time() ?>"></script>
+
 <!-- Global Main JS (Paper Sheet 3D Tilt & Interaction Engine) -->
 <script src="<?= $base_url ?>assets/js/main.js?v=<?= time() ?>"></script>
 

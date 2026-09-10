@@ -17,6 +17,7 @@ $team_members = [
         'section' => 'BSIS201',
         'email' => 'abustamante@kld.edu.ph',
         'image' => 'assets/img/developers/BUSTAMANTE.jpg',
+        'image_dark' => 'assets/img/developers/BUSTAMANTE_dark.jpg',
         'bio' => 'Oversees the end-to-end system architecture, routing logic, modular template structure, and data engine.',
         'tasks' => ['System Routing & State Engine', 'Architecture Blueprint', 'Session Handlers']
     ],
@@ -27,6 +28,7 @@ $team_members = [
         'section' => 'BSIS201',
         'email' => 'nbaco@kld.edu.ph',
         'image' => 'assets/img/developers/BACO.jpg',
+        'image_dark' => 'assets/img/developers/BACO_dark.jpg',
         'bio' => 'Designs and implements the public interface, responsive landing page, Data Privacy Policy, and Terms of Service.',
         'tasks' => ['Index & Landing Page', 'Data Privacy (RA 10173)', 'Terms of Service Page']
     ],
@@ -37,6 +39,7 @@ $team_members = [
         'section' => 'BSIS201',
         'email' => 'jrcruzpe@kld.edu.ph',
         'image' => 'assets/img/developers/CRUZPE.jpg',
+        'image_dark' => 'assets/img/developers/CRUZPE_dark.jpg',
         'bio' => 'Specializes in user authentication flows, dynamic real-time password strength algorithms, and account security.',
         'tasks' => ['Password Strength Meter JS', 'Multi-Role Login & Register', 'Forgot Password Flow']
     ],
@@ -47,6 +50,7 @@ $team_members = [
         'section' => 'BSIS201',
         'email' => 'avblayco@kld.edu.ph',
         'image' => 'assets/img/developers/LAYCO.jpg',
+        'image_dark' => 'assets/img/developers/LAYCO_dark.jpg',
         'bio' => 'Crafts the student dashboard, job browsing with live filters, job application modal, and application status tracker.',
         'tasks' => ['Student Dashboard', 'Job Filter & Details', 'My Applications Tracker']
     ],
@@ -57,6 +61,7 @@ $team_members = [
         'section' => 'BSIS201',
         'email' => 'jsalognon@kld.edu.ph',
         'image' => 'assets/img/developers/SOLOGNON.jpg',
+        'image_dark' => 'assets/img/developers/SOLOGNON_dark.jpg',
         'bio' => 'Builds the campus office portal, vacancy posting forms, candidate evaluation drawers, and interview scheduling triggers.',
         'tasks' => ['Employer Dashboard', 'Create & Edit Job Forms', 'Applicant Review Suite']
     ],
@@ -67,6 +72,7 @@ $team_members = [
         'section' => 'BSIS201',
         'email' => 'mjjurado@kld.edu.ph',
         'image' => 'assets/img/developers/JURADO.jpg',
+        'image_dark' => 'assets/img/developers/JURADO_dark.jpg',
         'bio' => 'Manages administrative category controls, user accounts, printable analytics reports, and cross-browser quality assurance.',
         'tasks' => ['Categories & User Control', 'Printable Analytics Reports', 'Mobile QA & Validation']
     ]
@@ -112,7 +118,13 @@ require_once __DIR__ . '/includes/header.php';
                     <?php foreach ($team_members as $dev): ?>
                         <div class="col-md-6 col-lg-4">
                             <div class="dev-card reveal-fade-rise">
-                                <img src="<?= $base_url . $dev['image'] ?>" alt="<?= htmlspecialchars($dev['name']) ?>" class="dev-card-photo">
+                                <div class="dev-photo-glitch-frame dev-card-photo-frame" data-light-src="<?= $base_url . $dev['image'] ?>" data-dark-src="<?= $base_url . $dev['image_dark'] ?>">
+                                    <img src="<?= $base_url . $dev['image'] ?>" 
+                                         data-light-src="<?= $base_url . $dev['image'] ?>" 
+                                         data-dark-src="<?= $base_url . $dev['image_dark'] ?>" 
+                                         alt="<?= htmlspecialchars($dev['name']) ?>" 
+                                         class="dev-card-photo dev-photo-target">
+                                </div>
                                 <h3 class="dev-card-name"><?= htmlspecialchars($dev['name']) ?></h3>
                                 <div class="dev-card-role"><?= htmlspecialchars($dev['role']) ?></div>
 
@@ -189,7 +201,13 @@ require_once __DIR__ . '/includes/header.php';
 
                                     <div class="devblog-card-body">
                                         <div class="devblog-author-row mb-2">
-                                            <img src="<?= $base_url . ($blog['author_image'] ?? 'assets/img/developers/BUSTAMANTE.jpg') ?>" alt="<?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?>" class="devblog-author-img">
+                                            <div class="devblog-author-img-wrap dev-photo-glitch-frame" data-light-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg" data-dark-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE_dark.jpg">
+                                                <img src="<?= $base_url . ($blog['author_image'] ?? 'assets/img/developers/BUSTAMANTE.jpg') ?>" 
+                                                     data-light-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg"
+                                                     data-dark-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE_dark.jpg"
+                                                     alt="<?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?>" 
+                                                     class="devblog-author-img dev-photo-target">
+                                            </div>
                                             <div class="devblog-author-info">
                                                 <div class="devblog-author-name"><?= htmlspecialchars($blog['author_name'] ?? 'Alwinson Bustamante') ?></div>
                                                 <div class="devblog-author-role"><?= htmlspecialchars($blog['author_role'] ?? 'Lead Developer & System Architect') ?></div>
@@ -503,7 +521,12 @@ require_once __DIR__ . '/includes/header.php';
 
                         <!-- Author Meta Bar -->
                         <div class="devblog-author-row p-3 bg-cream rounded-3 border border-line mb-4">
-                            <img src="" id="devblog-modal-author-img" alt="Author" class="devblog-author-img" style="width: 46px; height: 46px;">
+                            <div class="devblog-author-img-wrap dev-photo-glitch-frame" data-light-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg" data-dark-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE_dark.jpg">
+                                <img src="" id="devblog-modal-author-img" alt="Author" class="devblog-author-img dev-photo-target"
+                                     data-light-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE.jpg"
+                                     data-dark-src="<?= $base_url ?>assets/img/developers/BUSTAMANTE_dark.jpg"
+                                     style="width: 46px; height: 46px;">
+                            </div>
                             <div class="devblog-author-info">
                                 <div class="fw-bold text-ink" id="devblog-modal-author-name"></div>
                                 <div class="small text-muted-custom" id="devblog-modal-author-role"></div>
