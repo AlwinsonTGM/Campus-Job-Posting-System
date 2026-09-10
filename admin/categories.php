@@ -26,30 +26,30 @@ function get_category_cover($cat) {
     // Smart curated fallbacks based on category title/slug keywords
     $haystack = strtolower(($cat['name'] ?? '') . ' ' . ($cat['slug'] ?? ''));
     if (str_contains($haystack, 'tech') || str_contains($haystack, 'it') || str_contains($haystack, 'computer')) {
-        return 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop';
+        return '../assets/img/categories/cat-tech.jpg';
     }
     if (str_contains($haystack, 'lib') || str_contains($haystack, 'book')) {
-        return 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop';
+        return '../assets/img/categories/cat-library.jpg';
     }
     if (str_contains($haystack, 'admin') || str_contains($haystack, 'clerk') || str_contains($haystack, 'office')) {
-        return 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop';
+        return '../assets/img/categories/cat-admin.jpg';
     }
     if (str_contains($haystack, 'sci') || str_contains($haystack, 'lab') || str_contains($haystack, 'chem')) {
-        return 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop';
+        return '../assets/img/categories/cat-lab.jpg';
     }
     if (str_contains($haystack, 'tutor') || str_contains($haystack, 'peer') || str_contains($haystack, 'mentor')) {
-        return 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop';
+        return '../assets/img/categories/cat-tutor.jpg';
     }
     if (str_contains($haystack, 'sport') || str_contains($haystack, 'athletic') || str_contains($haystack, 'gym')) {
-        return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop';
+        return '../assets/img/categories/cat-sports.jpg';
     }
     if (str_contains($haystack, 'media') || str_contains($haystack, 'art') || str_contains($haystack, 'design')) {
-        return 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=900&auto=format&fit=crop';
+        return '../assets/img/categories/cat-media.jpg';
     }
     if (str_contains($haystack, 'food') || str_contains($haystack, 'cafe') || str_contains($haystack, 'barista')) {
-        return 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=900&auto=format&fit=crop';
+        return '../assets/img/categories/cat-cafe.jpg';
     }
-    return 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';
+    return '../assets/img/categories/cat-general.jpg';
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -311,7 +311,7 @@ require_once __DIR__ . '/../includes/header.php';
                                              class="w-100 h-100 cat-card-thumb" 
                                              loading="lazy"
                                              style="object-fit: cover; object-position: center;"
-                                             onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';">
+                                             onerror="this.src='../assets/img/categories/cat-general.jpg';">
                                         
                                         <!-- Gradient Overlay -->
                                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(17, 24, 39, 0.45) 0%, rgba(17, 24, 39, 0.05) 45%, rgba(17, 24, 39, 0.7) 100%);"></div>
@@ -479,7 +479,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <!-- Image URL Input -->
                                 <div class="mb-2">
-                                    <input type="url" name="image" id="new-cat-image-url" class="form-control" placeholder="https://images.unsplash.com/... (paste picture URL)">
+                                    <input type="text" name="image" id="new-cat-image-url" class="form-control" placeholder="assets/img/categories/cat-tech.jpg or image URL">
                                 </div>
 
                                 <!-- One-Click Picture Presets -->
@@ -488,35 +488,35 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div class="d-flex flex-wrap gap-1">
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-tech.jpg" 
                                             data-icon="bi-laptop">💻 Tech / IT</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-library.jpg" 
                                             data-icon="bi-book">📚 Library</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-admin.jpg" 
                                             data-icon="bi-folder2-open">🗄️ Office / Admin</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-lab.jpg" 
                                             data-icon="bi-radioactive">🔬 Science Lab</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-tutor.jpg" 
                                             data-icon="bi-mortarboard">🎓 Peer Tutor</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-sports.jpg" 
                                             data-icon="bi-trophy">🏆 Athletics</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=900&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-media.jpg" 
                                             data-icon="bi-camera-reels">🎨 Media / Arts</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
-                                            data-url="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=900&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-cafe.jpg" 
                                             data-icon="bi-cup-hot">☕ Cafe &amp; Dining</button>
                                     </div>
                                 </div>
@@ -614,7 +614,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <!-- Image URL Input -->
                                 <div class="mb-2">
-                                    <input type="url" name="image" id="edit-cat-image-url" class="form-control" placeholder="https://images.unsplash.com/... (paste picture URL)">
+                                    <input type="text" name="image" id="edit-cat-image-url" class="form-control" placeholder="assets/img/categories/cat-tech.jpg or image URL">
                                 </div>
 
                                 <!-- One-Click Picture Presets -->
@@ -623,35 +623,35 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div class="d-flex flex-wrap gap-1">
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-tech.jpg" 
                                             data-icon="bi-laptop">💻 Tech / IT</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-library.jpg" 
                                             data-icon="bi-book">📚 Library</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-admin.jpg" 
                                             data-icon="bi-folder2-open">🗄️ Office / Admin</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-lab.jpg" 
                                             data-icon="bi-radioactive">🔬 Science Lab</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-tutor.jpg" 
                                             data-icon="bi-mortarboard">🎓 Peer Tutor</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-sports.jpg" 
                                             data-icon="bi-trophy">🏆 Athletics</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=900&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-media.jpg" 
                                             data-icon="bi-camera-reels">🎨 Media / Arts</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
-                                            data-url="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=900&auto=format&fit=crop" 
+                                            data-url="assets/img/categories/cat-cafe.jpg" 
                                             data-icon="bi-cup-hot">☕ Cafe &amp; Dining</button>
                                     </div>
                                 </div>

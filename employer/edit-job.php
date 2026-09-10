@@ -347,7 +347,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <label class="form-label d-block fw-bold small text-ink mb-2">Current Flyer / Photo</label>
                                         <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
                                             <div style="width: 140px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); flex-shrink: 0;">
-                                                <img src="<?= (str_starts_with($job['image'], 'http') || str_starts_with($job['image'], '/')) ? htmlspecialchars($job['image']) : '../' . htmlspecialchars($job['image']) ?>" alt="Current Banner" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <img src="<?= (str_starts_with($job['image'], 'http') || str_starts_with($job['image'], '/')) ? htmlspecialchars($job['image']) : '../' . htmlspecialchars($job['image']) ?>" alt="Current Banner" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='../assets/img/jobs/job-01.jpg';">
                                             </div>
                                             <div>
                                                 <div class="badge bg-success-subtle text-success border border-success-subtle mb-2">

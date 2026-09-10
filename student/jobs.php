@@ -125,7 +125,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="row g-3" id="category-tiles-grid">
                         <?php foreach ($categories as $cat): 
                             $is_active_cat = (strcasecmp($category, $cat['name']) === 0 || strcasecmp($category, (string)$cat['id']) === 0);
-                            $cat_cover = !empty($cat['image']) ? $cat['image'] : 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';
+                            $cat_raw_img = !empty($cat['image']) ? $cat['image'] : 'assets/img/categories/cat-general.jpg';
+                            $cat_cover = (str_starts_with($cat_raw_img, 'http://') || str_starts_with($cat_raw_img, 'https://') || str_starts_with($cat_raw_img, '/'))
+                                ? $cat_raw_img
+                                : $base_url . ltrim($cat_raw_img, '/');
                             $cat_job_count = (int)($cat['job_count'] ?? 0);
                         ?>
                             <div class="col-6 col-md-4 col-lg-2">
@@ -143,7 +146,7 @@ require_once __DIR__ . '/../includes/header.php';
                                              class="w-100 h-100 cat-tile-img" 
                                              loading="lazy"
                                              style="object-fit: cover; object-position: center;"
-                                             onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';">
+                                             onerror="this.src='<?= $base_url ?>assets/img/categories/cat-general.jpg';">
                                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 100%);"></div>
                                         
                                         <!-- Tile Icon Badge -->

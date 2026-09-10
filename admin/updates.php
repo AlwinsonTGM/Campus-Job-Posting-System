@@ -159,7 +159,13 @@ require_once __DIR__ . '/../includes/header.php';
                                     ?>
                                         <tr>
                                             <td class="ps-4" data-label="Thumbnail">
-                                                <img src="<?= htmlspecialchars($item['image'] ?? '../assets/img/hero-office.jpg') ?>" class="rounded-3 border border-line" style="width: 54px; height: 42px; object-fit: cover;" alt="">
+                                                <?php
+                                                $upd_img = $item['image'] ?? 'assets/img/hero-office.jpg';
+                                                $upd_src = (str_starts_with($upd_img, 'http://') || str_starts_with($upd_img, 'https://') || str_starts_with($upd_img, '/'))
+                                                    ? $upd_img
+                                                    : '../' . ltrim($upd_img, '/');
+                                                ?>
+                                                <img src="<?= htmlspecialchars($upd_src) ?>" class="rounded-3 border border-line" style="width: 54px; height: 42px; object-fit: cover;" alt="" onerror="this.src='../assets/img/hero-office.jpg';">
                                             </td>
                                             <td data-label="Title &amp; Summary">
                                                 <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="fw-bold text-ink text-decoration-none d-block">
@@ -250,7 +256,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-ink">Featured Photo URL</label>
-                            <input type="url" name="image" class="form-control rounded-3" placeholder="https://images.unsplash.com/...">
+                            <input type="text" name="image" class="form-control rounded-3" placeholder="assets/img/updates/... or photo URL">
                             <span class="text-muted-custom small" style="font-size: 0.75rem;">Leave blank for default campus hero photo.</span>
                         </div>
                         <div class="col-md-6">

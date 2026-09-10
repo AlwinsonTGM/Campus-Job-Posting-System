@@ -59,12 +59,13 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
         <div class="collapse navbar-collapse" id="navbarMain">
             <?php if ($current_user && ($current_user['role'] ?? '') === 'admin'): 
                 $nav_pending_count = 0;
-                if (function_exists('get_profile_requests')) {
+                if (function_exists('get_profile_requests') && function_exists('get_all_users')) {
                     $all_pr = get_profile_requests();
                     $pending_pr = count(array_filter($all_pr, fn($r) => ($r['status'] ?? '') === 'pending'));
-                    $all_u = $_SESSION['users'] ?? (function_exists('load_json_file') ? load_json_file('users.json') : []);
+                    $all_u = get_all_users();
                     $pending_emp = count(array_filter($all_u, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
-                    $nav_pending_count = $pending_pr + $pending_emp;
+                    $pending_stu = count(array_filter($all_u, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
+                    $nav_pending_count = $pending_pr + $pending_emp + $pending_stu;
                 }
             ?>
                 <!-- Center/Left Navigation Links for Admin -->

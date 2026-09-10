@@ -65,7 +65,7 @@
             <div class="toast-header bg-cream border-bottom border-line py-2 px-3">
                 <i class="bi bi-bell-fill text-accent me-2"></i>
                 <strong class="me-auto text-ink small fw-bold">${escapeHtml(title)}</strong>
-                <small class="text-muted-custom">Just now</small>
+                <small class="text-muted-custom">1m ago</small>
                 <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body p-3">

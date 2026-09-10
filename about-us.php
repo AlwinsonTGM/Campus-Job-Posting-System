@@ -89,26 +89,29 @@ require_once __DIR__ . '/includes/header.php';
 
         <main class="py-5">
             <div class="container-paper">
-                <!-- Page Head -->
-                <?php
-                render_page_head(
-                    '',
-                    'Meet the Development Team',
-                    'We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the Institute of Computing and Digital Innovation (ICDI) at Kolehiyo ng Lungsod ng Dasmariñas (KLD) who built the KLD Campus Job Posting System for our COAL101: Web Systems and Technologies midterm lab project. Together, we designed and engineered an intuitive, secure, and accessible platform that streamlines the student assistantship application and hiring lifecycle across campus offices, featuring weekly schedule availability matching, transparent application pipelines, and role-based workflows.'
-                );
-                ?>
-
-                <!-- Developer Photo Specifications Compliance Note -->
-                <div class="card-paper mb-5 bg-cream">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
-                            <i class="bi bi-patch-check-fill"></i>
-                        </div>
-                        <div>
-                            <h4 class="card-paper-title mb-1">Developer 2x2 Photo Standards Policy</h4>
-                            <p class="text-muted-custom small mb-0">
-                                All developer profiles feature 2x2 formal institutional portrait photos in KLD Green blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories.
+                <!-- Page Head & Photo Standards Policy Split Header -->
+                <div class="page-head-split reveal-fade-rise mb-5 pb-4 border-bottom border-line">
+                    <h1 class="page-head-title mb-3">Meet the Development Team</h1>
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-7">
+                            <p class="page-head-lead mb-0 text-justify" style="text-align: justify; text-justify: inter-word;">
+                                We are a 6-member team of 2nd Year Bachelor of Science in Information Systems (BSIS) students from the Institute of Computing and Digital Innovation (ICDI) at Kolehiyo ng Lungsod ng Dasmariñas (KLD) who built the KLD Campus Job Posting System for our COAL101: Web Systems and Technologies midterm lab project. Together, we designed and engineered an intuitive, secure, and accessible platform that streamlines the student assistantship application and hiring lifecycle across campus offices, featuring weekly schedule availability matching, transparent application pipelines, and role-based workflows.
                             </p>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card-paper bg-cream p-4 border border-line">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
+                                        <i class="bi bi-patch-check-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="card-paper-title mb-1" style="font-size: 17px;">Developer 2x2 Photo Standards Policy</h4>
+                                        <p class="text-muted-custom small mb-0 lh-base">
+                                            All developer profiles feature 2x2 formal institutional portrait photos in KLD Green blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,27 +131,27 @@ require_once __DIR__ . '/includes/header.php';
                                 <h3 class="dev-card-name"><?= htmlspecialchars($dev['name']) ?></h3>
                                 <div class="dev-card-role"><?= htmlspecialchars($dev['role']) ?></div>
 
-                                <div class="dev-card-meta">
-                                    <div><i class="bi bi-person-badge me-1 text-ink"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></div>
-                                    <div><i class="bi bi-mortarboard me-1 text-ink"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></div>
-                                    <div class="text-truncate mt-1">
-                                        <a href="mailto:<?= htmlspecialchars($dev['email']) ?>" class="text-muted-custom text-decoration-none" title="<?= htmlspecialchars($dev['email']) ?>">
-                                            <i class="bi bi-envelope me-1 text-ink"></i><?= htmlspecialchars($dev['email']) ?>
-                                        </a>
+                                <div class="dev-card-bottom">
+                                    <div class="dev-card-meta text-start">
+                                        <span class="dev-card-section-heading small fw-bold text-ink d-block mb-1">Details:</span>
+                                        <ul class="list-unstyled text-muted-custom mb-0">
+                                            <li class="mb-1"><i class="bi bi-person-badge me-1 text-ink"></i> Student ID: <strong><?= htmlspecialchars($dev['student_id']) ?></strong></li>
+                                            <li class="mb-1"><i class="bi bi-mortarboard me-1 text-ink"></i> Section: <strong><?= htmlspecialchars($dev['section']) ?></strong></li>
+                                            <li class="text-truncate mt-1">
+                                                <a href="mailto:<?= htmlspecialchars($dev['email']) ?>" class="text-muted-custom text-decoration-none" title="<?= htmlspecialchars($dev['email']) ?>">
+                                                    <i class="bi bi-envelope me-1 text-ink"></i><?= htmlspecialchars($dev['email']) ?>
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
-                                </div>
-
-                                <div class="dev-card-bio">
-                                    <span><?= htmlspecialchars($dev['bio']) ?></span>
-                                </div>
-
-                                <div class="dev-card-scope text-start">
-                                    <span class="small fw-bold text-ink d-block mb-1">Key Deliverables:</span>
-                                    <ul class="list-unstyled small text-muted-custom mb-0">
-                                        <?php foreach ($dev['tasks'] as $task): ?>
-                                            <li class="mb-1"><i class="bi bi-check2 text-ink me-1"></i> <?= htmlspecialchars($task) ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
+                                    <div class="dev-card-scope text-start">
+                                        <span class="dev-card-section-heading small fw-bold text-ink d-block mb-1">Key Deliverables:</span>
+                                        <ul class="list-unstyled text-muted-custom mb-0">
+                                            <?php foreach ($dev['tasks'] as $task): ?>
+                                                <li class="mb-1"><i class="bi bi-check2 text-ink me-1"></i> <?= htmlspecialchars($task) ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -187,8 +190,15 @@ require_once __DIR__ . '/includes/header.php';
                             ?>
                                 <article class="devblog-card <?= $stateClass ?>" data-index="<?= $idx ?>" data-id="<?= htmlspecialchars($blog['id'] ?? ('day-' . $idx)) ?>" tabindex="0" role="group" aria-label="DevBlog: <?= htmlspecialchars($blog['title'] ?? 'Development Log') ?>">
                                     <div class="devblog-card-photo-wrap">
-                                        <img src="<?= htmlspecialchars($blog['cover_image'] ?? 'assets/img/kld-campus.jpg') ?>"
-                                            alt="<?= htmlspecialchars($blog['title'] ?? 'DevBlog') ?>" loading="lazy">
+                                        <?php 
+                                        $blog_cover = $blog['cover_image'] ?? 'assets/img/kld-campus.jpg';
+                                        $blog_cover_src = (str_starts_with($blog_cover, 'http://') || str_starts_with($blog_cover, 'https://') || str_starts_with($blog_cover, '/'))
+                                            ? $blog_cover 
+                                            : ($base_url . ltrim($blog_cover, '/'));
+                                        ?>
+                                        <img src="<?= htmlspecialchars($blog_cover_src) ?>"
+                                            alt="<?= htmlspecialchars($blog['title'] ?? 'DevBlog') ?>" loading="lazy"
+                                            onerror="this.src='<?= $base_url ?>assets/img/kld-campus.jpg';">
                                         <div class="devblog-card-badges">
                                             <span class="badge-tag-overlay" style="background-color: var(--ink); color: #fff;">
                                                 <i class="bi bi-flag-fill text-accent me-1"></i>DAY <?= sprintf('%02d', (int)($blog['sprint_number'] ?? ($idx + 1))) ?>
@@ -331,158 +341,71 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
                     </div>
 
-                    <!-- Tech Stack Showcase -->
+                    <!-- Tech Stack Showcase: Interactive Knowledge Graph -->
                     <div class="col-lg-7">
-                        <div class="card-paper h-100 reveal-fade-rise">
+                        <div class="card-paper h-100 reveal-fade-rise tech-graph-card">
                             <div class="d-flex align-items-center gap-3 mb-3">
                                 <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
-                                    <i class="bi bi-stack"></i>
+                                    <i class="bi bi-diagram-3"></i>
                                 </div>
                                 <div>
                                     <h3 class="card-paper-title mb-0">Technical Architecture</h3>
-                                    <span class="small text-muted-custom">Engineered with modern web standards, relational ACID persistence, and 3D AI kinematics</span>
+                                    <span class="small text-muted-custom">Interactive knowledge graph · Drag nodes to explore ecosystem connections</span>
                                 </div>
                             </div>
-                            
-                            <div class="tech-spec-grid">
-                                <!-- 1. Three.js & GLTF 3D Mascot -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-boxes"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">3D Engine &amp; Mascot</span>
-                                        <div class="tech-spec-title">Three.js WebGL &amp; GLTFLoader</div>
-                                        <div class="tech-spec-detail">Hardware-accelerated 3D mascot (<code>cute_robot.glb</code>) with 13 procedural kinematics &amp; OLED visor shader</div>
-                                    </div>
-                                </div>
 
-                                <!-- 2. MySQL / MariaDB Relational Engine -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-database-fill-check"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Relational Persistence</span>
-                                        <div class="tech-spec-title">MySQL 8.0 / MariaDB (InnoDB)</div>
-                                        <div class="tech-spec-detail">ACID transactional integrity, foreign key cascades, and utf8mb4 full unicode persistence</div>
-                                    </div>
+                            <!-- Graph Controls & Cluster Filters -->
+                            <div class="tech-graph-controls">
+                                <div class="tech-graph-filters" role="group" aria-label="Filter architecture cluster">
+                                    <button type="button" class="tech-graph-filter-btn is-active" data-cluster="all">
+                                        <i class="bi bi-grid-fill"></i> All Systems
+                                    </button>
+                                    <button type="button" class="tech-graph-filter-btn" data-cluster="frontend">
+                                        <i class="bi bi-window-stack"></i> 3D &amp; UI
+                                    </button>
+                                    <button type="button" class="tech-graph-filter-btn" data-cluster="backend">
+                                        <i class="bi bi-hdd-rack"></i> Backend
+                                    </button>
+                                    <button type="button" class="tech-graph-filter-btn" data-cluster="data">
+                                        <i class="bi bi-database"></i> Database
+                                    </button>
+                                    <button type="button" class="tech-graph-filter-btn" data-cluster="ai">
+                                        <i class="bi bi-shield-check"></i> AI &amp; QA
+                                    </button>
                                 </div>
+                                <button type="button" class="tech-graph-reset-btn" id="tech-graph-reset-btn" title="Reset Graph Layout">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Reset View
+                                </button>
+                            </div>
 
-                                <!-- 3. PHP PDO Layer -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-link-45deg"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Database Abstraction</span>
-                                        <div class="tech-spec-title">PHP PDO Prepared Statements</div>
-                                        <div class="tech-spec-detail">Strict parameter binding (zero SQL injection vulnerabilities) with singleton connection pool</div>
-                                    </div>
+                            <!-- Canvas Viewport -->
+                            <div class="tech-graph-canvas-wrap" id="tech-graph-canvas-wrap">
+                                <div class="tech-graph-hint">
+                                    <i class="bi bi-hand-index-thumb"></i> Drag or hover nodes
                                 </div>
-
-                                <!-- 4. Atomic Migrations & Dual Mode -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-arrow-repeat"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Database Pipeline</span>
-                                        <div class="tech-spec-title">Atomic Migrations &amp; Seeding</div>
-                                        <div class="tech-spec-detail">Transactional migration engine (<code>migrate.php</code>) with Demo vs. Clean Slate dataset switcher</div>
-                                    </div>
+                                <canvas id="tech-graph-canvas" class="tech-graph-canvas" aria-label="Interactive Technical Architecture Network Graph"></canvas>
+                                <!-- Floating Tooltip -->
+                                <div class="tech-graph-tooltip" id="tech-graph-tooltip" role="tooltip">
+                                    <span class="tech-graph-tooltip-tag">Component</span>
+                                    <div class="tech-graph-tooltip-title">Technology Name</div>
+                                    <p class="tech-graph-tooltip-desc">Description</p>
                                 </div>
+                            </div>
 
-                                <!-- 5. Native PHP 8.2+ Backend -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-filetype-php"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Core Backend</span>
-                                        <div class="tech-spec-title">Native PHP 8.2+ Architecture</div>
-                                        <div class="tech-spec-detail">Modular template hierarchy, strict session lifecycle, and multi-role RBAC authorization boundaries</div>
-                                    </div>
+                            <!-- Bottom Inspector HUD Panel (Click-to-Pin) -->
+                            <div class="tech-graph-inspector mt-auto" id="tech-graph-inspector" aria-live="polite">
+                                <div class="tech-graph-inspector-icon">
+                                    <i class="bi bi-boxes"></i>
                                 </div>
-
-                                <!-- 6. Apache & HTTP Security Headers -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-hdd-network"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Web Server</span>
-                                        <div class="tech-spec-title">Apache 2.4 &amp; XAMPP Stack</div>
-                                        <div class="tech-spec-detail">URL rewrite rules and strict HTTP security headers (X-Frame-Options, CSP, Referrer)</div>
+                                <div class="tech-graph-inspector-content">
+                                    <div class="tech-graph-inspector-meta">
+                                        <span class="tech-graph-inspector-tag">3D Engine &amp; Mascot</span>
+                                        <span class="tech-graph-inspector-cluster">3D &amp; UI</span>
                                     </div>
-                                </div>
-
-                                <!-- 7. NVIDIA NIM AI Gateway -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-cpu"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Campus AI Assistant</span>
-                                        <div class="tech-spec-title">NVIDIA NIM AI Cloud Gateway</div>
-                                        <div class="tech-spec-detail">Streaming inference via Llama-3.3-70B &amp; DeepSeek-R1 with sliding multi-turn conversational memory</div>
-                                    </div>
-                                </div>
-
-                                <!-- 8. Offline Fallback AI Engine -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-shield-shaded"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Resilience Engine</span>
-                                        <div class="tech-spec-title">Local Heuristic Fallback</div>
-                                        <div class="tech-spec-detail">Zero-downtime offline intelligence via plural-aware regex and curated campus knowledge rules</div>
-                                    </div>
-                                </div>
-
-                                <!-- 9. Tactile Paper Sheet Design Tokens -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-palette"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Design System</span>
-                                        <div class="tech-spec-title">Modular CSS3 Design Tokens</div>
-                                        <div class="tech-spec-detail">7 scoped domain stylesheets, tactile paper palette (<code>#FBF9F4</code> canvas, <code>#161616</code> ink), and zero pill clutter</div>
-                                    </div>
-                                </div>
-
-                                <!-- 10. Bootstrap 5.3 + Icons -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-bootstrap-fill"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">UI Framework</span>
-                                        <div class="tech-spec-title">Bootstrap 5.3 + Icons 1.11</div>
-                                        <div class="tech-spec-detail">Accessible 12-column responsive layout, candidate review drawers, paper modals, and vector iconography</div>
-                                    </div>
-                                </div>
-
-                                <!-- 11. Vanilla JavaScript ES6+ -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-filetype-js"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Client Runtime</span>
-                                        <div class="tech-spec-title">Vanilla JavaScript (ES6+)</div>
-                                        <div class="tech-spec-detail">Client-side Shannon password entropy meter, debounced spotlight search (<code>Ctrl+K</code>), and 3D Coverflow</div>
-                                    </div>
-                                </div>
-
-                                <!-- 12. Real-Time Notification Poller -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-bell"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Live State Sync</span>
-                                        <div class="tech-spec-title">Real-Time Notification Poller</div>
-                                        <div class="tech-spec-detail">30-second interval polling with <code>visibilitychange</code> lifecycle pause and floating alert toasts</div>
-                                    </div>
-                                </div>
-
-                                <!-- 13. Security & Anti-CSRF Protection -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">Security Architecture</span>
-                                        <div class="tech-spec-title">Bcrypt &amp; Anti-CSRF Tokens</div>
-                                        <div class="tech-spec-detail">Bcrypt password hashing, cryptographic session tokens on all state mutations, and IDOR boundary checks</div>
-                                    </div>
-                                </div>
-
-                                <!-- 14. Playwright E2E Automation -->
-                                <div class="tech-spec-item">
-                                    <div class="tech-spec-icon"><i class="bi bi-check-all"></i></div>
-                                    <div class="tech-spec-content">
-                                        <span class="tech-spec-tag">QA &amp; Automation</span>
-                                        <div class="tech-spec-title">Playwright E2E Test Suite</div>
-                                        <div class="tech-spec-detail">TypeScript automated test suites across smoke, security fuzzing, half-screen viewports, and multi-role auth</div>
-                                    </div>
+                                    <h4 class="tech-graph-inspector-title">Three.js WebGL &amp; GLTFLoader</h4>
+                                    <p class="tech-graph-inspector-desc">
+                                        Hardware-accelerated 3D mascot (<code>cute_robot.glb</code>) with 13 procedural kinematics &amp; OLED visor shader
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -561,6 +484,7 @@ require_once __DIR__ . '/includes/header.php';
         <script id="devblogs-data" type="application/json">
             <?= json_encode($devblogs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>
         </script>
+        <script src="<?= $base_url ?>assets/js/tech-graph.js?v=1.0"></script>
 
         <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </div>

@@ -2123,7 +2123,7 @@ function add_career_update($data) {
         }
         $initials = substr($initials, 0, 2) ?: 'CC';
 
-        $image = !empty($data['image']) ? trim($data['image']) : 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1200&auto=format&fit=crop';
+        $image = !empty($data['image']) ? trim($data['image']) : 'assets/img/updates/update-01.jpg';
         $summary = trim($data['summary'] ?? (substr(strip_tags($content), 0, 160) . '...'));
 
         $stmt = $pdo->prepare("
@@ -2458,8 +2458,9 @@ function time_ago_short($datetime) {
     $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
     if (!$timestamp) return '';
     $diff = time() - $timestamp;
-    if ($diff < 60) return 'Just now';
-    if ($diff < 3600) return floor($diff / 60) . 'm ago';
+    if ($diff < 0) $diff = 0;
+    if ($diff < 60) return '1m ago';
+    if ($diff < 3600) return max(1, floor($diff / 60)) . 'm ago';
     if ($diff < 86400) return floor($diff / 3600) . 'h ago';
     if ($diff < 172800) return 'Yesterday';
     if ($diff < 604800) return floor($diff / 86400) . 'd ago';

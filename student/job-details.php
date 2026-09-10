@@ -71,7 +71,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 $img_src = (str_starts_with($job['image'], 'http') || str_starts_with($job['image'], '/')) ? $job['image'] : '../' . $job['image'];
                             ?>
                                 <div class="mb-4 rounded overflow-hidden border border-line position-relative" style="max-height: 360px;">
-                                    <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($job['title']) ?>" style="width: 100%; height: 100%; max-height: 360px; object-fit: cover;">
+                                    <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($job['title']) ?>" style="width: 100%; height: 100%; max-height: 360px; object-fit: cover;" onerror="this.src='../assets/img/jobs/job-01.jpg';">
                                     <div class="position-absolute top-0 start-0 m-3">
                                         <span class="badge px-3 py-2 d-inline-flex align-items-center gap-1 shadow-sm" style="background-color: var(--ink); color: #fff; font-size: 0.78rem;">
                                             <i class="bi bi-stars text-accent"></i> Featured Opportunity

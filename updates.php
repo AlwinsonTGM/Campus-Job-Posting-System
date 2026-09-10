@@ -93,7 +93,13 @@ require_once __DIR__ . '/includes/header.php';
                             
                             <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($featured_story['id']) ?>" class="updates-spotlight-card reveal-fade-rise">
                                 <div class="updates-spotlight-photo-wrap">
-                                    <img src="<?= htmlspecialchars($featured_story['image']) ?>" class="updates-spotlight-photo" alt="<?= htmlspecialchars($featured_story['title']) ?>">
+                                    <?php
+                                    $feat_img = $featured_story['image'] ?? 'assets/img/hero-office.jpg';
+                                    $feat_img_src = (str_starts_with($feat_img, 'http://') || str_starts_with($feat_img, 'https://') || str_starts_with($feat_img, '/'))
+                                        ? $feat_img
+                                        : ($base_url . ltrim($feat_img, '/'));
+                                    ?>
+                                    <img src="<?= htmlspecialchars($feat_img_src) ?>" class="updates-spotlight-photo" alt="<?= htmlspecialchars($featured_story['title']) ?>" onerror="this.src='<?= $base_url ?>assets/img/hero-office.jpg';">
                                 </div>
                                 <div class="updates-spotlight-content d-flex flex-column justify-content-between">
                                     <div>
@@ -157,8 +163,13 @@ require_once __DIR__ . '/includes/header.php';
                                     $formatted_date = date('M j, Y', $pub_time);
                                 ?>
                                     <div class="col-md-6 update-card-wrapper" data-title="<?= htmlspecialchars(strtolower($article['title'] ?? '')) ?>" data-summary="<?= htmlspecialchars(strtolower($article['summary'] ?? '')) ?>" data-author="<?= htmlspecialchars(strtolower($article['author']['name'] ?? '')) ?>">
-                                        <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($article['id']) ?>" class="update-feed-card reveal-fade-rise">
-                                            <img src="<?= htmlspecialchars($article['image'] ?? 'assets/img/hero-office.jpg') ?>" class="update-feed-thumb" alt="<?= htmlspecialchars($article['title']) ?>">
+                                            <?php
+                                            $art_img = $article['image'] ?? 'assets/img/hero-office.jpg';
+                                            $art_img_src = (str_starts_with($art_img, 'http://') || str_starts_with($art_img, 'https://') || str_starts_with($art_img, '/'))
+                                                ? $art_img
+                                                : ($base_url . ltrim($art_img, '/'));
+                                            ?>
+                                            <img src="<?= htmlspecialchars($art_img_src) ?>" class="update-feed-thumb" alt="<?= htmlspecialchars($article['title']) ?>" onerror="this.src='<?= $base_url ?>assets/img/hero-office.jpg';">
                                             <div class="p-4 d-flex flex-column flex-grow-1">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <span class="small text-muted-custom"><i class="bi bi-calendar3 me-1"></i><?= $formatted_date ?></span>

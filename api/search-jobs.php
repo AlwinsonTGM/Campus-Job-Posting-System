@@ -55,7 +55,7 @@ foreach ($results_slice as $job) {
         'pay_rate' => $job['pay_rate'] ?? '₱65.00 / hr',
         'location' => $job['location'] ?? 'Campus',
         'deadline' => $job['deadline'] ?? 'Open',
-        'image' => $job['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=600&auto=format&fit=crop',
+        'image' => !empty($job['image']) ? $job['image'] : 'assets/img/jobs/job-01.jpg',
         'is_featured' => !empty($job['image']) || !empty($job['is_featured']),
         'badges' => $job['badges'] ?? [$job['job_type'] ?? 'Student Assistant', $job['work_setup'] ?? 'On-Campus']
     ];

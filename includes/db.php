@@ -11,6 +11,13 @@ if (!defined('DB_USER')) define('DB_USER', getenv('DB_USER') ?: 'root');
 if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
 
+// Single source of truth for app time: Philippines (KLD campus).
+// PHP default here is often Europe/Berlin on XAMPP while MySQL SYSTEM is +08:00,
+// which made NOW()-stamped rows look "from the future" and pinned labels at 1m.
+if (function_exists('date_default_timezone_set')) {
+    @date_default_timezone_set('Asia/Manila');
+}
+
 /**
  * Get singleton PDO connection to the MySQL database.
  * 
@@ -25,12 +32,17 @@ function get_db_connection() {
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . DB_CHARSET
+            PDO::ATTR_EMULATE_PREPARES   => false
         ];
+        if (defined('PDO::MYSQL_ATTR_INIT_COMMAND')) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES " . DB_CHARSET;
+        }
 
         try {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+            // Keep MySQL session clock aligned with PHP (Asia/Manila).
+            // Offset form needs no timezone tables and matches NOW()/created_at reads.
+            try { $pdo->exec("SET time_zone = '+08:00'"); } catch (Exception $tz_e) { /* non-fatal */ }
         } catch (PDOException $e) {
             // Check if database doesn't exist yet, attempt to connect to server without dbname
             if ($e->getCode() == 1049) {
@@ -40,6 +52,7 @@ function get_db_connection() {
                     $server_pdo->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET " . DB_CHARSET . " COLLATE utf8mb4_unicode_ci");
                     // Re-try connection
                     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+                    try { $pdo->exec("SET time_zone = '+08:00'"); } catch (Exception $tz_e) { /* non-fatal */ }
                 } catch (PDOException $inner_e) {
                     throw new PDOException("Database connection error: " . $inner_e->getMessage(), (int)$inner_e->getCode());
                 }

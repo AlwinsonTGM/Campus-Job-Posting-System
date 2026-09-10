@@ -63,11 +63,11 @@ if (!function_exists('render_flash')) {
         };
         ?>
         <div class="alert-paper <?= $type_class ?> alert-paper--floating alert alert-dismissible alert-auto-dismiss fade show mb-0" role="alert">
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
                 <i class="bi <?= $icon ?> fs-5 flex-shrink-0"></i>
-                <div class="fw-semibold small text-ink"><?= htmlspecialchars($message) ?></div>
+                <div class="fw-semibold small text-ink flex-grow-1 min-w-0 text-break pe-2"><?= htmlspecialchars($message) ?></div>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close flex-shrink-0 align-self-start" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php
     }
@@ -175,22 +175,22 @@ if (!function_exists('render_job_card')) {
                 $cover_image = $base_url . ltrim($img, '/');
             }
         } else {
-            // Curated domain fallbacks
+            // Curated local offline domain fallbacks
             $cat_name = strtolower($job['category'] ?? '');
             if (str_contains($cat_name, 'tech') || str_contains($cat_name, 'it') || str_contains($cat_name, 'computer')) {
-                $cover_image = 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=900&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-tech.jpg';
             } elseif (str_contains($cat_name, 'lib') || str_contains($cat_name, 'book')) {
-                $cover_image = 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-library.jpg';
             } elseif (str_contains($cat_name, 'admin') || str_contains($cat_name, 'clerk') || str_contains($cat_name, 'office')) {
-                $cover_image = 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-admin.jpg';
             } elseif (str_contains($cat_name, 'sci') || str_contains($cat_name, 'lab')) {
-                $cover_image = 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=800&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-lab.jpg';
             } elseif (str_contains($cat_name, 'tutor') || str_contains($cat_name, 'peer')) {
-                $cover_image = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-tutor.jpg';
             } elseif (str_contains($cat_name, 'sport') || str_contains($cat_name, 'athletic')) {
-                $cover_image = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-sports.jpg';
             } else {
-                $cover_image = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';
+                $cover_image = $base_url . 'assets/img/categories/cat-general.jpg';
             }
         }
         ?>
@@ -205,7 +205,7 @@ if (!function_exists('render_job_card')) {
                          style="object-fit: cover; object-position: center; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);"
                          onmouseover="this.style.transform='scale(1.06)'"
                          onmouseout="this.style.transform='scale(1.0)'"
-                         onerror="this.src='https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop';">
+                         onerror="this.src='<?= $base_url ?>assets/img/categories/cat-general.jpg';">
                 </a>
                 
                 <!-- Subtle Gradient Overlay -->

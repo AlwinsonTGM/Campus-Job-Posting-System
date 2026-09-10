@@ -148,10 +148,8 @@ if ($physical_pdf_path && file_exists($physical_pdf_path)) {
     <title><?= htmlspecialchars($student_name) ?> - Official Student Resume (KLD)</title>
     <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
     <link rel="apple-touch-icon" href="assets/img/favicon.svg">
-    <link rel=preconnect href=https://fonts.googleapis.com>
-    <link rel=preconnect href=https://fonts.gstatic.com crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css">
     <script>
     (function(){
       var t = localStorage.getItem('campus_hire_theme');

@@ -513,7 +513,7 @@ if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
         <head>
             <meta charset="UTF-8">
             <title>Database Migration - KLD Campus Hire</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="../assets/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
             <style>
                 body { background: #fdfbf7; color: #1f2937; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
                 .card-paper { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 30px; }

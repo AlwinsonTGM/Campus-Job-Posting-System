@@ -710,8 +710,15 @@ require_once __DIR__ . '/includes/header.php';
                                 ?>
                                 <div class="featured-job-card <?= ($idx === 0) ? 'is-active' : '' ?>">
                                     <div class="featured-card-photo-wrap">
-                                        <img src="<?= htmlspecialchars($job['image'] ?? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=900&auto=format&fit=crop') ?>"
-                                            alt="<?= htmlspecialchars($job['title']) ?>">
+                                        <?php
+                                        $j_img = $job['image'] ?? 'assets/img/jobs/job-01.jpg';
+                                        $j_img_src = (str_starts_with($j_img, 'http://') || str_starts_with($j_img, 'https://') || str_starts_with($j_img, '/'))
+                                            ? $j_img
+                                            : ($base_url . ltrim($j_img, '/'));
+                                        ?>
+                                        <img src="<?= htmlspecialchars($j_img_src) ?>"
+                                            alt="<?= htmlspecialchars($job['title']) ?>"
+                                            onerror="this.src='<?= $base_url ?>assets/img/jobs/job-01.jpg';">
                                         <div class="featured-card-badges">
                                             <?php if ($is_partner): ?>
                                                 <span class="badge-tag-overlay"
@@ -810,8 +817,15 @@ require_once __DIR__ . '/includes/header.php';
                             <div class="col-md-6 col-lg-3">
                                 <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($u['id']) ?>"
                                     class="update-news-card <?= $offset_class ?>">
-                                    <img src="<?= htmlspecialchars($u['image'] ?? 'assets/img/hero-office.jpg') ?>"
-                                        class="update-news-photo" alt="<?= htmlspecialchars($u['title']) ?>">
+                                    <?php
+                                    $u_img = $u['image'] ?? 'assets/img/hero-office.jpg';
+                                    $u_img_src = (str_starts_with($u_img, 'http://') || str_starts_with($u_img, 'https://') || str_starts_with($u_img, '/'))
+                                        ? $u_img
+                                        : ($base_url . ltrim($u_img, '/'));
+                                    ?>
+                                    <img src="<?= htmlspecialchars($u_img_src) ?>"
+                                        class="update-news-photo" alt="<?= htmlspecialchars($u['title']) ?>"
+                                        onerror="this.src='<?= $base_url ?>assets/img/hero-office.jpg';">
                                     <div class="p-3 d-flex flex-column flex-grow-1">
                                         <span class="eyebrow-badge text-muted-custom mb-1"><?= $u_date ?></span>
                                         <h3 class="h6 fw-bold text-ink mb-0 line-clamp-2">

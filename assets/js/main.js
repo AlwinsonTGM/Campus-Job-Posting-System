@@ -452,6 +452,9 @@ document.addEventListener('DOMContentLoaded', function () {
           results.forEach(function (job) {
             const jobDetailsUrl = `${baseUrl}student/job-details.php?id=${job.id}`;
             const applyUrl = `${baseUrl}student/apply.php?id=${job.id}`;
+            const jobImg = (job.image && (job.image.startsWith('http://') || job.image.startsWith('https://') || job.image.startsWith('/')))
+              ? job.image
+              : `${baseUrl}${job.image ? job.image.replace(/^\//, '') : 'assets/img/jobs/job-01.jpg'}`;
             const isPartnerBadge = job.is_partner
               ? `<span class="badge-tag-overlay p-1 px-2 small me-1" style="background-color: var(--ink); color: #fff; font-size: 10px;"><i class="bi bi-patch-check-fill text-accent"></i> Partner</span>`
               : '';
@@ -459,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
             html += `
               <div class="spotlight-job-item">
                 <a href="${jobDetailsUrl}" class="spotlight-job-link text-decoration-none text-ink">
-                  <img src="${escapeHtml(job.image)}" alt="${escapeHtml(job.title)}" class="spotlight-job-thumb">
+                  <img src="${escapeHtml(jobImg)}" alt="${escapeHtml(job.title)}" class="spotlight-job-thumb" onerror="this.src='${baseUrl}assets/img/jobs/job-01.jpg';">
                   <div class="spotlight-job-info">
                     <div class="d-flex align-items-center gap-1 mb-1">
                       ${isPartnerBadge}

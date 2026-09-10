@@ -96,7 +96,13 @@ require_once __DIR__ . '/includes/header.php';
 
                         <!-- 3. Featured Hero Picture -->
                         <div class="article-hero-wrap">
-                            <img src="<?= htmlspecialchars($article['image'] ?? 'assets/img/hero-office.jpg') ?>" class="article-hero-photo" alt="<?= htmlspecialchars($article['title']) ?>">
+                            <?php
+                            $art_main_img = $article['image'] ?? 'assets/img/hero-office.jpg';
+                            $art_main_src = (str_starts_with($art_main_img, 'http://') || str_starts_with($art_main_img, 'https://') || str_starts_with($art_main_img, '/'))
+                                ? $art_main_img
+                                : ($base_url . ltrim($art_main_img, '/'));
+                            ?>
+                            <img src="<?= htmlspecialchars($art_main_src) ?>" class="article-hero-photo" alt="<?= htmlspecialchars($article['title']) ?>" onerror="this.src='<?= $base_url ?>assets/img/hero-office.jpg';">
                         </div>
 
                         <!-- 4. Structured Article Content -->
@@ -142,8 +148,13 @@ require_once __DIR__ . '/includes/header.php';
                                         $lat_date = date('M j, Y', $lat_time);
                                     ?>
                                         <div class="col-md-4">
-                                            <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($lat_art['id']) ?>" class="update-compact-card">
-                                                <img src="<?= htmlspecialchars($lat_art['image'] ?? 'assets/img/hero-office.jpg') ?>" class="update-compact-thumb" alt="<?= htmlspecialchars($lat_art['title']) ?>">
+                                                <?php
+                                                $lat_img = $lat_art['image'] ?? 'assets/img/hero-office.jpg';
+                                                $lat_img_src = (str_starts_with($lat_img, 'http://') || str_starts_with($lat_img, 'https://') || str_starts_with($lat_img, '/'))
+                                                    ? $lat_img
+                                                    : ($base_url . ltrim($lat_img, '/'));
+                                                ?>
+                                                <img src="<?= htmlspecialchars($lat_img_src) ?>" class="update-compact-thumb" alt="<?= htmlspecialchars($lat_art['title']) ?>" onerror="this.src='<?= $base_url ?>assets/img/hero-office.jpg';">
                                                 <div class="p-3 d-flex flex-column flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                                         <span class="badge rounded-pill bg-light text-dark border small" style="font-size: 0.7rem;"><?= htmlspecialchars($lat_art['category'] ?? 'News') ?></span>

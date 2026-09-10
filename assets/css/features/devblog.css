@@ -72,7 +72,7 @@
 .devblog-track {
   position: relative;
   width: 100%;
-  height: 450px;
+  height: 490px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -82,9 +82,9 @@
 /* Individual DevBlog Card */
 .devblog-card {
   position: absolute;
-  width: 440px;
+  width: 620px;
   max-width: 90vw;
-  height: 425px;
+  height: 470px;
   background-color: var(--white);
   border-radius: var(--radius-card);
   border: 1.5px solid var(--line);
@@ -119,51 +119,51 @@
   pointer-events: auto;
 }
 
-/* 3D State: Left Flanking Card (in the back, transparent) */
+/* 3D State: Left Flanking Card (Utilizing space on the left) */
 .devblog-card.is-prev {
-  transform: perspective(1200px) translateX(-56%) scale(0.86) rotateY(12deg);
+  transform: perspective(1200px) translateX(-65%) scale(0.88) rotateY(10deg);
   z-index: 5;
-  opacity: 0.58;
-  filter: grayscale(35%);
-  box-shadow: 0 12px 28px rgba(22, 22, 22, 0.06);
+  opacity: 0.65;
+  filter: grayscale(20%);
+  box-shadow: 0 16px 36px rgba(22, 22, 22, 0.08);
   pointer-events: auto;
 }
 
 .devblog-card.is-prev:hover {
-  opacity: 0.88;
+  opacity: 0.95;
   filter: grayscale(0%);
-  transform: perspective(1200px) translateX(-53%) scale(0.89) rotateY(7deg);
+  transform: perspective(1200px) translateX(-61%) scale(0.91) rotateY(5deg);
   border-color: var(--ink);
 }
 
-/* 3D State: Right Flanking Card (in the back, transparent) */
+/* 3D State: Right Flanking Card (Utilizing space on the right) */
 .devblog-card.is-next {
-  transform: perspective(1200px) translateX(56%) scale(0.86) rotateY(-12deg);
+  transform: perspective(1200px) translateX(65%) scale(0.88) rotateY(-10deg);
   z-index: 5;
-  opacity: 0.58;
-  filter: grayscale(35%);
-  box-shadow: 0 12px 28px rgba(22, 22, 22, 0.06);
+  opacity: 0.65;
+  filter: grayscale(20%);
+  box-shadow: 0 16px 36px rgba(22, 22, 22, 0.08);
   pointer-events: auto;
 }
 
 .devblog-card.is-next:hover {
-  opacity: 0.88;
+  opacity: 0.95;
   filter: grayscale(0%);
-  transform: perspective(1200px) translateX(53%) scale(0.89) rotateY(-7deg);
+  transform: perspective(1200px) translateX(61%) scale(0.91) rotateY(-5deg);
   border-color: var(--ink);
 }
 
 /* 3D State: Far Outer Hidden Cards (Left and Right trajectories prevent center jumping) */
 .devblog-card.is-hidden-left,
 .devblog-card.is-hidden {
-  transform: perspective(1200px) translateX(-110%) scale(0.72) rotateY(14deg);
+  transform: perspective(1200px) translateX(-128%) scale(0.72) rotateY(12deg);
   z-index: 1;
   opacity: 0;
   pointer-events: none;
 }
 
 .devblog-card.is-hidden-right {
-  transform: perspective(1200px) translateX(110%) scale(0.72) rotateY(-14deg);
+  transform: perspective(1200px) translateX(128%) scale(0.72) rotateY(-12deg);
   z-index: 1;
   opacity: 0;
   pointer-events: none;
@@ -173,7 +173,7 @@
 .devblog-card-photo-wrap {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 185px;
   overflow: hidden;
   background-color: var(--cream);
   flex-shrink: 0;
@@ -481,25 +481,62 @@
   font-size: 0.78rem;
   font-weight: 600;
   padding: 0.35rem 0.65rem;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
+}
+
+/* Extra Wide Desktop Showcase Scaling */
+@media (min-width: 1200px) {
+  .devblog-stage-container {
+    min-height: 580px;
+  }
+  .devblog-track {
+    height: 510px;
+  }
+  .devblog-card {
+    width: 680px;
+    height: 485px;
+  }
+  .devblog-card-photo-wrap {
+    height: 200px;
+  }
+  .devblog-card.is-prev {
+    transform: perspective(1400px) translateX(-68%) scale(0.88) rotateY(10deg);
+    opacity: 0.68;
+  }
+  .devblog-card.is-prev:hover {
+    transform: perspective(1400px) translateX(-64%) scale(0.91) rotateY(5deg);
+    opacity: 0.95;
+  }
+  .devblog-card.is-next {
+    transform: perspective(1400px) translateX(68%) scale(0.88) rotateY(-10deg);
+    opacity: 0.68;
+  }
+  .devblog-card.is-next:hover {
+    transform: perspective(1400px) translateX(64%) scale(0.91) rotateY(-5deg);
+    opacity: 0.95;
+  }
+  .devblog-card.is-hidden-left,
+  .devblog-card.is-hidden {
+    transform: perspective(1400px) translateX(-132%) scale(0.72) rotateY(12deg);
+  }
+  .devblog-card.is-hidden-right {
+    transform: perspective(1400px) translateX(132%) scale(0.72) rotateY(-12deg);
+  }
 }
 
 /* Mobile & Tablet Responsive Adjustments */
 @media (max-width: 991.98px) {
   .devblog-stage-container {
-    min-height: 480px;
+    min-height: 500px;
   }
   .devblog-track {
-    height: 450px;
+    height: 470px;
   }
   .devblog-card {
-    width: 390px;
-    height: 420px;
+    width: min(480px, calc(100vw - 40px));
+    height: 440px;
   }
   .devblog-card-photo-wrap {
-    height: 150px;
+    height: 165px;
   }
   .devblog-card-body {
     padding: 1rem 1.15rem;
@@ -930,8 +967,8 @@ i.bi,
 }
 
 .dev-card-photo-frame {
-  width: 180px;
-  height: 180px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   margin: 0 auto 1.25rem auto;
   border-radius: 14px;
   border: 3px solid var(--white);

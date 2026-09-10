@@ -12,6 +12,7 @@
 @import url('features/chatbot.css?v=1.5');
 @import url('features/print.css?v=1.5');
 @import url('features/dark-overrides.css?v=1.5');
+@import url('features/tech-graph.css?v=1.0');
 
 /* --------------------------------------------------------------------------
    3. SHELL & SHEET CONTAINER (100% Full-Span Edge-to-Edge with No Max-Width)
@@ -775,7 +776,7 @@
   bottom: 0;
   background-image: 
     radial-gradient(ellipse at center, rgba(245, 244, 240, 0.88) 0%, rgba(245, 244, 240, 0.96) 65%, rgba(245, 244, 240, 1) 100%),
-    url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop');
+    url('../img/hero-backdrop.jpg');
   background-size: cover;
   background-position: center 30%;
   opacity: 0.88;
@@ -2032,6 +2033,11 @@ section.py-5.py-lg-6 {
   margin-bottom: 0;
 }
 
+.text-justify {
+  text-align: justify !important;
+  text-justify: inter-word;
+}
+
 .page-head-actions {
   display: flex;
   flex-wrap: wrap;
@@ -3103,6 +3109,37 @@ section.py-5.py-lg-6 {
   margin-bottom: 0 !important;
 }
 
+/* 16.12.2 Flash toast close button: keep in flex flow so it never overlaps text.
+   Bootstrap's .alert-dismissible .btn-close is absolutely positioned (top/right),
+   which lets long wrapping messages slide underneath the X. Override to static. */
+.alert-paper.alert-dismissible {
+  position: relative;
+  align-items: flex-start;
+}
+
+.alert-paper.alert-dismissible .btn-close {
+  position: static !important;
+  flex-shrink: 0 !important;
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  margin-left: auto;
+  padding: 0.5rem !important;
+  width: 1.75rem;
+  height: 1.75rem;
+  background-size: 0.85rem;
+  background-position: center;
+  border-radius: 8px;
+}
+
+.alert-paper.alert-dismissible .btn-close:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.alert-paper > .d-flex {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 @keyframes flashToastSlideIn {
   0% {
     opacity: 0;
@@ -3566,7 +3603,7 @@ section.py-5.py-lg-6 {
   color: var(--accent);
 }
 
-/* 16.20 Developer Card (dev-card: 1:1 r24 photo, name, role pill, one-line scope) */
+/* 16.20 Developer Card (dev-card: fluid photo, name, role tag, 2-col bottom) */
 .dev-card {
   background-color: var(--white);
   border: 1px solid var(--line);
@@ -3587,8 +3624,7 @@ section.py-5.py-lg-6 {
 }
 
 .dev-card-photo {
-  width: 180px;
-  height: 180px;
+  width: 100%;
   max-width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 14px;
@@ -3604,11 +3640,13 @@ section.py-5.py-lg-6 {
 }
 
 .dev-card-name {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
-  margin-bottom: 0.45rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
 }
 
 .dev-card-role {
@@ -3616,53 +3654,62 @@ section.py-5.py-lg-6 {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0.35rem 0.85rem;
+  padding: 0.55rem 0.95rem;
   border-radius: 6px;
   background-color: var(--ink);
   color: var(--white);
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  line-height: 1.3;
-  min-height: 44px;
+  line-height: 1.35;
+  min-height: 46px;
   width: 100%;
-  max-width: 290px;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* Bottom 2-column row: meta (left) + deliverables (right) */
+.dev-card-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.95rem;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.dev-card-section-heading {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
 }
 
 .dev-card-meta {
   font-size: 12.5px;
   color: var(--muted);
-  margin-bottom: 0.75rem;
-  text-align: center;
-  width: 100%;
-}
-
-.dev-card-bio {
-  font-size: 12.5px;
-  color: var(--muted);
-  line-height: 1.45;
-  background-color: var(--cream);
-  padding: 0.75rem 0.85rem;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  width: 100%;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
   text-align: left;
-  margin-bottom: 0.85rem;
+  width: 100%;
+  margin-bottom: 0;
+  line-height: 1.5;
 }
 
 .dev-card-scope {
-  font-size: 13.5px;
+  font-size: 12.5px;
   color: var(--muted);
-  line-height: 1.45;
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  line-height: 1.5;
   width: 100%;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.dev-card-meta li,
+.dev-card-scope li {
+  word-break: break-word;
 }
 
 /* 16.20b Technical Architecture Spec Grid */
