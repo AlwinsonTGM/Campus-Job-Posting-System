@@ -29,7 +29,7 @@ if (!$rate_status['allowed']) {
         'status' => 'error',
         'error' => 'RATE_LIMIT_EXCEEDED',
         'code' => 'RATE_LIMIT_EXCEEDED',
-        'message' => '🛡️ Anti-Spam Active: To keep AI free and fast for all students, requests are limited to ' . ($rate_status['limit_max'] ?? 10) . ' questions/min. Please cooldown for ' . $rate_status['retry_after'] . 's.',
+        'message' => 'Anti-Spam Active: To keep AI free and fast for all students, requests are limited to ' . ($rate_status['limit_max'] ?? 10) . ' questions/min. Please cooldown for ' . $rate_status['retry_after'] . 's.',
         'retry_after' => $rate_status['retry_after'],
         'rate_remaining' => 0,
         'rate_limit_max' => $rate_status['limit_max'] ?? 10

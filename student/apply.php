@@ -6,10 +6,12 @@
 require_once __DIR__ . '/../includes/data-helper.php';
 require_once __DIR__ . '/../includes/auth-check.php';
 
-// Ensure student auth - employers and admins cannot apply
+// Ensure student auth - employers and admins cannot apply.
+// Guests go to the plain login form (never a demo auto-login), then return here.
 if (!is_logged_in()) {
     set_flash('info', 'Please sign in with your student account to submit an application.');
-    header('Location: ../login.php?demo=student');
+    $return_to = 'student/apply.php?id=' . urlencode((string)($_GET['id'] ?? ($_GET['job_id'] ?? '')));
+    header('Location: ../login.php?next=' . urlencode($return_to));
     exit;
 }
 
@@ -222,7 +224,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <h3 class="card-paper-title fs-5 mb-0">
                                             <i class="bi bi-calendar-week text-accent me-2"></i> 3. Weekly Shift Availability Matrix <span class="text-danger">*</span>
                                         </h3>
-                                        <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/week</span>
+                                        <span class="chip" style="font-size: 10px;">&le; 20 hrs/week</span>
                                     </div>
                                     <p class="small text-muted-custom mb-3">
                                         Check all weekly time slots when you are free from academic lectures and can perform on-campus duty:

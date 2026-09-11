@@ -45,9 +45,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <span class="fw-extrabold text-ink fs-5 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></span>
                             </div>
 
-                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
-                                <i class="bi bi-key-fill text-accent"></i> Account Recovery
-                            </span>
+                            <span class="eyebrow-badge text-muted-custom">Account Recovery</span>
 
                             <h2 class="h3 fw-bold text-ink mb-3">
                                 Regain Access to Your Portal
@@ -83,7 +81,7 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="p-3 bg-white rounded-4 border border-line mt-3">
                             <span class="small fw-bold text-ink d-block mb-1">Need Immediate Assistance?</span>
                             <p class="small text-muted-custom mb-0" style="font-size: 11.5px;">
-                                Contact Career Services at <code>support@campus-hire.edu</code> or visit Room 201 Admin Building.
+                                Contact Career Services at <code>support@kld.edu.ph</code> or visit Room 201 Admin Building.
                             </p>
                         </div>
 
@@ -118,7 +116,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <label class="form-label" for="reset-email">Institutional Email Address</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" name="email" id="reset-email" class="form-control" placeholder="username@campus-hire.edu" value="<?= htmlspecialchars($email) ?>" required autofocus>
+                                    <input type="email" name="email" id="reset-email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email) ?>" required autofocus>
                                 </div>
                                 <div class="form-text small text-muted-custom mt-1" style="font-size: 12px;">
                                     We will dispatch a secure password reset link to this address.

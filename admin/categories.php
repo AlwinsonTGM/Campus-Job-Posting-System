@@ -489,35 +489,35 @@ require_once __DIR__ . '/../includes/header.php';
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-tech.jpg" 
-                                            data-icon="bi-laptop">💻 Tech / IT</button>
+                                            data-icon="bi-laptop"><i class="bi bi-laptop me-1"></i>Tech / IT</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-library.jpg" 
-                                            data-icon="bi-book">📚 Library</button>
+                                            data-icon="bi-book"><i class="bi bi-book me-1"></i>Library</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-admin.jpg" 
-                                            data-icon="bi-folder2-open">🗄️ Office / Admin</button>
+                                            data-icon="bi-folder2-open"><i class="bi bi-folder2-open me-1"></i>Office / Admin</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-lab.jpg" 
-                                            data-icon="bi-radioactive">🔬 Science Lab</button>
+                                            data-icon="bi-radioactive"><i class="bi bi-radioactive me-1"></i>Science Lab</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-tutor.jpg" 
-                                            data-icon="bi-mortarboard">🎓 Peer Tutor</button>
+                                            data-icon="bi-mortarboard"><i class="bi bi-mortarboard me-1"></i>Peer Tutor</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-sports.jpg" 
-                                            data-icon="bi-trophy">🏆 Athletics</button>
+                                            data-icon="bi-trophy"><i class="bi bi-trophy me-1"></i>Athletics</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-media.jpg" 
-                                            data-icon="bi-camera-reels">🎨 Media / Arts</button>
+                                            data-icon="bi-camera-reels"><i class="bi bi-camera-reels me-1"></i>Media / Arts</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="new" 
                                             data-url="assets/img/categories/cat-cafe.jpg" 
-                                            data-icon="bi-cup-hot">☕ Cafe &amp; Dining</button>
+                                            data-icon="bi-cup-hot"><i class="bi bi-cup-hot me-1"></i>Cafe &amp; Dining</button>
                                     </div>
                                 </div>
 
@@ -624,35 +624,35 @@ require_once __DIR__ . '/../includes/header.php';
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-tech.jpg" 
-                                            data-icon="bi-laptop">💻 Tech / IT</button>
+                                            data-icon="bi-laptop"><i class="bi bi-laptop me-1"></i>Tech / IT</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-library.jpg" 
-                                            data-icon="bi-book">📚 Library</button>
+                                            data-icon="bi-book"><i class="bi bi-book me-1"></i>Library</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-admin.jpg" 
-                                            data-icon="bi-folder2-open">🗄️ Office / Admin</button>
+                                            data-icon="bi-folder2-open"><i class="bi bi-folder2-open me-1"></i>Office / Admin</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-lab.jpg" 
-                                            data-icon="bi-radioactive">🔬 Science Lab</button>
+                                            data-icon="bi-radioactive"><i class="bi bi-radioactive me-1"></i>Science Lab</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-tutor.jpg" 
-                                            data-icon="bi-mortarboard">🎓 Peer Tutor</button>
+                                            data-icon="bi-mortarboard"><i class="bi bi-mortarboard me-1"></i>Peer Tutor</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-sports.jpg" 
-                                            data-icon="bi-trophy">🏆 Athletics</button>
+                                            data-icon="bi-trophy"><i class="bi bi-trophy me-1"></i>Athletics</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-media.jpg" 
-                                            data-icon="bi-camera-reels">🎨 Media / Arts</button>
+                                            data-icon="bi-camera-reels"><i class="bi bi-camera-reels me-1"></i>Media / Arts</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 preset-pill-btn" style="font-size: 11px;" 
                                             data-target="edit" 
                                             data-url="assets/img/categories/cat-cafe.jpg" 
-                                            data-icon="bi-cup-hot">☕ Cafe &amp; Dining</button>
+                                            data-icon="bi-cup-hot"><i class="bi bi-cup-hot me-1"></i>Cafe &amp; Dining</button>
                                     </div>
                                 </div>
 

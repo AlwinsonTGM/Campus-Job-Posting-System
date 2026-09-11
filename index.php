@@ -140,12 +140,8 @@ require_once __DIR__ . '/includes/header.php';
                                             </button>
                                         </div>
 
-                                        <!-- Speech Bubble Footer with model attribution, expand button & next tip button -->
-                                        <div class="speech-bubble-footer">
-                                            <span class="speech-hint-label" id="speech-footer-label">
-                                                <i class="bi bi-stars text-accent"></i>
-                                                <span id="speech-footer-model-text">AI Companion</span>
-                                            </span>
+                                        <!-- Speech Bubble Footer with expand button & next tip button -->
+                                        <div class="speech-bubble-footer justify-content-end">
                                             <div class="speech-footer-actions d-flex align-items-center gap-2">
                                                 <button type="button" id="speech-fullscreen-btn" class="speech-fullscreen-btn" title="Open Fullscreen Studio" aria-label="Expand Fullscreen Studio">
                                                     <i class="bi bi-arrows-fullscreen"></i>
@@ -623,10 +619,7 @@ require_once __DIR__ . '/includes/header.php';
 
                         <div class="row align-items-center g-4 position-relative z-2">
                             <div class="col-lg-4">
-                                <span
-                                    class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-white text-dark mb-3">
-                                    <i class="bi bi-bar-chart-fill text-accent"></i> Our Impact
-                                </span>
+                                <span class="eyebrow-badge text-white-50">Our Impact</span>
                                 <h2 class="h1 fw-extrabold text-white mb-2">Together, We're Building Careers</h2>
                                 <p class="text-white-50 small mb-0">Live data synchronized from active university
                                     department requisitions.</p>
@@ -902,10 +895,7 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <div class="position-relative z-2 max-w-640 mx-auto" style="max-width: 620px;">
-                            <span
-                                class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle mb-3">
-                                <i class="bi bi-lightning-charge-fill text-accent"></i> TAKE ACTION
-                            </span>
+                            <span class="eyebrow-badge text-muted-custom">Take Action</span>
                             <h2 class="h1 fw-extrabold text-ink mb-3">Join Us In Shaping Your Future</h2>
                             <p class="text-muted-custom mb-4">
                                 Gain practical on-campus workplace experience, earn tuition allowances, and expand your
@@ -940,15 +930,6 @@ require_once __DIR__ . '/includes/header.php';
                         <div>
                             <div class="d-flex align-items-center gap-2">
                                 <h5 id="fullscreen-modal-title" class="fs-bot-title mb-0">Campus AI Assistant</h5>
-                                <span class="fs-intent-badge" id="fs-intent-badge">CAMPUS FAQ</span>
-                            </div>
-                            <div class="fs-bot-sub d-flex align-items-center gap-2 mt-1">
-                                <span class="fs-model-tag" id="fs-model-tag">
-                                    <i class="bi bi-cpu-fill text-accent"></i>
-                                    <span id="fs-model-name">AI Companion</span>
-                                </span>
-                                <span class="text-muted small">&bull;</span>
-                                <span class="text-muted small">Student Career Copilot</span>
                             </div>
                         </div>
                     </div>

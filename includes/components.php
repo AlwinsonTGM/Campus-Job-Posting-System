@@ -9,13 +9,14 @@ if (!function_exists('render_page_head')) {
      * Renders standardized inner-page header
      */
     function render_page_head($eyebrow, $title, $lead = '', $actionsHtml = '', $eyebrowClass = '') {
-        $badgeClass = !empty($eyebrowClass) ? $eyebrowClass : 'badge rounded-pill d-inline-flex align-items-center gap-1 bg-success text-white shadow-sm text-wrap text-start lh-sm py-2 px-3 border-0';
+        // Plain-text kicker only — never a badge pill above h1 (per AGENTS.md badges-for-data-only rule).
+        $badgeClass = !empty($eyebrowClass) ? $eyebrowClass : 'eyebrow-badge text-muted-custom';
         ?>
         <div class="page-head reveal-fade-rise">
             <div class="page-head-content">
                 <?php if (!empty($eyebrow)): ?>
                     <div class="mb-2">
-                        <span class="<?= htmlspecialchars($badgeClass) ?>" style="max-width: 100%; white-space: normal; font-size: 12px; font-weight: 600; letter-spacing: 0.02em;">
+                        <span class="<?= htmlspecialchars($badgeClass) ?>">
                             <?= $eyebrow ?>
                         </span>
                     </div>
@@ -209,40 +210,16 @@ if (!function_exists('render_job_card')) {
                 </a>
                 
                 <!-- Subtle Gradient Overlay -->
-                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none" style="background: linear-gradient(180deg, rgba(17, 24, 39, 0.55) 0%, rgba(17, 24, 39, 0.05) 45%, rgba(17, 24, 39, 0.72) 100%);"></div>
+                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none" style="background: linear-gradient(180deg, rgba(17, 24, 39, 0.35) 0%, rgba(17, 24, 39, 0.0) 40%, rgba(17, 24, 39, 0.35) 100%);"></div>
 
-                <!-- Top Badges Overlay -->
-                <div class="position-absolute top-0 start-0 end-0 p-3 d-flex justify-content-between align-items-start pointer-events-none">
-                    <?php if ($is_partner): ?>
-                        <span class="badge rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-1 px-2 py-1 fw-bold" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.95); color: #0d3b2e;">
-                            <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
-                        </span>
-                    <?php else: ?>
-                        <span class="badge rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-1 px-2 py-1 fw-bold" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.95); color: #0d3b2e;">
-                            <i class="bi bi-bank text-accent"></i> University Office
-                        </span>
-                    <?php endif; ?>
-
-                    <?php if (!empty($job['image']) || !empty($job['is_featured'])): ?>
+                <!-- Single Overlay: Featured ribbon only (1-overlay-max rule) -->
+                <?php if (!empty($job['image']) || !empty($job['is_featured'])): ?>
+                <div class="position-absolute top-0 start-0 end-0 p-3 d-flex justify-content-end align-items-start pointer-events-none">
                         <span class="badge rounded-pill shadow-sm border border-white-50 d-inline-flex align-items-center gap-1 px-2 py-1 fw-semibold text-white" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(17, 24, 39, 0.75);">
                             <i class="bi bi-stars text-warning"></i> Featured
                         </span>
-                    <?php else: ?>
-                        <span class="badge rounded-pill shadow-sm border border-white-50 d-inline-flex align-items-center gap-1 px-2 py-1 fw-semibold text-white" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(17, 24, 39, 0.75);">
-                            <i class="bi bi-geo-alt-fill text-white-50"></i> <?= htmlspecialchars($job['work_setup'] ?? 'On-Campus') ?>
-                        </span>
-                    <?php endif; ?>
                 </div>
-
-                <!-- Bottom Badges Overlay: Category & Pay Rate -->
-                <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex justify-content-between align-items-end pointer-events-none">
-                    <span class="badge rounded-pill text-white border border-white-50 px-2 py-1 text-truncate" style="font-size: 11px; max-width: 170px; background: rgba(0, 0, 0, 0.72) !important;">
-                        <i class="bi bi-tag-fill text-accent me-1"></i><?= htmlspecialchars($job['category'] ?? 'Campus Role') ?>
-                    </span>
-                    <span class="badge rounded-pill text-white border border-white-50 px-2 py-1 fw-bold" style="font-size: 11px; background: rgba(13, 59, 46, 0.9) !important;">
-                        <?= htmlspecialchars($pay_raw) ?>
-                    </span>
-                </div>
+                <?php endif; ?>
             </div>
 
             <!-- 2. Card Body Content -->
@@ -264,6 +241,21 @@ if (!function_exists('render_job_card')) {
                         <span class="d-inline-flex align-items-center gap-1 text-truncate">
                             <i class="bi bi-geo-alt"></i>
                             <span><?= htmlspecialchars($location) ?></span>
+                        </span>
+                    </div>
+                    <!-- Plain metadata row (moved off photo): employer type, category, pay -->
+                    <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small mt-2">
+                        <span class="d-inline-flex align-items-center gap-1">
+                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill' : 'bi-bank' ?>"></i>
+                            <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
+                        </span>
+                        <span>&bull;</span>
+                        <span class="d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-tag"></i><?= htmlspecialchars($job['category'] ?? 'Campus Role') ?>
+                        </span>
+                        <span>&bull;</span>
+                        <span class="d-inline-flex align-items-center gap-1 fw-semibold text-ink">
+                            <i class="bi bi-cash-coin"></i><?= htmlspecialchars($pay_raw) ?>
                         </span>
                     </div>
                 </div>

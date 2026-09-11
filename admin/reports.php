@@ -180,7 +180,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </h3>
                             <p class="text-muted-custom small mb-0">Institutional compliance, vacancy quotas, and hiring ratios</p>
                         </div>
-                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle">Term: 1st Sem 2026–2027</span>
+                        <span class="small text-muted-custom">Term: 1st Sem 2026–2027</span>
                     </div>
 
                     <div class="table-responsive">
@@ -224,7 +224,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <span class="text-muted-custom"><?= $quota ?> slots</span>
                                             </td>
                                             <td data-label="Filled Positions">
-                                                <span class="<?= $filled >= $quota ? 'badge-status--accepted' : ($filled > 0 ? 'badge-status--pending' : 'chip') ?>"><?= $filled ?> / <?= $quota ?></span>
+                                                <span class="chip"><?= $filled ?> / <?= $quota ?></span>
                                             </td>
                                             <td data-label="Placement Ratio">
                                                 <div class="d-flex align-items-center gap-2" style="min-width: 120px;">
@@ -236,13 +236,13 @@ require_once __DIR__ . '/../includes/header.php';
                                             </td>
                                             <td class="text-end pe-4" data-label="Compliance">
                                                 <?php if ($filled > $quota): ?>
-                                                    <span class="badge-status--declined"><i class="bi bi-exclamation-triangle me-1"></i>Quota Exceeded</span>
-                                                <?php elseif ($filled === $quota): ?>
-                                                    <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>100% Filled</span>
+                                                    <span class="cell-flag cell-flag--bad"><span class="cell-dot"></span>Quota exceeded</span>
+                                                <?php elseif ($filled >= $quota): ?>
+                                                    <span class="cell-flag cell-flag--ok"><span class="cell-dot"></span>100% filled</span>
                                                 <?php elseif ($filled > 0): ?>
-                                                    <span class="badge-status--pending"><i class="bi bi-clock-history me-1"></i>In Progress</span>
+                                                    <span class="cell-flag cell-flag--warn"><span class="cell-dot"></span>In progress</span>
                                                 <?php else: ?>
-                                                    <span class="chip" style="font-size: 11px;"><i class="bi bi-dash-circle me-1"></i>Open Quota</span>
+                                                    <span class="cell-flag cell-flag--idle"><span class="cell-dot"></span>Open quota</span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>

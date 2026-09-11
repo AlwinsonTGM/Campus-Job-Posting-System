@@ -214,15 +214,6 @@ require_once __DIR__ . '/includes/header.php';
                         <div>
                             <div class="d-flex align-items-center gap-2">
                                 <h5 id="fullscreen-modal-title" class="fs-bot-title mb-0">Campus AI Assistant</h5>
-                                <span class="fs-intent-badge" id="fs-intent-badge">CAMPUS FAQ</span>
-                            </div>
-                            <div class="fs-bot-sub d-flex align-items-center gap-2 mt-1">
-                                <span class="fs-model-tag" id="fs-model-tag">
-                                    <i class="bi bi-cpu-fill text-accent"></i>
-                                    <span id="fs-model-name">AI Companion</span>
-                                </span>
-                                <span class="text-muted small">&bull;</span>
-                                <span class="text-muted small">Student Career Copilot</span>
                             </div>
                         </div>
                     </div>

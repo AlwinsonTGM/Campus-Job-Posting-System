@@ -136,7 +136,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <h3 class="card-paper-title fs-5 mb-0">
                                     <i class="bi bi-calendar-week text-accent me-2"></i> 3. Candidate Shift Availability
                                 </h3>
-                                <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/week</span>
+                                <span class="chip" style="font-size: 10px;">&le; 20 hrs/week</span>
                             </div>
                             <p class="small text-muted-custom mb-3">
                                 Periods when the student is free from academic lectures and can perform on-campus assistantship duty:

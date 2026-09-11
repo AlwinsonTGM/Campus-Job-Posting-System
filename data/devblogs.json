@@ -1,5 +1,41 @@
 [
     {
+        "id": "day-14",
+        "sprint_number": "14",
+        "sprint_badge": "DAY 14 · TRUST HARDENING & PAPER DISCIPLINE",
+        "title": "Sealing Demo Backdoors, Unifying Table Flags & Shipping the Accepted-Student Flow",
+        "date": "September 11, 2026",
+        "read_time": "8 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Gated the passwordless demo hooks to loopback-only, fixed an Apply redirect that silently signed guests in as another student, replaced rainbow table pills with a uniform dot-flag system, cut the job-card photo to a single overlay, and shipped an opt-in withdraw-others flow for accepted students — every change proven with curl traces and Playwright screenshots.",
+        "tags": [
+            "Demo Backdoor Gating",
+            "Return-To Auth",
+            "Cell-Flag System",
+            "Accept Flow",
+            "De-Pilling",
+            "Playwright Proof"
+        ],
+        "cover_image": "assets/img/devblog/day-14.jpg",
+        "full_story": "<p class='lead text-ink fw-semibold'>September 11 was a trust-and-clarity sprint: every path that could silently sign a visitor in as someone else got sealed, tables and cards were stripped of pill clutter, and accepted students finally got a dignified way to release their other pending applications — each change proven with curl traces and Playwright screenshots.</p><p>A production audit with fresh eyes surfaced an uncomfortable truth: our beloved demo conveniences had leaked into user-facing flows. The E2E reset and passwordless login hooks in <code class='bg-cream text-ink px-1 rounded'>login.php</code> answered to anyone who asked, and worse, the guest Apply redirect pointed at <code class='bg-cream text-ink px-1 rounded'>login.php?demo=student</code> — so a visitor who clicked Apply Now on the homepage woke up signed in as Juan Dela Cruz. I gated both hooks to loopback-only plus a non-production <code class='bg-cream text-ink px-1 rounded'>APP_ENV</code> with a strict student/employer/admin role whitelist, and rerouted guests to the plain login form carrying a whitelisted <code class='bg-cream text-ink px-1 rounded'>next</code> return-to target (relative portal paths only — an evil.com payload was curl-tested and rejected). After a manual sign-in, students land back on the exact requisition they wanted.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-palette-fill text-accent me-2'></i>Paper Discipline: Pills, Emojis & Phantom Domains</h5><p>The shared <code class='bg-cream text-ink px-1 rounded'>render_page_head()</code> helper defaulted every page title to a green badge pill, in direct violation of our own badges-for-data-only law — it now emits a plain-text kicker, and the homepage and forgot-password pills followed it into eyebrow text. All eight category preset emojis (duplicated across both admin modals) became proper Bootstrap icons, all twelve Campus AI reply templates were de-emojied with the JSON API contract returned to plain text, and six stray <code class='bg-cream text-ink px-1 rounded'>campus-hire.edu</code> contacts were unified to the real <code class='bg-cream text-ink px-1 rounded'>kld.edu.ph</code> domain. The CAMPUS FAQ badge and its siblings (AI Companion, Student Career Copilot) were purged from both fullscreen chatbot modals and the speech bubble, the redundant green dark-mode switch in Settings was deleted in favor of the segmented control, and the duplicate Back to Vacancies button on job details was removed.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-table text-accent me-2'></i>Tables: One Box, One Dot</h5><p>The analytics table swapped pill classes per cell value, so IN PROGRESS rendered visibly larger than Open Quota and a 1/5 fill count looked nothing like its 0/6 neighbors. The new <code class='bg-cream text-ink px-1 rounded'>.cell-flag</code> system gives every state one identical 28px box — ink text, hairline border — with meaning carried only by a 7px status dot (filled, in-progress, over-quota, open), all tokens carrying dark-mode values. Fill counts are now permanently neutral chips since the ratio bar and the flag already tell the story, the decorative Term pill became plain text, and the job-card photo dropped from four overlay pills to a single Featured ribbon with employer type, category, and pay relocated to a clean body metadata row.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-check-circle-fill text-accent me-2'></i>Accepted-Student Flow: Prompt, Never Force</h5><p>No auto-withdraw existed — accepting a student only bumped slot counters and sent a notification. I deliberately chose prompt-to-withdraw over silent auto-withdraw: students may legitimately stack OJT with part-time work, and silent deletes invite RA 10173 disputes and confused supervisors. A CSRF-guarded <code class='bg-cream text-ink px-1 rounded'>withdraw_others</code> handler (pending-only, ownership-checked, confirm-guarded) powers a congratulations banner that persists across logins until the record is clean. I staged a demo Juan with one acceptance and two pending applications, captured the screenshots, then deleted the demo rows and reverted — with the database verified byte-identical to its prior state.</p>",
+        "key_takeaways": [
+            "Gated ?reset/?demo hooks to loopback + non-production with role whitelisting, and fixed a guest Apply redirect that auto-logged visitors in as another student.",
+            "Shipped a whitelisted next return-to flow so guests land back on their exact requisition after a manual sign-in, with open redirects curl-tested shut.",
+            "Replaced per-value table pills with a uniform .cell-flag dot system and cut job-card photos to a single Featured overlay.",
+            "Built an opt-in withdraw-others flow for accepted students with CSRF + ownership guards, proven via Playwright screenshots with full demo-data cleanup."
+        ],
+        "tech_stack": [
+            "Loopback-Gated Test Hooks",
+            "Open-Redirect Whitelisting",
+            "CSS Status Tokens",
+            "Paper Dot Flags",
+            "CSRF-Guarded Mutations",
+            "Playwright E2E Screenshots"
+        ]
+    },
+    {
         "id": "day-13",
         "sprint_number": "13",
         "sprint_badge": "DAY 13 · DUAL PERSONAS & CYBER GLITCH ENGINE",

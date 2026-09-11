@@ -139,7 +139,7 @@ require_once __DIR__ . '/includes/header.php';
                                     <hr class="border-line my-2">
                                     <div class="small text-muted-custom d-flex flex-column gap-1">
                                         <div><i class="bi bi-geo-alt text-accent me-2"></i><strong>Location:</strong> Room 201, Student Affairs &amp; Administration Building</div>
-                                        <div><i class="bi bi-envelope text-accent me-2"></i><strong>Official Email:</strong> dataprivacy@campus-hire.edu</div>
+                                        <div><i class="bi bi-envelope text-accent me-2"></i><strong>Official Email:</strong> dataprivacy@kld.edu.ph</div>
                                         <div><i class="bi bi-telephone text-accent me-2"></i><strong>Campus Trunkline:</strong> (02) 8920-1000 loc. 105</div>
                                     </div>
                                 </div>
@@ -208,7 +208,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <p class="small text-muted-custom mb-3">
                                     Our Data Protection Officer handles statutory inquiries, corrections, and consent management.
                                 </p>
-                                <a href="mailto:dataprivacy@campus-hire.edu" class="btn-pill-outline w-100 d-inline-flex align-items-center justify-content-center gap-2 small">
+                                <a href="mailto:dataprivacy@kld.edu.ph" class="btn-pill-outline w-100 d-inline-flex align-items-center justify-content-center gap-2 small">
                                     <i class="bi bi-envelope"></i> Email DPO Team
                                 </a>
                             </div>

@@ -428,7 +428,7 @@ require_once __DIR__ . '/includes/header.php';
                                             <h4 class="card-paper-title fs-6 mb-0">
                                                 <i class="bi bi-calendar-week text-accent me-2"></i> Weekly Free Shift Availability <span class="text-danger">*</span>
                                             </h4>
-                                            <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/wk</span>
+                                            <span class="chip flex-shrink-0" style="font-size: 10px;">&le; 20 hrs/wk</span>
                                         </div>
                                         <p class="small text-muted-custom mb-3">
                                             Keep this matrix up to date with your class-free periods so department supervisors can assign duty shifts:
@@ -551,12 +551,6 @@ require_once __DIR__ . '/includes/header.php';
                                             <i class="bi bi-moon-fill"></i> Dark
                                         </button>
                                     </div>
-                                </div>
-                                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-0">
-                                    <input class="form-check-input flex-shrink-0 ms-0 mt-0" type="checkbox" id="themeModeSwitch">
-                                    <label class="form-check-label small text-ink cursor-pointer mb-0" for="themeModeSwitch">
-                                        Dark mode
-                                    </label>
                                 </div>
                             </div>
 

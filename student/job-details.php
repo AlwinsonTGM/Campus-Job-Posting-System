@@ -169,7 +169,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Weekly Duty Limit:</span>
-                                    <span class="badge-status--accepted" style="font-size: 10px;">&le; 20 hrs/week</span>
+                                    <span class="chip" style="font-size: 10px;">&le; 20 hrs/week</span>
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center">
@@ -269,10 +269,6 @@ require_once __DIR__ . '/../includes/header.php';
                                     </a>
                                 <?php endif; ?>
                             <?php endif; ?>
-
-                            <a href="jobs.php" class="btn-pill-outline btn-pill-sm w-100 text-center">
-                                <i class="bi bi-arrow-left"></i> Back to Vacancies
-                            </a>
                         </div>
                     </div>
                 </div>

@@ -6,8 +6,20 @@
 require_once __DIR__ . '/includes/data-helper.php';
 require_once __DIR__ . '/includes/auth-check.php';
 
-// Handle Datastore Reset from URL params (used by E2E test suites & demo fixtures)
+// Test hooks (?reset / ?demo) — LOCAL-ONLY. Blocked in production and for remote clients.
+// E2E suite runs on 127.0.0.1 so tests keep working. Set APP_ENV=production in prod .env to hard-close.
+$__app_env = strtolower(trim((string)(getenv('APP_ENV') ?: '')));
+$__is_production = ($__app_env === 'production' || $__app_env === 'prod');
+$__remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
+$__is_loopback = in_array($__remote_addr, ['127.0.0.1', '::1', '::ffff:127.0.0.1'], true);
+$__test_hooks_enabled = !$__is_production && $__is_loopback;
+
+// Handle Datastore Reset from URL params (E2E / local demo fixtures only)
 if (isset($_GET['reset'])) {
+    if (!$__test_hooks_enabled) {
+        http_response_code(403);
+        exit('Forbidden');
+    }
     if (session_status() === PHP_SESSION_ACTIVE) {
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {
@@ -27,9 +39,17 @@ if (isset($_GET['reset'])) {
     exit;
 }
 
-// Handle Quick Demo Login from URL params
+// Handle Quick Demo Login from URL params (local / E2E only, role-whitelisted)
 if (isset($_GET['demo'])) {
+    if (!$__test_hooks_enabled) {
+        http_response_code(403);
+        exit('Forbidden');
+    }
     $role = $_GET['demo'];
+    if (!in_array($role, ['student', 'employer', 'admin'], true)) {
+        header('Location: login.php');
+        exit;
+    }
     $user = quick_login($role);
     if ($user) {
         set_flash('success', "Welcome back, {$user['name']}! Signed in as " . ucfirst($role) . '.');
@@ -40,10 +60,21 @@ if (isset($_GET['demo'])) {
     }
 }
 
+// Safe return-to target after manual sign-in (relative portal paths only — no open redirects).
+$next_raw = (string)($_POST['next'] ?? ($_GET['next'] ?? ''));
+$safe_next = '';
+if ($next_raw !== '' && strpos($next_raw, '..') === false && strpos($next_raw, ':') === false && strpos($next_raw, '//') === false) {
+    if (preg_match('#^(student|employer|admin)/[A-Za-z0-9/_\-.?=&%]+$#', $next_raw)) {
+        $safe_next = $next_raw;
+    }
+}
+
 // Check if already logged in
 if (is_logged_in()) {
     $u = get_logged_user();
-    if ($u['role'] === 'student') header('Location: student/dashboard.php');
+    $role_path = ($u['role'] ?? '') . '/';
+    if ($safe_next !== '' && strpos($safe_next, $role_path) === 0) header('Location: ' . $safe_next);
+    elseif ($u['role'] === 'student') header('Location: student/dashboard.php');
     elseif ($u['role'] === 'employer') header('Location: employer/dashboard.php');
     elseif ($u['role'] === 'admin') header('Location: admin/reports.php');
     exit;
@@ -58,7 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($res['success']) {
         $u = $res['user'];
         set_flash('success', "Welcome back, {$u['name']}!");
-        if ($u['role'] === 'student') header('Location: student/dashboard.php');
+        if ($safe_next !== '') header('Location: ' . $safe_next);
+        elseif ($u['role'] === 'student') header('Location: student/dashboard.php');
         elseif ($u['role'] === 'employer') header('Location: employer/dashboard.php');
         elseif ($u['role'] === 'admin') header('Location: admin/reports.php');
         exit;
@@ -171,13 +203,16 @@ require_once __DIR__ . '/includes/header.php';
 
 
                         <form action="login.php" method="POST" class="form-paper">
+                            <?php if ($safe_next !== ''): ?>
+                                <input type="hidden" name="next" value="<?= htmlspecialchars($safe_next) ?>">
+                            <?php endif; ?>
                             
                             <!-- Email Input -->
                             <div class="mb-3">
                                 <label class="form-label" for="login-email">Institutional Email Address</label>
                                 <div class="input-group input-group-integrated">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" name="email" id="login-email" class="form-control" placeholder="username@campus-hire.edu" required autofocus>
+                                    <input type="email" name="email" id="login-email" class="form-control" placeholder="username@kld.edu.ph" required autofocus>
                                 </div>
                             </div>
 

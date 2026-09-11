@@ -40,6 +40,33 @@ if (isset($_POST['withdraw_id'])) {
     exit;
 }
 
+// Handle withdraw-all-others (accepted student tidying up remaining pending apps)
+if (isset($_POST['withdraw_others'])) {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        set_flash('danger', 'Security validation failed (invalid CSRF session token). Please refresh and try again.');
+        header('Location: my-applications.php');
+        exit;
+    }
+
+    $all = get_applications($user['id'] ?? 0);
+    $withdrawn = 0;
+    foreach ($all as $a) {
+        if (!in_array(strtolower($a['status'] ?? ''), ['pending', 'pending review'])) {
+            continue;
+        }
+        if ((int)$a['student_id'] !== (int)($user['id'] ?? 0)) {
+            continue;
+        }
+        delete_application((int)$a['id'], $user['id'] ?? null);
+        $withdrawn++;
+    }
+    set_flash('success', $withdrawn > 0
+        ? "Congratulations again! {$withdrawn} pending application" . ($withdrawn === 1 ? ' was' : 's were') . " withdrawn, freeing slots for fellow students."
+        : 'No pending applications left to withdraw.');
+    header('Location: my-applications.php');
+    exit;
+}
+
 $my_apps = get_applications($user['id'] ?? 0);
 $filter_status = trim($_GET['status'] ?? '');
 
@@ -104,6 +131,39 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <!-- Applications List -->
+                <?php
+                $accepted_apps = array_values(array_filter($my_apps, function($a) {
+                    return in_array(strtolower($a['status'] ?? ''), ['accepted', 'accepted / hired']);
+                }));
+                $withdrawable_others = array_values(array_filter($my_apps, function($a) {
+                    return in_array(strtolower($a['status'] ?? ''), ['pending', 'pending review']);
+                }));
+                ?>
+                <?php if (!empty($accepted_apps) && !empty($withdrawable_others)): ?>
+                    <div class="card-paper p-4 mb-4 border border-accent bg-surface">
+                        <div class="d-flex align-items-start gap-3 flex-wrap">
+                            <div class="faq-help-icon-box m-0 flex-shrink-0">
+                                <i class="bi bi-check-circle-fill text-accent"></i>
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 240px;">
+                                <h3 class="card-paper-title fs-5 mb-1">Congratulations, <?= htmlspecialchars($user['name'] ?? 'Student') ?>!</h3>
+                                <p class="small text-muted-custom mb-3">
+                                    You have been accepted for <strong class="text-ink"><?= htmlspecialchars($accepted_apps[0]['job_title'] ?? 'a campus role') ?></strong>.
+                                    You still have <strong class="text-ink"><?= count($withdrawable_others) ?> pending application<?= count($withdrawable_others) === 1 ? '' : 's' ?></strong>.
+                                    Withdrawing frees slots for fellow students and keeps your record clean.
+                                </p>
+                                <form action="my-applications.php" method="POST" class="d-flex flex-wrap gap-2" onsubmit="return confirm('Withdraw all <?= count($withdrawable_others) ?> pending applications? This cannot be undone.');">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+                                    <input type="hidden" name="withdraw_others" value="1">
+                                    <button type="submit" class="btn-pill btn-pill-sm">
+                                        <i class="bi bi-check2-all"></i> Withdraw all <?= count($withdrawable_others) ?> pending
+                                    </button>
+                                    <a href="#applications-list" class="btn-pill-outline btn-pill-sm text-decoration-none">Review them below</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <?php if (empty($my_apps)): ?>
                     <?php
                     render_empty_state(
@@ -115,7 +175,7 @@ require_once __DIR__ . '/../includes/header.php';
                     );
                     ?>
                 <?php else: ?>
-                    <div class="d-flex flex-column gap-4 mb-5">
+                    <div class="d-flex flex-column gap-4 mb-5" id="applications-list">
                         <?php foreach ($my_apps as $app): 
                             $is_pending = in_array(strtolower($app['status'] ?? ''), ['pending', 'pending review']);
                         ?>

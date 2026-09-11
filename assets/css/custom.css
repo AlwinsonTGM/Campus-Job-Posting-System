@@ -2590,81 +2590,124 @@ section.py-5.py-lg-6 {
 .badge-status--pending {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  background-color: var(--st-pending-bg);
-  color: #925400;
+  background: transparent;
+  color: var(--ink);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border: 1px solid var(--st-pending);
+  border: 1px solid var(--line);
   white-space: nowrap;
 }
+
+.badge-status--pending i { color: var(--st-pending); }
 
 .badge-status--review {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  background-color: var(--st-review-bg);
-  color: #125ea8;
+  background: transparent;
+  color: var(--ink);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border: 1px solid var(--st-review);
+  border: 1px solid var(--line);
   white-space: nowrap;
 }
+
+.badge-status--review i { color: var(--st-review); }
 
 .badge-status--interview {
   display: inline-flex;
   align-items: center;
-  padding: 0.35rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  background-color: var(--st-interview-bg);
-  color: #0369a1;
+  background: transparent;
+  color: var(--ink);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border: 1px solid var(--st-interview);
+  border: 1px solid var(--line);
   white-space: nowrap;
 }
+
+.badge-status--interview i { color: var(--st-interview); }
 
 .badge-status--accepted {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  background-color: var(--st-accepted-bg);
-  color: #146c2e;
+  background: transparent;
+  color: var(--ink);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border: 1px solid rgba(46, 204, 94, 0.45);
+  border: 1px solid var(--line);
   white-space: nowrap;
 }
+
+.badge-status--accepted i { color: var(--st-accepted); }
 
 .badge-status--declined {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  background-color: var(--st-declined-bg);
-  color: #a81c20;
+  background: transparent;
+  color: var(--ink);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border: 1px solid var(--st-declined);
+  border: 1px solid var(--line);
   white-space: nowrap;
 }
+
+.badge-status--declined i { color: var(--st-declined); }
+
+/* Uniform table cell flags — one box size for every state, meaning carried by the dot.
+   Replaces per-value pill swapping (which made e.g. "In Progress" render larger than "Open Quota"). */
+.cell-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 28px;
+  padding: 0.15rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.cell-flag .cell-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+
+.cell-flag--ok .cell-dot { background: var(--st-accepted); }
+.cell-flag--warn .cell-dot { background: var(--st-pending); }
+.cell-flag--bad .cell-dot { background: var(--st-declined); }
+.cell-flag--idle .cell-dot { background: var(--muted); }
 
 @media (max-width: 575.98px) {
   .badge-status--pending,
