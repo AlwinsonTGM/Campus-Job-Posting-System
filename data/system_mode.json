@@ -1,5 +1,5 @@
 {
-    "active_mode": "live",
-    "description": "Permanent unified mode where demo data and real registered users coexist.",
-    "last_updated": "2026-09-03"
+    "active_mode": "demo",
+    "last_switched_at": "2026-09-12 12:57:06",
+    "switched_by": "Datastore Reset"
 }

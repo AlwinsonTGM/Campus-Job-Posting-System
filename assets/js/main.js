@@ -1140,7 +1140,8 @@ document.addEventListener('DOMContentLoaded', function () {
         readtimeEl.innerHTML = '<i class="bi bi-clock-history me-1 text-accent"></i>' + (blog.read_time || '5 min read');
       }
       if (bannerEl) {
-        bannerEl.src = blog.cover_image || '';
+        const cardPhoto = cards[index] ? cards[index].querySelector('.devblog-card-photo-wrap img') : null;
+        bannerEl.src = (cardPhoto && cardPhoto.src) ? cardPhoto.src : (blog.cover_image || '');
         bannerEl.alt = blog.title || 'Sprint Cover';
       }
       if (titleEl) titleEl.textContent = blog.title || '';
@@ -1293,3 +1294,19 @@ window.addEventListener('pageshow', function (event) {
   });
 });
 
+
+// Back-to-top floating button (appears after scrolling past the hero)
+(function () {
+  var btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  var SHOW_AFTER = 600;
+  function onScroll() {
+    btn.classList.toggle('is-visible', window.scrollY > SHOW_AFTER);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+})();

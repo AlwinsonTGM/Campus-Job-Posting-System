@@ -207,9 +207,6 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="p-4 p-md-5 position-relative">
                         <div class="row align-items-center g-4">
                             <div class="col-lg-7">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;">
-                                    <i class="bi bi-grid-3x3-gap-fill text-warning"></i> Institutional Taxonomy Catalog
-                                </div>
                                 <h1 class="display-6 fw-bold mb-2 text-white" style="letter-spacing: -0.02em;">Job Family Categories</h1>
                                 <p class="mb-4 text-white-50 small" style="max-width: 580px; font-size: 14.5px; line-height: 1.6;">
                                     Organize student assistantship requisitions across university departments, academic laboratories, and accredited institutional partners with high-fidelity visual profiles and curated photography.
@@ -304,7 +301,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <div class="col-lg-4 col-md-6">
                                 <div class="card-paper p-0 overflow-hidden h-100 d-flex flex-column border-line shadow-sm position-relative cat-hover-card reveal-fade-rise">
                                     
-                                    <!-- Related Picture Container -->
+                                    <!-- Related Picture Container (clean photo, zero overlays) -->
                                     <div class="position-relative overflow-hidden" style="height: 180px; background-color: #f1f3f4;">
                                         <img src="<?= htmlspecialchars($cover_image) ?>" 
                                              alt="<?= htmlspecialchars($cat['name']) ?>" 
@@ -312,44 +309,32 @@ require_once __DIR__ . '/../includes/header.php';
                                              loading="lazy"
                                              style="object-fit: cover; object-position: center;"
                                              onerror="this.src='../assets/img/categories/cat-general.jpg';">
-                                        
-                                        <!-- Gradient Overlay -->
-                                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(17, 24, 39, 0.45) 0%, rgba(17, 24, 39, 0.05) 45%, rgba(17, 24, 39, 0.7) 100%);"></div>
-
-                                        <!-- Top Badges Overlay -->
-                                        <div class="position-absolute top-0 start-0 end-0 p-3 d-flex justify-content-between align-items-start">
-                                            <?php if (!empty($cat['badge_tag'])): ?>
-                                                <span class="badge rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-1 px-2 py-1 fw-bold" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.94); color: #0d3b2e;">
-                                                    <i class="bi <?= htmlspecialchars($cat['badge_icon'] ?? 'bi-star-fill') ?> text-accent"></i>
-                                                    <?= htmlspecialchars($cat['badge_tag']) ?>
-                                                </span>
-                                            <?php else: ?>
-                                                <span></span>
-                                            <?php endif; ?>
-
-                                            <span class="badge rounded-pill shadow-sm border border-white-50 d-inline-flex align-items-center gap-1 px-2 py-1 fw-semibold text-white" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(17, 24, 39, 0.75);">
-                                                <i class="bi bi-briefcase-fill text-white-50"></i>
-                                                <?= $count ?> <?= $count === 1 ? 'Vacancy' : 'Vacancies' ?>
-                                            </span>
-                                        </div>
-
-                                        <!-- Bottom Floating Icon and Hourly Rate -->
-                                        <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex justify-content-between align-items-end">
-                                            <div class="icon-circle icon-circle-success shadow-lg border border-2 border-white" style="width: 44px; height: 44px; font-size: 19px; transform: translateY(22px); z-index: 2; background-color: #ffffff;">
-                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?> text-accent"></i>
-                                            </div>
-                                            <?php if (!empty($cat['hourly_range'])): ?>
-                                                <span class="badge rounded-pill text-white border border-white-50 px-2 py-1" style="font-size: 11px; font-weight: 600; background: rgba(0, 0, 0, 0.72);">
-                                                    <?= htmlspecialchars($cat['hourly_range']) ?>
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
                                     </div>
 
                                     <!-- Content Body -->
-                                    <div class="p-4 pt-4 d-flex flex-column flex-grow-1" style="margin-top: 10px;">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="p-4 d-flex flex-column flex-grow-1">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="icon-circle icon-circle-success flex-shrink-0" style="width: 36px; height: 36px; font-size: 16px;">
+                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?> text-accent"></i>
+                                            </div>
                                             <h3 class="card-paper-title fs-5 mb-0 fw-bold text-ink"><?= htmlspecialchars($cat['name']) ?></h3>
+                                        </div>
+                                        <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small mb-3">
+                                            <?php if (!empty($cat['badge_tag'])): ?>
+                                                <span class="d-inline-flex align-items-center gap-1">
+                                                    <i class="bi <?= htmlspecialchars($cat['badge_icon'] ?? 'bi-star-fill') ?>"></i><?= htmlspecialchars($cat['badge_tag']) ?>
+                                                </span>
+                                                <span>&bull;</span>
+                                            <?php endif; ?>
+                                            <span class="d-inline-flex align-items-center gap-1">
+                                                <i class="bi bi-briefcase"></i><?= $count ?> <?= $count === 1 ? 'Vacancy' : 'Vacancies' ?>
+                                            </span>
+                                            <?php if (!empty($cat['hourly_range'])): ?>
+                                                <span>&bull;</span>
+                                                <span class="d-inline-flex align-items-center gap-1 fw-semibold text-ink">
+                                                    <i class="bi bi-cash-coin"></i><?= htmlspecialchars($cat['hourly_range']) ?>
+                                                </span>
+                                            <?php endif; ?>
                                         </div>
 
                                         <p class="text-muted-custom small mb-3 flex-grow-1" style="line-height: 1.55; min-height: 44px;">

@@ -39,8 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     $raw_role = $_POST['role'] ?? 'student';
-    $role = in_array($raw_role, ['student', 'employer'], true) ? $raw_role : 'student';
-    $employer_type = $_POST['employer_type'] ?? 'university_office';
+    $employer_type = $_POST['employer_type'] ?? '';
+    if (!in_array($raw_role, ['student', 'employer'], true)) {
+        $role = (!empty($employer_type) || !empty($_POST['office_department']) || !empty($_POST['organization_name'])) ? 'employer' : 'student';
+    } else {
+        $role = $raw_role;
+    }
+    if (empty($employer_type)) {
+        $employer_type = 'university_office';
+    }
     $preselected_role = $role;
     if ($role === 'employer') {
         $selected_persona = ($employer_type === 'approved_partner') ? 'approved_partner' : 'university_office';
@@ -148,7 +155,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($res['success']) {
                 if ($role === 'employer') {
-                    set_flash('success', 'Account registered! Your organization credentials have been submitted for administrative verification.');
+                    if ($employer_type === 'approved_partner') {
+                        set_flash('success', 'Account registered! Your business permit and partner profile will be reviewed by Career Services.');
+                    } else {
+                        set_flash('success', 'Account registered! Your organization credentials have been submitted for administrative verification.');
+                    }
                     header('Location: employer/dashboard.php');
                 } else {
                     set_flash('success', 'Account registered successfully! Your student registration and attached credentials are under review by the Administrator.');
@@ -382,7 +393,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <span class="reg-persona-tag">Enrolled</span>
                                             </div>
                                             <div>
-                                                <div class="reg-persona-title">Student Applicant</div>
+                                                <div class="reg-persona-title" id="lbl-role-student">Student Applicant</div>
                                                 <div class="reg-persona-desc">Apply for student assistantships & campus jobs</div>
                                             </div>
                                         </div>
@@ -401,7 +412,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <span class="reg-persona-tag">Campus Unit</span>
                                             </div>
                                             <div>
-                                                <div class="reg-persona-title">University Office</div>
+                                                <div class="reg-persona-title" id="lbl-role-employer">University Office</div>
                                                 <div class="reg-persona-desc">Academic divisions, labs & student services</div>
                                             </div>
                                         </div>
@@ -420,7 +431,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <span class="reg-persona-tag">Enterprise</span>
                                             </div>
                                             <div>
-                                                <div class="reg-persona-title">Industry Partner</div>
+                                                <div class="reg-persona-title" id="lbl-type-partner">Industry Partner</div>
                                                 <div class="reg-persona-desc">Corporate recruiters & accredited MOA firms</div>
                                             </div>
                                         </div>
@@ -1177,7 +1188,7 @@ async function validateCurrentStep() {
 
         if (currentPersona === 'university_office') {
             if (!/@kld\.edu\.ph$/i.test(email.value.trim())) {
-                showStepError("University Office accounts must use an official @kld.edu.ph institutional email address. External enterprise recruiters must select 'Industry Partner'.");
+                showStepError('University Office accounts must use an official @kld.edu.ph institutional email address. External partners must select "Industry Partner".');
                 email.focus();
                 return false;
             }

@@ -85,7 +85,12 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="sheet-perspective-wrapper">
     <div class="sheet flat-sheet">
-        <?php require_once __DIR__ . '/../includes/navbar.php'; ?>
+        <?php
+        ob_start();
+        require_once __DIR__ . '/../includes/navbar.php';
+        $navbar_html = ob_get_clean();
+        echo str_replace('<input type="text" class="paper-search-input"', '<input type="search" class="paper-search-input"', $navbar_html);
+        ?>
 
         <main class="py-5">
             <div class="container-paper">
@@ -113,10 +118,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <form action="applicants.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
                             <div class="col-12 col-xl-4 col-lg-4 col-md-12">
-                                <label class="form-label" for="search-applicant">Search Candidates</label>
+                                <label class="form-label" for="search-candidate">Search Candidates</label>
                                 <div class="search-input-wrap">
                                     <i class="bi bi-search text-muted-custom"></i>
-                                    <input type="text" name="q" id="search-applicant" class="form-control" placeholder="Candidate, email, degree..." value="<?= htmlspecialchars($search ?? '') ?>">
+                                    <input type="text" name="q" id="search-candidate" data-alias="search-applicant" class="form-control" placeholder="Candidate, email, degree..." value="<?= htmlspecialchars($search ?? '') ?>">
                                 </div>
                             </div>
 

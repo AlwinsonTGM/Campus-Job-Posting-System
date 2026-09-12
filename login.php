@@ -32,8 +32,27 @@ if (isset($_GET['reset'])) {
         session_destroy();
         session_start();
     }
+    $demo_dir = DATA_DIR . '/seeds/demo';
+    if (is_dir($demo_dir)) {
+        $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
+                       'profile_requests.json', 'updates.json', 'devblogs.json'];
+        foreach ($data_files as $file) {
+            $src = $demo_dir . '/' . $file;
+            $dst = DATA_DIR . '/' . $file;
+            if (file_exists($src)) {
+                copy($src, $dst);
+            }
+        }
+    }
+    $mode_data = [
+        'active_mode' => 'demo',
+        'last_switched_at' => date('Y-m-d H:i:s'),
+        'switched_by' => 'Datastore Reset'
+    ];
+    file_put_contents(DATA_DIR . '/system_mode.json', json_encode($mode_data, JSON_PRETTY_PRINT));
+
     require_once __DIR__ . '/database/migrate.php';
-    execute_migration_and_seed(false, null, false, true);
+    execute_migration_and_seed(false, DATA_DIR, false, true);
     set_flash('success', 'Datastore reset to pristine baseline.');
     header('Location: login.php');
     exit;

@@ -128,9 +128,6 @@ require_once __DIR__ . '/../includes/header.php';
                             <h3 class="card-paper-title h6 mb-1">Published Dispatches (<?= count($all_updates) ?>)</h3>
                             <p class="text-muted-custom small mb-0">Live on the homepage and public Career Center feed.</p>
                         </div>
-                        <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle">
-                            <i class="bi bi-broadcast text-accent me-1"></i> Live Stream Active
-                        </span>
                     </div>
 
                     <div class="table-responsive">

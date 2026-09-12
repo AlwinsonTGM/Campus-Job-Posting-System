@@ -58,12 +58,6 @@ require_once __DIR__ . '/includes/header.php';
                             </ol>
                         </nav>
 
-                        <!-- Category Pill -->
-                        <div class="mb-3">
-                            <a href="<?= $base_url ?>updates.php?category=<?= urlencode(strtolower($article['category'] ?? 'all')) ?>" class="badge rounded-pill bg-dark text-white text-decoration-none px-3 py-2 fw-semibold">
-                                <i class="bi bi-tag-fill text-white me-1"></i> <?= htmlspecialchars($article['category'] ?? 'Career Bulletin') ?>
-                            </a>
-                        </div>
 
                         <!-- 1. Article Title -->
                         <h1 class="h2 fw-extrabold text-ink mb-4 tracking-tight" style="font-size: 2.25rem; line-height: 1.25;">
@@ -157,7 +151,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <img src="<?= htmlspecialchars($lat_img_src) ?>" class="update-compact-thumb" alt="<?= htmlspecialchars($lat_art['title']) ?>" onerror="this.src='<?= $base_url ?>assets/img/hero-office.jpg';">
                                                 <div class="p-3 d-flex flex-column flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="badge rounded-pill bg-light text-dark border small" style="font-size: 0.7rem;"><?= htmlspecialchars($lat_art['category'] ?? 'News') ?></span>
+                                                        <span class="text-muted-custom fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;"><?= htmlspecialchars($lat_art['category'] ?? 'News') ?></span>
                                                         <span class="text-muted-custom" style="font-size: 0.75rem;"><?= $lat_date ?></span>
                                                     </div>
                                                     <h4 class="h6 fw-bold text-ink mb-0 line-clamp-2" style="font-size: 0.9rem;"><?= htmlspecialchars($lat_art['title']) ?></h4>

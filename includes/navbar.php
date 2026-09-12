@@ -51,7 +51,7 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                 </a>
             <?php endif; ?>
             <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <i class="bi bi-list"></i>
             </button>
         </div>
 
@@ -131,6 +131,16 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
 
             <!-- Right Action Items -->
             <div class="paper-nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
+
+                <!-- Dataset Mode Switcher Button -->
+                <?php
+                $current_data_mode = function_exists('get_system_data_mode') ? get_system_data_mode() : 'demo';
+                $is_real_mode = ($current_data_mode === 'real');
+                ?>
+                <button type="button" class="btn-data-mode-toggle <?= $is_real_mode ? 'btn-data-mode--real text-success' : 'btn-data-mode--demo text-warning' ?> d-inline-flex align-items-center gap-1 border py-1 px-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#dataModeModal" title="Toggle System Dataset Mode">
+                    <i class="bi <?= $is_real_mode ? 'bi-database-check' : 'bi-database-fill-gear' ?>"></i>
+                    <span class="small fw-bold"><?= $is_real_mode ? 'REAL DATA' : 'DEMO DATA' ?></span>
+                </button>
 
                 <?php if (!$current_user || ($current_user['role'] ?? '') === 'admin'): ?>
                 <!-- Circular Search-Icon Button (Desktop only; mobile is in top bar beside hamburger) -->

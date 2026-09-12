@@ -82,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!in_array($hours_per_week, $valid_hours) || preg_match('/\b(2[1-9]|[3-9]\d)\b/', $hours_per_week)) {
             $hours_per_week = 'Up to 20 hrs/week';
         }
+        $vacancies = isset($_POST['vacancies']) ? max(1, (int)$_POST['vacancies']) : 1;
         $deadline = trim($_POST['deadline'] ?? '');
         $description = trim($_POST['description'] ?? '');
 

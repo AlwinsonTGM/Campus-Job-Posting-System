@@ -318,3 +318,35 @@ No auto-withdraw existed — `update_application_status()` (`includes/data-helpe
 
 - `student/job-details.php:273-275` — two Back-to-Vacancies controls (top breadcrumb + bottom sidebar button). Removed the bottom button; top breadcrumb stays as the single way back.
 - `settings.php:555-560` — two dark-mode toggles in Appearance (segmented Light/Dark + green switch). Removed the green switch; segmented control stays. `theme-toggle.js` already null-guards the removed checkbox, no JS change needed.
+
+---
+
+# Round 6 — Double scrollbar + category card pills (2026-09-11)
+
+- **Twin scrollbars (Chrome):** `overflow-x: hidden` on both `html` and `body` (`assets/css/base.css`) turned each into its own scroll container → two vertical scrollbars. Changed to `overflow-x: clip` (plus `main`), which blocks horizontal spill without creating a scroller. Verified via Playwright: only `documentElement` scrolls now; hero screenshot pixel-identical otherwise (`Downloads/index-top.png`, `Downloads/index-dark.png`).
+- **Cache-bust fix:** the corrected `base.css` never reached browsers because `custom.css` imports it with a hardcoded `?v=1.5`. Bumped to `?v=1.6` (custom.css itself is `filemtime`-versioned, so the new URL chain refetches everywhere with a plain reload).
+- **Category card (`admin/categories.php:304-353`):** photo carried 4 pills (badge tag, vacancy count, floating icon, hourly rate). Photo is now clean (gradient + overlays removed); icon sits inline with the title and tag/count/pay form a plain body metadata row. Verified: `Downloads/cat-card.png`.
+
+---
+
+# Round 7 — Back-to-top button (2026-09-11)
+
+- New global `#back-to-top` (in `includes/footer.php`, so every page gets it): 40px circle bottom-right, 36px on mobile, paper styling via theme vars (dark-mode safe), appears after 600px of scroll, smooth-scrolls to hero (instant when `prefers-reduced-motion`). `aria-label` + focus ring included; sits at z-index 900, below modals.
+- Verified: hidden at top, visible after scroll, click lands at `scrollY === 0`; mobile measures exactly 36×36 (`Downloads/backtotop-desktop.png`, `Downloads/backtotop-mobile.png`).
+
+---
+
+# Round 8 — Mobile dark navbar (2026-09-11)
+
+- **Invisible hamburger:** Bootstrap's `.navbar-toggler-icon` is a hardcoded dark SVG (only `filter: invert(1)` patched it for dark mode — fragile). Replaced with a `bi-list` glyph in `includes/navbar.php`, which inherits `color: var(--ink)` and is visible in both modes by construction (`assets/css/custom.css:463`).
+- **Menu alignment:** mobile `.nav-link` was `justify-content: space-between` (reads left). Now `flex-end` + `text-align: right` under the mobile breakpoint only — desktop grid untouched.
+- Verified on 390px dark viewport: hamburger crisp, FIND JOBS / FAQS / ABOUT right-aligned (`Downloads/hamburger.png`, `Downloads/mobile-menu.png`).
+- *Correction:* links must be centered, not right — mobile `.nav-link` now `justify-content: center` + `text-align: center` (desktop grid untouched).
+
+---
+
+# Round 9 — Spotlight results breathing room (2026-09-11)
+
+- Search modal result cards were compressed (`10px 14px` padding, `10px` gaps, tight `py-2` footer).
+- Loosened: item padding → `14px 16px`, list gap → `14px`, footer → `py-3` / `gap-3` (`assets/css/custom.css`, `includes/search-modal.php`).
+- Verified on 390px dark viewport: `Downloads/spotlight-room.png`.

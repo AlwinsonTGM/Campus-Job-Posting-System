@@ -1,0 +1,48 @@
+%% Relational Table Map — KLD Campus Hire (10 Normalized 3NF Tables)
+flowchart TB
+    subgraph IDENTITY["IDENTITY & SPECIALIZED PROFILES (CTI)"]
+        direction TB
+        U[("USERS<br/>id PK, email UK, role, name")]
+        SP[("STUDENT_PROFILES<br/>user_id PK/FK, student_id UK")]
+        EP[("EMPLOYER_PROFILES<br/>user_id PK/FK, org_name")]
+        U -- "is-a (student)" --> SP
+        U -- "is-a (employer)" --> EP
+    end
+
+    subgraph REQUISITION["REQUISITIONS & PLACEMENT"]
+        direction TB
+        C[("CATEGORIES<br/>id PK, slug UK")]
+        J[("JOBS<br/>id PK, title<br/>employer_id FK, category_id FK")]
+        A[("APPLICATIONS<br/>id PK<br/>job_id FK CASCADE<br/>student_id FK CASCADE<br/>UNIQUE job_id + student_id")]
+        
+        C -- classifies --> J
+        J -- receives --> A
+    end
+
+    subgraph SYSTEM_SERVICES["COMMUNICATION & SYSTEM LOGS"]
+        direction TB
+        PR[("PROFILE_REQUESTS<br/>id PK, user_id FK CASCADE")]
+        UP[("UPDATES<br/>id PK, slug UK<br/>author_id FK SET NULL")]
+        N[("NOTIFICATIONS<br/>id PK, user_id FK CASCADE")]
+    end
+
+    subgraph AUDIT_LOGS["AUDIT TRAIL"]
+        D[("DEVBLOGS<br/>id PK, sprint_number")]
+    end
+
+    U -- "publishes" --> J
+    SP -. "applies" .-> A
+    U -- "requests" --> PR
+    U -- "authors" --> UP
+    U -- "notified via" --> N
+
+    style U fill:#e8f0e8,stroke:#0d5c3a,stroke-width:2px
+    style SP fill:#e8f4f8,stroke:#1d6f8a
+    style EP fill:#e8f4f8,stroke:#1d6f8a
+    style J fill:#fff8e6,stroke:#b8860b
+    style A fill:#fff8e6,stroke:#b8860b
+    style C fill:#f9f9f9,stroke:#666666
+    style PR fill:#fdf0f0,stroke:#c0392b
+    style UP fill:#fdf0f0,stroke:#c0392b
+    style N fill:#fdf0f0,stroke:#c0392b
+    style D fill:#f0f0f5,stroke:#555577

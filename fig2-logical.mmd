@@ -1,0 +1,88 @@
+erDiagram
+    USERS {
+        INT id PK
+        VARCHAR email
+        VARCHAR password
+        ENUM role
+        VARCHAR name
+        VARCHAR phone
+        ENUM status
+    }
+    STUDENT_PROFILES {
+        INT user_id PK
+        VARCHAR student_id
+        VARCHAR department
+        VARCHAR course
+        VARCHAR year_level
+        VARCHAR sex
+        INT age
+        VARCHAR verification_status
+    }
+    EMPLOYER_PROFILES {
+        INT user_id PK
+        VARCHAR employer_type
+        VARCHAR organization_name
+        VARCHAR office_location
+        VARCHAR contact_person
+        VARCHAR accreditation_number
+        VARCHAR verification_status
+    }
+    CATEGORIES {
+        INT id PK
+        VARCHAR name
+        VARCHAR slug
+        VARCHAR icon
+        INT job_count
+    }
+    JOBS {
+        INT id PK
+        VARCHAR title
+        VARCHAR department
+        INT employer_id FK
+        INT category_id FK
+        VARCHAR job_type
+        VARCHAR work_setup
+        VARCHAR pay_rate
+        VARCHAR status
+        INT slots_total
+        INT slots_filled
+    }
+    APPLICATIONS {
+        INT id PK
+        INT job_id FK
+        INT student_id FK
+        VARCHAR status
+        DATE interview_date
+        VARCHAR interview_venue
+    }
+    PROFILE_REQUESTS {
+        INT id PK
+        INT user_id FK
+        VARCHAR status
+    }
+    UPDATES {
+        INT id PK
+        VARCHAR slug
+        VARCHAR category
+        INT author_id FK
+    }
+    NOTIFICATIONS {
+        INT id PK
+        INT user_id FK
+        VARCHAR type
+        TINYINT is_read
+    }
+    DEVBLOGS {
+        VARCHAR id PK
+        VARCHAR sprint_number
+    }
+
+    USERS ||--o| STUDENT_PROFILES : "1-to-1 subtype"
+    USERS ||--o| EMPLOYER_PROFILES : "1-to-1 subtype"
+    USERS ||--o{ JOBS : "publishes"
+    CATEGORIES ||--o{ JOBS : "classifies"
+    JOBS ||--o{ APPLICATIONS : "receives"
+    USERS ||--o{ APPLICATIONS : "submits"
+    USERS ||--o{ PROFILE_REQUESTS : "requests"
+    USERS ||--o{ UPDATES : "authors"
+    USERS ||--o{ NOTIFICATIONS : "receives"

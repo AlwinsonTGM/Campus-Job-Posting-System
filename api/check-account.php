@@ -49,7 +49,7 @@ if (!empty($email)) {
 if (!empty($student_id)) {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(TRIM(`student_id`)) = LOWER(TRIM(:sid)) AND `role` = 'student' LIMIT 1");
+        $stmt = $pdo->prepare("SELECT `user_id` FROM `student_profiles` WHERE LOWER(TRIM(`student_id`)) = LOWER(TRIM(:sid)) LIMIT 1");
         $stmt->execute([':sid' => $student_id]);
         if ($stmt->fetch()) {
             $response['student_id_exists'] = true;
@@ -58,15 +58,11 @@ if (!empty($student_id)) {
             $response['message'] = $response['message'] ? $response['message'] . ' ' . $msg : $msg;
         }
     } catch (Exception $e) {
-        $users = get_users();
-        foreach ($users as $u) {
-            if (isset($u['student_id']) && strtolower(trim($u['student_id'])) === strtolower($student_id) && ($u['role'] ?? '') === 'student') {
-                $response['student_id_exists'] = true;
-                $response['available'] = false;
-                $msg = 'This Student ID Number is already registered.';
-                $response['message'] = $response['message'] ? $response['message'] . ' ' . $msg : $msg;
-                break;
-            }
+        if (is_student_id_registered($student_id)) {
+            $response['student_id_exists'] = true;
+            $response['available'] = false;
+            $msg = 'This Student ID Number is already registered.';
+            $response['message'] = $response['message'] ? $response['message'] . ' ' . $msg : $msg;
         }
     }
 }

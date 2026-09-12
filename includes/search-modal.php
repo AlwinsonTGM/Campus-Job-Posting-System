@@ -99,7 +99,7 @@ if (!defined('SITE_NAME')) {
             </div>
 
             <!-- Spotlight Footer Bar -->
-            <div class="spotlight-footer px-3 py-2 px-md-4 py-md-3 border-top border-line bg-surface d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+            <div class="spotlight-footer px-3 py-3 px-md-4 border-top border-line bg-surface d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
                 <div class="d-flex align-items-center gap-2 small text-muted-custom">
                     <span id="spotlightResultCount" class="fw-semibold text-ink">Showing vacancies</span>
                 </div>

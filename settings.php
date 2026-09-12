@@ -30,34 +30,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 try {
                     $pdo = get_db_connection();
-                    $updates = ['phone' => htmlspecialchars($phone)];
+                    $pdo->beginTransaction();
 
-                    if (($user['role'] ?? '') === 'student') {
-                        $updates['availability'] = json_encode($availability);
+                    $user_role = $user['role'] ?? 'student';
+
+                    // 1. Update base identity record in users
+                    $user_updates = ["`phone` = :phone"];
+                    $user_params = [
+                        ':phone' => htmlspecialchars($phone),
+                        ':id'    => (int)$user['id']
+                    ];
+
+                    if ($user_role === 'employer' || $user_role === 'admin') {
+                        $name = trim($_POST['name'] ?? '');
+                        if (!empty($name)) {
+                            $user_updates[] = "`name` = :name";
+                            $user_params[':name'] = htmlspecialchars($name);
+                        }
                     }
 
-                    if ($user['role'] === 'employer') {
-                        $name = trim($_POST['name'] ?? '');
+                    $stmt_u = $pdo->prepare("UPDATE `users` SET " . implode(', ', $user_updates) . ", `updated_at` = NOW() WHERE `id` = :id");
+                    $stmt_u->execute($user_params);
+
+                    // 2. Update subtype tables based on role
+                    if ($user_role === 'student') {
+                        $stmt_sp = $pdo->prepare("UPDATE `student_profiles` SET `availability` = :avail, `updated_at` = NOW() WHERE `user_id` = :id");
+                        $stmt_sp->execute([
+                            ':avail' => json_encode($availability),
+                            ':id'    => (int)$user['id']
+                        ]);
+                    } elseif ($user_role === 'employer') {
                         $office_loc = trim($_POST['office_location'] ?? '');
-                        if (!empty($name)) $updates['name'] = htmlspecialchars($name);
-                        if (!empty($office_loc)) $updates['office_location'] = htmlspecialchars($office_loc);
-                        // Organization name and department cannot be self-modified to prevent IDOR spoofing
-                    } elseif ($user['role'] === 'admin') {
-                        $name = trim($_POST['name'] ?? '');
-                        $department = trim($_POST['department'] ?? '');
-                        if (!empty($name)) $updates['name'] = htmlspecialchars($name);
-                        if (!empty($department)) $updates['department'] = htmlspecialchars($department);
+                        if (!empty($office_loc)) {
+                            $stmt_ep = $pdo->prepare("UPDATE `employer_profiles` SET `office_location` = :office_location, `updated_at` = NOW() WHERE `user_id` = :id");
+                            $stmt_ep->execute([
+                                ':office_location' => htmlspecialchars($office_loc),
+                                ':id'              => (int)$user['id']
+                            ]);
+                        }
                     }
 
-                    $set_clauses = [];
-                    $params = [':id' => (int)$user['id']];
-                    foreach ($updates as $col => $val) {
-                        $set_clauses[] = "`$col` = :$col";
-                        $params[":$col"] = $val;
-                    }
-                    $sql = "UPDATE `users` SET " . implode(', ', $set_clauses) . " WHERE `id` = :id";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute($params);
+                    $pdo->commit();
 
                     // Refresh session user
                     $fresh = get_user_by_id($user['id']);
@@ -70,6 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: settings.php');
                     exit;
                 } catch (Exception $e) {
+                    if (isset($pdo) && $pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
                     $error = 'Failed to update profile: ' . $e->getMessage();
                 }
             }

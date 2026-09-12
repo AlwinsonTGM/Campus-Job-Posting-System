@@ -19,12 +19,27 @@ define('DATA_DIR', dirname(__DIR__) . '/data');
 function hydrate_user($row) {
     if (!$row) return null;
     if (isset($row['availability']) && is_string($row['availability'])) {
-        $row['availability'] = json_decode($row['availability'], true) ?: [];
-    } elseif (!isset($row['availability'])) {
+        $decoded = json_decode($row['availability'], true);
+        if (is_string($decoded)) {
+            $decoded = json_decode($decoded, true);
+        }
+        $row['availability'] = is_array($decoded) ? $decoded : [];
+    } elseif (!isset($row['availability']) || !is_array($row['availability'])) {
         $row['availability'] = [];
     }
     $row['id'] = (int)$row['id'];
     if (isset($row['age'])) $row['age'] = $row['age'] !== null ? (int)$row['age'] : null;
+
+    // Aliases & compatibility
+    if (!isset($row['permit_file'])) {
+        $row['permit_file'] = $row['business_permit'] ?? null;
+    }
+    if (!isset($row['proof_file'])) {
+        $row['proof_file'] = $row['registration_proof'] ?? null;
+    }
+    if (!isset($row['organization_name']) && isset($row['department'])) {
+        $row['organization_name'] = $row['department'];
+    }
     return $row;
 }
 
@@ -38,6 +53,12 @@ function hydrate_job($row) {
     $row['slots_filled'] = (int)($row['slots_filled'] ?? 0);
     $row['verified_employer'] = !empty($row['verified_employer']);
     $row['is_featured'] = !empty($row['image']);
+
+    // Default synthesized aliases
+    $row['category'] = $row['category'] ?? 'General';
+    $row['employer_name'] = $row['employer_name'] ?? 'Hiring Supervisor';
+    $row['organization_name'] = $row['organization_name'] ?? ($row['department'] ?? 'Campus Department');
+    $row['employer_type'] = $row['employer_type'] ?? 'university_office';
 
     foreach (['tags', 'badges', 'responsibilities', 'qualifications'] as $field) {
         if (isset($row[$field]) && is_string($row[$field])) {
@@ -57,10 +78,42 @@ function hydrate_application($row) {
     $row['student_id'] = (int)$row['student_id'];
     if (isset($row['age'])) $row['age'] = $row['age'] !== null ? (int)$row['age'] : null;
     if (isset($row['availability']) && is_string($row['availability'])) {
-        $row['availability'] = json_decode($row['availability'], true) ?: [];
-    } elseif (!isset($row['availability'])) {
+        $decoded = json_decode($row['availability'], true);
+        if (is_string($decoded)) {
+            $decoded = json_decode($decoded, true);
+        }
+        $row['availability'] = is_array($decoded) ? $decoded : [];
+    } elseif (!isset($row['availability']) || !is_array($row['availability'])) {
         $row['availability'] = [];
     }
+
+    $status_map = [
+        'pending'             => 'Pending Review',
+        'under_review'        => 'Under Review',
+        'interview_scheduled' => 'Interview Scheduled',
+        'accepted'            => 'Accepted / Hired',
+        'declined'            => 'Declined / Filled'
+    ];
+    $badge_map = [
+        'pending'             => 'warning',
+        'under_review'        => 'primary',
+        'interview_scheduled' => 'info',
+        'accepted'            => 'success',
+        'declined'            => 'danger'
+    ];
+    $status = $row['status'] ?? 'pending';
+    if (!isset($row['status_label'])) {
+        $row['status_label'] = $status_map[$status] ?? ucfirst(str_replace('_', ' ', $status));
+    }
+    if (!isset($row['status_badge'])) {
+        $row['status_badge'] = $badge_map[$status] ?? 'secondary';
+    }
+
+    // Aliases
+    if (!isset($row['student_number']) && isset($row['student_id_code'])) {
+        $row['student_number'] = $row['student_id_code'];
+    }
+
     return $row;
 }
 
@@ -377,27 +430,56 @@ function can_view_student_resume($app = null, $student_user_id = null, $user = n
 // USER MANAGEMENT & AUTH ACTIONS
 // ============================================================================
 
+function get_user_base_query() {
+    return "
+        SELECT 
+            u.`id`, u.`email`, u.`password`, u.`role`, u.`name`, u.`phone`, u.`status`, u.`created_at`, u.`updated_at`,
+            sp.`student_id`,
+            sp.`department` AS `student_department`,
+            COALESCE(sp.`department`, ep.`organization_name`, 'General Academics') AS `department`,
+            sp.`course`,
+            sp.`year_level`,
+            sp.`sex`,
+            sp.`birthdate`,
+            sp.`age`,
+            sp.`availability`,
+            sp.`registration_proof`,
+            COALESCE(sp.`verification_status`, ep.`verification_status`, 'verified') AS `verification_status`,
+            COALESCE(sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
+            ep.`employer_type`,
+            COALESCE(ep.`organization_name`, sp.`department`, u.`name`) AS `organization_name`,
+            ep.`office_location`,
+            ep.`contact_person`,
+            ep.`accreditation_number`,
+            ep.`business_permit`
+        FROM `users` u
+        LEFT JOIN `student_profiles` sp ON u.`id` = sp.`user_id`
+        LEFT JOIN `employer_profiles` ep ON u.`id` = ep.`user_id`
+    ";
+}
+
 function get_all_users($role = null, $keyword = null, $emp_type = null, $ver_status = null) {
     try {
         $pdo = get_db_connection();
-        $sql = "SELECT * FROM `users` WHERE 1=1";
+        $sql = get_user_base_query() . " WHERE 1=1";
         $params = [];
 
         if ($role) {
-            $sql .= " AND `role` = :role";
+            $sql .= " AND u.`role` = :role";
             $params[':role'] = $role;
         }
         if ($emp_type) {
-            $sql .= " AND `employer_type` = :emp_type";
+            $sql .= " AND ep.`employer_type` = :emp_type";
             $params[':emp_type'] = $emp_type;
         }
         if ($ver_status) {
-            $sql .= " AND `verification_status` = :ver_status";
+            $sql .= " AND (sp.`verification_status` = :ver_status OR ep.`verification_status` = :ver_status2)";
             $params[':ver_status'] = $ver_status;
+            $params[':ver_status2'] = $ver_status;
         }
         if ($keyword) {
             $kw_val = '%' . trim($keyword) . '%';
-            $sql .= " AND (`name` LIKE :kw1 OR `email` LIKE :kw2 OR `student_id` LIKE :kw3 OR `department` LIKE :kw4 OR `organization_name` LIKE :kw5)";
+            $sql .= " AND (u.`name` LIKE :kw1 OR u.`email` LIKE :kw2 OR sp.`student_id` LIKE :kw3 OR sp.`department` LIKE :kw4 OR ep.`organization_name` LIKE :kw5)";
             $params[':kw1'] = $kw_val;
             $params[':kw2'] = $kw_val;
             $params[':kw3'] = $kw_val;
@@ -405,7 +487,7 @@ function get_all_users($role = null, $keyword = null, $emp_type = null, $ver_sta
             $params[':kw5'] = $kw_val;
         }
 
-        $sql .= " ORDER BY `id` ASC";
+        $sql .= " ORDER BY u.`id` ASC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
@@ -420,7 +502,7 @@ function get_all_users($role = null, $keyword = null, $emp_type = null, $ver_sta
 function get_user_by_id($id) {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `id` = :id LIMIT 1");
+        $stmt = $pdo->prepare(get_user_base_query() . " WHERE u.`id` = :id LIMIT 1");
         $stmt->execute([':id' => (int)$id]);
         $row = $stmt->fetch();
         return $row ? hydrate_user($row) : null;
@@ -433,7 +515,7 @@ function get_user_by_id($id) {
 function login_user($email, $password) {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
+        $stmt = $pdo->prepare(get_user_base_query() . " WHERE LOWER(u.`email`) = LOWER(:email) LIMIT 1");
         $stmt->execute([':email' => trim($email)]);
         $row = $stmt->fetch();
 
@@ -471,10 +553,10 @@ function quick_login($role, $user_id = null) {
     try {
         $pdo = get_db_connection();
         if ($user_id) {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `id` = :id LIMIT 1");
+            $stmt = $pdo->prepare(get_user_base_query() . " WHERE u.`id` = :id LIMIT 1");
             $stmt->execute([':id' => (int)$user_id]);
         } else {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `role` = :role ORDER BY `id` ASC LIMIT 1");
+            $stmt = $pdo->prepare(get_user_base_query() . " WHERE u.`role` = :role ORDER BY u.`id` ASC LIMIT 1");
             $stmt->execute([':role' => $role]);
         }
         $row = $stmt->fetch();
@@ -631,17 +713,36 @@ function update_user_verification($id, $status, $notes = '') {
     try {
         $pdo = get_db_connection();
         $target_user = get_user_by_id($id);
-        $stmt = $pdo->prepare("
-            UPDATE `users` 
-            SET `verification_status` = :status, `rejection_reason` = :notes, `updated_at` = NOW() 
-            WHERE `id` = :id
-        ");
-        $stmt->execute([
-            ':status' => $status,
-            ':notes'  => $notes,
-            ':id'     => (int)$id
-        ]);
-        $success = $stmt->rowCount() > 0 || ($target_user && $target_user['verification_status'] === $status);
+        if (!$target_user) return false;
+
+        $id = (int)$id;
+        $role = $target_user['role'] ?? 'student';
+
+        if ($role === 'student') {
+            $stmt = $pdo->prepare("
+                UPDATE `student_profiles`
+                SET `verification_status` = :status, `rejection_reason` = :notes, `updated_at` = NOW()
+                WHERE `user_id` = :id
+            ");
+            $stmt->execute([
+                ':status' => $status,
+                ':notes'  => $notes,
+                ':id'     => $id
+            ]);
+        } else {
+            $stmt = $pdo->prepare("
+                UPDATE `employer_profiles`
+                SET `verification_status` = :status, `rejection_reason` = :notes, `updated_at` = NOW()
+                WHERE `user_id` = :id
+            ");
+            $stmt->execute([
+                ':status' => $status,
+                ':notes'  => $notes,
+                ':id'     => $id
+            ]);
+        }
+
+        $success = $stmt->rowCount() > 0 || ($target_user['verification_status'] === $status);
 
         if ($target_user && $success) {
             if ($status === 'verified') {
@@ -714,8 +815,8 @@ function is_student_id_registered($student_id) {
     if (empty($sid)) return false;
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(TRIM(`student_id`)) = LOWER(TRIM(:sid)) AND `role` = 'student' LIMIT 1");
-        $stmt->execute([':sid' => $student_id]);
+        $stmt = $pdo->prepare("SELECT `user_id` FROM `student_profiles` WHERE LOWER(TRIM(`student_id`)) = LOWER(TRIM(:sid)) LIMIT 1");
+        $stmt->execute([':sid' => $sid]);
         return (bool)$stmt->fetch();
     } catch (Exception $e) {
         $users = get_users();
@@ -761,8 +862,8 @@ function register_user($data, $permit_file = null, $proof_file = null) {
                 $accreditation = $data['accreditation_number'] ?? 'PENDING-VERIFICATION';
             }
         } else {
-            // New student registrations start in pending_approval for admin acceptance
-            $verification = 'pending_approval';
+            // University students registering with @kld.edu.ph institutional email or valid credentials are auto-verified
+            $verification = $is_kld_email ? 'verified' : 'pending_approval';
             $accreditation = $data['student_id'] ?? ('STUDENT-' . rand(10000, 99999));
         }
 
@@ -773,46 +874,73 @@ function register_user($data, $permit_file = null, $proof_file = null) {
         $proof_path = $proof_file ?? ($data['proof_file'] ?? null);
         $permit_path = $permit_file ?? ($data['permit_file'] ?? null);
 
-        $stmt = $pdo->prepare("
-            INSERT INTO `users` (
-                `name`, `email`, `password`, `role`, `employer_type`, `organization_name`,
-                `student_id`, `department`, `course`, `year_level`, `sex`, `birthdate`,
-                `age`, `phone`, `office_location`, `accreditation_number`, `business_permit`,
-                `registration_proof`, `verification_status`, `rejection_reason`, `status`, `created_at`
-            ) VALUES (
-                :name, :email, :password, :role, :employer_type, :organization_name,
-                :student_id, :department, :course, :year_level, :sex, :birthdate,
-                :age, :phone, :office_location, :accreditation_number, :business_permit,
-                :registration_proof, :verification_status, '', 'active', NOW()
-            )
-        ");
-
         $raw_pass = $data['password'] ?? 'Password123!';
         $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
 
-        $stmt->execute([
-            ':name'                 => trim($data['name'] ?? ''),
-            ':email'                => $email,
-            ':password'             => $hashed_pass,
-            ':role'                 => $role,
-            ':employer_type'        => $employer_type,
-            ':organization_name'    => trim($org_name),
-            ':student_id'           => $data['student_id'] ?? ('2026-' . rand(10000, 99999)),
-            ':department'           => $data['department'] ?? 'General Academics',
-            ':course'               => $data['course'] ?? '',
-            ':year_level'           => $year_level,
-            ':sex'                  => $sex,
-            ':birthdate'            => $birthdate,
-            ':age'                  => $age,
-            ':phone'                => $data['phone'] ?? '',
-            ':office_location'      => $data['office_location'] ?? 'Campus Main Office',
-            ':accreditation_number' => $accreditation,
-            ':business_permit'      => $permit_path,
-            ':registration_proof'   => $proof_path,
-            ':verification_status'  => $verification
+        $pdo->beginTransaction();
+
+        $stmt_user = $pdo->prepare("
+            INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `created_at`)
+            VALUES (:name, :email, :password, :role, :phone, 'active', NOW())
+        ");
+        $stmt_user->execute([
+            ':name'     => trim($data['name'] ?? ''),
+            ':email'    => $email,
+            ':password' => $hashed_pass,
+            ':role'     => $role,
+            ':phone'    => $data['phone'] ?? null
         ]);
 
         $new_id = (int)$pdo->lastInsertId();
+
+        if ($role === 'student') {
+            $student_id_val = !empty($data['student_id']) ? $data['student_id'] : ('KLD-' . str_pad($new_id, 6, '0', STR_PAD_LEFT));
+            $availability = isset($data['availability']) ? (is_array($data['availability']) ? json_encode($data['availability']) : $data['availability']) : json_encode([]);
+            $stmt_student = $pdo->prepare("
+                INSERT INTO `student_profiles` (
+                    `user_id`, `student_id`, `department`, `course`, `year_level`,
+                    `sex`, `birthdate`, `age`, `availability`, `verification_status`, `registration_proof`, `created_at`
+                ) VALUES (
+                    :user_id, :student_id, :department, :course, :year_level,
+                    :sex, :birthdate, :age, :availability, :verification_status, :registration_proof, NOW()
+                )
+            ");
+            $stmt_student->execute([
+                ':user_id'             => $new_id,
+                ':student_id'          => $student_id_val,
+                ':department'          => $data['department'] ?? 'Institute of Computing and Digital Innovation (ICDI)',
+                ':course'              => $data['course'] ?? 'BS Information Systems (BSIS)',
+                ':year_level'          => $year_level,
+                ':sex'                 => $sex,
+                ':birthdate'           => $birthdate,
+                ':age'                 => $age,
+                ':availability'        => $availability,
+                ':verification_status' => $verification,
+                ':registration_proof'  => $proof_path
+            ]);
+        } elseif ($role === 'employer') {
+            $stmt_employer = $pdo->prepare("
+                INSERT INTO `employer_profiles` (
+                    `user_id`, `employer_type`, `organization_name`, `office_location`,
+                    `contact_person`, `accreditation_number`, `verification_status`, `business_permit`, `created_at`
+                ) VALUES (
+                    :user_id, :employer_type, :organization_name, :office_location,
+                    :contact_person, :accreditation_number, :verification_status, :business_permit, NOW()
+                )
+            ");
+            $stmt_employer->execute([
+                ':user_id'              => $new_id,
+                ':employer_type'        => $employer_type,
+                ':organization_name'    => trim($org_name),
+                ':office_location'      => $data['office_location'] ?? 'Campus Main Office',
+                ':contact_person'       => trim($data['name'] ?? ''),
+                ':accreditation_number' => $accreditation,
+                ':verification_status'  => $verification,
+                ':business_permit'      => $permit_path
+            ]);
+        }
+
+        $pdo->commit();
         $new_user = get_user_by_id($new_id);
         if ($new_user) unset($new_user['password']);
         $_SESSION['user'] = $new_user;
@@ -843,19 +971,29 @@ function register_user($data, $permit_file = null, $proof_file = null) {
 function get_profile_requests($user_id = null, $status = null) {
     try {
         $pdo = get_db_connection();
-        $sql = "SELECT * FROM `profile_requests` WHERE 1=1";
+        $sql = "
+            SELECT 
+                pr.*,
+                u.`name` AS `user_name`,
+                u.`email` AS `user_email`,
+                sp.`student_id`
+            FROM `profile_requests` pr
+            INNER JOIN `users` u ON pr.`user_id` = u.`id`
+            LEFT JOIN `student_profiles` sp ON pr.`user_id` = sp.`user_id`
+            WHERE 1=1
+        ";
         $params = [];
 
         if ($user_id) {
-            $sql .= " AND `user_id` = :user_id";
+            $sql .= " AND pr.`user_id` = :user_id";
             $params[':user_id'] = (int)$user_id;
         }
         if ($status) {
-            $sql .= " AND `status` = :status";
+            $sql .= " AND pr.`status` = :status";
             $params[':status'] = $status;
         }
 
-        $sql .= " ORDER BY `created_at` DESC";
+        $sql .= " ORDER BY pr.`created_at` DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
@@ -954,20 +1092,17 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
 
         $stmt = $pdo->prepare("
             INSERT INTO `profile_requests` (
-                `user_id`, `user_name`, `user_email`, `student_id`, `current_profile`,
-                `requested_profile`, `proof_file`, `reason`, `status`, `admin_notes`,
+                `user_id`, `current_profile`, `requested_profile`,
+                `proof_file`, `reason`, `status`, `admin_notes`,
                 `dismissed_by_user`, `created_at`
             ) VALUES (
-                :user_id, :user_name, :user_email, :student_id, :current_profile,
-                :requested_profile, :proof_file, :reason, 'pending', '', 0, NOW()
+                :user_id, :current_profile, :requested_profile,
+                :proof_file, :reason, 'pending', '', 0, NOW()
             )
         ");
 
         $stmt->execute([
             ':user_id'           => (int)$user_id,
-            ':user_name'         => $current_user['name'],
-            ':user_email'        => $current_user['email'],
-            ':student_id'        => $current_user['student_id'] ?? '2024-00123',
             ':current_profile'   => json_encode($current_profile),
             ':requested_profile' => json_encode($requested_profile),
             ':proof_file'        => $proof_file,
@@ -1021,13 +1156,15 @@ function approve_profile_request($request_id, $admin_notes = '') {
 
         $pdo->beginTransaction();
 
-        // Update user record
+        // 1. Update users identity table (name, email)
         $user_updates = [];
         $user_params = [':id' => $user_id];
 
-        if (!empty($requested['name'])) { $user_updates[] = "`name` = :name"; $user_params[':name'] = $requested['name']; }
+        if (!empty($requested['name'])) { 
+            $user_updates[] = "`name` = :name"; 
+            $user_params[':name'] = $requested['name']; 
+        }
         
-        $new_email_applied = null;
         if (!empty($requested['email'])) {
             $candidate_email = strtolower(trim($requested['email']));
             $chk_email = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
@@ -1035,23 +1172,7 @@ function approve_profile_request($request_id, $admin_notes = '') {
             if (!$chk_email->fetch()) {
                 $user_updates[] = "`email` = :email";
                 $user_params[':email'] = $candidate_email;
-                $new_email_applied = $candidate_email;
             }
-        }
-
-        if (!empty($requested['department'])) { $user_updates[] = "`department` = :department"; $user_params[':department'] = $requested['department']; }
-        if (!empty($requested['course'])) { $user_updates[] = "`course` = :course"; $user_params[':course'] = $requested['course']; }
-        if (!empty($requested['year_level'])) { $user_updates[] = "`year_level` = :year_level"; $user_params[':year_level'] = $requested['year_level']; }
-        if (!empty($requested['sex'])) { $user_updates[] = "`sex` = :sex"; $user_params[':sex'] = $requested['sex']; }
-        if (!empty($requested['birthdate'])) { $user_updates[] = "`birthdate` = :birthdate"; $user_params[':birthdate'] = $requested['birthdate']; }
-        if (!empty($requested['age'])) { $user_updates[] = "`age` = :age"; $user_params[':age'] = (int)$requested['age']; }
-        if (!empty($target_req['proof_file'])) { $user_updates[] = "`registration_proof` = :proof"; $user_params[':proof'] = $target_req['proof_file']; }
-
-        // If the student's registration was rejected or awaiting revision, approving their official correction restores full verified status
-        $cur_user_row = get_user_by_id($user_id);
-        if ($cur_user_row && in_array($cur_user_row['verification_status'] ?? '', ['rejected', 'pending_approval'])) {
-            $user_updates[] = "`verification_status` = 'verified'";
-            $user_updates[] = "`rejection_reason` = NULL";
         }
 
         if (!empty($user_updates)) {
@@ -1060,29 +1181,32 @@ function approve_profile_request($request_id, $admin_notes = '') {
             $upd_user_stmt->execute($user_params);
         }
 
-        // Update applications for this student
-        $app_updates = [];
-        $app_params = [':student_id' => $user_id];
-        if (!empty($requested['name'])) { $app_updates[] = "`student_name` = :name"; $app_params[':name'] = $requested['name']; }
-        if (!empty($new_email_applied)) { $app_updates[] = "`student_email` = :student_email"; $app_params[':student_email'] = $new_email_applied; }
-        if (!empty($requested['course'])) { $app_updates[] = "`course` = :course"; $app_params[':course'] = $requested['course']; }
-        if (!empty($requested['year_level'])) { $app_updates[] = "`year_level` = :year_level"; $app_params[':year_level'] = $requested['year_level']; }
-        if (!empty($requested['sex'])) { $app_updates[] = "`sex` = :sex"; $app_params[':sex'] = $requested['sex']; }
-        if (!empty($requested['age'])) { $app_updates[] = "`age` = :age"; $app_params[':age'] = (int)$requested['age']; }
+        // 2. Update student_profiles subtype table
+        $student_updates = [];
+        $student_params = [':user_id' => $user_id];
 
-        if (!empty($app_updates)) {
-            $app_sql = "UPDATE `applications` SET " . implode(', ', $app_updates) . ", `updated_at` = NOW() WHERE `student_id` = :student_id";
-            $upd_app_stmt = $pdo->prepare($app_sql);
-            $upd_app_stmt->execute($app_params);
+        if (!empty($requested['department'])) { $student_updates[] = "`department` = :department"; $student_params[':department'] = $requested['department']; }
+        if (!empty($requested['course'])) { $student_updates[] = "`course` = :course"; $student_params[':course'] = $requested['course']; }
+        if (!empty($requested['year_level'])) { $student_updates[] = "`year_level` = :year_level"; $student_params[':year_level'] = $requested['year_level']; }
+        if (!empty($requested['sex'])) { $student_updates[] = "`sex` = :sex"; $student_params[':sex'] = $requested['sex']; }
+        if (!empty($requested['birthdate'])) { $student_updates[] = "`birthdate` = :birthdate"; $student_params[':birthdate'] = $requested['birthdate']; }
+        if (!empty($requested['age'])) { $student_updates[] = "`age` = :age"; $student_params[':age'] = (int)$requested['age']; }
+        if (!empty($target_req['proof_file'])) { $student_updates[] = "`registration_proof` = :proof"; $student_params[':proof'] = $target_req['proof_file']; }
+
+        // If the student's registration was rejected or awaiting revision, approving their official correction restores full verified status
+        $cur_user_row = get_user_by_id($user_id);
+        if ($cur_user_row && in_array($cur_user_row['verification_status'] ?? '', ['rejected', 'pending_approval'])) {
+            $student_updates[] = "`verification_status` = 'verified'";
+            $student_updates[] = "`rejection_reason` = NULL";
         }
 
-        // Update user_email in profile_requests if email was changed
-        if (!empty($new_email_applied)) {
-            $upd_pr_email = $pdo->prepare("UPDATE `profile_requests` SET `user_email` = :new_em WHERE `user_id` = :uid");
-            $upd_pr_email->execute([':new_em' => $new_email_applied, ':uid' => $user_id]);
+        if (!empty($student_updates)) {
+            $student_sql = "UPDATE `student_profiles` SET " . implode(', ', $student_updates) . ", `updated_at` = NOW() WHERE `user_id` = :user_id";
+            $upd_student_stmt = $pdo->prepare($student_sql);
+            $upd_student_stmt->execute($student_params);
         }
 
-        // Mark request as approved
+        // 3. Mark request as approved
         $stmt_req_upd = $pdo->prepare("
             UPDATE `profile_requests` 
             SET `status` = 'approved', `admin_notes` = :notes, `resolved_at` = NOW(), `dismissed_by_user` = 0 
@@ -1166,11 +1290,24 @@ function reject_profile_request($request_id, $admin_notes = '') {
 function get_jobs($category = null, $keyword = null, $department = null, $pay_type = null, $job_type = null, $employer_type = null, $work_setup = null, $employer_id = null) {
     try {
         $pdo = get_db_connection();
-        $sql = "SELECT * FROM `jobs` WHERE 1=1";
+        $sql = "
+            SELECT 
+                j.*,
+                c.`name` AS `category`,
+                COALESCE(ep.`organization_name`, j.`department`) AS `organization_name`,
+                u.`name` AS `employer_name`,
+                COALESCE(ep.`employer_type`, 'university_office') AS `employer_type`,
+                CASE WHEN ep.`verification_status` = 'verified' OR u.`role` = 'admin' THEN 1 ELSE 0 END AS `verified_employer`
+            FROM `jobs` j
+            LEFT JOIN `categories` c ON j.`category_id` = c.`id`
+            LEFT JOIN `users` u ON j.`employer_id` = u.`id`
+            LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+            WHERE 1=1
+        ";
         $params = [];
 
         if ($employer_id !== null) {
-            $sql .= " AND `employer_id` = :emp_owner_id";
+            $sql .= " AND j.`employer_id` = :emp_owner_id";
             $params[':emp_owner_id'] = (int)$employer_id;
         }
 
@@ -1181,14 +1318,14 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
                 foreach ($category as $cat_val) {
                     if (empty($cat_val) || !is_scalar($cat_val)) continue;
                     $p_name = ":cat_" . ($i++);
-                    $cat_clauses[] = "(`category` LIKE $p_name OR `category_id` = $p_name)";
+                    $cat_clauses[] = "(c.`name` LIKE $p_name OR j.`category_id` = $p_name)";
                     $params[$p_name] = '%' . trim((string)$cat_val) . '%';
                 }
                 if (!empty($cat_clauses)) {
                     $sql .= " AND (" . implode(' OR ', $cat_clauses) . ")";
                 }
             } else {
-                $sql .= " AND (`category` LIKE :cat OR `category_id` = :cat_exact)";
+                $sql .= " AND (c.`name` LIKE :cat OR j.`category_id` = :cat_exact)";
                 $params[':cat'] = '%' . trim($category) . '%';
                 $params[':cat_exact'] = trim($category);
             }
@@ -1201,45 +1338,45 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
                 foreach ($job_type as $jt_val) {
                     if (empty($jt_val) || !is_scalar($jt_val)) continue;
                     $p_name = ":jt_" . ($j++);
-                    $jt_clauses[] = "`job_type` LIKE $p_name";
+                    $jt_clauses[] = "j.`job_type` LIKE $p_name";
                     $params[$p_name] = '%' . trim((string)$jt_val) . '%';
                 }
                 if (!empty($jt_clauses)) {
                     $sql .= " AND (" . implode(' OR ', $jt_clauses) . ")";
                 }
             } else {
-                $sql .= " AND `job_type` LIKE :jt";
+                $sql .= " AND j.`job_type` LIKE :jt";
                 $params[':jt'] = '%' . trim($job_type) . '%';
             }
         }
 
         if ($employer_type) {
-            $sql .= " AND `employer_type` = :employer_type";
+            $sql .= " AND ep.`employer_type` = :employer_type";
             $params[':employer_type'] = $employer_type;
         }
 
         if ($work_setup) {
-            $sql .= " AND `work_setup` = :work_setup";
+            $sql .= " AND j.`work_setup` = :work_setup";
             $params[':work_setup'] = $work_setup;
         }
 
         if ($department) {
             $dept_val = '%' . trim($department) . '%';
-            $sql .= " AND (`department` LIKE :dept1 OR `organization_name` LIKE :dept2)";
+            $sql .= " AND (j.`department` LIKE :dept1 OR ep.`organization_name` LIKE :dept2)";
             $params[':dept1'] = $dept_val;
             $params[':dept2'] = $dept_val;
         }
 
         if ($pay_type) {
             $pt_val = '%' . trim($pay_type) . '%';
-            $sql .= " AND (`pay_type` LIKE :pt1 OR `pay_rate` LIKE :pt2)";
+            $sql .= " AND (j.`pay_type` LIKE :pt1 OR j.`pay_rate` LIKE :pt2)";
             $params[':pt1'] = $pt_val;
             $params[':pt2'] = $pt_val;
         }
 
         if ($keyword) {
             $kw = '%' . trim($keyword) . '%';
-            $sql .= " AND (`title` LIKE :kw1 OR `department` LIKE :kw2 OR `organization_name` LIKE :kw3 OR `description` LIKE :kw4 OR `location` LIKE :kw5 OR `tags` LIKE :kw6 OR `category` LIKE :kw7)";
+            $sql .= " AND (j.`title` LIKE :kw1 OR j.`department` LIKE :kw2 OR ep.`organization_name` LIKE :kw3 OR j.`description` LIKE :kw4 OR j.`location` LIKE :kw5 OR j.`tags` LIKE :kw6 OR c.`name` LIKE :kw7)";
             $params[':kw1'] = $kw;
             $params[':kw2'] = $kw;
             $params[':kw3'] = $kw;
@@ -1249,7 +1386,7 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
             $params[':kw7'] = $kw;
         }
 
-        $sql .= " ORDER BY `id` DESC";
+        $sql .= " ORDER BY j.`id` DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
@@ -1264,7 +1401,20 @@ function get_jobs($category = null, $keyword = null, $department = null, $pay_ty
 function get_job_by_id($id) {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `jobs` WHERE `id` = :id LIMIT 1");
+        $stmt = $pdo->prepare("
+            SELECT 
+                j.*,
+                c.`name` AS `category`,
+                COALESCE(ep.`organization_name`, j.`department`) AS `organization_name`,
+                u.`name` AS `employer_name`,
+                COALESCE(ep.`employer_type`, 'university_office') AS `employer_type`,
+                CASE WHEN ep.`verification_status` = 'verified' OR u.`role` = 'admin' THEN 1 ELSE 0 END AS `verified_employer`
+            FROM `jobs` j
+            LEFT JOIN `categories` c ON j.`category_id` = c.`id`
+            LEFT JOIN `users` u ON j.`employer_id` = u.`id`
+            LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+            WHERE j.`id` = :id LIMIT 1
+        ");
         $stmt->execute([':id' => (int)$id]);
         $row = $stmt->fetch();
         return $row ? hydrate_job($row) : null;
@@ -1282,7 +1432,6 @@ function create_job($data, $photo_file = null) {
         $org_name = $user['organization_name'] ?? ($user['department'] ?? ($data['department'] ?? 'Campus Department'));
         $work_setup = $data['work_setup'] ?? 'On-Campus';
         $job_type = $data['job_type'] ?? 'Student Assistant';
-        $is_verified_employer = (($user['role'] ?? '') === 'admin' || ($user['verification_status'] ?? 'verified') === 'verified') ? 1 : 0;
         $vacancies_count = max(1, (int)($data['vacancies'] ?? 1));
 
         // Handle optional photo upload
@@ -1311,15 +1460,15 @@ function create_job($data, $photo_file = null) {
 
         $stmt = $pdo->prepare("
             INSERT INTO `jobs` (
-                `title`, `department`, `organization_name`, `category`, `category_id`,
-                `employer_id`, `employer_name`, `employer_type`, `job_type`, `work_setup`,
-                `verified_employer`, `location`, `pay_rate`, `pay_type`, `hours_per_week`,
+                `title`, `department`, `category_id`,
+                `employer_id`, `job_type`, `work_setup`,
+                `location`, `pay_rate`, `pay_type`, `hours_per_week`,
                 `vacancies`, `slots_total`, `slots_filled`, `deadline`, `status`, `image`,
                 `tags`, `badges`, `description`, `responsibilities`, `qualifications`, `created_at`
             ) VALUES (
-                :title, :department, :organization_name, :category, :category_id,
-                :employer_id, :employer_name, :employer_type, :job_type, :work_setup,
-                :verified_employer, :location, :pay_rate, :pay_type, :hours_per_week,
+                :title, :department, :category_id,
+                :employer_id, :job_type, :work_setup,
+                :location, :pay_rate, :pay_type, :hours_per_week,
                 :vacancies, :slots_total, 0, :deadline, 'active', :image,
                 :tags, :badges, :description, :responsibilities, :qualifications, NOW()
             )
@@ -1328,15 +1477,10 @@ function create_job($data, $photo_file = null) {
         $stmt->execute([
             ':title'             => $data['title'] ?? '',
             ':department'        => $data['department'] ?? $org_name,
-            ':organization_name' => $org_name,
-            ':category'          => $category_name,
             ':category_id'       => $category_id,
             ':employer_id'       => (int)($user['id'] ?? 0),
-            ':employer_name'     => $user['name'] ?? 'Office Supervisor',
-            ':employer_type'     => $employer_type,
             ':job_type'          => $job_type,
             ':work_setup'        => $work_setup,
-            ':verified_employer' => $is_verified_employer,
             ':location'          => $data['location'] ?? 'Campus Main Office',
             ':pay_rate'          => $data['pay_rate'] ?? '₱80.00 / hour',
             ':pay_type'          => $data['pay_type'] ?? 'Hourly',
@@ -1393,7 +1537,7 @@ function update_job($id, $data, $photo_file = null) {
         $stmt = $pdo->prepare("
             UPDATE `jobs` SET
                 `title` = :title,
-                `category` = :category,
+                `department` = :department,
                 `category_id` = :category_id,
                 `job_type` = :job_type,
                 `work_setup` = :work_setup,
@@ -1414,7 +1558,7 @@ function update_job($id, $data, $photo_file = null) {
 
         $stmt->execute([
             ':title'            => $data['title'] ?? $existing['title'],
-            ':category'         => $category_name,
+            ':department'       => $data['department'] ?? $existing['department'],
             ':category_id'      => $category_id,
             ':job_type'         => $data['job_type'] ?? $existing['job_type'],
             ':work_setup'       => $data['work_setup'] ?? $existing['work_setup'],
@@ -1470,11 +1614,33 @@ function delete_job($id) {
 function get_applications($student_id = null, $job_id = null, $department = null, $employer_id = null) {
     try {
         $pdo = get_db_connection();
-        $sql = "SELECT a.* FROM `applications` a";
-        if ($employer_id !== null) {
-            $sql .= " INNER JOIN `jobs` j ON j.`id` = a.`job_id`";
-        }
-        $sql .= " WHERE 1=1";
+        $sql = "
+            SELECT 
+                a.*,
+                j.`title` AS `job_title`,
+                j.`department` AS `department`,
+                j.`employer_id`,
+                j.`pay_rate`,
+                j.`pay_type`,
+                j.`job_type`,
+                j.`work_setup`,
+                j.`status` AS `job_status`,
+                u.`name` AS `student_name`,
+                u.`email` AS `student_email`,
+                u.`phone`,
+                sp.`student_id` AS `student_number`,
+                sp.`department` AS `student_department`,
+                sp.`course`,
+                sp.`year_level`,
+                sp.`sex`,
+                sp.`birthdate`,
+                sp.`age`
+            FROM `applications` a
+            INNER JOIN `jobs` j ON a.`job_id` = j.`id`
+            INNER JOIN `users` u ON a.`student_id` = u.`id`
+            LEFT JOIN `student_profiles` sp ON a.`student_id` = sp.`user_id`
+            WHERE 1=1
+        ";
         $params = [];
 
         if ($student_id !== null && $student_id !== '') {
@@ -1486,7 +1652,7 @@ function get_applications($student_id = null, $job_id = null, $department = null
             $params[':job_id'] = (int)$job_id;
         }
         if ($department) {
-            $sql .= " AND a.`department` LIKE :dept";
+            $sql .= " AND j.`department` LIKE :dept";
             $params[':dept'] = '%' . trim($department) . '%';
         }
         if ($employer_id !== null) {
@@ -1509,7 +1675,33 @@ function get_applications($student_id = null, $job_id = null, $department = null
 function get_application_by_id($id) {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `applications` WHERE `id` = :id LIMIT 1");
+        $stmt = $pdo->prepare("
+            SELECT 
+                a.*,
+                j.`title` AS `job_title`,
+                j.`department` AS `department`,
+                j.`employer_id`,
+                j.`pay_rate`,
+                j.`pay_type`,
+                j.`job_type`,
+                j.`work_setup`,
+                j.`status` AS `job_status`,
+                u.`name` AS `student_name`,
+                u.`email` AS `student_email`,
+                u.`phone`,
+                sp.`student_id` AS `student_number`,
+                sp.`department` AS `student_department`,
+                sp.`course`,
+                sp.`year_level`,
+                sp.`sex`,
+                sp.`birthdate`,
+                sp.`age`
+            FROM `applications` a
+            INNER JOIN `jobs` j ON a.`job_id` = j.`id`
+            INNER JOIN `users` u ON a.`student_id` = u.`id`
+            LEFT JOIN `student_profiles` sp ON a.`student_id` = sp.`user_id`
+            WHERE a.`id` = :id LIMIT 1
+        ");
         $stmt->execute([':id' => (int)$id]);
         $row = $stmt->fetch();
         return $row ? hydrate_application($row) : null;
@@ -1571,33 +1763,19 @@ function create_application($data) {
 
         $stmt = $pdo->prepare("
             INSERT INTO `applications` (
-                `job_id`, `job_title`, `department`, `student_id`, `student_name`,
-                `student_number`, `student_email`, `course`, `year_level`, `sex`,
-                `age`, `phone`, `cover_letter`, `availability`, `resume_file`,
-                `study_load_file`, `status`, `status_label`, `status_badge`,
+                `job_id`, `student_id`, `cover_letter`, `availability`,
+                `resume_file`, `study_load_file`, `status`,
                 `supervisor_notes`, `applied_at`, `updated_at`
             ) VALUES (
-                :job_id, :job_title, :department, :student_id, :student_name,
-                :student_number, :student_email, :course, :year_level, :sex,
-                :age, :phone, :cover_letter, :availability, :resume_file,
-                :study_load_file, 'pending', 'Pending Review', 'warning',
+                :job_id, :student_id, :cover_letter, :availability,
+                :resume_file, :study_load_file, 'pending',
                 'Application submitted and queued for evaluation.', NOW(), NOW()
             )
         ");
 
         $stmt->execute([
             ':job_id'          => $job['id'],
-            ':job_title'       => $job['title'],
-            ':department'      => $job['department'],
             ':student_id'      => $student_id,
-            ':student_name'    => $user['name'] ?? 'Juan Dela Cruz',
-            ':student_number'  => $user['student_id'] ?? '2024-00123',
-            ':student_email'   => $user['email'] ?? 'student@kld.edu.ph',
-            ':course'          => $user['course'] ?? 'BS Information Systems (BSIS)',
-            ':year_level'      => $user['year_level'] ?? '2nd Year',
-            ':sex'             => $user['sex'] ?? 'Male',
-            ':age'             => $user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20),
-            ':phone'           => $data['phone'] ?? ($user['phone'] ?? '+63 917 123 4567'),
             ':cover_letter'    => $data['cover_letter'] ?? '',
             ':availability'    => json_encode($availability),
             ':resume_file'     => $resume_file,
@@ -1677,8 +1855,6 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
         $stmt = $pdo->prepare("
             UPDATE `applications` SET
                 `status` = :status,
-                `status_label` = :status_label,
-                `status_badge` = :status_badge,
                 `supervisor_notes` = :notes,
                 `interview_date` = COALESCE(:interview_date, `interview_date`),
                 `interview_time` = COALESCE(:interview_time, `interview_time`),
@@ -1689,8 +1865,6 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
 
         $stmt->execute([
             ':status'          => $status,
-            ':status_label'    => $status_label,
-            ':status_badge'    => $status_badge,
             ':notes'           => $notes,
             ':interview_date'  => $interview_date,
             ':interview_time'  => $interview_time,
@@ -1701,19 +1875,38 @@ function update_application_status($id, $status, $notes = '', $interview_data = 
         // Synchronize slots_filled and job status
         if ($job_id > 0) {
             if ($old_status !== 'accepted' && $status === 'accepted') {
+                // Capacity ceiling guard (Defect 2 Fix): prevent overfilling
+                $stmt_check = $pdo->prepare("SELECT `slots_filled`, `slots_total`, `vacancies` FROM `jobs` WHERE `id` = :job_id FOR UPDATE");
+                $stmt_check->execute([':job_id' => $job_id]);
+                $job_quota = $stmt_check->fetch(PDO::FETCH_ASSOC);
+
+                if (!$job_quota) {
+                    $pdo->rollBack();
+                    return false;
+                }
+
+                $slots_max = max(1, (int)($job_quota['slots_total'] ?? 0), (int)($job_quota['vacancies'] ?? 0));
+                $slots_curr = (int)($job_quota['slots_filled'] ?? 0);
+                if ($slots_curr >= $slots_max) {
+                    $pdo->rollBack();
+                    return false; // Prevent overfilling
+                }
+
+                // Corrected SQL evaluation (Defect 1 Fix): remove redundant '+ 1' inside CASE clause
                 $stmt_inc = $pdo->prepare("
                     UPDATE `jobs` SET
                         `slots_filled` = `slots_filled` + 1,
-                        `status` = CASE WHEN (`slots_filled` + 1) >= `slots_total` THEN 'filled' ELSE `status` END,
+                        `status` = CASE WHEN `slots_filled` >= `slots_total` THEN 'closed' ELSE `status` END,
                         `updated_at` = NOW()
                     WHERE `id` = :job_id
                 ");
                 $stmt_inc->execute([':job_id' => $job_id]);
             } elseif ($old_status === 'accepted' && $status !== 'accepted') {
+                // Decrement: evaluate status against new decremented value without double-decrementing
                 $stmt_dec = $pdo->prepare("
                     UPDATE `jobs` SET
                         `slots_filled` = GREATEST(0, `slots_filled` - 1),
-                        `status` = CASE WHEN `status` = 'filled' AND (GREATEST(0, `slots_filled` - 1) < `slots_total`) THEN 'active' ELSE `status` END,
+                        `status` = CASE WHEN `status` = 'closed' AND (`slots_filled` < `slots_total`) THEN 'active' ELSE `status` END,
                         `updated_at` = NOW()
                     WHERE `id` = :job_id
                 ");
@@ -1837,18 +2030,21 @@ function get_categories() {
 
         // Dynamic active job counts
         $stmt_counts = $pdo->query("
-            SELECT `category`, COUNT(*) as cnt 
-            FROM `jobs` 
-            WHERE `status` = 'active' 
-            GROUP BY `category`
+            SELECT j.`category_id`, c.`name` AS category_name, COUNT(*) AS cnt 
+            FROM `jobs` j
+            JOIN `categories` c ON j.`category_id` = c.`id`
+            WHERE j.`status` = 'active' 
+            GROUP BY j.`category_id`, c.`name`
         ");
-        $counts = [];
+        $counts_by_id = [];
+        $counts_by_name = [];
         while ($row = $stmt_counts->fetch()) {
-            $counts[$row['category']] = (int)$row['cnt'];
+            $counts_by_id[(int)$row['category_id']] = (int)$row['cnt'];
+            $counts_by_name[$row['category_name']] = (int)$row['cnt'];
         }
 
         foreach ($cats as &$cat) {
-            $cat['job_count'] = $counts[$cat['name']] ?? 0;
+            $cat['job_count'] = $counts_by_id[(int)$cat['id']] ?? ($counts_by_name[$cat['name']] ?? 0);
         }
 
         return $cats;
@@ -2029,28 +2225,71 @@ function get_metrics_avg_hourly_pay() {
 }
 
 // ============================================================================
-// UNIFIED SYSTEM DATA MODE (Coexisting Demo & Real Data)
+// SYSTEM DATA MODE SWITCHING (Demo / Real Toggle)
 // ============================================================================
 
 function get_system_data_mode() {
-    return 'live';
+    $mode_file = DATA_DIR . '/system_mode.json';
+    if (file_exists($mode_file)) {
+        $data = json_decode(file_get_contents($mode_file), true);
+        return ($data['active_mode'] ?? 'demo');
+    }
+    return 'demo';
 }
 
 function switch_system_data_mode($mode, $switched_by = 'User') {
-    // Mode switching is permanently unified: demo fixtures and real accounts coexist.
+    $seed_dir = DATA_DIR . '/seeds/' . $mode;
+    if (!is_dir($seed_dir)) {
+        return false;
+    }
+
+    // 1. Sync seed files to data/
+    $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
+                   'profile_requests.json', 'updates.json', 'devblogs.json'];
+
+    foreach ($data_files as $file) {
+        $src = $seed_dir . '/' . $file;
+        $dst = DATA_DIR . '/' . $file;
+        if (file_exists($src)) {
+            copy($src, $dst);
+        }
+    }
+
+    // 2. Re-import into MySQL
+    try {
+        require_once dirname(__DIR__) . '/database/migrate.php';
+        execute_migration_and_seed(false, DATA_DIR, false, true);
+    } catch (Exception $e) {
+        error_log("switch_system_data_mode db error: " . $e->getMessage());
+    }
+
+    // Record mode change
+    $mode_data = [
+        'active_mode' => $mode,
+        'last_switched_at' => date('Y-m-d H:i:s'),
+        'switched_by' => $switched_by
+    ];
+    file_put_contents(DATA_DIR . '/system_mode.json', json_encode($mode_data, JSON_PRETTY_PRINT));
+
+    // Clear session user
+    unset($_SESSION['user']);
+    unset($_SESSION['flash']);
+
     return true;
 }
 
 function reset_current_data_mode($switched_by = 'User') {
-    return true;
+    $current_mode = get_system_data_mode();
+    return switch_system_data_mode($current_mode, $switched_by);
 }
 
 function wipe_real_data_fresh() {
-    return true;
+    return switch_system_data_mode('real', 'System Wipe');
 }
 
 function reset_demo_data() {
-    return true;
+    switch_system_data_mode('demo', 'System Reset');
+    set_flash('info', 'Demo dataset has been reset to default campus state.');
 }
 
 // ============================================================================
@@ -2060,7 +2299,17 @@ function reset_demo_data() {
 function get_career_updates() {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->query("SELECT * FROM `updates` ORDER BY `published_at` DESC, `id` DESC");
+        $stmt = $pdo->query("
+            SELECT 
+                up.*,
+                COALESCE(u.name, 'Career Development Office') AS author_name,
+                COALESCE(ep.office_location, u.role, 'Coordinator') AS author_role,
+                COALESCE(ep.organization_name, 'KLD Career Development & Placement Office') AS author_office
+            FROM `updates` up
+            LEFT JOIN `users` u ON u.id = up.author_id
+            LEFT JOIN `employer_profiles` ep ON ep.user_id = u.id
+            ORDER BY up.`published_at` DESC, up.`id` DESC
+        ");
         $rows = $stmt->fetchAll();
         return array_map('hydrate_update', $rows);
     } catch (Exception $e) {
@@ -2072,7 +2321,17 @@ function get_career_updates() {
 function get_career_update_by_id($id) {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `updates` WHERE `id` = :id LIMIT 1");
+        $stmt = $pdo->prepare("
+            SELECT 
+                up.*,
+                COALESCE(u.name, 'Career Development Office') AS author_name,
+                COALESCE(ep.office_location, u.role, 'Coordinator') AS author_role,
+                COALESCE(ep.organization_name, 'KLD Career Development & Placement Office') AS author_office
+            FROM `updates` up
+            LEFT JOIN `users` u ON u.id = up.author_id
+            LEFT JOIN `employer_profiles` ep ON ep.user_id = u.id
+            WHERE up.`id` = :id LIMIT 1
+        ");
         $stmt->execute([':id' => (int)$id]);
         $row = $stmt->fetch();
         return $row ? hydrate_update($row) : null;
@@ -2085,13 +2344,22 @@ function get_career_update_by_id($id) {
 function get_latest_career_updates($limit = 3, $exclude_id = null) {
     try {
         $pdo = get_db_connection();
-        $sql = "SELECT * FROM `updates`";
+        $sql = "
+            SELECT 
+                up.*,
+                COALESCE(u.name, 'Career Development Office') AS author_name,
+                COALESCE(ep.office_location, u.role, 'Coordinator') AS author_role,
+                COALESCE(ep.organization_name, 'KLD Career Development & Placement Office') AS author_office
+            FROM `updates` up
+            LEFT JOIN `users` u ON u.id = up.author_id
+            LEFT JOIN `employer_profiles` ep ON ep.user_id = u.id
+        ";
         $params = [];
         if ($exclude_id !== null) {
-            $sql .= " WHERE `id` != :ex_id";
+            $sql .= " WHERE up.`id` != :ex_id";
             $params[':ex_id'] = (int)$exclude_id;
         }
-        $sql .= " ORDER BY `published_at` DESC, `id` DESC LIMIT " . (int)$limit;
+        $sql .= " ORDER BY up.`published_at` DESC, up.`id` DESC LIMIT " . (int)$limit;
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
@@ -2112,9 +2380,8 @@ function add_career_update($data) {
         $word_count = str_word_count(strip_tags($content));
         $read_time = max(1, ceil($word_count / 200)) . ' min read';
 
+        $author_id = isset($data['author_id']) ? (int)$data['author_id'] : (int)($_SESSION['user']['id'] ?? 5);
         $author_name = trim($data['author_name'] ?? 'Career Development Office');
-        $author_role = trim($data['author_role'] ?? 'Coordinator');
-        $author_office = trim($data['author_office'] ?? 'KLD Career Development & Placement Office');
         
         $initials = '';
         $name_parts = explode(' ', $author_name);
@@ -2129,12 +2396,10 @@ function add_career_update($data) {
         $stmt = $pdo->prepare("
             INSERT INTO `updates` (
                 `slug`, `title`, `category`, `published_at`, `read_time`,
-                `author_name`, `author_role`, `author_office`, `author_avatar`,
-                `image`, `summary`, `content`, `created_at`
+                `author_id`, `author_avatar`, `image`, `summary`, `content`, `created_at`
             ) VALUES (
                 :slug, :title, :category, :published_at, :read_time,
-                :author_name, :author_role, :author_office, :author_avatar,
-                :image, :summary, :content, NOW()
+                :author_id, :author_avatar, :image, :summary, :content, NOW()
             )
         ");
 
@@ -2144,9 +2409,7 @@ function add_career_update($data) {
             ':category'      => trim($data['category'] ?? 'Campus News'),
             ':published_at'  => $data['published_at'] ?? date('Y-m-d H:i:s'),
             ':read_time'     => $data['read_time'] ?? $read_time,
-            ':author_name'   => $author_name,
-            ':author_role'   => $author_role,
-            ':author_office' => $author_office,
+            ':author_id'     => $author_id,
             ':author_avatar' => $initials,
             ':image'         => $image,
             ':summary'       => $summary,
@@ -2195,24 +2458,9 @@ function update_career_update($id, $data) {
             $updates[] = "`image` = :image";
             $params[':image'] = trim($data['image']);
         }
-        if (isset($data['author_name'])) {
-            $updates[] = "`author_name` = :author_name";
-            $updates[] = "`author_avatar` = :author_avatar";
-            $params[':author_name'] = trim($data['author_name']);
-            $initials = '';
-            $name_parts = explode(' ', $data['author_name']);
-            foreach ($name_parts as $np) {
-                if (!empty($np)) $initials .= strtoupper(substr($np, 0, 1));
-            }
-            $params[':author_avatar'] = substr($initials, 0, 2) ?: 'CC';
-        }
-        if (isset($data['author_role'])) {
-            $updates[] = "`author_role` = :author_role";
-            $params[':author_role'] = trim($data['author_role']);
-        }
-        if (isset($data['author_office'])) {
-            $updates[] = "`author_office` = :author_office";
-            $params[':author_office'] = trim($data['author_office']);
+        if (isset($data['author_id'])) {
+            $updates[] = "`author_id` = :author_id";
+            $params[':author_id'] = (int)$data['author_id'];
         }
 
         if (!empty($updates)) {

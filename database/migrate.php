@@ -45,14 +45,21 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
 
             $log_fn("Executing schema.sql DDL statements...");
             $sql = file_get_contents($schema_file);
-            $pdo->exec($sql);
+            $statements = array_filter(array_map('trim', explode(';', $sql)));
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+            foreach ($statements as $stmt) {
+                if (!empty($stmt)) {
+                    $pdo->exec($stmt);
+                }
+            }
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
             $log_fn("Tables created/verified successfully.", "success");
         }
 
         // Truncate tables if requested for a clean datastore reset
         if ($truncate) {
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            $allowed_tables = ['notifications', 'devblogs', 'updates', 'profile_requests', 'applications', 'jobs', 'categories', 'users'];
+            $allowed_tables = ['notifications', 'devblogs', 'updates', 'profile_requests', 'applications', 'jobs', 'student_profiles', 'employer_profiles', 'categories', 'users'];
             foreach ($allowed_tables as $t) {
                 // Strict whitelist validation for security audit compliance
                 if (in_array($t, $allowed_tables, true) && preg_match('/^[a-z0-9_]+$/i', $t)) {
@@ -116,28 +123,32 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         }
         $log_fn("Imported $count_cats categories.", "success");
 
-        // 3. Migrate Users
-        $log_fn("Migrating users...");
+        // 3. Migrate Users (Class Table Inheritance: users, student_profiles, employer_profiles)
+        $log_fn("Migrating users and subtypes (student_profiles, employer_profiles)...");
         $users = $read_json('users.json');
         $stmt_user = $pdo->prepare("
-            INSERT INTO `users` (
-                `id`, `email`, `password`, `role`, `name`, `student_id`, `department`, `course`, 
-                `year_level`, `sex`, `birthdate`, `age`, `phone`, `status`, `employer_type`, 
-                `organization_name`, `office_location`, `contact_person`, `accreditation_number`, 
-                `verification_status`, `rejection_reason`, `business_permit`, `registration_proof`, 
-                `availability`, `created_at`
-            ) VALUES (
-                :id, :email, :password, :role, :name, :student_id, :department, :course,
-                :year_level, :sex, :birthdate, :age, :phone, :status, :employer_type,
-                :organization_name, :office_location, :contact_person, :accreditation_number,
-                :verification_status, :rejection_reason, :business_permit, :registration_proof,
-                :availability, :created_at
-            )
+            INSERT INTO `users` (`id`, `email`, `password`, `role`, `name`, `phone`, `status`, `created_at`)
+            VALUES (:id, :email, :password, :role, :name, :phone, :status, :created_at)
             ON DUPLICATE KEY UPDATE
                 `email` = VALUES(`email`),
                 `password` = VALUES(`password`),
                 `role` = VALUES(`role`),
                 `name` = VALUES(`name`),
+                `phone` = VALUES(`phone`),
+                `status` = VALUES(`status`)
+        ");
+
+        $stmt_student = $pdo->prepare("
+            INSERT INTO `student_profiles` (
+                `user_id`, `student_id`, `department`, `course`, `year_level`, 
+                `sex`, `birthdate`, `age`, `availability`, `verification_status`, 
+                `rejection_reason`, `registration_proof`, `created_at`
+            ) VALUES (
+                :user_id, :student_id, :department, :course, :year_level,
+                :sex, :birthdate, :age, :availability, :verification_status,
+                :rejection_reason, :registration_proof, :created_at
+            )
+            ON DUPLICATE KEY UPDATE
                 `student_id` = VALUES(`student_id`),
                 `department` = VALUES(`department`),
                 `course` = VALUES(`course`),
@@ -145,8 +156,23 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 `sex` = VALUES(`sex`),
                 `birthdate` = VALUES(`birthdate`),
                 `age` = VALUES(`age`),
-                `phone` = VALUES(`phone`),
-                `status` = VALUES(`status`),
+                `availability` = VALUES(`availability`),
+                `verification_status` = VALUES(`verification_status`),
+                `rejection_reason` = VALUES(`rejection_reason`),
+                `registration_proof` = VALUES(`registration_proof`)
+        ");
+
+        $stmt_employer = $pdo->prepare("
+            INSERT INTO `employer_profiles` (
+                `user_id`, `employer_type`, `organization_name`, `office_location`, 
+                `contact_person`, `accreditation_number`, `verification_status`, 
+                `rejection_reason`, `business_permit`, `created_at`
+            ) VALUES (
+                :user_id, :employer_type, :organization_name, :office_location,
+                :contact_person, :accreditation_number, :verification_status,
+                :rejection_reason, :business_permit, :created_at
+            )
+            ON DUPLICATE KEY UPDATE
                 `employer_type` = VALUES(`employer_type`),
                 `organization_name` = VALUES(`organization_name`),
                 `office_location` = VALUES(`office_location`),
@@ -154,77 +180,89 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 `accreditation_number` = VALUES(`accreditation_number`),
                 `verification_status` = VALUES(`verification_status`),
                 `rejection_reason` = VALUES(`rejection_reason`),
-                `business_permit` = VALUES(`business_permit`),
-                `registration_proof` = VALUES(`registration_proof`),
-                `availability` = VALUES(`availability`)
+                `business_permit` = VALUES(`business_permit`)
         ");
 
         $count_users = 0;
+        $count_students = 0;
+        $count_employers = 0;
         foreach ($users as $u) {
-            $bdate = (!empty($u['birthdate']) && $u['birthdate'] !== '0000-00-00') ? $u['birthdate'] : null;
             $created_at = $u['created_at'] ?? date('Y-m-d H:i:s');
             if (strlen($created_at) === 10) $created_at .= ' 00:00:00';
 
             $stmt_user->execute([
-                ':id'                   => $u['id'],
-                ':email'                => strtolower(trim($u['email'])),
-                ':password'             => $u['password'] ?? 'Password123!',
-                ':role'                 => $u['role'] ?? 'student',
-                ':name'                 => $u['name'] ?? '',
-                ':student_id'           => $u['student_id'] ?? null,
-                ':department'           => $u['department'] ?? null,
-                ':course'               => $u['course'] ?? null,
-                ':year_level'           => $u['year_level'] ?? null,
-                ':sex'                  => $u['sex'] ?? null,
-                ':birthdate'            => $bdate,
-                ':age'                  => isset($u['age']) ? (int)$u['age'] : null,
-                ':phone'                => $u['phone'] ?? null,
-                ':status'               => $u['status'] ?? 'active',
-                ':employer_type'        => $u['employer_type'] ?? null,
-                ':organization_name'    => $u['organization_name'] ?? null,
-                ':office_location'      => $u['office_location'] ?? null,
-                ':contact_person'       => $u['contact_person'] ?? null,
-                ':accreditation_number' => $u['accreditation_number'] ?? null,
-                ':verification_status'  => $u['verification_status'] ?? 'verified',
-                ':rejection_reason'     => $u['rejection_reason'] ?? null,
-                ':business_permit'      => $u['permit_file'] ?? ($u['business_permit'] ?? null),
-                ':registration_proof'   => $u['proof_file'] ?? ($u['registration_proof'] ?? null),
-                ':availability'         => isset($u['availability']) ? json_encode($u['availability']) : null,
-                ':created_at'           => $created_at
+                ':id'         => $u['id'],
+                ':email'      => strtolower(trim($u['email'])),
+                ':password'   => $u['password'] ?? 'Password123!',
+                ':role'       => $u['role'] ?? 'student',
+                ':name'       => $u['name'] ?? '',
+                ':phone'      => $u['phone'] ?? null,
+                ':status'     => $u['status'] ?? 'active',
+                ':created_at' => $created_at
             ]);
             $count_users++;
-        }
-        $log_fn("Imported $count_users users.", "success");
 
-        // 4. Migrate Jobs
+            if (($u['role'] ?? '') === 'student') {
+                $bdate = (!empty($u['birthdate']) && $u['birthdate'] !== '0000-00-00') ? $u['birthdate'] : null;
+                $student_id = !empty($u['student_id']) ? $u['student_id'] : ('KLD-' . str_pad($u['id'], 6, '0', STR_PAD_LEFT));
+                $stmt_student->execute([
+                    ':user_id'             => $u['id'],
+                    ':student_id'          => $student_id,
+                    ':department'          => $u['department'] ?? 'Institute of Computing and Digital Innovation (ICDI)',
+                    ':course'              => $u['course'] ?? 'BS Information Systems (BSIS)',
+                    ':year_level'          => $u['year_level'] ?? '1st Year',
+                    ':sex'                 => $u['sex'] ?? null,
+                    ':birthdate'           => $bdate,
+                    ':age'                 => isset($u['age']) ? (int)$u['age'] : null,
+                    ':availability'        => isset($u['availability']) ? (is_array($u['availability']) ? json_encode($u['availability']) : $u['availability']) : null,
+                    ':verification_status' => $u['verification_status'] ?? 'verified',
+                    ':rejection_reason'    => $u['rejection_reason'] ?? null,
+                    ':registration_proof'  => $u['proof_file'] ?? ($u['registration_proof'] ?? null),
+                    ':created_at'          => $created_at
+                ]);
+                $count_students++;
+            } elseif (($u['role'] ?? '') === 'employer') {
+                $stmt_employer->execute([
+                    ':user_id'              => $u['id'],
+                    ':employer_type'        => $u['employer_type'] ?? 'university_office',
+                    ':organization_name'    => $u['organization_name'] ?? ($u['name'] ?? 'University Department'),
+                    ':office_location'      => $u['office_location'] ?? 'Campus Main Building',
+                    ':contact_person'       => $u['contact_person'] ?? ($u['name'] ?? null),
+                    ':accreditation_number' => $u['accreditation_number'] ?? null,
+                    ':verification_status'  => $u['verification_status'] ?? 'verified',
+                    ':rejection_reason'     => $u['rejection_reason'] ?? null,
+                    ':business_permit'      => $u['permit_file'] ?? ($u['business_permit'] ?? null),
+                    ':created_at'           => $created_at
+                ]);
+                $count_employers++;
+            }
+        }
+        $log_fn("Imported $count_users users ($count_students student profiles, $count_employers employer profiles).", "success");
+
+        // 4. Migrate Jobs (3NF Requisition Header)
         $log_fn("Migrating jobs...");
         $jobs = $read_json('jobs.json');
         $stmt_job = $pdo->prepare("
             INSERT INTO `jobs` (
-                `id`, `title`, `department`, `organization_name`, `category`, `category_id`, 
-                `employer_id`, `employer_name`, `employer_type`, `job_type`, `work_setup`, 
-                `verified_employer`, `location`, `pay_rate`, `pay_type`, `hours_per_week`, 
+                `id`, `title`, `department`, `category_id`, 
+                `employer_id`, `job_type`, `work_setup`, 
+                `location`, `pay_rate`, `pay_type`, `hours_per_week`, 
                 `vacancies`, `slots_total`, `slots_filled`, `deadline`, `status`, `image`, 
                 `tags`, `badges`, `description`, `responsibilities`, `qualifications`, `created_at`
             ) VALUES (
-                :id, :title, :department, :organization_name, :category, :category_id,
-                :employer_id, :employer_name, :employer_type, :job_type, :work_setup,
-                :verified_employer, :location, :pay_rate, :pay_type, :hours_per_week,
+                :id, :title, :department, :category_id,
+                :employer_id, :job_type, :work_setup,
+                :location, :pay_rate, :pay_type, :hours_per_week,
                 :vacancies, :slots_total, :slots_filled, :deadline, :status, :image,
                 :tags, :badges, :description, :responsibilities, :qualifications, :created_at
             )
             ON DUPLICATE KEY UPDATE
                 `title` = VALUES(`title`),
                 `department` = VALUES(`department`),
-                `organization_name` = VALUES(`organization_name`),
-                `category` = VALUES(`category`),
                 `category_id` = VALUES(`category_id`),
                 `employer_id` = VALUES(`employer_id`),
-                `employer_name` = VALUES(`employer_name`),
-                `employer_type` = VALUES(`employer_type`),
                 `job_type` = VALUES(`job_type`),
                 `work_setup` = VALUES(`work_setup`),
-                `verified_employer` = VALUES(`verified_employer`),
                 `location` = VALUES(`location`),
                 `pay_rate` = VALUES(`pay_rate`),
                 `pay_type` = VALUES(`pay_type`),
@@ -252,15 +290,10 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 ':id'                => $j['id'],
                 ':title'             => $j['title'] ?? '',
                 ':department'        => $j['department'] ?? '',
-                ':organization_name' => $j['organization_name'] ?? ($j['department'] ?? ''),
-                ':category'          => $j['category'] ?? '',
                 ':category_id'       => isset($j['category_id']) ? (int)$j['category_id'] : null,
                 ':employer_id'       => isset($j['employer_id']) ? (int)$j['employer_id'] : null,
-                ':employer_name'     => $j['employer_name'] ?? null,
-                ':employer_type'     => $j['employer_type'] ?? 'university_office',
                 ':job_type'          => $j['job_type'] ?? 'Student Assistant',
                 ':work_setup'        => $j['work_setup'] ?? 'On-Campus',
-                ':verified_employer' => !empty($j['verified_employer']) ? 1 : 0,
                 ':location'          => $j['location'] ?? null,
                 ':pay_rate'          => $j['pay_rate'] ?? '₱85.00 / hour',
                 ':pay_type'          => $j['pay_type'] ?? 'Hourly',
@@ -282,43 +315,29 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         }
         $log_fn("Imported $count_jobs jobs.", "success");
 
-        // 5. Migrate Applications
+        // 5. Migrate Applications (Pure Junction)
         $log_fn("Migrating applications...");
         $applications = $read_json('applications.json');
         $stmt_app = $pdo->prepare("
             INSERT INTO `applications` (
-                `id`, `job_id`, `job_title`, `department`, `student_id`, `student_name`, 
-                `student_number`, `student_email`, `course`, `year_level`, `sex`, `age`, 
-                `phone`, `cover_letter`, `availability`, `resume_file`, `study_load_file`, 
-                `status`, `status_label`, `status_badge`, `interview_date`, `interview_time`, 
+                `id`, `job_id`, `student_id`, 
+                `cover_letter`, `availability`, `resume_file`, `study_load_file`, 
+                `status`, `interview_date`, `interview_time`, 
                 `interview_venue`, `supervisor_notes`, `applied_at`, `updated_at`
             ) VALUES (
-                :id, :job_id, :job_title, :department, :student_id, :student_name,
-                :student_number, :student_email, :course, :year_level, :sex, :age,
-                :phone, :cover_letter, :availability, :resume_file, :study_load_file,
-                :status, :status_label, :status_badge, :interview_date, :interview_time,
+                :id, :job_id, :student_id,
+                :cover_letter, :availability, :resume_file, :study_load_file,
+                :status, :interview_date, :interview_time,
                 :interview_venue, :supervisor_notes, :applied_at, :updated_at
             )
             ON DUPLICATE KEY UPDATE
                 `job_id` = VALUES(`job_id`),
-                `job_title` = VALUES(`job_title`),
-                `department` = VALUES(`department`),
                 `student_id` = VALUES(`student_id`),
-                `student_name` = VALUES(`student_name`),
-                `student_number` = VALUES(`student_number`),
-                `student_email` = VALUES(`student_email`),
-                `course` = VALUES(`course`),
-                `year_level` = VALUES(`year_level`),
-                `sex` = VALUES(`sex`),
-                `age` = VALUES(`age`),
-                `phone` = VALUES(`phone`),
                 `cover_letter` = VALUES(`cover_letter`),
                 `availability` = VALUES(`availability`),
                 `resume_file` = VALUES(`resume_file`),
                 `study_load_file` = VALUES(`study_load_file`),
                 `status` = VALUES(`status`),
-                `status_label` = VALUES(`status_label`),
-                `status_badge` = VALUES(`status_badge`),
                 `interview_date` = VALUES(`interview_date`),
                 `interview_time` = VALUES(`interview_time`),
                 `interview_venue` = VALUES(`interview_venue`),
@@ -335,24 +354,12 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $stmt_app->execute([
                 ':id'               => $app['id'],
                 ':job_id'           => (int)$app['job_id'],
-                ':job_title'        => $app['job_title'] ?? '',
-                ':department'       => $app['department'] ?? '',
                 ':student_id'       => (int)($app['student_id'] ?? 0),
-                ':student_name'     => $app['student_name'] ?? '',
-                ':student_number'   => $app['student_number'] ?? null,
-                ':student_email'    => $app['student_email'] ?? '',
-                ':course'           => $app['course'] ?? null,
-                ':year_level'       => $app['year_level'] ?? null,
-                ':sex'              => $app['sex'] ?? null,
-                ':age'              => isset($app['age']) ? (int)$app['age'] : null,
-                ':phone'            => $app['phone'] ?? null,
                 ':cover_letter'     => $app['cover_letter'] ?? null,
-                ':availability'     => isset($app['availability']) ? json_encode($app['availability']) : null,
+                ':availability'     => isset($app['availability']) ? (is_array($app['availability']) ? json_encode($app['availability']) : $app['availability']) : null,
                 ':resume_file'      => $app['resume_file'] ?? null,
                 ':study_load_file'  => $app['study_load_file'] ?? null,
                 ':status'           => $app['status'] ?? 'pending',
-                ':status_label'     => $app['status_label'] ?? 'Pending Review',
-                ':status_badge'     => $app['status_badge'] ?? 'warning',
                 ':interview_date'   => $idate,
                 ':interview_time'   => $app['interview_time'] ?? null,
                 ':interview_venue'  => $app['interview_venue'] ?? null,
@@ -369,19 +376,16 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $requests = $read_json('profile_requests.json');
         $stmt_req = $pdo->prepare("
             INSERT INTO `profile_requests` (
-                `id`, `user_id`, `user_name`, `user_email`, `student_id`, `current_profile`, 
+                `id`, `user_id`, `current_profile`, 
                 `requested_profile`, `proof_file`, `reason`, `status`, `admin_notes`, 
                 `dismissed_by_user`, `created_at`, `resolved_at`
             ) VALUES (
-                :id, :user_id, :user_name, :user_email, :student_id, :current_profile,
+                :id, :user_id, :current_profile,
                 :requested_profile, :proof_file, :reason, :status, :admin_notes,
                 :dismissed_by_user, :created_at, :resolved_at
             )
             ON DUPLICATE KEY UPDATE
                 `user_id` = VALUES(`user_id`),
-                `user_name` = VALUES(`user_name`),
-                `user_email` = VALUES(`user_email`),
-                `student_id` = VALUES(`student_id`),
                 `current_profile` = VALUES(`current_profile`),
                 `requested_profile` = VALUES(`requested_profile`),
                 `proof_file` = VALUES(`proof_file`),
@@ -397,9 +401,6 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $stmt_req->execute([
                 ':id'                => $r['id'],
                 ':user_id'           => (int)$r['user_id'],
-                ':user_name'         => $r['user_name'] ?? '',
-                ':user_email'        => $r['user_email'] ?? '',
-                ':student_id'        => $r['student_id'] ?? null,
                 ':current_profile'   => isset($r['current_profile']) ? json_encode($r['current_profile']) : null,
                 ':requested_profile' => isset($r['requested_profile']) ? json_encode($r['requested_profile']) : null,
                 ':proof_file'        => $r['proof_file'] ?? null,
@@ -420,12 +421,12 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $stmt_upd = $pdo->prepare("
             INSERT INTO `updates` (
                 `id`, `slug`, `title`, `category`, `published_at`, `read_time`, 
-                `author_name`, `author_role`, `author_office`, `author_avatar`, 
-                `image`, `summary`, `content`
+                `author_id`, `author_avatar`, 
+                `image`, `summary`, `content`, `created_at`, `updated_at`
             ) VALUES (
                 :id, :slug, :title, :category, :published_at, :read_time,
-                :author_name, :author_role, :author_office, :author_avatar,
-                :image, :summary, :content
+                :author_id, :author_avatar,
+                :image, :summary, :content, :created_at, :updated_at
             )
             ON DUPLICATE KEY UPDATE
                 `slug` = VALUES(`slug`),
@@ -433,32 +434,34 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 `category` = VALUES(`category`),
                 `published_at` = VALUES(`published_at`),
                 `read_time` = VALUES(`read_time`),
-                `author_name` = VALUES(`author_name`),
-                `author_role` = VALUES(`author_role`),
-                `author_office` = VALUES(`author_office`),
+                `author_id` = VALUES(`author_id`),
                 `author_avatar` = VALUES(`author_avatar`),
                 `image` = VALUES(`image`),
                 `summary` = VALUES(`summary`),
-                `content` = VALUES(`content`)
+                `content` = VALUES(`content`),
+                `updated_at` = VALUES(`updated_at`)
         ");
 
         $count_upds = 0;
         foreach ($updates as $upd) {
             $author = $upd['author'] ?? [];
+            $published_at = $upd['published_at'] ?? date('Y-m-d H:i:s');
+            $created_at = $upd['created_at'] ?? $published_at;
+            $updated_at = $upd['updated_at'] ?? $published_at;
             $stmt_upd->execute([
                 ':id'            => $upd['id'],
                 ':slug'          => $upd['slug'] ?? ('update-' . $upd['id']),
                 ':title'         => $upd['title'] ?? '',
                 ':category'      => $upd['category'] ?? 'Campus News',
-                ':published_at'  => $upd['published_at'] ?? date('Y-m-d H:i:s'),
+                ':published_at'  => $published_at,
                 ':read_time'     => $upd['read_time'] ?? '3 min read',
-                ':author_name'   => $author['name'] ?? 'Career Development Office',
-                ':author_role'   => $author['role'] ?? 'Coordinator',
-                ':author_office' => $author['office'] ?? 'KLD Career Development & Placement Office',
-                ':author_avatar' => $author['avatar'] ?? 'CC',
+                ':author_id'     => isset($upd['author_id']) ? (int)$upd['author_id'] : 5,
+                ':author_avatar' => $author['avatar'] ?? ($upd['author_avatar'] ?? 'CC'),
                 ':image'         => $upd['image'] ?? null,
                 ':summary'       => $upd['summary'] ?? '',
-                ':content'       => $upd['content'] ?? ''
+                ':content'       => $upd['content'] ?? '',
+                ':created_at'    => $created_at,
+                ':updated_at'    => $updated_at
             ]);
             $count_upds++;
         }
@@ -527,7 +530,8 @@ if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
                 <div class="bg-dark text-light p-3 rounded mb-4" style="max-height: 450px; overflow-y: auto;">';
     }
 
-    execute_migration_and_seed(true);
+    $truncate = in_array('--truncate', $argv ?? []) || in_array('--clean', $argv ?? []) || in_array('-c', $argv ?? []);
+    execute_migration_and_seed(true, null, true, $truncate);
 
     if (!$is_cli) {
         echo '      </div>

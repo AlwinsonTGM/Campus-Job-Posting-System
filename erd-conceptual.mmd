@@ -1,0 +1,11 @@
+erDiagram
+    USERS ||--o| STUDENT_PROFILES : "specializes as (1-to-1)"
+    USERS ||--o| EMPLOYER_PROFILES : "specializes as (1-to-1)"
+    USERS ||--o{ JOBS : "publishes (employer)"
+    CATEGORIES ||--o{ JOBS : "classifies"
+    JOBS ||--o{ APPLICATIONS : "receives"
+    USERS ||--o{ APPLICATIONS : "submits (student)"
+    USERS ||--o{ PROFILE_REQUESTS : "requests"
+    USERS ||--o{ UPDATES : "authors"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    DEVBLOGS
