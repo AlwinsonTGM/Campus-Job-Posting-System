@@ -486,10 +486,10 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $stmt_blog->execute([
                 ':id'            => (string)($blog['id'] ?? $blog['sprint_number']),
                 ':sprint_number' => (string)($blog['sprint_number'] ?? '1'),
-                ':sprint_title'  => $blog['sprint_title'] ?? '',
-                ':sprint_dates'  => $blog['sprint_dates'] ?? null,
-                ':sprint_focus'  => $blog['sprint_focus'] ?? null,
-                ':daily_logs'    => isset($blog['daily_logs']) ? json_encode($blog['daily_logs']) : null
+                ':sprint_title'  => $blog['sprint_title'] ?? ($blog['title'] ?? ''),
+                ':sprint_dates'  => $blog['sprint_dates'] ?? ($blog['date'] ?? null),
+                ':sprint_focus'  => $blog['sprint_focus'] ?? ($blog['summary_excerpt'] ?? null),
+                ':daily_logs'    => isset($blog['daily_logs']) ? (is_string($blog['daily_logs']) ? $blog['daily_logs'] : json_encode($blog['daily_logs'])) : json_encode($blog)
             ]);
             $count_blogs++;
         }

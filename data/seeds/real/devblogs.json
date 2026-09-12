@@ -1,5 +1,44 @@
 [
     {
+        "id": "day-15",
+        "sprint_number": "15",
+        "sprint_badge": "DAY 15 · 3NF ARCHITECTURE & ADVERSARIAL CERTIFICATION",
+        "title": "Option C Relational Overhaul: Strict 3NF Decomposition, Pure Junction Tables & Multi-Tier Verification",
+        "date": "September 12, 2026",
+        "read_time": "8 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Decomposed the polymorphic users table into clean 3NF with Class Table Inheritance, converted applications into a pure junction table with relational hydration, fixed a subtle MySQL left-to-right SET evaluation bug in vacancy auto-closure, enforced concurrency quota ceilings with SELECT FOR UPDATE, and verified 201/201 multi-tier test assertions via Bun and Playwright.",
+        "tags": [
+            "3NF Normalization",
+            "Class Table Inheritance",
+            "Junction Tables",
+            "Concurrency Locking",
+            "Adversarial Testing",
+            "Bun & Playwright",
+            "De-Pilling"
+        ],
+        "cover_image": "assets/img/devblog/day-15.jpg",
+        "full_story": "<p class='lead text-ink fw-semibold'>September 12 was our most significant data architecture and reliability sprint to date. We committed to Option C: full Third Normal Form (3NF) relational refactoring with Class Table Inheritance, purged all denormalized snapshots, resolved insidious concurrency edge cases in vacancy auto-closure, and certified the entire system across 201 automated test assertions powered by Bun and Playwright.</p><p>Our database had historically relied on a wide, polymorphic <code class='bg-cream text-ink px-1 rounded'>users</code> table packed with mutually exclusive nullable columns for student program and course records and employer office accreditation. Today, we dismantled that flat design. We decomposed identity into a pure authentication supertype <code class='bg-cream text-ink px-1 rounded'>users</code> and two dedicated 1-to-1 subtype profile tables: <code class='bg-cream text-ink px-1 rounded'>student_profiles</code> and <code class='bg-cream text-ink px-1 rounded'>employer_profiles</code>, sharing primary keys with cascading referential actions. Simultaneously, <code class='bg-cream text-ink px-1 rounded'>applications</code> was stripped of duplicated snapshot fields (such as student names, contacts, and job titles), transforming it into a lean, pure 3NF junction table governed by a compound <code class='bg-cream text-ink px-1 rounded'>UNIQUE(job_id, student_id)</code> constraint.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-layers-fill text-accent me-2'></i>Zero-Downtime Backward Compatibility via Hydration</h5><p>Refactoring core database tables can easily break presentation layers across student, employer, and administrative views. To achieve zero regressions without modifying dozens of front-end templates, we engineered a sophisticated relational hydration layer in <code class='bg-cream text-ink px-1 rounded'>includes/data-helper.php</code>. Functions like <code class='bg-cream text-ink px-1 rounded'>get_user_base_query()</code>, <code class='bg-cream text-ink px-1 rounded'>hydrate_user()</code>, <code class='bg-cream text-ink px-1 rounded'>hydrate_job()</code>, and <code class='bg-cream text-ink px-1 rounded'>hydrate_application()</code> dynamically execute optimized SQL joins at query time to synthesize all expected attributes on the fly with zero PHP notices or warnings.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-bug-fill text-accent me-2'></i>Adversarial Auditing: Catching the Left-to-Right SET Bug</h5><p>During our adversarial stress audit, our test harness uncovered a subtle, critical defect in vacancy auto-closure. In MySQL, <code class='bg-cream text-ink px-1 rounded'>UPDATE ... SET</code> clauses are evaluated left to right. Because <code class='bg-cream text-ink px-1 rounded'>slots_filled = slots_filled + 1</code> executed first, the subsequent CASE condition checking <code class='bg-cream text-ink px-1 rounded'>slots_filled + 1 >= slots_total</code> was reading the <em>already-incremented</em> value! This resulted in premature auto-closure after only N-1 candidates were accepted. We eliminated the redundant increment in the CASE condition and wrapped applicant acceptance in a pessimistic <code class='bg-cream text-ink px-1 rounded'>SELECT ... FOR UPDATE</code> lock to strictly enforce vacancy capacity ceilings against concurrent acceptances.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-speedometer2 text-accent me-2'></i>Fast Multi-Tier Verification with Bun & Playwright</h5><p>To verify that our refactored relational foundation is rock-solid, we migrated our test runner execution to <strong>Bun</strong> for sub-second tooling startup. We ran our comprehensive dual integration suite (61/61 passed), the adversarial edge case audit (29/29 passed), the lifecycle notifications suite, and all 8 Playwright browser automation suites across desktop, half-screen (680px-960px), and mobile viewports. The outcome was definitive: <strong>201 out of 201 automated test assertions passed cleanly</strong> with zero database constraint violations and zero console errors.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-brush text-accent me-2'></i>Strict UI Clean UI & Typography Enforcement</h5><p>We also performed a final pass on UI cleanliness, removing legacy decorative badge pills and eyebrow tags above headings in <code class='bg-cream text-ink px-1 rounded'>admin/categories.php</code>, <code class='bg-cream text-ink px-1 rounded'>admin/updates.php</code>, and <code class='bg-cream text-ink px-1 rounded'>update-detail.php</code>. In strict compliance with our UI guidelines, headings now stand with clean typographic hierarchy, reserving badges strictly for dynamic application workflow states and notification counters.</p>",
+        "key_takeaways": [
+            "Refactored database to strict 3NF with Class Table Inheritance (users, student_profiles, employer_profiles).",
+            "Converted applications to a pure 3NF junction table with dynamic SQL hydration and compound uniqueness.",
+            "Patched MySQL left-to-right SET evaluation flaw in vacancy auto-closure and added SELECT FOR UPDATE ceiling locks.",
+            "Hardened registration role tampering, unscoped selectors, and eliminated decorative pill clutter above headings.",
+            "Achieved 100% pass rate across all 201 multi-tier test assertions (111 Playwright + 61 integration + 29 adversarial) via Bun."
+        ],
+        "tech_stack": [
+            "Third Normal Form (3NF)",
+            "Class Table Inheritance (CTI)",
+            "Pessimistic Locking (FOR UPDATE)",
+            "MySQL 8 InnoDB FKs",
+            "Bun Runtime",
+            "Playwright E2E Suite",
+            "Tactile UI Typography & Tokens"
+        ]
+    },
+    {
         "id": "day-14",
         "sprint_number": "14",
         "sprint_badge": "DAY 14 · TRUST HARDENING & PAPER DISCIPLINE",
