@@ -512,6 +512,19 @@ function get_user_by_id($id) {
     }
 }
 
+function get_user_by_email($email) {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare(get_user_base_query() . " WHERE LOWER(u.`email`) = LOWER(:email) LIMIT 1");
+        $stmt->execute([':email' => trim($email)]);
+        $row = $stmt->fetch();
+        return $row ? hydrate_user($row) : null;
+    } catch (Exception $e) {
+        error_log("get_user_by_email error: " . $e->getMessage());
+        return null;
+    }
+}
+
 function login_user($email, $password) {
     try {
         $pdo = get_db_connection();
@@ -2271,9 +2284,19 @@ function switch_system_data_mode($mode, $switched_by = 'User') {
     ];
     file_put_contents(DATA_DIR . '/system_mode.json', json_encode($mode_data, JSON_PRETTY_PRINT));
 
-    // Clear session user
-    unset($_SESSION['user']);
-    unset($_SESSION['flash']);
+    // Clear session user if not admin; refresh admin user from newly loaded database
+    $was_admin = (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin');
+    if ($was_admin) {
+        $fresh_admin = get_user_by_email('admin@kld.edu.ph');
+        if ($fresh_admin) {
+            unset($fresh_admin['password']);
+            $_SESSION['user'] = $fresh_admin;
+        } else {
+            unset($_SESSION['user']);
+        }
+    } else {
+        unset($_SESSION['user']);
+    }
 
     return true;
 }

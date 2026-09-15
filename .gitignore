@@ -30,8 +30,8 @@ package-lock.json
 .claude/
 .gemini/
 .impeccable/
-PROJECT.md
-QA_TEST_REPORT.md
+/PROJECT.md
+/QA_TEST_REPORT.md
 
 # Test Runner Reports & Specs
 tests/

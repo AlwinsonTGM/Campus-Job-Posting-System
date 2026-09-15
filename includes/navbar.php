@@ -132,16 +132,6 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
             <!-- Right Action Items -->
             <div class="paper-nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
 
-                <!-- Dataset Mode Switcher Button -->
-                <?php
-                $current_data_mode = function_exists('get_system_data_mode') ? get_system_data_mode() : 'demo';
-                $is_real_mode = ($current_data_mode === 'real');
-                ?>
-                <button type="button" class="btn-data-mode-toggle <?= $is_real_mode ? 'btn-data-mode--real text-success' : 'btn-data-mode--demo text-warning' ?> d-inline-flex align-items-center gap-1 border py-1 px-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#dataModeModal" title="Toggle System Dataset Mode">
-                    <i class="bi <?= $is_real_mode ? 'bi-database-check' : 'bi-database-fill-gear' ?>"></i>
-                    <span class="small fw-bold"><?= $is_real_mode ? 'REAL DATA' : 'DEMO DATA' ?></span>
-                </button>
-
                 <?php if (!$current_user || ($current_user['role'] ?? '') === 'admin'): ?>
                 <!-- Circular Search-Icon Button (Desktop only; mobile is in top bar beside hamburger) -->
                 <button type="button" class="btn-circle-icon d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
@@ -226,10 +216,6 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                             <?php elseif ($current_user['role'] === 'student'): ?>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-folder-check me-2"></i> My Applications</a></li>
                             <?php elseif ($current_user['role'] === 'admin'): ?>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/users.php"><i class="bi bi-people-fill me-2 text-accent"></i> Users &amp; Verification</a></li>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/updates.php"><i class="bi bi-newspaper me-2 text-accent"></i> Career Dispatches</a></li>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/categories.php"><i class="bi bi-grid-fill me-2"></i> Job Categories</a></li>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/reports.php"><i class="bi bi-bar-chart-fill me-2"></i> System Reports</a></li>
                                 <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/ai-settings.php"><i class="bi bi-cpu-fill me-2 text-success"></i> NVIDIA AI &amp; Robot</a></li>
                             <?php endif; ?>
                             <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2"></i> Settings</a></li>

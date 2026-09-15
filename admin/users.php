@@ -377,15 +377,15 @@ require_once __DIR__ . '/../includes/header.php';
                                             </td>
                                             <td data-label="Role" class="text-nowrap">
                                                 <?php if ($u['role'] === 'student'): ?>
-                                                    <span class="chip" style="font-size: 11px;"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                                                    <span class="chip" style="font-size: 11px;"><i class="bi bi-mortarboard text-accent me-1"></i>Student</span>
                                                 <?php elseif ($u['role'] === 'employer'): ?>
                                                     <?php if ($is_partner): ?>
-                                                        <span class="chip active" style="font-size: 11px;"><i class="bi bi-patch-check-fill text-accent me-1"></i>Partner</span>
+                                                        <span class="chip" style="font-size: 11px;"><i class="bi bi-patch-check-fill text-accent me-1"></i>Partner</span>
                                                     <?php else: ?>
                                                         <span class="chip" style="font-size: 11px;"><i class="bi bi-bank text-accent me-1"></i>Office</span>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 10px;"><i class="bi bi-shield-lock me-1"></i>Admin</span>
+                                                    <span class="chip" style="font-size: 11px;"><i class="bi bi-shield-lock text-accent me-1"></i>Admin</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td data-label="Organization / Program" style="max-width: 240px;">
@@ -422,7 +422,9 @@ require_once __DIR__ . '/../includes/header.php';
                                                             <i class="bi bi-person-check"></i> Inspect
                                                         </button>
                                                     <?php else: ?>
-                                                        <span class="small text-muted-custom">Admin Active</span>
+                                                        <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#adminModal<?= $u['id'] ?>">
+                                                            <i class="bi bi-shield-check"></i> Inspect
+                                                        </button>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -935,6 +937,63 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
 
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <!-- Institutional Administrator Profile Modals -->
+        <?php foreach ($users as $u): 
+            if ($u['role'] !== 'admin') continue;
+        ?>
+        <div class="modal fade" id="adminModal<?= $u['id'] ?>" tabindex="-1" aria-labelledby="adminModalLabel<?= $u['id'] ?>" aria-hidden="true">
+            <div class="modal-dialog modal-md modal-dialog-centered">
+                <div class="modal-content rounded-4 border-line shadow-lg">
+                    <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="icon-circle icon-circle-sm icon-circle-dark">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-ink mb-0" id="adminModalLabel<?= $u['id'] ?>">Administrator Profile</h5>
+                                <span class="small text-muted-custom">Institutional System Administrator Record</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="p-3 bg-surface rounded-4 border border-line mb-3">
+                            <span class="small text-muted-custom d-block mb-1">Administrative Account</span>
+                            <strong class="text-ink fs-6"><?= htmlspecialchars($u['name']) ?></strong>
+                            <div class="small text-muted-custom mt-1">
+                                <i class="bi bi-envelope me-1"></i> <?= htmlspecialchars($u['email']) ?>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-cream rounded-4 border border-line mb-3">
+                            <span class="small fw-bold text-ink text-uppercase d-block mb-2" style="font-size: 11px;">
+                                <i class="bi bi-shield-check text-accent me-1"></i> Role &amp; Access Clearance
+                            </span>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="chip" style="font-size: 11px;"><i class="bi bi-shield-lock text-accent me-1"></i>Admin</span>
+                                <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>System Root</span>
+                            </div>
+                            <p class="small text-muted-custom mb-0" style="font-size: 11.5px;">
+                                Institutional Administrator accounts hold system authority for verifying employer partners, approving student profile updates, and maintaining portal parameters.
+                            </p>
+                        </div>
+
+                        <ul class="list-unstyled small text-muted-custom mb-0 d-flex flex-column gap-2">
+                            <li><strong class="text-ink">Institutional Unit:</strong> <?= htmlspecialchars($u['department'] ?? 'Student Affairs & Services Office (SASO)') ?></li>
+                            <li><strong class="text-ink">Campus Location:</strong> <?= htmlspecialchars($u['office_location'] ?? 'KLD Main Building, 2nd Floor') ?></li>
+                            <li><strong class="text-ink">Contact Line:</strong> <?= htmlspecialchars($u['phone'] ?? '(046) 416-0000 loc 101') ?></li>
+                            <li><strong class="text-ink">Institutional ID:</strong> <span class="font-monospace text-ink fw-semibold">INTERNAL</span></li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer bg-cream border-top border-line py-3 px-4 d-flex justify-content-between">
+                        <span class="badge-status--accepted"><i class="bi bi-shield-check me-1"></i> Active Administrator</span>
+                        <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
