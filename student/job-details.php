@@ -179,7 +179,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Application Deadline:</span>
-                                    <span class="fw-bold text-danger"><?= htmlspecialchars($job['deadline']) ?></span>
+                                    <span class="fw-bold text-danger"><?= htmlspecialchars(format_display_date($job['deadline'] ?? 'Open')) ?></span>
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center">

@@ -150,13 +150,13 @@ require_once __DIR__ . '/../includes/header.php';
                                                         <i class="bi bi-calendar-check-fill text-accent"></i>
                                                         <span>Interview Invitation</span>
                                                     </div>
-                                                    <div><strong>Schedule:</strong> <?= htmlspecialchars($app['interview_date']) ?> at <?= htmlspecialchars($app['interview_time']) ?></div>
+                                                    <div><strong>Schedule:</strong> <?= htmlspecialchars(format_display_date($app['interview_date'])) ?> at <?= htmlspecialchars($app['interview_time']) ?></div>
                                                     <div><strong>Venue:</strong> <?= htmlspecialchars($app['interview_venue']) ?></div>
                                                 </div>
                                             <?php endif; ?>
 
                                             <div class="d-flex justify-content-between align-items-center pt-2 border-top border-line small text-muted-custom">
-                                                <span>Applied: <?= date('M d, Y', strtotime($app['applied_at'])) ?></span>
+                                                <span>Applied: <?= format_display_date($app['applied_at']) ?></span>
                                                 <a href="my-applications.php" class="text-ink fw-bold text-decoration-none">
                                                     Track Details &rarr;
                                                 </a>

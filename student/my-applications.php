@@ -189,7 +189,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                 #APP-<?= str_pad($app['id'], 4, '0', STR_PAD_LEFT) ?>
                                             </span>
                                             <span class="small text-muted-custom">
-                                                Applied on <?= date('F d, Y', strtotime($app['applied_at'] ?? 'now')) ?>
+                                                Applied on <?= format_display_date($app['applied_at'] ?? 'now') ?>
                                             </span>
                                         </div>
                                         <h3 class="card-paper-title fs-5 mb-1">
@@ -219,7 +219,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             <span>Official Interview Schedule</span>
                                         </div>
                                         <div class="small text-ink">
-                                            <strong>Date & Time:</strong> <?= htmlspecialchars($app['interview_date']) ?> at <?= htmlspecialchars($app['interview_time']) ?><br>
+                                            <strong>Date & Time:</strong> <?= htmlspecialchars(format_display_date($app['interview_date'])) ?> at <?= htmlspecialchars($app['interview_time']) ?><br>
                                             <strong>Interview Venue / Room:</strong> <?= htmlspecialchars($app['interview_venue']) ?><br>
                                             <span class="text-muted-custom"><em>Please bring your valid student ID card and latest study load.</em></span>
                                         </div>

@@ -176,7 +176,7 @@ $user_recent_notifs = ($current_user && function_exists('get_user_notifications'
                                             <div class="flex-grow-1 min-w-0">
                                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                                     <h6 class="small fw-bold text-ink mb-0 text-truncate pe-2"><?= htmlspecialchars($item['title']) ?></h6>
-                                                    <span class="text-muted-custom x-small"><?= htmlspecialchars(time_ago_short($item['created_at'])) ?></span>
+                                                    <span class="text-muted-custom x-small" title="<?= htmlspecialchars(format_display_date($item['created_at'], true)) ?>"><?= htmlspecialchars(time_ago_short($item['created_at'])) ?></span>
                                                 </div>
                                                 <p class="small text-muted-custom mb-0 line-clamp-2"><?= htmlspecialchars($item['message']) ?></p>
                                             </div>

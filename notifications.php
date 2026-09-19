@@ -168,7 +168,7 @@ require_once __DIR__ . '/includes/header.php';
                                                     <?= htmlspecialchars(str_replace('_', ' ', $notif['type'] ?? 'system')) ?>
                                                 </span>
                                             </div>
-                                            <div class="text-muted-custom small" title="<?= htmlspecialchars($notif['created_at']) ?>">
+                                            <div class="text-muted-custom small" title="<?= htmlspecialchars(format_display_date($notif['created_at'], true)) ?>">
                                                 <i class="bi bi-clock me-1"></i><?= htmlspecialchars(time_ago_short($notif['created_at'])) ?>
                                             </div>
                                         </div>

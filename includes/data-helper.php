@@ -12,6 +12,20 @@ require_once __DIR__ . '/db.php';
 
 define('DATA_DIR', dirname(__DIR__) . '/data');
 
+/**
+ * Format a date string or timestamp into standard institutional format ('December 5, 2026').
+ */
+function format_display_date(string|int|null $datetime, bool $include_time = false): string {
+    if ($datetime === null || $datetime === '' || $datetime === '0000-00-00' || $datetime === '0000-00-00 00:00:00' || strcasecmp((string)$datetime, 'open') === 0) {
+        return 'Open';
+    }
+    $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime((string)$datetime);
+    if (!$timestamp || $timestamp <= 0) {
+        return (string)$datetime;
+    }
+    return date($include_time ? 'F j, Y \a\t g:i A' : 'F j, Y', $timestamp);
+}
+
 // ============================================================================
 // ROW HYDRATION HELPERS
 // ============================================================================
@@ -59,6 +73,7 @@ function hydrate_job($row) {
     $row['employer_name'] = $row['employer_name'] ?? 'Hiring Supervisor';
     $row['organization_name'] = $row['organization_name'] ?? ($row['department'] ?? 'Campus Department');
     $row['employer_type'] = $row['employer_type'] ?? 'university_office';
+    $row['deadline_formatted'] = format_display_date($row['deadline'] ?? 'Open');
 
     foreach (['tags', 'badges', 'responsibilities', 'qualifications'] as $field) {
         if (isset($row[$field]) && is_string($row[$field])) {
@@ -1079,6 +1094,13 @@ function create_profile_request($user_id, $requested_data, $proof_file, $reason 
             if ($stmt_chk->fetch()) {
                 return ['success' => false, 'message' => 'The requested email address is already in use by another account.'];
             }
+        }
+
+        $target_dept = trim((string)($requested_data['department'] ?? ($current_user['department'] ?? '')));
+        $target_course = trim((string)($requested_data['course'] ?? ($current_user['course'] ?? '')));
+        $institutes = get_kld_institutes_and_courses();
+        if ($target_dept !== '' && $target_course !== '' && isset($institutes[$target_dept]) && !in_array($target_course, $institutes[$target_dept], true)) {
+            return ['success' => false, 'message' => "The selected degree program does not belong to {$target_dept}."];
         }
 
         $current_profile = [

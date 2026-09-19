@@ -139,7 +139,7 @@ if (!function_exists('render_job_card')) {
         $org_name = $job['organization_name'] ?? ($job['department'] ?? 'University Department');
         $location = $job['location'] ?? 'Campus Main Office';
         $pay_rate = $job['pay_rate'] ?? '₱80.00 / hour';
-        $deadline = $job['deadline'] ?? 'Open';
+        $deadline = format_display_date($job['deadline'] ?? 'Open');
         $slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
         $slots_filled = (int)($job['slots_filled'] ?? 0);
         $pct = ($slots_total > 0) ? round(($slots_filled / $slots_total) * 100) : 0;
