@@ -71,7 +71,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <h2 class="h3 fw-bold text-ink mb-1">KOLEHIYO NG LUNGSOD NG DASMARIÑAS</h2>
                     <h3 class="h5 fw-semibold text-muted-custom mb-1">Campus Job Posting & Student Assistantship System</h3>
                     <p class="small text-muted-custom mb-0">Official Institutional Analytics & Placement Report &bull; Academic Year 2026–2027</p>
-                    <p class="small text-muted-custom mb-0">Generated: <?= date('F d, Y \a\t h:i A') ?> by <?= htmlspecialchars($user['name'] ?? 'Administrator') ?></p>
+                    <p class="small text-muted-custom mb-0">Generated: <?= format_display_date(time(), true) ?> by <?= htmlspecialchars($user['name'] ?? 'Administrator') ?></p>
                 </div>
 
                 <!-- Page Head (Interactive view) -->

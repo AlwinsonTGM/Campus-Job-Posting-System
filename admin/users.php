@@ -219,7 +219,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <tr>
                                             <td class="ps-4 text-nowrap" data-label="Request Ref">
                                                 <span class="font-monospace fw-bold text-ink small">#REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?></span>
-                                                <div class="small text-muted-custom" style="font-size: 11px;"><?= date('M d, Y', strtotime($req['created_at'])) ?></div>
+                                                <div class="small text-muted-custom" style="font-size: 11px;"><?= format_display_date($req['created_at']) ?></div>
                                             </td>
                                             <td data-label="Student Details" style="max-width: 240px;">
                                                 <div class="fw-bold text-ink text-truncate" title="<?= htmlspecialchars($req['user_name']) ?>"><?= htmlspecialchars($req['user_name']) ?></div>
@@ -460,7 +460,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     Student Profile Update Request #REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?>
                                 </h5>
                                 <span class="small text-muted-custom">
-                                    <?= htmlspecialchars($req['user_name']) ?> (<?= htmlspecialchars($req['student_id'] ?? '') ?>) &bull; <?= date('M d, Y h:i A', strtotime($req['created_at'])) ?>
+                                    <?= htmlspecialchars($req['user_name']) ?> (<?= htmlspecialchars($req['student_id'] ?? '') ?>) &bull; <?= format_display_date($req['created_at'], true) ?>
                                 </span>
                             </div>
                         </div>
@@ -500,6 +500,8 @@ require_once __DIR__ . '/../includes/header.php';
                                                 $curr_val = (string)($curr[$f_key] ?? '');
                                                 $next_val = (string)($next[$f_key] ?? '');
                                                 $is_changed = ($curr_val !== $next_val && !empty($next_val));
+                                                $curr_disp = ($f_key === 'birthdate' && $curr_val && $curr_val !== '—') ? format_display_date($curr_val) : ($curr_val ?: '—');
+                                                $next_disp = ($f_key === 'birthdate' && $next_val && $next_val !== '—') ? format_display_date($next_val) : ($next_val ?: '—');
                                             ?>
                                                 <tr class="<?= $is_changed ? 'bg-cream' : '' ?>">
                                                     <td class="fw-bold text-ink">
@@ -509,10 +511,10 @@ require_once __DIR__ . '/../includes/header.php';
                                                         <?php endif; ?>
                                                     </td>
                                                     <td class="text-muted-custom">
-                                                        <?= htmlspecialchars($curr_val ?: '—') ?>
+                                                        <?= htmlspecialchars($curr_disp) ?>
                                                     </td>
                                                     <td class="<?= $is_changed ? 'fw-bold text-accent' : 'text-ink' ?>">
-                                                        <?= htmlspecialchars($next_val ?: '—') ?>
+                                                        <?= htmlspecialchars($next_disp) ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -605,7 +607,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <?php else: ?>
                                             <span class="badge-status--declined fs-6 d-inline-block py-2 px-3"><i class="bi bi-x-circle me-1"></i> Request Declined</span>
                                         <?php endif; ?>
-                                        <div class="small text-muted-custom mt-2">Resolved on <?= date('M d, Y h:i A', strtotime($req['resolved_at'] ?? $req['created_at'])) ?></div>
+                                        <div class="small text-muted-custom mt-2">Resolved on <?= format_display_date($req['resolved_at'] ?? $req['created_at'], true) ?></div>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -827,7 +829,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <div class="col-7 text-ink"><?= htmlspecialchars($u['phone'] ?? 'N/A') ?></div>
 
                                         <div class="col-5 text-muted-custom">Registered Date:</div>
-                                        <div class="col-7 text-ink"><?= date('M d, Y h:i A', strtotime($u['created_at'])) ?></div>
+                                        <div class="col-7 text-ink"><?= format_display_date($u['created_at'], true) ?></div>
 
                                         <div class="col-5 text-muted-custom">Verification Status:</div>
                                         <div class="col-7">

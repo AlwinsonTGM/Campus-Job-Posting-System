@@ -150,10 +150,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         </td>
                                     </tr>
                                 <?php else: ?>
-                                    <?php foreach ($all_updates as $item): 
-                                        $pub_time = strtotime($item['published_at'] ?? 'now');
-                                        $pub_formatted = date('M j, Y • g:i A', $pub_time);
-                                    ?>
+                                    <?php foreach ($all_updates as $item): ?>
                                         <tr>
                                             <td class="ps-4" data-label="Thumbnail">
                                                 <?php
@@ -177,7 +174,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <span class="text-muted-custom small" style="font-size: 0.75rem;"><?= htmlspecialchars($item['author']['office'] ?? 'University') ?></span>
                                             </td>
                                             <td class="text-muted-custom small" data-label="Published">
-                                                <?= $pub_formatted ?>
+                                                <?= format_display_date($item['published_at'] ?? 'now', true) ?>
                                             </td>
                                             <td class="text-end pe-4" data-label="Actions">
                                                 <div class="d-inline-flex gap-2">
