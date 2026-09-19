@@ -77,7 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
                     render_page_head(
                         '',
                         'Review Applicant: ' . htmlspecialchars($target_app['student_name']),
-                        'Vacancy: ' . htmlspecialchars($target_app['job_title']) . ' • Applied on ' . date('F d, Y', strtotime($target_app['applied_at'] ?? 'now'))
+                        'Vacancy: ' . htmlspecialchars($target_app['job_title']) . ' • Applied on ' . format_display_date($target_app['applied_at'] ?? 'now')
                     );
                     ?>
                 </div>
@@ -223,7 +223,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             <input type="date" name="interview_date" id="int-date" min="<?= date('Y-m-d') ?>" class="form-control" value="<?= htmlspecialchars($default_int_date) ?>" <?= !$is_interview_selected ? 'disabled' : '' ?>>
                                             <?php if (!empty($stored_int_date) && !$is_stored_date_valid): ?>
                                                 <div class="small text-muted-custom mt-1" style="font-size: 11px;">
-                                                    <i class="bi bi-clock-history me-1"></i> Prior: <?= date('M d, Y', strtotime($stored_int_date)) ?>
+                                                    <i class="bi bi-clock-history me-1"></i> Prior: <?= format_display_date($stored_int_date) ?>
                                                 </div>
                                             <?php endif; ?>
                                         </div>

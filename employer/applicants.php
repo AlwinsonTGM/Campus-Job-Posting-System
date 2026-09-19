@@ -215,7 +215,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <div class="small text-muted-custom"><?= htmlspecialchars($app['year_level'] ?? '2nd Year') ?></div>
                                             </td>
                                             <td data-label="Applied Date" class="small text-muted-custom">
-                                                <?= date('M d, Y', strtotime($app['applied_at'])) ?>
+                                                <?= format_display_date($app['applied_at']) ?>
                                             </td>
                                             <td data-label="Status">
                                                 <?= render_status_badge($app['status']) ?>
