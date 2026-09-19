@@ -766,6 +766,7 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <script src="assets/js/password-strength.js"></script>
+<script src="assets/js/academic-sync.js"></script>
 <script>
 // Global state
 let currentStep = 1;

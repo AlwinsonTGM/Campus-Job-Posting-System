@@ -187,7 +187,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <div>
                                     <strong class="text-ink fs-6 d-block mb-1">Official Profile Change Request Pending Review</strong>
                                     <span class="small text-muted-custom">
-                                        Submitted on <?= date('M d, Y h:i A', strtotime($pending_req['created_at'])) ?> &bull; Document: <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($pending_req['proof_file'])) ?></span>
+                                        Submitted on <?= format_display_date($pending_req['created_at'], true) ?> &bull; Document: <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($pending_req['proof_file'])) ?></span>
                                     </span>
                                     <div class="mt-2 small bg-white p-2 px-3 rounded-3 border border-line text-ink">
                                         <strong>Requested Updates:</strong>
@@ -778,6 +778,7 @@ require_once __DIR__ . '/includes/header.php';
 <?php endif; ?>
 
 <script src="assets/js/password-strength.js"></script>
+<script src="assets/js/academic-sync.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     function bindAgeCalc(dobId, ageId) {
