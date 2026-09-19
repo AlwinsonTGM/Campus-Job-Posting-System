@@ -159,8 +159,7 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Secondary Articles Grid (Paginated 4 cards per page) -->
                             <div class="row g-4 updates-grid-layout" id="updatesGrid">
                                 <?php foreach ($secondary_updates as $article): 
-                                    $pub_time = strtotime($article['published_at'] ?? 'now');
-                                    $formatted_date = date('M j, Y', $pub_time);
+                                    $formatted_date = format_display_date($article['published_at'] ?? 'now');
                                 ?>
                                     <div class="col-md-6 update-card-wrapper" data-title="<?= htmlspecialchars(strtolower($article['title'] ?? '')) ?>" data-summary="<?= htmlspecialchars(strtolower($article['summary'] ?? '')) ?>" data-author="<?= htmlspecialchars(strtolower($article['author']['name'] ?? '')) ?>">
                                             <?php

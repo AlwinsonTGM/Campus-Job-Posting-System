@@ -236,7 +236,7 @@ require_once __DIR__ . '/includes/header.php';
                                                 <div class="devblog-author-role"><?= htmlspecialchars($blog['author_role'] ?? 'Lead Developer & System Architect') ?></div>
                                             </div>
                                             <span class="devblog-date-pill ms-auto">
-                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars(!empty($blog['date']) ? date('M j, Y', strtotime($blog['date'])) : 'Aug 2026') ?>
+                                                <i class="bi bi-calendar3 me-1 text-accent"></i><?= htmlspecialchars(!empty($blog['date']) ? format_display_date($blog['date']) : 'Aug 2026') ?>
                                             </span>
                                         </div>
 

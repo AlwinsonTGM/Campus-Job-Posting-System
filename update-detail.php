@@ -138,8 +138,7 @@ require_once __DIR__ . '/includes/header.php';
 
                                 <div class="row g-3">
                                     <?php foreach ($latest_articles as $lat_art): 
-                                        $lat_time = strtotime($lat_art['published_at'] ?? 'now');
-                                        $lat_date = date('M j, Y', $lat_time);
+                                        $lat_date = format_display_date($lat_art['published_at'] ?? 'now');
                                     ?>
                                         <div class="col-md-4">
                                                 <?php

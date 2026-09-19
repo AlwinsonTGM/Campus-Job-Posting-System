@@ -760,7 +760,7 @@ require_once __DIR__ . '/includes/header.php';
                                             </div>
                                             <div class="small text-muted-custom mt-2">
                                                 <i class="bi bi-calendar-event me-1"></i> Deadline:
-                                                <?= htmlspecialchars($job['deadline'] ?? 'Open') ?>
+                                                <?= htmlspecialchars(format_display_date($job['deadline'] ?? 'Open')) ?>
                                             </div>
                                         </div>
                                     </div>
