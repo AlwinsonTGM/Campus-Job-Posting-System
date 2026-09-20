@@ -839,6 +839,61 @@ function update_employer_verification($id, $status, $notes = '') {
 }
 
 /**
+ * Validate email format and check whether the domain/subdomain has active DNS mail records.
+ *
+ * @param string $email The email address to check.
+ * @return array ['valid' => bool, 'error' => string|null, 'domain' => string]
+ */
+function validate_email_domain_dns($email): array {
+    $clean_email = trim((string)$email);
+
+    if ($clean_email === '' || !filter_var($clean_email, FILTER_VALIDATE_EMAIL)) {
+        return [
+            'valid' => false,
+            'error' => 'Please provide a valid email address format (e.g. name@kld.edu.ph).',
+            'domain' => ''
+        ];
+    }
+
+    $at_pos = strrpos($clean_email, '@');
+    if ($at_pos === false) {
+        return [
+            'valid' => false,
+            'error' => 'Invalid email address structure.',
+            'domain' => ''
+        ];
+    }
+
+    $domain = strtolower(substr($clean_email, $at_pos + 1));
+
+    if (!str_contains($domain, '.') || !preg_match('/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i', $domain)) {
+        return [
+            'valid' => false,
+            'error' => "The email domain \"{$domain}\" is invalid.",
+            'domain' => $domain
+        ];
+    }
+
+    // Verify whether the domain or subdomain has active MX or A/AAAA DNS records
+    $has_mx = checkdnsrr($domain, 'MX');
+    $has_a  = checkdnsrr($domain, 'A') || checkdnsrr($domain, 'AAAA');
+
+    if (!$has_mx && !$has_a) {
+        return [
+            'valid' => false,
+            'error' => "The email domain or subdomain \"{$domain}\" does not exist or has no active mail servers.",
+            'domain' => $domain
+        ];
+    }
+
+    return [
+        'valid' => true,
+        'error' => null,
+        'domain' => $domain
+    ];
+}
+
+/**
  * Check if an email address is already registered
  */
 function is_email_registered($email) {

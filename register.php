@@ -97,6 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please provide a valid email address.';
         $initial_step = 1;
+    } elseif (!($domain_validation = validate_email_domain_dns($email))['valid']) {
+        $error = $domain_validation['error'];
+        $initial_step = 1;
     } elseif (is_email_registered($email)) {
         $error = 'This KLD account / email address is already registered. Please sign in or use another email.';
         $initial_step = 1;
@@ -1064,10 +1067,19 @@ async function verifyEmailAvailability(emailVal) {
             accountCheckCache.email = {
                 value: emailVal,
                 exists: !!data.email_exists,
+                domain_invalid: !!data.domain_invalid,
+                message: data.message || '',
                 checked: true
             };
 
-            if (data.email_exists) {
+            if (data.domain_invalid) {
+                if (emailInput) emailInput.classList.add('is-invalid');
+                if (feedback) {
+                    feedback.innerHTML = '<div class="text-danger fw-semibold mt-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> ' + (data.message || 'The email domain does not exist or has no active mail servers.') + '</div>';
+                    feedback.style.display = 'block';
+                }
+                return false;
+            } else if (data.email_exists) {
                 if (emailInput) emailInput.classList.add('is-invalid');
                 if (feedback) {
                     feedback.innerHTML = '<div class="text-danger fw-semibold d-flex align-items-center justify-content-between mt-1"><span><i class="bi bi-exclamation-circle-fill me-1"></i> This KLD account / email is already registered.</span><a href="login.php" class="text-accent fw-bold ms-2 text-decoration-underline text-nowrap">Sign in &rarr;</a></div>';
@@ -1224,10 +1236,13 @@ async function validateCurrentStep() {
             return false;
         }
 
-        // Live check email uniqueness
+        // Live check email uniqueness and domain validity
         const emailAvailable = await verifyEmailAvailability(email.value.trim());
         if (!emailAvailable) {
-            showStepError("This KLD account / email address is already registered. Please sign in or use another email.");
+            const err = (accountCheckCache.email && accountCheckCache.email.message)
+                ? accountCheckCache.email.message
+                : "Please provide a valid, available email address.";
+            showStepError(err);
             email.focus();
             return false;
         }

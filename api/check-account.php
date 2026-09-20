@@ -23,23 +23,30 @@ $response = [
 
 // Check Email
 if (!empty($email)) {
-    try {
-        $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT `id`, `name`, `role` FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
-        $stmt->execute([':email' => $email]);
-        if ($user = $stmt->fetch()) {
-            $response['email_exists'] = true;
-            $response['available'] = false;
-            $response['message'] = 'This KLD account / email is already registered. Please sign in instead.';
-        }
-    } catch (Exception $e) {
-        $users = get_users();
-        foreach ($users as $u) {
-            if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
+    $domain_check = validate_email_domain_dns($email);
+    if (!$domain_check['valid']) {
+        $response['available'] = false;
+        $response['domain_invalid'] = true;
+        $response['message'] = $domain_check['error'];
+    } else {
+        try {
+            $pdo = get_db_connection();
+            $stmt = $pdo->prepare("SELECT `id`, `name`, `role` FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
+            $stmt->execute([':email' => $email]);
+            if ($user = $stmt->fetch()) {
                 $response['email_exists'] = true;
                 $response['available'] = false;
                 $response['message'] = 'This KLD account / email is already registered. Please sign in instead.';
-                break;
+            }
+        } catch (Exception $e) {
+            $users = get_users();
+            foreach ($users as $u) {
+                if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
+                    $response['email_exists'] = true;
+                    $response['available'] = false;
+                    $response['message'] = 'This KLD account / email is already registered. Please sign in instead.';
+                    break;
+                }
             }
         }
     }

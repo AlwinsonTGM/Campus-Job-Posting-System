@@ -13,19 +13,24 @@ $email = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $user = get_user_by_email($email);
-        if ($user) {
-            $token = create_password_reset((int)$user['id']);
+        $domain_check = validate_email_domain_dns($email);
+        if ($domain_check['valid']) {
+            $user = get_user_by_email($email);
+            if ($user) {
+                $token = create_password_reset((int)$user['id']);
 
-            $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-            $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
-            $reset_link = ($https ? 'https://' : 'http://') . $host . $base . '/reset-password.php?token=' . $token;
+                $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+                $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+                $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+                $reset_link = ($https ? 'https://' : 'http://') . $host . $base . '/reset-password.php?token=' . $token;
 
-            $recipient_name = $user['name'] ?? $user['company_name'] ?? 'User';
-            send_password_reset_email($email, $recipient_name, $reset_link);
+                $recipient_name = $user['name'] ?? $user['company_name'] ?? 'User';
+                send_password_reset_email($email, $recipient_name, $reset_link);
+            }
+            $submitted = true;
+        } else {
+            $error = $domain_check['error'];
         }
-        $submitted = true;
     }
 }
 
