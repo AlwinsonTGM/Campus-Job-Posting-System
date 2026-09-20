@@ -7,7 +7,7 @@
 @import url('tokens.css?v=1.5');
 @import url('base.css?v=1.6');
 @import url('components/notifications.css?v=1.5');
-@import url('features/auth.css?v=1.5');
+@import url('features/auth.css?v=2.0');
 @import url('features/devblog.css?v=1.5');
 @import url('features/chatbot.css?v=1.5');
 @import url('features/print.css?v=1.5');
@@ -5020,6 +5020,183 @@ body.modal-open {
   border-color: #10b981;
   color: #047857;
 }
+
+/* ==========================================================================
+   16.20 6-Digit Institutional OTP Pods & Morphing Animations
+   ========================================================================== */
+.otp-inputs-grid {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 auto !important;
+  max-width: 380px !important;
+}
+
+.otp-digit-pod {
+  width: 52px !important;
+  height: 62px !important;
+  min-width: 44px !important;
+  max-width: 58px !important;
+  flex: 0 0 52px !important;
+  text-align: center !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  background-color: var(--surface) !important;
+  border: 2px solid var(--line) !important;
+  border-radius: 12px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  outline: none !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+.otp-digit-pod:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px rgba(46, 204, 94, 0.22) !important;
+  background-color: var(--surface) !important;
+  transform: translateY(-2px);
+}
+
+.otp-digit-pod.filled {
+  border-color: var(--accent) !important;
+  background-color: rgba(46, 204, 94, 0.08) !important;
+}
+
+.otp-digit-pod.pod-success {
+  border-color: var(--accent) !important;
+  background-color: var(--accent) !important;
+  color: #ffffff !important;
+  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(46, 204, 94, 0.45) !important;
+}
+
+.otp-digit-pod.pod-error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Haptic Shake Animation */
+.otp-shake {
+  animation: otpShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes otpShake {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* Success Card Morph & SVG Checkmark */
+.otp-success-morph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  animation: otpMorphFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes otpMorphFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.otp-checkmark-svg {
+  width: 84px;
+  height: 84px;
+  margin-bottom: 1.25rem;
+}
+
+.otp-checkmark-circle {
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  stroke-width: 4;
+  stroke-miterlimit: 10;
+  stroke: var(--accent);
+  fill: none;
+  animation: checkmarkCircleDraw 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.otp-checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: var(--accent);
+  fill: none;
+  animation: checkmarkStrokeDraw 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+}
+
+@keyframes checkmarkCircleDraw {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkmarkStrokeDraw {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.otp-progress-bar-wrap {
+  width: 180px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 1rem auto 0;
+}
+
+.otp-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  border-radius: 999px;
+  animation: otpProgressFill 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes otpProgressFill {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Theme Polish & Helpers */
+.otp-email-chip {
+  background-color: var(--cream);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.otp-helpdesk-card {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
 
 
 

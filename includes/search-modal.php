@@ -42,6 +42,8 @@ if (!defined('SITE_NAME')) {
                         <!-- Modal Close Button -->
                         <button type="button" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <input type="hidden" name="job_type" id="spotlightJobTypeHidden" value="">
+                    <input type="hidden" name="work_setup" id="spotlightWorkSetupHidden" value="">
                 </form>
 
                 <!-- Quick Filter Chips -->
@@ -64,8 +66,11 @@ if (!defined('SITE_NAME')) {
                     <button type="button" class="spotlight-chip" data-filter-type="work_setup" data-filter-val="On-Campus">
                         <i class="bi bi-geo-alt me-1"></i> On-Campus
                     </button>
+                    <button type="button" class="spotlight-chip" data-filter-type="work_setup" data-filter-val="Hybrid">
+                        <i class="bi bi-laptop me-1"></i> Hybrid
+                    </button>
                     <button type="button" class="spotlight-chip" data-filter-type="work_setup" data-filter-val="Remote">
-                        <i class="bi bi-laptop me-1"></i> Remote
+                        <i class="bi bi-globe me-1"></i> Remote
                     </button>
                 </div>
             </div>

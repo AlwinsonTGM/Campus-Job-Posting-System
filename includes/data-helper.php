@@ -54,6 +54,7 @@ function hydrate_user($row) {
     if (!isset($row['organization_name']) && isset($row['department'])) {
         $row['organization_name'] = $row['department'];
     }
+    $row['is_email_verified'] = isset($row['is_email_verified']) ? (int)$row['is_email_verified'] : 1;
     return $row;
 }
 
@@ -314,8 +315,21 @@ function require_auth($allowed_roles = []) {
         exit;
     }
 
+    $user = get_logged_user();
+    if ($user && isset($user['is_email_verified']) && (int)$user['is_email_verified'] === 0 && ($user['role'] ?? '') !== 'admin') {
+        $_SESSION['pending_verification'] = [
+            'user_id' => (int)$user['id'],
+            'email'   => $user['email'],
+            'name'    => $user['name'],
+            'role'    => $user['role']
+        ];
+        unset($_SESSION['user']);
+        set_flash('warning', 'Please verify your institutional email address to continue.');
+        header('Location: ' . $prefix . 'verify-email.php');
+        exit;
+    }
+
     if (!empty($allowed_roles)) {
-        $user = get_logged_user();
         if (!in_array($user['role'] ?? '', $allowed_roles)) {
             set_flash('danger', 'Unauthorized access for your account role.');
             header('Location: ' . $prefix . 'index.php');
@@ -446,9 +460,10 @@ function can_view_student_resume($app = null, $student_user_id = null, $user = n
 // ============================================================================
 
 function get_user_base_query() {
+    ensure_email_verifications_table();
     return "
         SELECT 
-            u.`id`, u.`email`, u.`password`, u.`role`, u.`name`, u.`phone`, u.`status`, u.`created_at`, u.`updated_at`,
+            u.`id`, u.`email`, u.`password`, u.`role`, u.`name`, u.`phone`, u.`status`, u.`is_email_verified`, u.`created_at`, u.`updated_at`,
             sp.`student_id`,
             sp.`department` AS `student_department`,
             COALESCE(sp.`department`, ep.`organization_name`, 'General Academics') AS `department`,
@@ -564,7 +579,17 @@ function login_user($email, $password) {
             }
 
             if ($is_valid) {
-                session_regenerate_id(true);
+                if (isset($user['is_email_verified']) && (int)$user['is_email_verified'] === 0 && ($user['role'] ?? '') !== 'admin') {
+                    return [
+                        'success' => false,
+                        'unverified' => true,
+                        'user' => $user,
+                        'message' => 'Your institutional email is not verified yet. Please enter the verification code.'
+                    ];
+                }
+                if (!headers_sent()) {
+                    @session_regenerate_id(true);
+                }
                 unset($user['password']);
                 $_SESSION['user'] = $user;
                 return ['success' => true, 'user' => $user];
@@ -908,8 +933,8 @@ function register_user($data, $permit_file = null, $proof_file = null) {
         $pdo->beginTransaction();
 
         $stmt_user = $pdo->prepare("
-            INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `created_at`)
-            VALUES (:name, :email, :password, :role, :phone, 'active', NOW())
+            INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `is_email_verified`, `created_at`)
+            VALUES (:name, :email, :password, :role, :phone, 'active', 0, NOW())
         ");
         $stmt_user->execute([
             ':name'     => trim($data['name'] ?? ''),
@@ -971,7 +996,6 @@ function register_user($data, $permit_file = null, $proof_file = null) {
         $pdo->commit();
         $new_user = get_user_by_id($new_id);
         if ($new_user) unset($new_user['password']);
-        $_SESSION['user'] = $new_user;
 
         if ($verification === 'pending_approval') {
             $applicant_name = trim($data['name'] ?? 'New Partner');
@@ -2588,6 +2612,217 @@ function update_user_password($user_id, $hashed_password) {
     } catch (Exception $e) {
         error_log("update_user_password error: " . $e->getMessage());
         return false;
+    }
+}
+
+function ensure_password_resets_table() {
+    try {
+        $pdo = get_db_connection();
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `password_resets` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT NOT NULL,
+            `token_hash` VARCHAR(255) NOT NULL UNIQUE,
+            `expires_at` DATETIME NOT NULL,
+            `used_at` DATETIME NULL,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX `idx_resets_user` (`user_id`),
+            INDEX `idx_resets_expires` (`expires_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (Exception $e) {
+        error_log("ensure_password_resets_table error: " . $e->getMessage());
+    }
+}
+
+function create_password_reset($user_id) {
+    ensure_password_resets_table();
+    $pdo = get_db_connection();
+    $pdo->prepare("DELETE FROM `password_resets` WHERE `user_id` = :u OR `expires_at` < NOW()")
+        ->execute([':u' => (int)$user_id]);
+    $token = bin2hex(random_bytes(32));
+    $pdo->prepare("INSERT INTO `password_resets` (`user_id`, `token_hash`, `expires_at`)
+                   VALUES (:u, :h, DATE_ADD(NOW(), INTERVAL 1 HOUR))")
+        ->execute([':u' => (int)$user_id, ':h' => hash('sha256', $token)]);
+    return $token;
+}
+
+function get_password_reset_by_token($token) {
+    ensure_password_resets_table();
+    if (!is_string($token) || strlen($token) !== 64 || !ctype_xdigit($token)) return null;
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT r.*, u.`email` FROM `password_resets` r
+            JOIN `users` u ON u.`id` = r.`user_id`
+            WHERE r.`token_hash` = :h AND r.`used_at` IS NULL AND r.`expires_at` > NOW() LIMIT 1");
+        $stmt->execute([':h' => hash('sha256', $token)]);
+        return $stmt->fetch() ?: null;
+    } catch (Exception $e) {
+        error_log("get_password_reset_by_token error: " . $e->getMessage());
+        return null;
+    }
+}
+
+function consume_password_reset($reset_id, $user_id, $new_password) {
+    ensure_password_resets_table();
+    try {
+        $pdo = get_db_connection();
+        $pdo->beginTransaction();
+        $stmt = $pdo->prepare("UPDATE `users` SET `password` = :pass, `updated_at` = NOW() WHERE `id` = :id");
+        $stmt->execute([':pass' => password_hash($new_password, PASSWORD_DEFAULT), ':id' => (int)$user_id]);
+        $pdo->prepare("UPDATE `password_resets` SET `used_at` = NOW() WHERE `id` = :i")
+            ->execute([':i' => (int)$reset_id]);
+        $pdo->commit();
+        return true;
+    } catch (Exception $e) {
+        if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+        error_log("consume_password_reset error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function ensure_email_verifications_table() {
+    static $ensured = false;
+    if ($ensured) {
+        return;
+    }
+    try {
+        $pdo = get_db_connection();
+        $col_check = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'is_email_verified'")->fetch();
+        if (!$col_check) {
+            $pdo->exec("ALTER TABLE `users` ADD COLUMN `is_email_verified` TINYINT(1) NOT NULL DEFAULT 1");
+            $pdo->exec("UPDATE `users` SET `is_email_verified` = 1 WHERE `is_email_verified` IS NULL");
+        }
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `email_verifications` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT NOT NULL,
+            `code_hash` VARCHAR(255) NOT NULL,
+            `expires_at` DATETIME NOT NULL,
+            `attempts` INT NOT NULL DEFAULT 0,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX `idx_verify_user` (`user_id`),
+            INDEX `idx_verify_expires` (`expires_at`),
+            CONSTRAINT `fk_verify_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $ensured = true;
+    } catch (Exception $e) {
+        error_log("ensure_email_verifications_table error: " . $e->getMessage());
+    }
+}
+
+function create_email_verification_code(int $user_id): string {
+    ensure_email_verifications_table();
+    try {
+        $pdo = get_db_connection();
+
+        // Guard against non-existent / purged users to prevent FK constraint violations
+        $user_check = $pdo->prepare("SELECT id FROM `users` WHERE `id` = :u LIMIT 1");
+        $user_check->execute([':u' => $user_id]);
+        if (!$user_check->fetchColumn()) {
+            return '';
+        }
+
+        $pdo->prepare("DELETE FROM `email_verifications` WHERE `user_id` = :u OR `expires_at` < NOW()")
+            ->execute([':u' => $user_id]);
+
+        $code = (string)random_int(100000, 999999);
+        $stmt = $pdo->prepare("INSERT INTO `email_verifications` (`user_id`, `code_hash`, `expires_at`)
+                               VALUES (:u, :h, DATE_ADD(NOW(), INTERVAL 15 MINUTE))");
+        $stmt->execute([':u' => $user_id, ':h' => hash('sha256', $code)]);
+
+        return $code;
+    } catch (\Throwable $e) {
+        error_log("create_email_verification_code error: " . $e->getMessage());
+        return '';
+    }
+}
+
+function can_resend_email_code(int $user_id): array {
+    ensure_email_verifications_table();
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT TIMESTAMPDIFF(SECOND, `created_at`, NOW()) FROM `email_verifications` WHERE `user_id` = :u ORDER BY `id` DESC LIMIT 1");
+        $stmt->execute([':u' => $user_id]);
+        $elapsed = $stmt->fetchColumn();
+        if ($elapsed === false) {
+            return ['allowed' => true, 'remaining_seconds' => 0];
+        }
+        $remaining = 60 - (int)$elapsed;
+        return ['allowed' => $remaining <= 0, 'remaining_seconds' => max(0, $remaining)];
+    } catch (Exception) {
+        return ['allowed' => true, 'remaining_seconds' => 0];
+    }
+}
+
+function verify_email_code(int $user_id, string $code): array {
+    ensure_email_verifications_table();
+    $clean_code = preg_replace('/\D/', '', trim($code));
+    if (strlen($clean_code) !== 6) {
+        return ['success' => false, 'message' => 'Please enter a valid 6-digit verification code.'];
+    }
+
+    try {
+        $pdo = get_db_connection();
+
+        // Verify user exists and check current verification status
+        $user_check = $pdo->prepare("SELECT id, is_email_verified FROM `users` WHERE `id` = :u LIMIT 1");
+        $user_check->execute([':u' => $user_id]);
+        $user_row = $user_check->fetch();
+        if (!$user_row) {
+            return ['success' => false, 'message' => 'Account not found or session expired. Please register again.'];
+        }
+        if ((int)$user_row['is_email_verified'] === 1) {
+            return ['success' => true, 'already_verified' => true, 'message' => 'Your email has already been verified!'];
+        }
+
+        $stmt = $pdo->prepare("SELECT `id`, `code_hash`, `attempts` FROM `email_verifications` WHERE `user_id` = :u AND `expires_at` > NOW() ORDER BY `id` DESC LIMIT 1");
+        $stmt->execute([':u' => $user_id]);
+        $record = $stmt->fetch();
+
+        if (!$record) {
+            return ['success' => false, 'message' => 'The verification code has expired or is invalid. Please request a new code.'];
+        }
+
+        if ((int)$record['attempts'] >= 5) {
+            $pdo->prepare("DELETE FROM `email_verifications` WHERE `id` = :id")->execute([':id' => $record['id']]);
+            return ['success' => false, 'message' => 'Maximum verification attempts exceeded. Please request a new code.'];
+        }
+
+        if (!hash_equals($record['code_hash'], hash('sha256', $clean_code))) {
+            $pdo->prepare("UPDATE `email_verifications` SET `attempts` = `attempts` + 1 WHERE `id` = :id")->execute([':id' => $record['id']]);
+            $remaining = 4 - (int)$record['attempts'];
+            return [
+                'success' => false,
+                'message' => $remaining > 0
+                    ? "Incorrect verification code. {$remaining} attempt" . ($remaining === 1 ? "" : "s") . " remaining."
+                    : "Incorrect verification code. Maximum attempts reached. Please request a new code."
+            ];
+        }
+
+        $pdo->beginTransaction();
+        $pdo->prepare("UPDATE `users` SET `is_email_verified` = 1, `updated_at` = NOW() WHERE `id` = :u")->execute([':u' => $user_id]);
+        $pdo->prepare("DELETE FROM `email_verifications` WHERE `user_id` = :u")->execute([':u' => $user_id]);
+        $pdo->commit();
+
+        return ['success' => true, 'message' => 'Your email has been verified successfully!'];
+    } catch (Exception $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log("verify_email_code error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Verification failed due to a database error. Please try again.'];
+    }
+}
+
+function is_user_email_verified(int $user_id): bool {
+    ensure_email_verifications_table();
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT `is_email_verified` FROM `users` WHERE `id` = :u LIMIT 1");
+        $stmt->execute([':u' => $user_id]);
+        return (bool)$stmt->fetchColumn();
+    } catch (Exception) {
+        return true;
     }
 }
 

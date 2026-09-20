@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `name` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(50) NULL,
     `status` ENUM('active', 'suspended') NOT NULL DEFAULT 'active',
+    `is_email_verified` TINYINT(1) NOT NULL DEFAULT 1,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_users_role` (`role`),
@@ -235,7 +236,22 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
--- 10. Table: devblogs (Standalone Sprint Engineering Chronicle)
+-- 10. Table: password_resets (Forgot-password single-use tokens)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `password_resets` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `token_hash` VARCHAR(255) NOT NULL UNIQUE,
+    `expires_at` DATETIME NOT NULL,
+    `used_at` DATETIME NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_resets_user` (`user_id`),
+    INDEX `idx_resets_expires` (`expires_at`),
+    CONSTRAINT `fk_resets_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 11. Table: devblogs (Standalone Sprint Engineering Chronicle)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `devblogs` (
     `id` VARCHAR(50) PRIMARY KEY,
@@ -247,3 +263,19 @@ CREATE TABLE IF NOT EXISTS `devblogs` (
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_devblogs_sprint_number` (`sprint_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 12. Table: email_verifications (Institutional 6-Digit OTP Email Verification)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_verifications` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `code_hash` VARCHAR(255) NOT NULL,
+    `expires_at` DATETIME NOT NULL,
+    `attempts` INT NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_verify_user` (`user_id`),
+    INDEX `idx_verify_expires` (`expires_at`),
+    CONSTRAINT `fk_verify_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

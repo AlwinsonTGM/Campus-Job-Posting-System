@@ -17,6 +17,22 @@ $work_setup = trim($_GET['work_setup'] ?? '');
 $pay_type = trim($_GET['pay_type'] ?? '');
 $employer_type = trim($_GET['employer_type'] ?? '');
 
+// Handle aliases for quick filters
+$is_lab_assistant_active = (strcasecmp($category, 'Science & Computer Lab Assistant') === 0 || strcasecmp($job_type, 'Lab Assistant') === 0);
+$is_library_aide_active = (strcasecmp($category, 'Library Services') === 0 || strcasecmp($job_type, 'Library Aide') === 0 || strcasecmp($job_type, 'Library') === 0);
+
+if (strcasecmp($job_type, 'Lab Assistant') === 0) {
+    if (empty($category)) {
+        $category = 'Science & Computer Lab Assistant';
+    }
+    $job_type = '';
+} elseif (strcasecmp($job_type, 'Library Aide') === 0 || strcasecmp($job_type, 'Library') === 0) {
+    if (empty($category)) {
+        $category = 'Library Services';
+    }
+    $job_type = '';
+}
+
 $active_filters_count = 0;
 if (!empty($keyword)) $active_filters_count++;
 if (!empty($category)) $active_filters_count++;
@@ -310,13 +326,22 @@ require_once __DIR__ . '/../includes/header.php';
                                 All Roles
                             </a>
                             <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Student Assistant">
-                                Student Assistant
+                                <i class="bi bi-mortarboard"></i> Student Assistant
                             </a>
-                            <a href="jobs.php?job_type=Lab+Assistant" class="chip chip-selectable <?= ($job_type === 'Lab Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Lab Assistant">
-                                Lab Assistant
+                            <a href="jobs.php?job_type=Part-Time+Job" class="chip chip-selectable <?= ($job_type === 'Part-Time Job') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Part-Time Job">
+                                <i class="bi bi-clock"></i> Part-Time
                             </a>
-                            <a href="jobs.php?job_type=Library+Aide" class="chip chip-selectable <?= ($job_type === 'Library Aide') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Library Aide">
-                                Library Aide
+                            <a href="jobs.php?job_type=<?= urlencode('Internship / OJT') ?>" class="chip chip-selectable <?= ($job_type === 'Internship / OJT') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Internship / OJT">
+                                <i class="bi bi-briefcase"></i> Internship / OJT
+                            </a>
+                            <a href="jobs.php?job_type=Peer+Tutor" class="chip chip-selectable <?= ($job_type === 'Peer Tutor') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Peer Tutor">
+                                <i class="bi bi-person-video3"></i> Peer Tutor
+                            </a>
+                            <a href="jobs.php?category=<?= urlencode('Science & Computer Lab Assistant') ?>" class="chip chip-selectable <?= $is_lab_assistant_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Science & Computer Lab Assistant">
+                                <i class="bi bi-radioactive"></i> Lab Assistant
+                            </a>
+                            <a href="jobs.php?category=Library+Services" class="chip chip-selectable <?= $is_library_aide_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Library Services">
+                                <i class="bi bi-book"></i> Library Aide
                             </a>
                             <a href="jobs.php?work_setup=On-Campus" class="chip chip-selectable <?= ($work_setup === 'On-Campus') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="On-Campus">
                                 <i class="bi bi-geo-alt"></i> On-Campus

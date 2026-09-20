@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Multi-Step Registration Wizard & Stepper System
    ========================================================================== */
 
@@ -632,3 +632,37 @@
   color: #000;
   border-color: var(--accent);
 }
+
+/* 6-Digit OTP Verification Inputs */
+.otp-digit-input {
+  width: 48px;
+  height: 58px;
+  font-size: 26px;
+  border-radius: var(--radius-md, 10px);
+  border: 2px solid var(--line, #cbd5e1);
+  background-color: var(--surface, #ffffff);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.otp-digit-input:focus {
+  border-color: var(--kld-green, #15803d) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2) !important;
+  outline: none !important;
+}
+
+.otp-digit-input.filled {
+  border-color: var(--kld-dark-green, #166534);
+  background-color: #f0fdf4;
+}
+
+[data-theme="dark"] .otp-digit-input {
+  border-color: var(--line);
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+[data-theme="dark"] .otp-digit-input.filled {
+  border-color: var(--accent);
+  background-color: rgba(46, 204, 94, 0.1);
+}
+

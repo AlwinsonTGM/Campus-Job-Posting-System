@@ -83,7 +83,7 @@ The platform connects students with on-campus employment opportunities (e.g., St
 | **Partner Employer** | `partner@apex.com` | `Employer@123` | External Accredited Employer |
 | **Administrator** | `admin@kld.edu.ph` | `Admin@123` | Full Admin Console & Analytics |
 
-> *Tip: You can also use the one-click demo login chips on the [login page](http://127.0.0.1:8000/login.php) for instant evaluation.*
+> *Tip: Enter any of the credentials above directly into the [login form](http://127.0.0.1:8000/login.php). Full evaluation account profiles, workflow states, and test data are documented in `EVALUATION_ACCOUNTS_OVERVIEW.md`.*
 
 ---
 

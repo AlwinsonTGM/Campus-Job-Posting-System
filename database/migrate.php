@@ -59,7 +59,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         // Truncate tables if requested for a clean datastore reset
         if ($truncate) {
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            $allowed_tables = ['notifications', 'devblogs', 'updates', 'profile_requests', 'applications', 'jobs', 'student_profiles', 'employer_profiles', 'categories', 'users'];
+            $allowed_tables = ['notifications', 'devblogs', 'updates', 'profile_requests', 'password_resets', 'applications', 'jobs', 'student_profiles', 'employer_profiles', 'categories', 'users'];
             foreach ($allowed_tables as $t) {
                 // Strict whitelist validation for security audit compliance
                 if (in_array($t, $allowed_tables, true) && preg_match('/^[a-z0-9_]+$/i', $t)) {
