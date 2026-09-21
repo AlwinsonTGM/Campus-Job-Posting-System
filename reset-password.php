@@ -18,10 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new = $_POST['new_password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
+    $strength = validate_password_strength($new);
+
     if (!$reset) {
         $error = 'This reset link is invalid or has expired. Please request a new one.';
-    } elseif (strlen($new) < 8) {
-        $error = 'New password must contain at least 8 characters.';
+    } elseif (!$strength['valid']) {
+        $error = $strength['error'];
     } elseif ($new !== $confirm) {
         $error = 'New password and confirm password do not match.';
     } else {
@@ -85,11 +87,13 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                             <?php endif; ?>
 
-                            <form action="reset-password.php?token=<?= htmlspecialchars($token) ?>" method="POST" class="form-paper">
+                            <form action="reset-password.php?token=<?= htmlspecialchars($token) ?>" method="POST" id="reset-password-form" class="form-paper">
                                 <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                                 <div class="mb-3">
                                     <label class="form-label" for="new-password">New Password</label>
                                     <input type="password" name="new_password" id="new-password" class="form-control" placeholder="Minimum 8 characters" required>
+                                    <div class="password-meter-bar"><div id="password-meter-fill" class="password-meter-fill"></div></div>
+                                    <div id="password-strength-text" class="small text-muted-custom mt-1">Enter password to see strength</div>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label" for="confirm-password">Confirm New Password</label>
@@ -110,3 +114,5 @@ require_once __DIR__ . '/includes/header.php';
         <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </div>
 </div>
+
+<script src="assets/js/password-strength.js"></script>

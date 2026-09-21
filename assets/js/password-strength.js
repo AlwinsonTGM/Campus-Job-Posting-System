@@ -25,8 +25,8 @@ window.togglePasswordVisibility = function (inputId, iconId) {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-  const passwordInput = document.getElementById('password');
-  const confirmPasswordInput = document.getElementById('confirm_password');
+  const passwordInput = document.getElementById('password') || document.getElementById('new-password');
+  const confirmPasswordInput = document.getElementById('confirm_password') || document.getElementById('confirm-password');
   const meterFill = document.getElementById('password-meter-fill');
   const strengthText = document.getElementById('password-strength-text');
   const authForm = document.getElementById('register-form') || document.getElementById('reset-password-form');
