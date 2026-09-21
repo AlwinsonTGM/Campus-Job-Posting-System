@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const confirmPasswordInput = document.getElementById('confirm_password');
   const meterFill = document.getElementById('password-meter-fill');
   const strengthText = document.getElementById('password-strength-text');
-  const registerForm = document.getElementById('register-form');
+  const authForm = document.getElementById('register-form') || document.getElementById('reset-password-form');
 
   // Requirement elements
   const reqLength = document.getElementById('req-length');
@@ -170,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function () {
     confirmPasswordInput.addEventListener('input', validatePasswordMatch);
   }
 
-  if (registerForm) {
-    registerForm.addEventListener('submit', function (e) {
+  if (authForm) {
+    authForm.addEventListener('submit', function (e) {
       const pVal = passwordInput ? passwordInput.value : '';
       const { count } = evaluatePasswordStrength(pVal);
 

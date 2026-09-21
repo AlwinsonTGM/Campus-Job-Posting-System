@@ -2734,6 +2734,40 @@ function consume_password_reset($reset_id, $user_id, $new_password) {
     }
 }
 
+/**
+ * Validate password complexity requirements across authentication flows.
+ *
+ * @param string $password
+ * @return array{valid: bool, error: ?string}
+ */
+function validate_password_strength(string $password): array {
+    if (strlen($password) < 8) {
+        return [
+            'valid' => false,
+            'error' => 'Password must contain at least 8 characters.'
+        ];
+    }
+
+    $has_lower = (bool)preg_match('/[a-z]/', $password);
+    $has_upper = (bool)preg_match('/[A-Z]/', $password);
+    $has_number = (bool)preg_match('/[0-9]/', $password);
+    $has_special = (bool)preg_match('/[^A-Za-z0-9]/', $password);
+
+    $categories = ($has_lower ? 1 : 0) + ($has_upper ? 1 : 0) + ($has_number ? 1 : 0) + ($has_special ? 1 : 0);
+
+    if ($categories < 2) {
+        return [
+            'valid' => false,
+            'error' => 'Please choose a stronger password (at least 8 characters with a mix of letters, numbers, or symbols).'
+        ];
+    }
+
+    return [
+        'valid' => true,
+        'error' => null
+    ];
+}
+
 function ensure_email_verifications_table() {
     static $ensured = false;
     if ($ensured) {
