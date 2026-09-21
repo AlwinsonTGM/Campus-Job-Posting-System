@@ -1,5 +1,44 @@
 [
     {
+        "id": "day-17",
+        "sprint_number": "17",
+        "sprint_badge": "DAY 17 · PASSWORD ENTROPY & DNS DOMAIN HARDENING",
+        "title": "Defense-in-Depth Hardening: Live DNS MX Resolution, Dual-Layer Password Entropy & TypeSafe Clean Architecture Certification",
+        "date": "September 21, 2026",
+        "read_time": "8 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Hardened institutional authentication with live DNS MX/A domain verification before transactional mail dispatch, eliminated insecure password reset vulnerability via dual-layer complexity validation and real-time entropy scoring, and certified clean architecture (0.8600) under TypeSafe System One quality gates.",
+        "tags": [
+            "Password Entropy",
+            "DNS MX Verification",
+            "Account Recovery",
+            "Real-Time Validation",
+            "Clean Architecture",
+            "TypeSafe System One",
+            "Jev Quality Gate",
+            "Security Hardening"
+        ],
+        "cover_image": "assets/img/devblog/day-17.jpg",
+        "full_story": "<p class='lead text-ink fw-semibold'>September 21 was dedicated to closing critical security boundaries in identity lifecycle management. We engineered live DNS MX record verification to prevent phantom outbound email dispatch, eliminated a critical vulnerability in account recovery where arbitrary passwords could be set during reset, unified our client-side real-time Shannon entropy engine across registration and recovery flows, and certified our implementation against TypeSafe System One (Jev) automated clean architecture quality gates.</p><p>While yesterday's implementation of 6-digit cryptographic email verification established provable inbox ownership, thorough adversarial probing revealed two subtle yet critical security vectors in the authentication lifecycle: first, users could request reset tokens or register with syntactically valid yet non-existent domain names (causing unnecessary SMTP timeouts and delivery failures); second, our password reset endpoint permitted arbitrary passwords without the strict multi-class entropy checks enforced during registration.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-globe-americas text-accent me-2'></i>Live DNS MX &amp; Subdomain Verification Before SMTP Dispatch</h5><p>To eliminate wasted transactional mail attempts and defend against garbage email registrations, we engineered <code class='bg-cream text-ink px-1 rounded'>validate_email_domain_dns($email)</code> in <code class='bg-cream text-ink px-1 rounded'>includes/data-helper.php</code>. Beyond basic regex formatting, the engine extracts the host domain, performs low-level DNS MX record lookups via <code class='bg-cream text-ink px-1 rounded'>checkdnsrr($domain, 'MX')</code>, and falls back to address record validation (<code class='bg-cream text-ink px-1 rounded'>checkdnsrr($domain, 'A')</code>). Requests to bogus or dead domains are now rejected immediately at the input layer before contacting the PHPMailer transport layer.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-shield-lock-fill text-accent me-2'></i>Dual-Layer Password Complexity &amp; Real-Time Entropy Scoring</h5><p>We addressed the account recovery security flaw where users could bypass password strength recommendations. We architected a shared server-side validator, <code class='bg-cream text-ink px-1 rounded'>validate_password_strength($password)</code>, enforcing an 8-character minimum ceiling and requiring at least two distinct character classes (lowercase, uppercase, numbers, symbols). Simultaneously, we extended our standalone JavaScript entropy analyzer (<code class='bg-cream text-ink px-1 rounded'>assets/js/password-strength.js</code>) to dynamically bind to the password reset form (<code class='bg-cream text-ink px-1 rounded'>#reset-password-form</code>), providing real-time visual meter fill transitions, textual strength feedback, and client-side submission blocking for weak inputs.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-patch-check-fill text-accent me-2'></i>TypeSafe System One (Jev) Clean Architecture Certification</h5><p>In accordance with our strict engineering quality directives, all refactored authentication controllers and UI scripts were evaluated against the TypeSafe System One (<code class='bg-cream text-ink px-1 rounded'>jev-gate</code>) automated quality gate. By eliminating redundant wrapper abstractions, avoiding inline handler slop, and preserving idiomatic PHP and vanilla JavaScript paradigms, our final staged changeset achieved a clean architecture rating of <strong class='text-accent'>0.8600</strong> (exceeding the 0.8500 gate threshold), certifying production readiness ahead of formal institutional defense.</p>",
+        "key_takeaways": [
+            "Implemented live DNS MX and A record domain validation to reject phantom emails prior to SMTP dispatch.",
+            "Closed forgot-password security gap by enforcing dual-layer password complexity (8+ chars, 2+ character classes).",
+            "Unified real-time client-side Shannon password entropy analyzer across registration and reset workflows.",
+            "Certified clean architecture under TypeSafe System One (jev-gate) with a 0.8600 quality gate score.",
+            "Guaranteed single-use reset token invalidation upon password consumption, protecting against token replay attacks."
+        ],
+        "tech_stack": [
+            "Native PHP 8.2",
+            "DNS MX/A Verification",
+            "Shannon Password Entropy",
+            "TypeSafe System One (Jev 1.13)",
+            "Vanilla ES6 DOM",
+            "CSS Custom Properties & Transitions"
+        ]
+    },
+    {
         "id": "day-16",
         "sprint_number": "16",
         "sprint_badge": "DAY 16 · INSTITUTIONAL OTP VERIFICATION & TACTILE AUTH",
