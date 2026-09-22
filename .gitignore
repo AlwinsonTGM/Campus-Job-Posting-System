@@ -61,4 +61,6 @@ uploads/resumes/resume_*
 # Local Backups
 *.bak
 
-
+# Jev Triage Pipeline (local runtime artifacts)
+triage-queue.json
+scratch/

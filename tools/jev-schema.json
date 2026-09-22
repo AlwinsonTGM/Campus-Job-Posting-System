@@ -1,0 +1,52 @@
+{
+  "questions": {
+    "has_dead_or_redundant_code": {
+      "type": "noul",
+      "instructions": "Does this PHP file contain dead code, unused functions, unreachable branches, commented-out logic blocks, debug output calls (var_dump, print_r, error_log), or variables that are assigned but never read?",
+      "criteria": {
+        "true": "All functions are called from somewhere meaningful, no debug output, no commented-out implementation blocks, no unreachable code after returns",
+        "false": "Contains one or more: unused function definitions, commented-out logic, var_dump/print_r calls, variables that are set but never used, unreachable branches"
+      }
+    },
+    "violates_single_responsibility": {
+      "type": "noul",
+      "instructions": "Does this PHP file handle more than one distinct responsibility? A single responsibility violation occurs when the same file performs two or more of: database queries, session/auth enforcement, email sending, HTML rendering, business logic calculation, file upload handling, API calls to external services.",
+      "criteria": {
+        "true": "File has exactly one clear responsibility — either it is a controller, a pure view template, a data access layer, a service function library, or a security utility",
+        "false": "File mixes two or more of: SQL queries + HTML output, auth checks + data mutation + email dispatch, presentation + business rules"
+      }
+    },
+    "lacks_php_type_safety": {
+      "type": "noul",
+      "instructions": "Does this PHP file use PHP 8.x strict type declarations? Look for: missing parameter types on functions that accept strings/ints/arrays, missing return types, loose equality comparisons (== vs ===), absent null handling (?string, mixed), and missing strict_types declaration.",
+      "criteria": {
+        "true": "Functions declare typed parameters and return types, strict_types=1 is present or types are consistently applied, null coalescing and strict equality are used",
+        "false": "Functions lack typed parameters/returns, loose comparisons (== instead of ===) are common, no strict_types declaration, or untyped variables are mixed with business logic"
+      }
+    },
+    "primary_refactor_action": {
+      "type": "choice",
+      "instructions": "Based on the code's overall structure and the issues above, what is the single most impactful refactoring action needed? Choose 'none' if the file is reasonably clean for a PHP 8.2 project.",
+      "criteria": {
+        "none": "File is reasonably clean with clear structure, no significant tech debt, and well-scoped responsibilities",
+        "split_monolith": "File is very large (typically >30KB) and handles multiple unrelated concerns that should be decomposed into separate modules or layers",
+        "extract_services": "File contains reusable business logic functions that are mixed with controller or presentation code and should be moved to a dedicated service layer",
+        "extract_view_template": "File mixes PHP controller logic (DB queries, auth, session) directly with HTML output and needs a clean controller/view separation",
+        "simplify_logic": "File contains deeply nested conditionals, excessively long functions (>50 lines), or complex branching that could be simplified with guard clauses and named helpers",
+        "remove_dead_code": "File has demonstrably unused functions, commented-out code blocks, debug output calls, or dead variable assignments that should be deleted",
+        "add_type_declarations": "File lacks PHP 8.2 typed parameters and return types but is otherwise structurally clean and only needs type safety improvements"
+      }
+    },
+    "spaghetti_severity": {
+      "type": "score",
+      "instructions": "How urgently does this PHP file need refactoring due to technical debt, complexity, or structural problems?",
+      "criteria": [
+        "Production-clean: single clear responsibility, well-typed, no dead code, easy to read and maintain",
+        "Minor polish needed: mostly clean but has a few inconsistencies, loose types, or small dead code sections",
+        "Noticeable tech debt: multiple responsibilities mixed, missing types, some dead code, but still functional",
+        "High maintenance risk: large monolith or tightly coupled code causing clear structural problems",
+        "Critical spaghetti: god object or deeply tangled code requiring immediate decomposition to remain maintainable"
+      ]
+    }
+  }
+}
