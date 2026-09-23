@@ -360,6 +360,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .devblog-nav-cluster-btn {
@@ -378,6 +380,7 @@
   transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
   -webkit-user-select: none;
+  flex-shrink: 0;
 }
 
 .devblog-nav-cluster-btn:hover:not(:disabled) {
@@ -405,6 +408,14 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.devblog-step-dots::-webkit-scrollbar {
+  display: none;
 }
 
 .devblog-dot {
@@ -692,7 +703,48 @@
   .devblog-controls-strip {
     text-align: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+  }
+  .devblog-nav-cluster {
+    width: auto;
+    max-width: 100%;
+    padding: 0.3rem 0.45rem;
+    gap: 0.45rem;
+    box-sizing: border-box;
+  }
+  .devblog-nav-cluster-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+  .devblog-step-dots {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 2px 0;
+  }
+  .devblog-step-dots::-webkit-scrollbar {
+    display: none;
+  }
+  .devblog-dot {
+    width: 6px;
+    height: 5px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .devblog-dot.is-active {
+    width: 16px;
+    height: 5px;
   }
 }
 
@@ -728,6 +780,28 @@
     padding: 0.4rem 0.65rem;
     min-height: 34px;
     border-radius: 6px;
+  }
+  .devblog-nav-cluster {
+    padding: 0.25rem 0.35rem;
+    gap: 0.35rem;
+  }
+  .devblog-nav-cluster-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    font-size: 0.88rem;
+  }
+  .devblog-step-dots {
+    gap: 2.5px;
+  }
+  .devblog-dot {
+    width: 5px;
+    height: 4px;
+  }
+  .devblog-dot.is-active {
+    width: 14px;
+    height: 4px;
   }
 }
 

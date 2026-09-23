@@ -991,6 +991,9 @@ document.addEventListener('DOMContentLoaded', function () {
       dots.forEach(function (dot, idx) {
         dot.classList.toggle('is-active', idx === currentIndex);
       });
+      if (dots[currentIndex] && typeof dots[currentIndex].scrollIntoView === 'function') {
+        dots[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
 
       // Update counter
       if (counterCurrent && devblogsData[currentIndex]) {
