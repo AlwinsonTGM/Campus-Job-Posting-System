@@ -1,0 +1,242 @@
+<?php
+/**
+ * View template for student/my-applications.php
+ * Pure HTML/PHP echo. Controller sets variables before require.
+ * Inline <script> blocks intentionally stay here (guardrail).
+ */
+require_once __DIR__ . '/../header.php';
+?>
+
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/../navbar.php'; ?>
+
+        <main class="py-5">
+            <div class="container-paper">
+                
+                <!-- Page Head -->
+                <?php
+                $head_actions = '
+                    <a href="jobs.php" class="btn-pill">
+                        <i class="bi bi-search"></i> Apply for More Opportunities
+                    </a>
+                ';
+                render_page_head(
+                    '<i class="bi bi-folder-check text-accent me-1"></i> Application Tracker & Status',
+                    'My Assistantship Applications',
+                    'Monitor your evaluation progress, scheduled interviews, and appointment confirmations in real-time.',
+                    $head_actions
+                );
+                ?>
+
+                <!-- Filter Tabs -->
+                <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-bottom border-line">
+                    <a href="my-applications.php" class="chip chip-selectable <?= empty($filter_status) ? 'active' : '' ?>">
+                        All Submissions
+                    </a>
+                    <a href="my-applications.php?status=pending" class="chip chip-selectable <?= ($filter_status === 'pending') ? 'active' : '' ?>">
+                        <i class="bi bi-hourglass-split text-accent"></i> Pending Review
+                    </a>
+                    <a href="my-applications.php?status=review" class="chip chip-selectable <?= ($filter_status === 'review') ? 'active' : '' ?>">
+                        <i class="bi bi-search text-accent"></i> Under Evaluation
+                    </a>
+                    <a href="my-applications.php?status=interview" class="chip chip-selectable <?= ($filter_status === 'interview') ? 'active' : '' ?>">
+                        <i class="bi bi-calendar-event text-accent"></i> Interviews Scheduled
+                    </a>
+                    <a href="my-applications.php?status=accepted" class="chip chip-selectable <?= ($filter_status === 'accepted') ? 'active' : '' ?>">
+                        <i class="bi bi-check-circle-fill text-accent"></i> Accepted / Hired
+                    </a>
+                    <a href="my-applications.php?status=declined" class="chip chip-selectable <?= ($filter_status === 'declined') ? 'active' : '' ?>">
+                        <i class="bi bi-x-circle text-danger"></i> Declined / Filled
+                    </a>
+                </div>
+
+                <!-- Applications List -->
+                <?php
+                $accepted_apps = array_values(array_filter($my_apps, function($a) {
+                    return in_array(strtolower($a['status'] ?? ''), ['accepted', 'accepted / hired']);
+                }));
+                $withdrawable_others = array_values(array_filter($my_apps, function($a) {
+                    return in_array(strtolower($a['status'] ?? ''), ['pending', 'pending review']);
+                }));
+                ?>
+                <?php if (!empty($accepted_apps) && !empty($withdrawable_others)): ?>
+                    <div class="card-paper p-4 mb-4 border border-accent bg-surface">
+                        <div class="d-flex align-items-start gap-3 flex-wrap">
+                            <div class="faq-help-icon-box m-0 flex-shrink-0">
+                                <i class="bi bi-check-circle-fill text-accent"></i>
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 240px;">
+                                <h3 class="card-paper-title fs-5 mb-1">Congratulations, <?= htmlspecialchars($user['name'] ?? 'Student') ?>!</h3>
+                                <p class="small text-muted-custom mb-3">
+                                    You have been accepted for <strong class="text-ink"><?= htmlspecialchars($accepted_apps[0]['job_title'] ?? 'a campus role') ?></strong>.
+                                    You still have <strong class="text-ink"><?= count($withdrawable_others) ?> pending application<?= count($withdrawable_others) === 1 ? '' : 's' ?></strong>.
+                                    Withdrawing frees slots for fellow students and keeps your record clean.
+                                </p>
+                                <form action="my-applications.php" method="POST" class="d-flex flex-wrap gap-2" onsubmit="return confirm('Withdraw all <?= count($withdrawable_others) ?> pending applications? This cannot be undone.');">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+                                    <input type="hidden" name="withdraw_others" value="1">
+                                    <button type="submit" class="btn-pill btn-pill-sm">
+                                        <i class="bi bi-check2-all"></i> Withdraw all <?= count($withdrawable_others) ?> pending
+                                    </button>
+                                    <a href="#applications-list" class="btn-pill-outline btn-pill-sm text-decoration-none">Review them below</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if (empty($my_apps)): ?>
+                    <?php
+                    render_empty_state(
+                        'bi-folder2-open',
+                        'No Applications Found',
+                        'You do not have any submitted applications in this view category. Explore active campus vacancies to apply.',
+                        'jobs.php',
+                        'Explore Campus Opportunities'
+                    );
+                    ?>
+                <?php else: ?>
+                    <div class="d-flex flex-column gap-4 mb-5" id="applications-list">
+                        <?php foreach ($my_apps as $app): 
+                            $is_pending = in_array(strtolower($app['status'] ?? ''), ['pending', 'pending review']);
+                        ?>
+                            <div class="card-paper p-4 p-md-4 reveal-fade-rise">
+                                
+                                <!-- Top Bar: Title + Department + Status Badge -->
+                                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3 pb-3 border-bottom border-line">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">
+                                                #APP-<?= str_pad($app['id'], 4, '0', STR_PAD_LEFT) ?>
+                                            </span>
+                                            <span class="small text-muted-custom">
+                                                Applied on <?= format_display_date($app['applied_at'] ?? 'now') ?>
+                                            </span>
+                                        </div>
+                                        <h3 class="card-paper-title fs-5 mb-1">
+                                            <a href="job-details.php?id=<?= $app['job_id'] ?? 0 ?>" class="text-ink text-decoration-none">
+                                                <?= htmlspecialchars($app['job_title']) ?>
+                                            </a>
+                                        </h3>
+                                        <span class="small text-muted-custom">
+                                            <i class="bi bi-building text-accent me-1"></i><?= htmlspecialchars($app['department']) ?>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <?= render_status_badge($app['status']) ?>
+                                    </div>
+                                </div>
+
+                                <!-- 4-Step Stepper Component -->
+                                <div class="my-4 px-2 px-md-4">
+                                    <?php render_stepper($app['status']); ?>
+                                </div>
+
+                                <!-- Conditional Notice Callouts -->
+                                <?php if (in_array(strtolower($app['status']), ['interview_scheduled', 'interview scheduled']) && !empty($app['interview_date'])): ?>
+                                    <div class="card-paper bg-cream p-3 mb-3 border border-line">
+                                        <div class="d-flex align-items-center gap-2 fw-bold text-ink mb-1">
+                                            <i class="bi bi-calendar-check-fill text-accent fs-5"></i>
+                                            <span>Official Interview Schedule</span>
+                                        </div>
+                                        <div class="small text-ink">
+                                            <strong>Date & Time:</strong> <?= htmlspecialchars(format_display_date($app['interview_date'])) ?> at <?= htmlspecialchars($app['interview_time']) ?><br>
+                                            <strong>Interview Venue / Room:</strong> <?= htmlspecialchars($app['interview_venue']) ?><br>
+                                            <span class="text-muted-custom"><em>Please bring your valid student ID card and latest study load.</em></span>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (in_array(strtolower($app['status']), ['accepted', 'accepted / hired'])): ?>
+                                    <div class="card-paper p-3 mb-3 border border-accent bg-surface">
+                                        <div class="d-flex align-items-center gap-2 fw-bold text-accent mb-1">
+                                            <i class="bi bi-check-circle-fill fs-5"></i>
+                                            <span>Congratulations! You are officially appointed as Student Assistant.</span>
+                                        </div>
+                                        <p class="small text-muted-custom mb-0">
+                                            Please report to <strong><?= htmlspecialchars($app['department']) ?></strong> to sign your student assistantship agreement and receive your Daily Time Record (DTR) orientation.
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if (in_array(strtolower($app['status']), ['declined', 'rejected', 'declined / position filled'])): ?>
+                                    <div class="card-paper p-3 mb-3 border border-danger-subtle bg-danger-subtle bg-opacity-10">
+                                        <div class="d-flex align-items-center gap-2 fw-bold text-danger mb-1">
+                                            <i class="bi bi-info-circle-fill fs-5"></i>
+                                            <span>Requisition Update: Position Filled / Application Closed</span>
+                                        </div>
+                                        <p class="small text-muted-custom mb-0">
+                                            Thank you for applying. This vacancy has been filled or closed for the current academic term. We encourage you to browse other open assistantships on campus.
+                                            <?php if (!empty($app['supervisor_notes'])): ?>
+                                                <br><strong>Department Feedback:</strong> <?= htmlspecialchars($app['supervisor_notes']) ?>
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <!-- Availability & Attached Documents -->
+                                <div class="row g-3 small text-muted-custom mb-3 pt-2">
+                                    <div class="col-md-7">
+                                        <span class="fw-bold text-ink d-block mb-1">Indicated Free Class Shift Availability:</span>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <?php 
+                                            $app_avail = is_array($app['availability'] ?? null) 
+                                                ? $app['availability'] 
+                                                : (is_string($app['availability'] ?? null) ? (json_decode($app['availability'], true) ?: []) : []);
+                                            if (!empty($app_avail)):
+                                                foreach ($app_avail as $av): ?>
+                                                    <span class="chip" style="font-size: 11px;"><?= htmlspecialchars($av) ?></span>
+                                                <?php endforeach; 
+                                            else: ?>
+                                                <span class="text-muted-custom fst-italic" style="font-size: 11px;">Flexible schedule available</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <span class="fw-bold text-ink d-block mb-1">Attached Credentials:</span>
+                                        <div class="d-flex align-items-center justify-content-between p-2 bg-surface rounded-3 border border-line">
+                                            <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
+                                                <span class="text-ink small text-truncate"><?= htmlspecialchars($app['resume_file'] ?? 'Juan_Dela_Cruz_Resume.pdf') ?></span>
+                                            </div>
+                                            <div class="d-flex gap-1 flex-shrink-0">
+                                                <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px; white-space: nowrap;" title="View uploaded PDF">
+                                                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                                                </a>
+                                                <a href="../view-resume.php?app_id=<?= $app['id'] ?>&render_html=1" target="_blank" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px; white-space: nowrap;" title="View official printable digital curriculum vitae">
+                                                    <i class="bi bi-file-text me-1"></i> CV
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions Footer -->
+                                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-line">
+                                    <a href="job-details.php?id=<?= $app['job_id'] ?? 0 ?>" class="btn-pill-outline btn-pill-sm">
+                                        <i class="bi bi-eye"></i> View Requisition
+                                    </a>
+
+                                    <?php if ($is_pending): ?>
+                                        <form action="my-applications.php" method="POST" onsubmit="return confirm('Are you sure you want to withdraw this application?');">
+                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                            <input type="hidden" name="withdraw_id" value="<?= $app['id'] ?>">
+                                            <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger">
+                                                <i class="bi bi-trash"></i> Withdraw
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+        </main>
+
+        <?php require_once __DIR__ . '/../footer.php'; ?>
+    </div>
+</div>
+

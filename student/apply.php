@@ -71,28 +71,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cover_letter = trim($_POST['cover_letter'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $availability = $_POST['availability'] ?? [];
-        
-        // Handle resume file upload with failure detection
+        $digits_only = preg_replace('/[^0-9]/', '', $phone);
+
         $resume_name = ($user['name'] ?? 'Student') . '_Resume.pdf';
-        $upload_failed = false;
 
         if (isset($_FILES['resume']) && $_FILES['resume']['error'] !== UPLOAD_ERR_NO_FILE) {
             if ($_FILES['resume']['error'] !== UPLOAD_ERR_OK) {
                 $error = 'File upload failed. Please verify that your resume file is under 5MB.';
-                $upload_failed = true;
             } else {
                 $resume_path = save_uploaded_resume($_FILES['resume']);
                 if (!$resume_path) {
                     $error = 'Invalid resume format or size. Accepted formats: PDF, DOC, DOCX (Max 5MB).';
-                    $upload_failed = true;
                 } else {
                     $resume_name = basename($resume_path);
                 }
             }
         }
 
-        if (!$upload_failed) {
-            $digits_only = preg_replace('/[^0-9]/', '', $phone);
+        if (!$error) {
             if (empty($cover_letter)) {
                 $error = 'Please provide a brief statement of intent / cover letter.';
             } elseif (empty($phone) || preg_match('/[a-zA-Z]/', $phone) || !preg_match('/^[\+]?[0-9\s\-()]{7,20}$/', $phone) || strlen($digits_only) < 7 || strlen($digits_only) > 15) {
@@ -112,9 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     set_flash('success', "Application successfully submitted for {$job['title']}! You can track its review progress below.");
                     header('Location: my-applications.php');
                     exit;
-                } else {
-                    $error = $res['message'];
                 }
+                $error = $res['message'] ?? 'Failed to submit application. Please try again.';
             }
         }
     }
@@ -129,229 +124,13 @@ $default_availability = (isset($_POST['availability']) && is_array($_POST['avail
     ]);
 
 $page_title = 'Apply for ' . $job['title'];
-require_once __DIR__ . '/../includes/header.php';
-?>
 
-<div class="sheet-perspective-wrapper">
-    <div class="sheet flat-sheet">
-        <?php require_once __DIR__ . '/../includes/navbar.php'; ?>
+// Preload view data — no service/DB calls in the template
+$form = $_POST;
+$query = $_GET;
+$files = $_FILES;
+$view_flash = $_SESSION['flash'] ?? null;
 
-        <main class="py-5">
-            <div class="container-paper">
-                
-                <!-- Back Link & Page Head -->
-                <div class="mb-4">
-                    <a href="job-details.php?id=<?= $job['id'] ?>" class="text-ink fw-bold small text-decoration-none d-inline-flex align-items-center gap-1 mb-3">
-                        <i class="bi bi-arrow-left"></i> Back to Requisition Details
-                    </a>
-                    
-                    <?php
-                    render_page_head(
-                        '',
-                        'Apply for ' . $job['title'],
-                        $job['department'] . ' • ' . $job['pay_rate'] . ' • ' . ($job['work_setup'] ?? 'On-Campus')
-                    );
-                    ?>
-                </div>
+// Last line: view template
+require __DIR__ . '/../includes/templates/student-apply-view.php';
 
-                <div class="row justify-content-center">
-                    <div class="col-lg-10">
-                        
-                        <?php if ($error): ?>
-                            <div class="alert-paper alert-paper--danger mb-4">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
-                                    <div class="small fw-semibold text-ink"><?= htmlspecialchars($error) ?></div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-
-                        <div class="card-paper p-4 p-md-5 mb-5">
-                            
-                            <form action="apply.php?id=<?= $job['id'] ?>&job_id=<?= $job['id'] ?>" method="POST" enctype="multipart/form-data" class="form-paper">
-                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                
-                                <!-- Section 1: Applicant Profile Confirmation -->
-                                <div class="mb-4 pb-3 border-bottom border-line">
-                                    <h3 class="card-paper-title fs-5 mb-3">
-                                        <i class="bi bi-person-badge text-accent me-2"></i> 1. Applicant Profile Information
-                                    </h3>
-                                    
-                                    <div class="row g-3 p-3 bg-cream rounded-4 border border-line">
-                                        <div class="col-md-6">
-                                            <span class="small text-muted-custom d-block mb-1">Student Full Name</span>
-                                            <strong class="text-ink"><?= htmlspecialchars($user['name']) ?></strong>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <span class="small text-muted-custom d-block mb-1">Student ID Number</span>
-                                            <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <span class="small text-muted-custom d-block mb-1">Enrolled Degree Program</span>
-                                            <span class="text-ink"><?= htmlspecialchars($user['course'] ?? 'BS Information Systems') ?></span>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <span class="small text-muted-custom d-block mb-1">Year Level & Standing</span>
-                                            <span class="text-ink"><?= htmlspecialchars($user['year_level'] ?? '2nd Year') ?></span>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <span class="small text-muted-custom d-block mb-1">Sex & Age</span>
-                                            <span class="text-ink"><?= htmlspecialchars($user['sex'] ?? 'Male') ?> &bull; <?= htmlspecialchars((string)($user['age'] ?? (isset($user['birthdate']) ? calculate_age($user['birthdate']) : 20))) ?> yrs</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Section 2: Contact Information -->
-                                <div class="mb-4 pb-3 border-bottom border-line">
-                                    <h3 class="card-paper-title fs-5 mb-3">
-                                        <i class="bi bi-telephone text-accent me-2"></i> 2. Contact Phone Number
-                                    </h3>
-                                    <div>
-                                        <label class="form-label" for="app-phone">Mobile Phone (for SMS interview notices) <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                            <input type="tel" name="phone" id="app-phone" class="form-control" placeholder="+63 917 123 4567" value="<?= htmlspecialchars(!empty($user['phone']) ? $user['phone'] : '+63 917 555 0192') ?>" pattern="[\+]?[0-9\s\-()]{7,20}" inputmode="tel" title="Please enter numbers only (e.g. 09171234567 or +63 917 123 4567)." required>
-                                        </div>
-                                        <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
-                                            Department supervisors use this contact to confirm interview dates and duty room assignments.
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Section 3: Availability Matrix -->
-                                <div class="mb-4 pb-3 border-bottom border-line">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h3 class="card-paper-title fs-5 mb-0">
-                                            <i class="bi bi-calendar-week text-accent me-2"></i> 3. Weekly Shift Availability Matrix <span class="text-danger">*</span>
-                                        </h3>
-                                        <span class="chip" style="font-size: 10px;">&le; 20 hrs/week</span>
-                                    </div>
-                                    <p class="small text-muted-custom mb-3">
-                                        Check all weekly time slots when you are free from academic lectures and can perform on-campus duty:
-                                    </p>
-                                    
-                                    <div class="card-paper p-3 bg-surface border border-line position-relative" id="matrixContainer">
-                                        <div id="availabilityErrorAlert" class="alert-paper alert-paper--danger mb-3" style="display: none;">
-                                            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
-                                            <span>Candidate Shift Availability cannot be empty. Please select at least one weekly timeslot.</span>
-                                        </div>
-                                        <?php render_availability_matrix($default_availability, 'availability[]', false); ?>
-                                    </div>
-                                </div>
-
-                                <!-- Section 4: Statement of Purpose / Cover Letter -->
-                                <div class="mb-4 pb-3 border-bottom border-line">
-                                    <h3 class="card-paper-title fs-5 mb-3">
-                                        <i class="bi bi-card-text text-accent me-2"></i> 4. Statement of Intent / Cover Letter <span class="text-danger">*</span>
-                                    </h3>
-                                    <div>
-                                        <label class="form-label" for="cover_letter">Statement of Interest</label>
-                                        <textarea name="cover_letter" id="cover_letter" rows="4" class="form-control" placeholder="Briefly state your motivation, relevant coursework, and availability for this assistantship role..." required><?= isset($_POST['cover_letter']) ? htmlspecialchars($_POST['cover_letter']) : ("I am writing to express my strong interest in the " . htmlspecialchars($job['title']) . " position in " . htmlspecialchars($job['department']) . ". As a student in " . htmlspecialchars($user['course'] ?? 'BS Information Systems') . ", I have the requisite skills, organizational diligence, and vacant shift hours to fulfill the assigned duties reliably.") ?></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Section 5: Resume Upload Mock -->
-                                <div class="mb-4 pb-3 border-bottom border-line">
-                                    <h3 class="card-paper-title fs-5 mb-3">
-                                        <i class="bi bi-file-earmark-arrow-up text-accent me-2"></i> 5. Resume / Study Load Document
-                                    </h3>
-                                    <div>
-                                        <label class="form-label">Attach Updated Resume or Study Load (PDF / DOCX)</label>
-                                        <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
-                                        <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
-                                            You may attach an updated PDF or leave blank to automatically link your stored student profile resume.
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Academic Safeguard Declaration -->
-                                <div class="mb-4 form-check">
-                                    <input type="checkbox" class="form-check-input" id="saComplianceCheck" required checked>
-                                    <label class="form-check-label small text-ink" for="saComplianceCheck">
-                                        I certify that my class attendance will not be compromised, and I agree to adhere strictly to the <strong>20-hour maximum weekly duty limit</strong> in accordance with campus work regulations.
-                                    </label>
-                                </div>
-
-                                <!-- Action Buttons -->
-                                <div class="d-flex flex-wrap gap-3 pt-2">
-                                    <button type="submit" id="submitAppBtn" class="btn-pill px-4">
-                                        <i class="bi bi-send-fill"></i> SUBMIT APPLICATION
-                                    </button>
-                                    <a href="job-details.php?id=<?= $job['id'] ?>" class="btn-pill-outline">
-                                        Cancel
-                                    </a>
-                                </div>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </main>
-
-        <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form.form-paper');
-    const alertBox = document.getElementById('availabilityErrorAlert');
-    const matrixContainer = document.getElementById('matrixContainer');
-
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const checkedBoxes = form.querySelectorAll('input[name="availability[]"]:checked');
-            if (checkedBoxes.length === 0) {
-                e.preventDefault();
-                if (alertBox) {
-                    alertBox.style.display = 'flex';
-                }
-                if (matrixContainer) {
-                    matrixContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    matrixContainer.style.borderColor = 'var(--st-declined, #E5484D)';
-                }
-                return false;
-            } else {
-                if (alertBox) {
-                    alertBox.style.display = 'none';
-                }
-                if (matrixContainer) {
-                    matrixContainer.style.borderColor = '';
-                }
-
-                // Double submit prevention
-                const submitBtn = document.getElementById('submitAppBtn');
-                if (submitBtn) {
-                    setTimeout(() => {
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Submitting Application...';
-                    }, 10);
-                }
-            }
-        });
-
-        // Clear error on checkbox click
-        form.querySelectorAll('input[name="availability[]"]').forEach(function(cb) {
-            cb.addEventListener('change', function() {
-                const checked = form.querySelectorAll('input[name="availability[]"]:checked');
-                if (checked.length > 0) {
-                    if (alertBox) alertBox.style.display = 'none';
-                    if (matrixContainer) matrixContainer.style.borderColor = '';
-                }
-            });
-        });
-
-        // Restrict phone input to numbers and valid phone characters
-        const appPhone = document.getElementById('app-phone');
-        if (appPhone) {
-            appPhone.addEventListener('input', function() {
-                this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
-            });
-        }
-    }
-});
-</script>

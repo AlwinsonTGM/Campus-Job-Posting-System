@@ -1,0 +1,222 @@
+<?php
+/**
+ * View template for employer/dashboard.php
+ * Pure HTML/PHP echo. Controller sets variables before require.
+ * Inline <script> blocks intentionally stay here (guardrail).
+ */
+require_once __DIR__ . '/../header.php';
+?>
+
+<div class="sheet-perspective-wrapper">
+    <div class="sheet flat-sheet">
+        <?php require_once __DIR__ . '/../navbar.php'; ?>
+
+        <main class="py-5">
+            <div class="container-paper">
+                
+                <!-- Page Head -->
+                <?php
+                $head_actions = '
+                    <a href="create-job.php" class="btn-pill">
+                        <i class="bi bi-plus-circle-fill"></i> Post New Vacancy
+                    </a>
+                    <a href="updates.php" class="btn-pill-outline">
+                        <i class="bi bi-megaphone-fill"></i> Department Dispatches
+                    </a>
+                    <a href="applicants.php" class="btn-pill-outline">
+                        <i class="bi bi-people-fill"></i> View Applicants (' . $total_applicants_count . ')
+                    </a>
+                ';
+                render_page_head(
+                    '',
+                    'Welcome back, ' . htmlspecialchars($user['name']),
+                    htmlspecialchars($org_name) . ' • Manage active student assistant openings, candidate evaluations, and hiring quotas.',
+                    $head_actions
+                );
+                ?>
+
+                <?php if (($user['verification_status'] ?? 'verified') === 'pending_approval'): ?>
+                    <div class="alert-paper alert-paper--warning mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-hourglass-split text-warning fs-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-ink d-block mb-1">Organization Accreditation Pending Review</strong>
+                                <span class="small text-muted-custom">
+                                    Your employer registration and organization credentials have been submitted to Career Services. Once verified by the Campus Administrator, you will be authorized to post student assistant vacancies.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
+                    <div class="alert-paper alert-paper--danger mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-exclamation-triangle-fill text-danger fs-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-ink d-block mb-1">Accreditation Requires Revision</strong>
+                                <span class="small text-muted-custom">
+                                    <?= htmlspecialchars($user['rejection_reason'] ?: 'Your permit documents or institutional accreditation were not approved.') ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- 4 KPI Metrics -->
+                <div class="row g-3 mb-5">
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($active_jobs_count, 'Active Requisitions', 'bi-briefcase-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($total_applicants_count, 'Total Applicants', 'bi-people-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($interview_count, 'Interviews Scheduled', 'bi-calendar-event-fill'); ?>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <?php render_metric($hired_count, 'Officially Appointed', 'bi-person-check-fill'); ?>
+                    </div>
+                </div>
+
+                <!-- Manage Department Requisitions Table -->
+                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
+                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
+                        <div>
+                            <h3 class="card-paper-title mb-1">
+                                <i class="bi bi-folder-check text-accent me-2"></i> Department Vacancy Requisitions
+                            </h3>
+                            <p class="text-muted-custom small mb-0">Overview of student assistantship postings published by your office</p>
+                        </div>
+                        <a href="create-job.php" class="btn-pill btn-pill-sm">
+                            <i class="bi bi-plus-lg"></i> Post Vacancy
+                        </a>
+                    </div>
+
+                    <?php if (empty($all_dept_jobs)): ?>
+                        <div class="p-4">
+                            <?php
+                            render_empty_state(
+                                'bi-briefcase',
+                                'No Active Requisitions',
+                                'Your department has not posted any student assistant openings yet. Create your first opening to receive student applications.',
+                                'create-job.php',
+                                'Post a New Vacancy'
+                            );
+                            ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table-paper table-paper-responsive mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Vacancy Title</th>
+                                        <th>Category</th>
+                                        <th>Slot Quota</th>
+                                        <th>Rate</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($all_dept_jobs as $job): 
+                                        $slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
+                                        $slots_filled = (int)($job['slots_filled'] ?? 0);
+                                        $pct = ($slots_total > 0) ? round(($slots_filled / $slots_total) * 100) : 0;
+                                    ?>
+                                        <tr>
+                                            <td class="ps-4" data-label="Vacancy Title">
+                                                <a href="../student/job-details.php?id=<?= $job['id'] ?>" class="fw-bold text-ink text-decoration-none">
+                                                    <?= htmlspecialchars($job['title']) ?>
+                                                </a>
+                                                <div class="small text-muted-custom"><?= htmlspecialchars($job['job_type'] ?? 'Student Assistant') ?> &bull; <?= htmlspecialchars($job['work_setup'] ?? 'On-Campus') ?></div>
+                                            </td>
+                                            <td data-label="Category">
+                                                <span class="chip"><?= htmlspecialchars($job['category']) ?></span>
+                                            </td>
+                                            <td data-label="Slot Quota">
+                                                <div class="d-flex align-items-center gap-2" style="min-width: 110px;">
+                                                    <div class="progress-paper flex-grow-1">
+                                                        <div class="progress-paper-bar" style="width: <?= $pct ?>%;"></div>
+                                                    </div>
+                                                    <span class="small text-ink fw-bold"><?= $slots_filled ?>/<?= $slots_total ?></span>
+                                                </div>
+                                            </td>
+                                            <td data-label="Rate" class="fw-bold text-ink">
+                                                <?= htmlspecialchars($job['pay_rate']) ?>
+                                            </td>
+                                            <td data-label="Deadline" class="small text-muted-custom">
+                                                <?= htmlspecialchars(format_display_date($job['deadline'] ?? 'Open')) ?>
+                                            </td>
+                                            <td data-label="Status">
+                                                <?= render_status_badge($job['status'] ?? 'Active') ?>
+                                            </td>
+                                            <td class="text-end pe-4" data-label="Actions">
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <a href="applicants.php?job_id=<?= $job['id'] ?>" class="btn-pill btn-pill-sm">
+                                                        <i class="bi bi-people"></i> Applicants
+                                                    </a>
+                                                    <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm" title="Edit Posting">
+                                                        <i class="bi bi-pencil"></i> Edit
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Recent Candidate Submissions -->
+                <div class="card-paper p-4 mb-5 reveal-fade-rise">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line gap-3">
+                        <div class="min-w-0">
+                            <h3 class="card-paper-title mb-1 fs-5 text-break">
+                                <i class="bi bi-person-lines-fill text-accent me-2"></i> Recent Candidate Applications
+                            </h3>
+                            <p class="text-muted-custom small mb-0">Incoming submissions awaiting department evaluation</p>
+                        </div>
+                        <a href="applicants.php" class="btn-pill-outline btn-pill-sm text-nowrap flex-shrink-0">
+                            View All (<?= $total_applicants_count ?>)
+                        </a>
+                    </div>
+
+                    <?php if (empty($dept_apps)): ?>
+                        <div class="text-center py-4 text-muted-custom small">
+                            No student applications submitted yet.
+                        </div>
+                    <?php else: ?>
+                        <div class="d-flex flex-column gap-3">
+                            <?php foreach (array_slice($dept_apps, 0, 4) as $app): ?>
+                                <div class="candidate-app-item p-3 bg-surface rounded-4 border border-line d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3">
+                                    <div class="min-w-0 flex-grow-1">
+                                        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-baseline gap-1 gap-sm-2 mb-1">
+                                            <strong class="text-ink fs-6 text-break"><?= htmlspecialchars($app['student_name']) ?></strong>
+                                            <span class="small text-muted-custom text-break">(<?= htmlspecialchars($app['course']) ?> &bull; <?= htmlspecialchars($app['year_level']) ?>)</span>
+                                        </div>
+                                        <div class="small text-muted-custom text-break">
+                                            Applied for: <strong class="text-ink"><?= htmlspecialchars($app['job_title']) ?></strong> &bull; <?= format_display_date($app['applied_at']) ?>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-2 gap-sm-3 pt-2 pt-md-0 border-top border-md-0 border-line">
+                                        <div class="flex-shrink-1 min-w-0">
+                                            <?= render_status_badge($app['status']) ?>
+                                        </div>
+                                        <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm text-nowrap flex-shrink-0">
+                                            Evaluate
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+        </main>
+
+        <?php require_once __DIR__ . '/../footer.php'; ?>
+    </div>
+</div>
+

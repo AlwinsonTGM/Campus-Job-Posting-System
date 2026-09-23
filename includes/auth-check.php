@@ -1,43 +1,37 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Campus Job Posting System - Auth Check & Session State Helper
- * Handles session verification, role checks, and user authentication state.
+ * Campus Job Posting System - Role Routing & Navigation Helpers
  */
 
 require_once __DIR__ . '/data-helper.php';
 
-if (!function_exists('check_authenticated')) {
+if (!function_exists('get_role_dashboard_url')) {
     /**
-     * Check if a user is currently logged in
+     * Resolve default landing page relative URL for a given role
      */
-    function check_authenticated() {
-        return is_logged_in();
+    function get_role_dashboard_url(?string $role): string {
+        return match ($role) {
+            'student'  => 'student/dashboard.php',
+            'employer' => 'employer/dashboard.php',
+            'admin'    => 'admin/reports.php',
+            default    => 'index.php'
+        };
     }
 }
 
-if (!function_exists('get_current_auth_user')) {
+if (!function_exists('redirect_by_role')) {
     /**
-     * Retrieve the currently logged-in user profile array or null
+     * Redirect active user to their corresponding role dashboard and exit
      */
-    function get_current_auth_user() {
-        return get_logged_user();
-    }
-}
-
-if (!function_exists('check_user_role')) {
-    /**
-     * Verify if the active user matches a specific role (student, employer, admin)
-     */
-    function check_user_role($role) {
-        return has_role($role);
-    }
-}
-
-if (!function_exists('guard_authenticated_page')) {
-    /**
-     * Guard protected pages and redirect to login if unauthenticated
-     */
-    function guard_authenticated_page($allowed_roles = []) {
-        require_auth($allowed_roles);
+    function redirect_by_role(?string $role): void {
+        $url = get_role_dashboard_url($role);
+        if (!headers_sent()) {
+            header('Location: ' . $url);
+            exit;
+        }
+        echo '<script>window.location.href = ' . json_encode($url, JSON_HEX_TAG | JSON_HEX_AMP) . ';</script>';
+        exit;
     }
 }

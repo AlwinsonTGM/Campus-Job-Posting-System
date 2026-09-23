@@ -1,0 +1,56 @@
+{
+  "questions": {
+    "preserves_php_only": {
+      "type": "noul",
+      "instructions": "Does this PHP chunk keep all server-side logic in PHP with zero JavaScript/TypeScript porting? Flag any evidence that PHP business logic, DB access, auth, session, or email logic was converted or delegated to .js/.ts. Inline <script> in a view template is ALLOWED and does not count as porting.",
+      "criteria": {
+        "true": "All logic remains in PHP; no require/include of JS for server behavior; inline scripts stay inline in PHP views",
+        "false": "PHP logic converted to JS/TS, server behavior delegated to client scripts, or foreign language constructs embedded as server logic"
+      }
+    },
+    "single_domain_coherence": {
+      "type": "noul",
+      "instructions": "Read CHUNK OUTLINE roles. If roles are aggregator/domain services: score whether the chunk cleanly separates a monolith into thin bootstrap + one-domain files. If roles are controller/view: score whether controller/view are properly separated (controller = logic only, view = presentation only) without re-blending concerns. Fail only for wrong boundaries, mixed roles, or an unsplit multi-responsibility structure.",
+      "criteria": {
+        "true": "For service split: aggregator thin + each service one domain. For view extract: controller is logic-only and view is presentation-only with clear boundary",
+        "false": "Boundaries wrong, roles mixed (e.g. controller still contains bulk HTML, view still does DB/redirects, or services still god-files)"
+      }
+    },
+    "contract_surface_intact": {
+      "type": "noul",
+      "instructions": "Do the callable/contract surfaces look intact for existing callers? For controllers: URL entry point still works, POST/GET handlers and redirects preserved. For views: template is still require-able and uses preloaded variables. For services: top-level named PHP functions with stable names/signatures. Fail if APIs were reshaped, renamed, or wrapped in ways that break callers.",
+      "criteria": {
+        "true": "Entry points, function names, and require contracts look preserved for legacy callers",
+        "false": "Broken require paths, missing redirects/handlers, renamed/removed public functions, or class/namespace wrapping that breaks callers"
+      }
+    },
+    "bootstrap_safe": {
+      "type": "noul",
+      "instructions": "Is load-time wiring safe? For aggregator/bootstrap: minimal session/DB + require_once only. For controller: auth/session/POST handling then require view as last step, no harmful double-emit. For view template: safe requires of header/navbar/footer with correct __DIR__ paths, no side effects that conflict with controller. Flag fatal risks (wrong paths, header after output, recursive requires).",
+      "criteria": {
+        "true": "Wiring and requires are safe; controller then view load order is correct; no fatal path/side-effect risks",
+        "false": "Broken requires, output before header(), conflicting session/bootstrap, or view performing controller responsibilities at load"
+      }
+    },
+    "refactor_chunk_verdict": {
+      "type": "choice",
+      "instructions": "Overall verdict for this chunk as a single refactoring unit under strict PHP-preservation guardrails. Judge ONLY structural chunk success for its action type (split_monolith, extract_view_template, etc.): PHP-only preserved, contracts intact, boundaries correct for the action, load/require safe. Residual debt tags (dead_code, type_safety, internal_srp, size) are follow-up work and do NOT by themselves block 'verified'. Use 'needs_work' only for meaningful structural problems still present. Use 'failed' only for guardrail violations.",
+      "criteria": {
+        "verified": "Action-appropriate structure achieved (split or controller/view extract), PHP-only preserved, contracts intact, requires/redirects safe — residual debt may remain as follow-up",
+        "needs_work": "Directionally correct but meaningful structural issues remain (controller/view still blended, fat aggregator, broken boundary) — fix before verify",
+        "failed": "Guardrail violation (JS porting of server logic), broken contract/require surface, or still an unsplit monolith — do not mark verified"
+      }
+    },
+    "residual_debt_notes": {
+      "type": "choice",
+      "instructions": "Primary residual debt remaining after this chunk (pick the dominant one).",
+      "criteria": {
+        "none": "No significant residual debt for this file at chunk scope",
+        "dead_code": "Still has unused/debug/commented-out code — schedule remove_dead_code pass",
+        "type_safety": "Still lacks PHP 8.2 types/strict equality — schedule add_type_declarations pass",
+        "internal_srp": "Boundaries OK but functions/sections inside still blur sub-concerns — optional internal cleanup later",
+        "size": "Still very large for one concern — consider a follow-up split only if needed"
+      }
+    }
+  }
+}
