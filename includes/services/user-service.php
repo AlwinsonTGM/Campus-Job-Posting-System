@@ -578,24 +578,104 @@ function is_student_id_registered(string $student_id): bool {
     }
 }
 
+function validate_registration_payload(array $data, string $email, string $role): ?string {
+    if (is_email_registered($email)) {
+        return 'This KLD account / email address is already registered.';
+    }
+
+    if ($role === 'student' && !empty($data['student_id'])) {
+        if (is_student_id_registered($data['student_id'])) {
+            return 'This Student ID Number is already registered to an existing account.';
+        }
+    }
+
+    return null;
+}
+
+function insert_user_base_record(PDO $pdo, array $data, string $email, string $role): int {
+    $raw_pass = $data['password'] ?? 'Password123!';
+    $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
+
+    $stmt_user = $pdo->prepare("
+        INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `is_email_verified`, `created_at`)
+        VALUES (:name, :email, :password, :role, :phone, 'active', 0, NOW())
+    ");
+    $stmt_user->execute([
+        ':name'     => trim($data['name'] ?? ''),
+        ':email'    => $email,
+        ':password' => $hashed_pass,
+        ':role'     => $role,
+        ':phone'    => $data['phone'] ?? null
+    ]);
+
+    return (int)$pdo->lastInsertId();
+}
+
+function insert_student_profile(PDO $pdo, int $user_id, array $data, string $verification, ?string $proof_path): void {
+    $birthdate = (!empty($data['birthdate']) && $data['birthdate'] !== '0000-00-00') ? $data['birthdate'] : null;
+    $age = !empty($birthdate) ? calculate_age($birthdate) : ($data['age'] ?? 20);
+    $sex = $data['sex'] ?? 'Male';
+    $year_level = $data['year_level'] ?? '1st Year';
+    $student_id_val = !empty($data['student_id']) ? $data['student_id'] : ('KLD-' . str_pad((string)$user_id, 6, '0', STR_PAD_LEFT));
+    $availability = isset($data['availability']) ? (is_array($data['availability']) ? json_encode($data['availability']) : $data['availability']) : json_encode([]);
+
+    $stmt_student = $pdo->prepare("
+        INSERT INTO `student_profiles` (
+            `user_id`, `student_id`, `department`, `course`, `year_level`,
+            `sex`, `birthdate`, `age`, `availability`, `verification_status`, `registration_proof`, `created_at`
+        ) VALUES (
+            :user_id, :student_id, :department, :course, :year_level,
+            :sex, :birthdate, :age, :availability, :verification_status, :registration_proof, NOW()
+        )
+    ");
+    $stmt_student->execute([
+        ':user_id'             => $user_id,
+        ':student_id'          => $student_id_val,
+        ':department'          => $data['department'] ?? 'Institute of Computing and Digital Innovation (ICDI)',
+        ':course'              => $data['course'] ?? 'BS Information Systems (BSIS)',
+        ':year_level'          => $year_level,
+        ':sex'                 => $sex,
+        ':birthdate'           => $birthdate,
+        ':age'                 => $age,
+        ':availability'        => $availability,
+        ':verification_status' => $verification,
+        ':registration_proof'  => $proof_path
+    ]);
+}
+
+function insert_employer_profile(PDO $pdo, int $user_id, array $data, string $org_name, string $employer_type, string $verification, string $accreditation, ?string $permit_path): void {
+    $stmt_employer = $pdo->prepare("
+        INSERT INTO `employer_profiles` (
+            `user_id`, `employer_type`, `organization_name`, `office_location`,
+            `contact_person`, `accreditation_number`, `verification_status`, `business_permit`, `created_at`
+        ) VALUES (
+            :user_id, :employer_type, :organization_name, :office_location,
+            :contact_person, :accreditation_number, :verification_status, :business_permit, NOW()
+        )
+    ");
+    $stmt_employer->execute([
+        ':user_id'              => $user_id,
+        ':employer_type'        => $employer_type,
+        ':organization_name'    => trim($org_name),
+        ':office_location'      => $data['office_location'] ?? 'Campus Main Office',
+        ':contact_person'       => trim($data['name'] ?? ''),
+        ':accreditation_number' => $accreditation,
+        ':verification_status'  => $verification,
+        ':business_permit'      => $permit_path
+    ]);
+}
+
 function register_user(array $data, ?array $permit_file = null, ?array $proof_file = null): array {
     try {
         $pdo = get_db_connection();
         $email = strtolower(trim($data['email'] ?? ''));
 
-        // Check if email already exists
-        if (is_email_registered($email)) {
-            return ['success' => false, 'message' => 'This KLD account / email address is already registered.'];
-        }
-
         $allowed_roles = ['student', 'employer'];
         $role = in_array($data['role'] ?? '', $allowed_roles, true) ? $data['role'] : 'student';
 
-        // Check if student ID already exists
-        if ($role === 'student' && !empty($data['student_id'])) {
-            if (is_student_id_registered($data['student_id'])) {
-                return ['success' => false, 'message' => 'This Student ID Number is already registered to an existing account.'];
-            }
+        $val_error = validate_registration_payload($data, $email, $role);
+        if ($val_error !== null) {
+            return ['success' => false, 'message' => $val_error];
         }
 
         $employer_type = $data['employer_type'] ?? 'university_office';
@@ -611,82 +691,21 @@ function register_user(array $data, ?array $permit_file = null, ?array $proof_fi
                 $accreditation = $data['accreditation_number'] ?? 'PENDING-VERIFICATION';
             }
         } else {
-            // University students registering with @kld.edu.ph institutional email or valid credentials are auto-verified
             $verification = $is_kld_email ? 'verified' : 'pending_approval';
             $accreditation = $data['student_id'] ?? ('STUDENT-' . rand(10000, 99999));
         }
 
-        $sex = $data['sex'] ?? ($role === 'student' ? 'Male' : '');
-        $birthdate = (!empty($data['birthdate']) && $data['birthdate'] !== '0000-00-00') ? $data['birthdate'] : null;
-        $age = !empty($birthdate) ? calculate_age($birthdate) : ($data['age'] ?? ($role === 'student' ? 20 : null));
-        $year_level = $data['year_level'] ?? '1st Year';
         $proof_path = $proof_file ?? ($data['proof_file'] ?? null);
         $permit_path = $permit_file ?? ($data['permit_file'] ?? null);
 
-        $raw_pass = $data['password'] ?? 'Password123!';
-        $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
-
         $pdo->beginTransaction();
 
-        $stmt_user = $pdo->prepare("
-            INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `is_email_verified`, `created_at`)
-            VALUES (:name, :email, :password, :role, :phone, 'active', 0, NOW())
-        ");
-        $stmt_user->execute([
-            ':name'     => trim($data['name'] ?? ''),
-            ':email'    => $email,
-            ':password' => $hashed_pass,
-            ':role'     => $role,
-            ':phone'    => $data['phone'] ?? null
-        ]);
-
-        $new_id = (int)$pdo->lastInsertId();
+        $new_id = insert_user_base_record($pdo, $data, $email, $role);
 
         if ($role === 'student') {
-            $student_id_val = !empty($data['student_id']) ? $data['student_id'] : ('KLD-' . str_pad($new_id, 6, '0', STR_PAD_LEFT));
-            $availability = isset($data['availability']) ? (is_array($data['availability']) ? json_encode($data['availability']) : $data['availability']) : json_encode([]);
-            $stmt_student = $pdo->prepare("
-                INSERT INTO `student_profiles` (
-                    `user_id`, `student_id`, `department`, `course`, `year_level`,
-                    `sex`, `birthdate`, `age`, `availability`, `verification_status`, `registration_proof`, `created_at`
-                ) VALUES (
-                    :user_id, :student_id, :department, :course, :year_level,
-                    :sex, :birthdate, :age, :availability, :verification_status, :registration_proof, NOW()
-                )
-            ");
-            $stmt_student->execute([
-                ':user_id'             => $new_id,
-                ':student_id'          => $student_id_val,
-                ':department'          => $data['department'] ?? 'Institute of Computing and Digital Innovation (ICDI)',
-                ':course'              => $data['course'] ?? 'BS Information Systems (BSIS)',
-                ':year_level'          => $year_level,
-                ':sex'                 => $sex,
-                ':birthdate'           => $birthdate,
-                ':age'                 => $age,
-                ':availability'        => $availability,
-                ':verification_status' => $verification,
-                ':registration_proof'  => $proof_path
-            ]);
+            insert_student_profile($pdo, $new_id, $data, $verification, $proof_path);
         } elseif ($role === 'employer') {
-            $stmt_employer = $pdo->prepare("
-                INSERT INTO `employer_profiles` (
-                    `user_id`, `employer_type`, `organization_name`, `office_location`,
-                    `contact_person`, `accreditation_number`, `verification_status`, `business_permit`, `created_at`
-                ) VALUES (
-                    :user_id, :employer_type, :organization_name, :office_location,
-                    :contact_person, :accreditation_number, :verification_status, :business_permit, NOW()
-                )
-            ");
-            $stmt_employer->execute([
-                ':user_id'              => $new_id,
-                ':employer_type'        => $employer_type,
-                ':organization_name'    => trim($org_name),
-                ':office_location'      => $data['office_location'] ?? 'Campus Main Office',
-                ':contact_person'       => trim($data['name'] ?? ''),
-                ':accreditation_number' => $accreditation,
-                ':verification_status'  => $verification,
-                ':business_permit'      => $permit_path
-            ]);
+            insert_employer_profile($pdo, $new_id, $data, $org_name, $employer_type, $verification, $accreditation, $permit_path);
         }
 
         $pdo->commit();
@@ -708,6 +727,9 @@ function register_user(array $data, ?array $permit_file = null, ?array $proof_fi
 
         return ['success' => true, 'user' => $new_user];
     } catch (Exception $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         return ['success' => false, 'message' => 'Registration failed: ' . $e->getMessage()];
     }
 }
@@ -784,44 +806,64 @@ function dismiss_profile_request_notice(int|string $user_id): bool {
     }
 }
 
+function validate_profile_request_payload(PDO $pdo, int $user_id, array $requested_data, array $current_user): ?string {
+    $pending = get_pending_profile_request($user_id);
+    if ($pending) {
+        return 'You already have an active profile update request awaiting review.';
+    }
+
+    $req_email = strtolower(trim($requested_data['email'] ?? ($current_user['email'] ?? '')));
+    if (empty($req_email) || !filter_var($req_email, FILTER_VALIDATE_EMAIL)) {
+        return 'Please provide a valid institutional / student email address.';
+    }
+
+    if ($req_email !== strtolower($current_user['email'])) {
+        $stmt_chk = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
+        $stmt_chk->execute([':email' => $req_email, ':id' => $user_id]);
+        if ($stmt_chk->fetch()) {
+            return 'The requested email address is already in use by another account.';
+        }
+    }
+
+    $target_dept = trim((string)($requested_data['department'] ?? ($current_user['department'] ?? '')));
+    $target_course = trim((string)($requested_data['course'] ?? ($current_user['course'] ?? '')));
+    $institutes = get_kld_institutes_and_courses();
+    if ($target_dept !== '' && $target_course !== '' && isset($institutes[$target_dept]) && !in_array($target_course, $institutes[$target_dept], true)) {
+        return "The selected degree program does not belong to {$target_dept}.";
+    }
+
+    return null;
+}
+
+function dispatch_profile_request_notification(string $user_name): void {
+    notify_all_admins(
+        'profile_request',
+        'Profile Correction Request',
+        "{$user_name} submitted a profile change request for administrative review.",
+        'admin/users.php?ver_status=all',
+        'bi-person-gear',
+        'info'
+    );
+}
+
 function create_profile_request(int|string $user_id, array $requested_data, ?array $proof_file, string $reason = ''): array {
     try {
         $pdo = get_db_connection();
-
-        // Check if user already has an active pending request
-        $pending = get_pending_profile_request($user_id);
-        if ($pending) {
-            return ['success' => false, 'message' => 'You already have an active profile update request awaiting review.'];
-        }
+        $user_id = (int)$user_id;
 
         $current_user = get_user_by_id($user_id);
         if (!$current_user) {
             return ['success' => false, 'message' => 'User account not found.'];
         }
 
+        $val_error = validate_profile_request_payload($pdo, $user_id, $requested_data, $current_user);
+        if ($val_error !== null) {
+            return ['success' => false, 'message' => $val_error];
+        }
+
         $req_birthdate = trim($requested_data['birthdate'] ?? ($current_user['birthdate'] ?? ''));
         $req_age = !empty($req_birthdate) ? calculate_age($req_birthdate) : (!empty($requested_data['age']) ? (int)$requested_data['age'] : ($current_user['age'] ?? 20));
-
         $req_email = strtolower(trim($requested_data['email'] ?? ($current_user['email'] ?? '')));
-        if (empty($req_email) || !filter_var($req_email, FILTER_VALIDATE_EMAIL)) {
-            return ['success' => false, 'message' => 'Please provide a valid institutional / student email address.'];
-        }
-
-        // If email is changing, check uniqueness against other users
-        if ($req_email !== strtolower($current_user['email'])) {
-            $stmt_chk = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
-            $stmt_chk->execute([':email' => $req_email, ':id' => (int)$user_id]);
-            if ($stmt_chk->fetch()) {
-                return ['success' => false, 'message' => 'The requested email address is already in use by another account.'];
-            }
-        }
-
-        $target_dept = trim((string)($requested_data['department'] ?? ($current_user['department'] ?? '')));
-        $target_course = trim((string)($requested_data['course'] ?? ($current_user['course'] ?? '')));
-        $institutes = get_kld_institutes_and_courses();
-        if ($target_dept !== '' && $target_course !== '' && isset($institutes[$target_dept]) && !in_array($target_course, $institutes[$target_dept], true)) {
-            return ['success' => false, 'message' => "The selected degree program does not belong to {$target_dept}."];
-        }
 
         $current_profile = [
             'name'       => $current_user['name'] ?? '',
@@ -857,7 +899,7 @@ function create_profile_request(int|string $user_id, array $requested_data, ?arr
         ");
 
         $stmt->execute([
-            ':user_id'           => (int)$user_id,
+            ':user_id'           => $user_id,
             ':current_profile'   => json_encode($current_profile),
             ':requested_profile' => json_encode($requested_profile),
             ':proof_file'        => $proof_file,
@@ -867,7 +909,7 @@ function create_profile_request(int|string $user_id, array $requested_data, ?arr
         $new_id = (int)$pdo->lastInsertId();
         $new_req = [
             'id'                => $new_id,
-            'user_id'           => (int)$user_id,
+            'user_id'           => $user_id,
             'user_name'         => $current_user['name'],
             'user_email'        => $current_user['email'],
             'student_id'        => $current_user['student_id'] ?? '2024-00123',
@@ -882,19 +924,75 @@ function create_profile_request(int|string $user_id, array $requested_data, ?arr
             'resolved_at'       => null
         ];
 
-        notify_all_admins(
-            'profile_request',
-            'Profile Correction Request',
-            "{$current_user['name']} submitted a profile change request for administrative review.",
-            'admin/users.php?ver_status=all',
-            'bi-person-gear',
-            'info'
-        );
+        dispatch_profile_request_notification($current_user['name']);
 
         return ['success' => true, 'request' => $new_req];
     } catch (Exception $e) {
         return ['success' => false, 'message' => 'Request creation failed: ' . $e->getMessage()];
     }
+}
+
+function apply_profile_request_changes(PDO $pdo, int $user_id, array $requested, ?string $proof_file): void {
+    // 1. Update users identity table (name, email)
+    $user_updates = [];
+    $user_params = [':id' => $user_id];
+
+    if (!empty($requested['name'])) { 
+        $user_updates[] = "`name` = :name"; 
+        $user_params[':name'] = $requested['name']; 
+    }
+    
+    if (!empty($requested['email'])) {
+        $candidate_email = strtolower(trim($requested['email']));
+        $chk_email = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
+        $chk_email->execute([':email' => $candidate_email, ':id' => $user_id]);
+        if (!$chk_email->fetch()) {
+            $user_updates[] = "`email` = :email";
+            $user_params[':email'] = $candidate_email;
+        }
+    }
+
+    if (!empty($user_updates)) {
+        $user_sql = "UPDATE `users` SET " . implode(', ', $user_updates) . ", `updated_at` = NOW() WHERE `id` = :id";
+        $upd_user_stmt = $pdo->prepare($user_sql);
+        $upd_user_stmt->execute($user_params);
+    }
+
+    // 2. Update student_profiles subtype table
+    $student_updates = [];
+    $student_params = [':user_id' => $user_id];
+
+    if (!empty($requested['department'])) { $student_updates[] = "`department` = :department"; $student_params[':department'] = $requested['department']; }
+    if (!empty($requested['course'])) { $student_updates[] = "`course` = :course"; $student_params[':course'] = $requested['course']; }
+    if (!empty($requested['year_level'])) { $student_updates[] = "`year_level` = :year_level"; $student_params[':year_level'] = $requested['year_level']; }
+    if (!empty($requested['sex'])) { $student_updates[] = "`sex` = :sex"; $student_params[':sex'] = $requested['sex']; }
+    if (!empty($requested['birthdate'])) { $student_updates[] = "`birthdate` = :birthdate"; $student_params[':birthdate'] = $requested['birthdate']; }
+    if (!empty($requested['age'])) { $student_updates[] = "`age` = :age"; $student_params[':age'] = (int)$requested['age']; }
+    if (!empty($proof_file)) { $student_updates[] = "`registration_proof` = :proof"; $student_params[':proof'] = $proof_file; }
+
+    $cur_user_row = get_user_by_id($user_id);
+    if ($cur_user_row && in_array($cur_user_row['verification_status'] ?? '', ['rejected', 'pending_approval'])) {
+        $student_updates[] = "`verification_status` = 'verified'";
+        $student_updates[] = "`rejection_reason` = NULL";
+    }
+
+    if (!empty($student_updates)) {
+        $student_sql = "UPDATE `student_profiles` SET " . implode(', ', $student_updates) . ", `updated_at` = NOW() WHERE `user_id` = :user_id";
+        $upd_student_stmt = $pdo->prepare($student_sql);
+        $upd_student_stmt->execute($student_params);
+    }
+}
+
+function dispatch_profile_approval_notification(int $user_id): void {
+    create_notification(
+        $user_id,
+        'profile_request',
+        'Profile Update Approved! 🎉',
+        'Your institutional record change request has been verified and updated by the administrator.',
+        'settings.php',
+        'bi-person-check-fill',
+        'success'
+    );
 }
 
 function approve_profile_request(int|string $request_id, string $admin_notes = ''): bool {
@@ -906,62 +1004,13 @@ function approve_profile_request(int|string $request_id, string $admin_notes = '
         if (!$row) return false;
 
         $target_req = hydrate_profile_request($row);
-        $user_id = $target_req['user_id'];
+        $user_id = (int)$target_req['user_id'];
         $requested = $target_req['requested_profile'];
 
         $pdo->beginTransaction();
 
-        // 1. Update users identity table (name, email)
-        $user_updates = [];
-        $user_params = [':id' => $user_id];
+        apply_profile_request_changes($pdo, $user_id, $requested, $target_req['proof_file'] ?? null);
 
-        if (!empty($requested['name'])) { 
-            $user_updates[] = "`name` = :name"; 
-            $user_params[':name'] = $requested['name']; 
-        }
-        
-        if (!empty($requested['email'])) {
-            $candidate_email = strtolower(trim($requested['email']));
-            $chk_email = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = :email AND `id` != :id LIMIT 1");
-            $chk_email->execute([':email' => $candidate_email, ':id' => $user_id]);
-            if (!$chk_email->fetch()) {
-                $user_updates[] = "`email` = :email";
-                $user_params[':email'] = $candidate_email;
-            }
-        }
-
-        if (!empty($user_updates)) {
-            $user_sql = "UPDATE `users` SET " . implode(', ', $user_updates) . ", `updated_at` = NOW() WHERE `id` = :id";
-            $upd_user_stmt = $pdo->prepare($user_sql);
-            $upd_user_stmt->execute($user_params);
-        }
-
-        // 2. Update student_profiles subtype table
-        $student_updates = [];
-        $student_params = [':user_id' => $user_id];
-
-        if (!empty($requested['department'])) { $student_updates[] = "`department` = :department"; $student_params[':department'] = $requested['department']; }
-        if (!empty($requested['course'])) { $student_updates[] = "`course` = :course"; $student_params[':course'] = $requested['course']; }
-        if (!empty($requested['year_level'])) { $student_updates[] = "`year_level` = :year_level"; $student_params[':year_level'] = $requested['year_level']; }
-        if (!empty($requested['sex'])) { $student_updates[] = "`sex` = :sex"; $student_params[':sex'] = $requested['sex']; }
-        if (!empty($requested['birthdate'])) { $student_updates[] = "`birthdate` = :birthdate"; $student_params[':birthdate'] = $requested['birthdate']; }
-        if (!empty($requested['age'])) { $student_updates[] = "`age` = :age"; $student_params[':age'] = (int)$requested['age']; }
-        if (!empty($target_req['proof_file'])) { $student_updates[] = "`registration_proof` = :proof"; $student_params[':proof'] = $target_req['proof_file']; }
-
-        // If the student's registration was rejected or awaiting revision, approving their official correction restores full verified status
-        $cur_user_row = get_user_by_id($user_id);
-        if ($cur_user_row && in_array($cur_user_row['verification_status'] ?? '', ['rejected', 'pending_approval'])) {
-            $student_updates[] = "`verification_status` = 'verified'";
-            $student_updates[] = "`rejection_reason` = NULL";
-        }
-
-        if (!empty($student_updates)) {
-            $student_sql = "UPDATE `student_profiles` SET " . implode(', ', $student_updates) . ", `updated_at` = NOW() WHERE `user_id` = :user_id";
-            $upd_student_stmt = $pdo->prepare($student_sql);
-            $upd_student_stmt->execute($student_params);
-        }
-
-        // 3. Mark request as approved
         $stmt_req_upd = $pdo->prepare("
             UPDATE `profile_requests` 
             SET `status` = 'approved', `admin_notes` = :notes, `resolved_at` = NOW(), `dismissed_by_user` = 0 
@@ -974,21 +1023,11 @@ function approve_profile_request(int|string $request_id, string $admin_notes = '
 
         $pdo->commit();
 
-        // Refresh session if the modified user is currently logged in
         if (isset($_SESSION['user']) && (int)$_SESSION['user']['id'] === $user_id) {
             $_SESSION['user'] = get_user_by_id($user_id);
         }
 
-        // Notify student of approval
-        create_notification(
-            $user_id,
-            'profile_request',
-            'Profile Update Approved! 🎉',
-            'Your institutional record change request has been verified and updated by the administrator.',
-            'settings.php',
-            'bi-person-check-fill',
-            'success'
-        );
+        dispatch_profile_approval_notification($user_id);
 
         return true;
     } catch (Exception $e) {

@@ -144,39 +144,69 @@ function get_job_by_id(int|string|null $id): ?array {
     }
 }
 
+function prepare_job_attributes(PDO $pdo, array $data, ?array $photo_file = null, ?array $existing = null): array {
+    $image_path = $existing['image'] ?? null;
+    if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+        $new_img = save_uploaded_job_photo($photo_file);
+        if ($new_img) {
+            $image_path = $new_img;
+        }
+    } elseif (!empty($data['remove_photo'])) {
+        $image_path = null;
+    } elseif (isset($data['image'])) {
+        $image_path = $data['image'];
+    }
+
+    $responsibilities = isset($data['responsibilities'])
+        ? (is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", (string)$data['responsibilities']))))
+        : ($existing['responsibilities'] ?? []);
+
+    $qualifications = isset($data['qualifications'])
+        ? (is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", (string)$data['qualifications']))))
+        : ($existing['qualifications'] ?? []);
+
+    $vacancies_count = max(1, (int)($data['vacancies'] ?? ($existing['vacancies'] ?? 1)));
+
+    $category_name = $data['category'] ?? ($existing['category'] ?? 'Administrative & Clerical');
+    $category_id = (int)($data['category_id'] ?? 0);
+    if ($category_id <= 0) {
+        $stmt_cat = $pdo->prepare("SELECT `id` FROM `categories` WHERE `name` = :cname LIMIT 1");
+        $stmt_cat->execute([':cname' => $category_name]);
+        $found_id = $stmt_cat->fetchColumn();
+        $category_id = $found_id ? (int)$found_id : ($existing['category_id'] ?? 3);
+    }
+
+    $job_type = $data['job_type'] ?? ($existing['job_type'] ?? 'Student Assistant');
+    $work_setup = $data['work_setup'] ?? ($existing['work_setup'] ?? 'On-Campus');
+    $employer_type = $data['employer_type'] ?? ($existing['employer_type'] ?? 'university_office');
+
+    $tags = !empty($data['tags'])
+        ? (is_array($data['tags']) ? $data['tags'] : explode(',', (string)$data['tags']))
+        : [$job_type, $work_setup, $employer_type === 'university_office' ? 'University Office' : 'Approved Partner'];
+
+    $badges = [$job_type, $work_setup];
+
+    return [
+        'image_path'       => $image_path,
+        'responsibilities' => $responsibilities,
+        'qualifications'   => $qualifications,
+        'vacancies_count'  => $vacancies_count,
+        'category_id'      => $category_id,
+        'job_type'         => $job_type,
+        'work_setup'       => $work_setup,
+        'tags'             => $tags,
+        'badges'           => $badges
+    ];
+}
+
 function create_job(array $data, ?array $photo_file = null): int {
     try {
         $pdo = get_db_connection();
         $user = get_logged_user();
-        $employer_type = $user['employer_type'] ?? ($data['employer_type'] ?? 'university_office');
         $org_name = $user['organization_name'] ?? ($user['department'] ?? ($data['department'] ?? 'Campus Department'));
-        $work_setup = $data['work_setup'] ?? 'On-Campus';
-        $job_type = $data['job_type'] ?? 'Student Assistant';
-        $vacancies_count = max(1, (int)($data['vacancies'] ?? 1));
+        $data['employer_type'] = $user['employer_type'] ?? ($data['employer_type'] ?? 'university_office');
 
-        // Handle optional photo upload
-        $image_path = null;
-        if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            $image_path = save_uploaded_job_photo($photo_file);
-        }
-        if (empty($image_path) && !empty($data['image'])) {
-            $image_path = $data['image'];
-        }
-
-        $tags = !empty($data['tags']) ? (is_array($data['tags']) ? $data['tags'] : explode(',', $data['tags'])) : [$job_type, $work_setup, $employer_type === 'university_office' ? 'University Office' : 'Approved Partner'];
-        $badges = [$job_type, $work_setup];
-        $responsibilities = !empty($data['responsibilities']) ? (is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", $data['responsibilities'])))) : [];
-        $qualifications = !empty($data['qualifications']) ? (is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", $data['qualifications'])))) : [];
-
-        // Dynamically resolve category_id from category name if not provided
-        $category_name = $data['category'] ?? 'Administrative & Clerical';
-        $category_id = (int)($data['category_id'] ?? 0);
-        if ($category_id <= 0) {
-            $stmt_cat = $pdo->prepare("SELECT `id` FROM `categories` WHERE `name` = :cname LIMIT 1");
-            $stmt_cat->execute([':cname' => $category_name]);
-            $found_id = $stmt_cat->fetchColumn();
-            $category_id = $found_id ? (int)$found_id : 3;
-        }
+        $attrs = prepare_job_attributes($pdo, $data, $photo_file);
 
         $stmt = $pdo->prepare("
             INSERT INTO `jobs` (
@@ -197,23 +227,23 @@ function create_job(array $data, ?array $photo_file = null): int {
         $stmt->execute([
             ':title'             => $data['title'] ?? '',
             ':department'        => $data['department'] ?? $org_name,
-            ':category_id'       => $category_id,
+            ':category_id'       => $attrs['category_id'],
             ':employer_id'       => (int)($user['id'] ?? 0),
-            ':job_type'          => $job_type,
-            ':work_setup'        => $work_setup,
+            ':job_type'          => $attrs['job_type'],
+            ':work_setup'        => $attrs['work_setup'],
             ':location'          => $data['location'] ?? 'Campus Main Office',
             ':pay_rate'          => $data['pay_rate'] ?? '₱80.00 / hour',
             ':pay_type'          => $data['pay_type'] ?? 'Hourly',
             ':hours_per_week'    => $data['hours_per_week'] ?? '10 - 20 hrs/week',
-            ':vacancies'         => $vacancies_count,
-            ':slots_total'       => $vacancies_count,
+            ':vacancies'         => $attrs['vacancies_count'],
+            ':slots_total'       => $attrs['vacancies_count'],
             ':deadline'          => !empty($data['deadline']) ? $data['deadline'] : date('Y-m-d', strtotime('+30 days')),
-            ':image'             => $image_path,
-            ':tags'              => json_encode($tags),
-            ':badges'            => json_encode($badges),
+            ':image'             => $attrs['image_path'],
+            ':tags'              => json_encode($attrs['tags']),
+            ':badges'            => json_encode($attrs['badges']),
             ':description'       => $data['description'] ?? '',
-            ':responsibilities'  => json_encode($responsibilities),
-            ':qualifications'    => json_encode($qualifications)
+            ':responsibilities'  => json_encode($attrs['responsibilities']),
+            ':qualifications'    => json_encode($attrs['qualifications'])
         ]);
 
         return (int)$pdo->lastInsertId();
@@ -229,30 +259,7 @@ function update_job(int|string $id, array $data, ?array $photo_file = null): boo
         $existing = get_job_by_id($id);
         if (!$existing) return false;
 
-        $image_path = $existing['image'];
-        if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            $new_img = save_uploaded_job_photo($photo_file);
-            if ($new_img) $image_path = $new_img;
-        } elseif (!empty($data['remove_photo'])) {
-            $image_path = null;
-        } elseif (isset($data['image'])) {
-            $image_path = $data['image'];
-        }
-
-        $responsibilities = isset($data['responsibilities']) ? (is_array($data['responsibilities']) ? $data['responsibilities'] : array_filter(array_map('trim', explode("\n", $data['responsibilities'])))) : $existing['responsibilities'];
-        $qualifications = isset($data['qualifications']) ? (is_array($data['qualifications']) ? $data['qualifications'] : array_filter(array_map('trim', explode("\n", $data['qualifications'])))) : $existing['qualifications'];
-
-        $vacancies_count = max(1, (int)($data['vacancies'] ?? $existing['vacancies']));
-
-        // Dynamically resolve category_id from category name
-        $category_name = $data['category'] ?? $existing['category'];
-        $category_id = (int)($data['category_id'] ?? 0);
-        if ($category_id <= 0) {
-            $stmt_cat = $pdo->prepare("SELECT `id` FROM `categories` WHERE `name` = :cname LIMIT 1");
-            $stmt_cat->execute([':cname' => $category_name]);
-            $found_id = $stmt_cat->fetchColumn();
-            $category_id = $found_id ? (int)$found_id : ($existing['category_id'] ?? 3);
-        }
+        $attrs = prepare_job_attributes($pdo, $data, $photo_file, $existing);
 
         $stmt = $pdo->prepare("
             UPDATE `jobs` SET
@@ -279,20 +286,20 @@ function update_job(int|string $id, array $data, ?array $photo_file = null): boo
         $stmt->execute([
             ':title'            => $data['title'] ?? $existing['title'],
             ':department'       => $data['department'] ?? $existing['department'],
-            ':category_id'      => $category_id,
-            ':job_type'         => $data['job_type'] ?? $existing['job_type'],
-            ':work_setup'       => $data['work_setup'] ?? $existing['work_setup'],
+            ':category_id'      => $attrs['category_id'],
+            ':job_type'         => $attrs['job_type'],
+            ':work_setup'       => $attrs['work_setup'],
             ':location'         => $data['location'] ?? $existing['location'],
             ':pay_rate'         => $data['pay_rate'] ?? $existing['pay_rate'],
             ':hours_per_week'   => $data['hours_per_week'] ?? $existing['hours_per_week'],
-            ':vacancies'        => $vacancies_count,
-            ':slots_total'      => $vacancies_count,
+            ':vacancies'        => $attrs['vacancies_count'],
+            ':slots_total'      => $attrs['vacancies_count'],
             ':deadline'         => $data['deadline'] ?? $existing['deadline'],
             ':status'           => $data['status'] ?? $existing['status'],
             ':description'      => $data['description'] ?? $existing['description'],
-            ':image'            => $image_path,
-            ':responsibilities' => json_encode($responsibilities),
-            ':qualifications'   => json_encode($qualifications),
+            ':image'            => $attrs['image_path'],
+            ':responsibilities' => json_encode($attrs['responsibilities']),
+            ':qualifications'   => json_encode($attrs['qualifications']),
             ':id'               => (int)$id
         ]);
 
@@ -526,7 +533,108 @@ function create_application(array $data): array {
     }
 }
 
-function update_application_status(int|string $id, string $status, string $notes = '', array $interview_data = []): array {
+function sync_job_slot_capacity(PDO $pdo, int $job_id, string $old_status, string $new_status): bool {
+    if ($old_status !== 'accepted' && $new_status === 'accepted') {
+        $stmt_check = $pdo->prepare("SELECT `slots_filled`, `slots_total`, `vacancies` FROM `jobs` WHERE `id` = :job_id FOR UPDATE");
+        $stmt_check->execute([':job_id' => $job_id]);
+        $job_quota = $stmt_check->fetch(PDO::FETCH_ASSOC);
+
+        if (!$job_quota) {
+            return false;
+        }
+
+        $slots_max = max(1, (int)($job_quota['slots_total'] ?? 0), (int)($job_quota['vacancies'] ?? 0));
+        $slots_curr = (int)($job_quota['slots_filled'] ?? 0);
+        if ($slots_curr >= $slots_max) {
+            return false;
+        }
+
+        $stmt_inc = $pdo->prepare("
+            UPDATE `jobs` SET
+                `slots_filled` = `slots_filled` + 1,
+                `status` = CASE WHEN `slots_filled` >= `slots_total` THEN 'closed' ELSE `status` END,
+                `updated_at` = NOW()
+            WHERE `id` = :job_id
+        ");
+        $stmt_inc->execute([':job_id' => $job_id]);
+        return true;
+    }
+
+    if ($old_status === 'accepted' && $new_status !== 'accepted') {
+        $stmt_dec = $pdo->prepare("
+            UPDATE `jobs` SET
+                `slots_filled` = GREATEST(0, `slots_filled` - 1),
+                `status` = CASE WHEN `status` = 'closed' AND (`slots_filled` < `slots_total`) THEN 'active' ELSE `status` END,
+                `updated_at` = NOW()
+            WHERE `id` = :job_id
+        ");
+        $stmt_dec->execute([':job_id' => $job_id]);
+        return true;
+    }
+
+    return true;
+}
+
+function dispatch_application_status_notification(
+    int $student_id,
+    string $job_title,
+    string $status,
+    string $status_label,
+    string $notes,
+    ?string $interview_date,
+    ?string $interview_time,
+    ?string $interview_venue
+): void {
+    if ($student_id <= 0) {
+        return;
+    }
+
+    $notif_title = "Application Update: " . $job_title;
+    $notif_icon = 'bi-bell';
+    $notif_badge = 'primary';
+    $notif_msg = "Your application for '{$job_title}' has been updated to {$status_label}.";
+
+    if ($status === 'interview_scheduled') {
+        $notif_title = "Interview Scheduled: " . $job_title;
+        $notif_icon = 'bi-calendar-check-fill';
+        $notif_badge = 'info';
+        $date_str = $interview_date ?: 'TBA';
+        $time_str = $interview_time ? ' at ' . $interview_time : '';
+        $venue_str = $interview_venue ? ' (' . $interview_venue . ')' : '';
+        $notif_msg = "You have an interview scheduled on {$date_str}{$time_str}{$venue_str}.";
+    } elseif ($status === 'accepted') {
+        $notif_title = "Application Accepted! 🎉";
+        $notif_icon = 'bi-check-circle-fill';
+        $notif_badge = 'success';
+        $notif_msg = "Congratulations! You have been accepted for the position '{$job_title}'.";
+    } elseif ($status === 'declined') {
+        $notif_title = "Application Update: " . $job_title;
+        $notif_icon = 'bi-x-circle';
+        $notif_badge = 'secondary';
+        $notif_msg = "The hiring supervisor has completed review for '{$job_title}'. The position has been filled or closed.";
+    } elseif ($status === 'under_review') {
+        $notif_title = "Application Under Review";
+        $notif_icon = 'bi-hourglass-split';
+        $notif_badge = 'primary';
+        $notif_msg = "Your application for '{$job_title}' is now being evaluated by the hiring department.";
+    }
+
+    if (!empty($notes)) {
+        $notif_msg .= " Supervisor Note: " . trim($notes);
+    }
+
+    create_notification(
+        $student_id,
+        'application_status',
+        $notif_title,
+        $notif_msg,
+        'student/my-applications.php',
+        $notif_icon,
+        $notif_badge
+    );
+}
+
+function update_application_status(int|string $id, string $status, string $notes = '', array $interview_data = []): bool {
     try {
         $pdo = get_db_connection();
         $target_app = get_application_by_id($id);
@@ -560,7 +668,7 @@ function update_application_status(int|string $id, string $status, string $notes
         if ($status === 'interview_scheduled' && !empty($interview_data)) {
             $raw_date = trim($interview_data['date'] ?? '');
             if (!empty($raw_date) && strtotime($raw_date) < strtotime(date('Y-m-d'))) {
-                return false; // Cannot schedule in the past
+                return false;
             }
             $interview_date = $raw_date ?: null;
             $interview_time = $interview_data['time'] ?? null;
@@ -589,98 +697,25 @@ function update_application_status(int|string $id, string $status, string $notes
             ':id'              => (int)$id
         ]);
 
-        // Synchronize slots_filled and job status
-        if ($job_id > 0) {
-            if ($old_status !== 'accepted' && $status === 'accepted') {
-                // Capacity ceiling guard (Defect 2 Fix): prevent overfilling
-                $stmt_check = $pdo->prepare("SELECT `slots_filled`, `slots_total`, `vacancies` FROM `jobs` WHERE `id` = :job_id FOR UPDATE");
-                $stmt_check->execute([':job_id' => $job_id]);
-                $job_quota = $stmt_check->fetch(PDO::FETCH_ASSOC);
-
-                if (!$job_quota) {
-                    $pdo->rollBack();
-                    return false;
-                }
-
-                $slots_max = max(1, (int)($job_quota['slots_total'] ?? 0), (int)($job_quota['vacancies'] ?? 0));
-                $slots_curr = (int)($job_quota['slots_filled'] ?? 0);
-                if ($slots_curr >= $slots_max) {
-                    $pdo->rollBack();
-                    return false; // Prevent overfilling
-                }
-
-                // Corrected SQL evaluation (Defect 1 Fix): remove redundant '+ 1' inside CASE clause
-                $stmt_inc = $pdo->prepare("
-                    UPDATE `jobs` SET
-                        `slots_filled` = `slots_filled` + 1,
-                        `status` = CASE WHEN `slots_filled` >= `slots_total` THEN 'closed' ELSE `status` END,
-                        `updated_at` = NOW()
-                    WHERE `id` = :job_id
-                ");
-                $stmt_inc->execute([':job_id' => $job_id]);
-            } elseif ($old_status === 'accepted' && $status !== 'accepted') {
-                // Decrement: evaluate status against new decremented value without double-decrementing
-                $stmt_dec = $pdo->prepare("
-                    UPDATE `jobs` SET
-                        `slots_filled` = GREATEST(0, `slots_filled` - 1),
-                        `status` = CASE WHEN `status` = 'closed' AND (`slots_filled` < `slots_total`) THEN 'active' ELSE `status` END,
-                        `updated_at` = NOW()
-                    WHERE `id` = :job_id
-                ");
-                $stmt_dec->execute([':job_id' => $job_id]);
-            }
+        if ($job_id > 0 && !sync_job_slot_capacity($pdo, $job_id, $old_status, $status)) {
+            $pdo->rollBack();
+            return false;
         }
 
         $pdo->commit();
 
-        // Dispatch notification to student regarding application status
         $student_id = (int)($target_app['student_id'] ?? 0);
         $job_title = $target_app['job_title'] ?? 'Campus Job';
-        if ($student_id > 0) {
-            $notif_title = "Application Update: " . $job_title;
-            $notif_icon = 'bi-bell';
-            $notif_badge = 'primary';
-            $notif_msg = "Your application for '{$job_title}' has been updated to {$status_label}.";
-
-            if ($status === 'interview_scheduled') {
-                $notif_title = "Interview Scheduled: " . $job_title;
-                $notif_icon = 'bi-calendar-check-fill';
-                $notif_badge = 'info';
-                $date_str = $interview_date ?: 'TBA';
-                $time_str = $interview_time ? ' at ' . $interview_time : '';
-                $venue_str = $interview_venue ? ' (' . $interview_venue . ')' : '';
-                $notif_msg = "You have an interview scheduled on {$date_str}{$time_str}{$venue_str}.";
-            } elseif ($status === 'accepted') {
-                $notif_title = "Application Accepted! 🎉";
-                $notif_icon = 'bi-check-circle-fill';
-                $notif_badge = 'success';
-                $notif_msg = "Congratulations! You have been accepted for the position '{$job_title}'.";
-            } elseif ($status === 'declined') {
-                $notif_title = "Application Update: " . $job_title;
-                $notif_icon = 'bi-x-circle';
-                $notif_badge = 'secondary';
-                $notif_msg = "The hiring supervisor has completed review for '{$job_title}'. The position has been filled or closed.";
-            } elseif ($status === 'under_review') {
-                $notif_title = "Application Under Review";
-                $notif_icon = 'bi-hourglass-split';
-                $notif_badge = 'primary';
-                $notif_msg = "Your application for '{$job_title}' is now being evaluated by the hiring department.";
-            }
-
-            if (!empty($notes)) {
-                $notif_msg .= " Supervisor Note: " . trim($notes);
-            }
-
-            create_notification(
-                $student_id,
-                'application_status',
-                $notif_title,
-                $notif_msg,
-                'student/my-applications.php',
-                $notif_icon,
-                $notif_badge
-            );
-        }
+        dispatch_application_status_notification(
+            $student_id,
+            $job_title,
+            $status,
+            $status_label,
+            $notes,
+            $interview_date,
+            $interview_time,
+            $interview_venue
+        );
 
         return true;
     } catch (Exception $e) {

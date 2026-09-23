@@ -138,6 +138,7 @@ function wipe_real_data_fresh(): bool {
 function reset_demo_data(): bool {
     switch_system_data_mode('demo', 'System Reset');
     set_flash('info', 'Demo dataset has been reset to default campus state.');
+    return true;
 }
 
 function get_career_updates(): array {
@@ -215,7 +216,7 @@ function get_latest_career_updates(int $limit = 3, int|string|null $exclude_id =
     }
 }
 
-function add_career_update(array $data): int {
+function add_career_update(array $data): ?array {
     try {
         $pdo = get_db_connection();
         $title = trim($data['title'] ?? 'Campus Career Dispatch');

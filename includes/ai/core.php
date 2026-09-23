@@ -177,12 +177,102 @@ function build_robot_system_prompt(string $mode = 'faq', string $user_role = 'gu
     }
 }
 
+function execute_nim_http_request(string $endpoint_url, string $json_payload, array $headers, float $timeout): array {
+    if (extension_loaded('curl')) {
+        $ch = curl_init($endpoint_url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $json_payload,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => (int)ceil($timeout),
+            CURLOPT_SSL_VERIFYPEER => true
+        ]);
+        $response_body = curl_exec($ch);
+        $http_code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_err = curl_error($ch);
+        curl_close($ch);
+
+        return [
+            'body'      => ($response_body !== false) ? (string)$response_body : false,
+            'http_code' => $http_code,
+            'error'     => !empty($curl_err) ? $curl_err : ($response_body === false ? 'Connection timeout / network error' : null)
+        ];
+    }
+
+    // Stream context fallback (with permissive SSL for environments lacking root certs)
+    $header_str = implode("\r\n", $headers) . "\r\n";
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => $header_str,
+            'content' => $json_payload,
+            'timeout' => $timeout,
+            'ignore_errors' => true
+        ],
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false
+        ]
+    ];
+    $context = stream_context_create($opts);
+    set_error_handler(static fn() => true);
+    $response_body = file_get_contents($endpoint_url, false, $context);
+    restore_error_handler();
+
+    $http_code = 0;
+    if (isset($http_response_header) && is_array($http_response_header)) {
+        if (preg_match('#HTTP/\S+\s+(\d+)#', $http_response_header[0], $m)) {
+            $http_code = (int)$m[1];
+        }
+    }
+
+    return [
+        'body'      => ($response_body !== false) ? (string)$response_body : false,
+        'http_code' => $http_code,
+        'error'     => ($response_body === false) ? 'HTTP stream failed to open' : null
+    ];
+}
+
+function parse_nim_chat_response(string $response_body, string $current_model, string $target_model, int $attempt_idx, float $start_time, array $model_failures): ?array {
+    $data = json_decode($response_body, true);
+    $reply_text = $data['choices'][0]['message']['content'] ?? '';
+
+    if (empty($reply_text)) {
+        return null;
+    }
+
+    $latency_ms = (int)round((microtime(true) - $start_time) * 1000);
+    $is_model_fallback = ($attempt_idx > 0);
+
+    $fallback_notice = null;
+    if ($is_model_fallback) {
+        $orig_name = get_model_display_name($target_model);
+        $curr_name = get_model_display_name($current_model);
+        $primary_failure = $model_failures[0]['error'] ?? 'Unresponsive';
+        $fallback_notice = "Primary model ($orig_name) was unavailable ($primary_failure). Smoothly switched to fallback model ($curr_name).";
+    }
+
+    return [
+        'success'           => true,
+        'reply'             => trim($reply_text),
+        'model'             => $current_model,
+        'original_model'    => $target_model,
+        'latency_ms'        => $latency_ms,
+        'is_fallback'       => $is_model_fallback,
+        'is_model_fallback' => $is_model_fallback,
+        'is_local_fallback' => false,
+        'fallback_notice'   => $fallback_notice,
+        'fallback_chain'    => $model_failures,
+        'error'             => null
+    ];
+}
+
 function call_nvidia_nim_chat(array $messages, ?string $model = null, array $options = []): array {
     $api_key = trim(get_ai_env('NVIDIA_API_KEY', ''));
     $base_url = rtrim(get_ai_env('NVIDIA_BASE_URL', 'https://integrate.api.nvidia.com/v1'), '/');
     $user_role = $options['user_role'] ?? 'guest';
 
-    // If no API key configured or placeholder key, return curated local response
     if (empty($api_key) || str_contains($api_key, 'YOUR_API_KEY') || str_contains($api_key, 'YOUR_KEY')) {
         $local_reply = get_curated_local_reply($messages, $model, 'Please add your free NVIDIA API Key in .env or Admin AI Settings to enable live AI reasoning!', $user_role);
         $local_reply['is_model_fallback'] = false;
@@ -193,12 +283,8 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
     $target_model = validate_ai_model($model);
     $configured_fallback = get_ai_fallback_model($target_model);
 
-    // Build intelligent multi-tier model cascade:
-    // Tier 1: Target / primary model requested
-    // Tier 2: Configured secondary fallback model
-    // Tier 3: Resilient high-speed cloud candidates
     $models_to_try = [$target_model];
-    if (!in_array($configured_fallback, $models_to_try)) {
+    if (!in_array($configured_fallback, $models_to_try, true)) {
         $models_to_try[] = $configured_fallback;
     }
 
@@ -209,12 +295,11 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
         'mistralai/mistral-nemotron'
     ];
     foreach ($resilient_candidates as $rc) {
-        if (!in_array($rc, $models_to_try)) {
+        if (!in_array($rc, $models_to_try, true)) {
             $models_to_try[] = $rc;
         }
     }
 
-    // Limit to max 3 cloud attempts to guarantee low latency before safety net
     $max_attempts = isset($options['max_model_attempts']) ? max(1, (int)$options['max_model_attempts']) : 3;
     $models_to_try = array_slice($models_to_try, 0, $max_attempts);
 
@@ -223,15 +308,14 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
     $start_time = microtime(true);
 
     foreach ($models_to_try as $idx => $current_model) {
-        // Generous inference timeout: Primary model gets up to 16.0s (or custom), fallback models get 15.0s
         $timeout = ($idx === 0) ? (float)($options['timeout'] ?? 16.0) : 15.0;
 
         $payload = [
-            'model' => $current_model,
-            'messages' => $messages,
+            'model'       => $current_model,
+            'messages'    => $messages,
             'temperature' => $options['temperature'] ?? (float)get_ai_env('AI_TEMPERATURE', 0.6),
-            'max_tokens' => $options['max_tokens'] ?? (int)get_ai_env('AI_MAX_TOKENS', 384),
-            'stream' => false
+            'max_tokens'  => $options['max_tokens'] ?? (int)get_ai_env('AI_MAX_TOKENS', 384),
+            'stream'      => false
         ];
 
         $json_payload = json_encode($payload);
@@ -242,111 +326,35 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
             'User-Agent: CampusHire-Robot/2.0'
         ];
 
-        $response_body = null;
-        $http_code = 0;
+        $http_res = execute_nim_http_request("$base_url/chat/completions", $json_payload, $headers, $timeout);
+        $response_body = $http_res['body'];
+        $http_code = $http_res['http_code'];
 
-        if (extension_loaded('curl')) {
-            $ch = curl_init("$base_url/chat/completions");
-            curl_setopt_array($ch, [
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => $json_payload,
-                CURLOPT_HTTPHEADER => $headers,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => (int)ceil($timeout),
-                CURLOPT_SSL_VERIFYPEER => true
-            ]);
-            $response_body = curl_exec($ch);
-            $http_code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $curl_err = curl_error($ch);
-            curl_close($ch);
-
-            if ($response_body === false) {
-                $err_desc = !empty($curl_err) ? $curl_err : 'Connection timeout / network error';
-                $model_failures[] = [
-                    'model' => $current_model,
-                    'error' => $err_desc,
-                    'http_code' => 0
-                ];
-                $last_error = "cURL error on $current_model: $err_desc";
-                continue;
-            }
-        } else {
-            // Stream context fallback (with permissive SSL for environments lacking root certs)
-            $header_str = implode("\r\n", $headers) . "\r\n";
-            $opts = [
-                'http' => [
-                    'method' => 'POST',
-                    'header' => $header_str,
-                    'content' => $json_payload,
-                    'timeout' => $timeout,
-                    'ignore_errors' => true
-                ],
-                'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false
-                ]
+        if ($response_body === false) {
+            $model_failures[] = [
+                'model'     => $current_model,
+                'error'     => $http_res['error'] ?? 'Transport error',
+                'http_code' => $http_code
             ];
-            $context = stream_context_create($opts);
-            set_error_handler(static fn() => true);
-            $response_body = file_get_contents("$base_url/chat/completions", false, $context);
-            restore_error_handler();
-            if (isset($http_response_header) && is_array($http_response_header)) {
-                if (preg_match('#HTTP/\S+\s+(\d+)#', $http_response_header[0], $m)) {
-                    $http_code = (int)$m[1];
-                }
-            }
-            if ($response_body === false) {
-                $model_failures[] = [
-                    'model' => $current_model,
-                    'error' => 'HTTP stream failed to open',
-                    'http_code' => $http_code
-                ];
-                $last_error = "Stream error on $current_model (HTTP $http_code)";
-                continue;
-            }
+            $last_error = "Network error on $current_model: " . ($http_res['error'] ?? 'Unresponsive');
+            continue;
         }
 
         if ($http_code === 200 && !empty($response_body)) {
-            $data = json_decode($response_body, true);
-            $reply_text = $data['choices'][0]['message']['content'] ?? '';
-
-            if (!empty($reply_text)) {
-                $latency_ms = (int)round((microtime(true) - $start_time) * 1000);
-                $is_model_fallback = ($idx > 0);
-
-                $fallback_notice = null;
-                if ($is_model_fallback) {
-                    $orig_name = get_model_display_name($target_model);
-                    $curr_name = get_model_display_name($current_model);
-                    $primary_failure = $model_failures[0]['error'] ?? 'Unresponsive';
-                    $fallback_notice = "Primary model ($orig_name) was unavailable ($primary_failure). Smoothly switched to fallback model ($curr_name).";
-                }
-
-                return [
-                    'success' => true,
-                    'reply' => trim($reply_text),
-                    'model' => $current_model,
-                    'original_model' => $target_model,
-                    'latency_ms' => $latency_ms,
-                    'is_fallback' => $is_model_fallback,
-                    'is_model_fallback' => $is_model_fallback,
-                    'is_local_fallback' => false,
-                    'fallback_notice' => $fallback_notice,
-                    'fallback_chain' => $model_failures,
-                    'error' => null
-                ];
-            } else {
-                $model_failures[] = [
-                    'model' => $current_model,
-                    'error' => 'Empty completion content received from API',
-                    'http_code' => 200
-                ];
-                $last_error = "Empty response choices from $current_model";
-                continue;
+            $parsed = parse_nim_chat_response($response_body, $current_model, $target_model, $idx, $start_time, $model_failures);
+            if ($parsed !== null) {
+                return $parsed;
             }
+
+            $model_failures[] = [
+                'model'     => $current_model,
+                'error'     => 'Empty completion content received from API',
+                'http_code' => 200
+            ];
+            $last_error = "Empty response choices from $current_model";
+            continue;
         }
 
-        // Handle HTTP error codes
         $err_details = "HTTP $http_code";
         if (!empty($response_body)) {
             $err_data = json_decode($response_body, true);
@@ -356,19 +364,17 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
         }
 
         $model_failures[] = [
-            'model' => $current_model,
-            'error' => $err_details,
+            'model'     => $current_model,
+            'error'     => $err_details,
             'http_code' => $http_code
         ];
         $last_error = "$err_details on $current_model";
 
         if ($http_code === 401) {
-            // Invalid API key: cascading will also fail, break immediately
             break;
         }
     }
 
-    // Tier 4 Safety Net: Fallback to local curated answer ONLY if all online models failed
     $local_reply = get_curated_local_reply($messages, $target_model, "NVIDIA cloud status: $last_error. Displaying verified campus guidance.", $user_role);
     $local_reply['original_model'] = $target_model;
     $local_reply['is_fallback'] = true;
