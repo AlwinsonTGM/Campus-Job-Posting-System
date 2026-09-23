@@ -95,7 +95,7 @@ function switch_system_data_mode(string $mode, string $switched_by = 'User'): bo
 
     // 2. Re-import into MySQL
     try {
-        require_once dirname(__DIR__) . '/database/migrate.php';
+        require_once dirname(__DIR__, 2) . '/database/migrate.php';
         execute_migration_and_seed(false, DATA_DIR, false, true);
     } catch (Exception $e) {
         error_log("switch_system_data_mode db error: " . $e->getMessage());
@@ -336,7 +336,7 @@ function delete_career_update(int|string $id): bool {
 }
 
 function get_devblogs(): array {
-    $file = __DIR__ . '/../data/devblogs.json';
+    $file = DATA_DIR . '/devblogs.json';
     if (file_exists($file)) {
         $json = json_decode(file_get_contents($file), true);
         if (is_array($json) && !empty($json)) {
@@ -345,7 +345,7 @@ function get_devblogs(): array {
     }
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->query("SELECT * FROM `devblogs` ORDER BY `sprint_number` ASC");
+        $stmt = $pdo->query("SELECT * FROM `devblogs` ORDER BY CAST(`sprint_number` AS UNSIGNED) DESC");
         $rows = $stmt->fetchAll();
         return array_map('hydrate_devblog', $rows);
     } catch (Exception $e) {

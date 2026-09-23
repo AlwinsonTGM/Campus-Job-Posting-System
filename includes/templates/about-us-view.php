@@ -185,7 +185,7 @@ require_once __DIR__ . '/../header.php';
                     <div class="devblog-controls-strip d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mt-4 pt-3">
                         <div class="small fw-semibold text-muted-custom">
                             <i class="bi bi-layers-fill text-accent me-1"></i>
-                            Showing Day <strong id="devblog-counter-current" class="text-ink"><?= $devblogs[0]['sprint_number'] ?? '04' ?></strong> of <strong class="text-ink"><?= sprintf('%02d', count($devblogs)) ?></strong>
+                            Showing Day <strong id="devblog-counter-current" class="text-ink"><?= !empty($devblogs) ? ($devblogs[0]['sprint_number'] ?? '01') : '00' ?></strong> of <strong class="text-ink"><?= sprintf('%02d', count($devblogs)) ?></strong>
                         </div>
 
                         <!-- Tactile Navigation Cluster (Arrows + Dots) -->
