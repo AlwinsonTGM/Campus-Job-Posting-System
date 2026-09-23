@@ -16,6 +16,8 @@
   letter-spacing: 0.02em;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .auth-role-badge i {
@@ -179,6 +181,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
 
@@ -191,10 +194,11 @@
 }
 
 .reg-progress-title {
-  font-size: 1.2rem;
+  font-size: clamp(1.05rem, 3.5vw, 1.25rem);
   font-weight: 800;
   color: var(--ink);
   margin: 0;
+  line-height: 1.25;
 }
 
 .reg-progress-track {
@@ -343,10 +347,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: 1.75rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--line);
+}
+
+.reg-step-counter {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-step-prev {
@@ -359,9 +368,11 @@
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-step-prev:hover:not(:disabled) {
@@ -379,15 +390,17 @@
   color: var(--white);
   border: none;
   border-radius: var(--radius-pill);
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1.35rem;
   font-size: 0.85rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-step-next:hover {
@@ -431,21 +444,33 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
+    gap: 0.35rem;
+    padding: 0.6rem 0.75rem;
     background-color: var(--cream);
     border-radius: 12px;
     border: 1px solid var(--line);
     margin-bottom: 1.25rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .reg-mobile-step {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
+    gap: 0.35rem;
+    font-size: clamp(0.7rem, 2.5vw, 0.78rem);
     font-weight: 700;
     color: var(--muted);
+    white-space: nowrap;
+    min-width: 0;
+    cursor: pointer;
+  }
+
+  .reg-mobile-step span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .reg-mobile-step.is-active {
@@ -457,15 +482,16 @@
   }
 
   .reg-mobile-dot {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     background-color: var(--white);
     border: 1px solid var(--line);
+    flex-shrink: 0;
   }
 
   .reg-mobile-step.is-active .reg-mobile-dot {
@@ -478,6 +504,47 @@
     background-color: #2ECC5E;
     color: var(--white);
     border-color: #2ECC5E;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .reg-mobile-stepper {
+    padding: 0.5rem 0.55rem;
+    gap: 0.2rem;
+  }
+
+  .reg-mobile-step {
+    font-size: 0.7rem;
+    gap: 0.25rem;
+  }
+
+  .reg-mobile-dot {
+    width: 18px;
+    height: 18px;
+    font-size: 0.62rem;
+  }
+
+  .reg-step-actions {
+    gap: 0.5rem;
+  }
+
+  .btn-step-prev,
+  .btn-step-next {
+    font-size: 0.78rem;
+    padding: 0.55rem 0.85rem;
+    gap: 0.3rem;
+  }
+
+  .reg-step-actions .btn-pill {
+    font-size: 0.78rem !important;
+    padding: 0.55rem 0.95rem !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .reg-mobile-step:not(.is-active) span {
+    display: none;
   }
 }
 

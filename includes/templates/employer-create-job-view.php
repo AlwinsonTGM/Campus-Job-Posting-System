@@ -131,7 +131,7 @@ require_once __DIR__ . '/../header.php';
                         <div class="reg-mobile-stepper" id="job-mobile-stepper">
                             <div class="reg-mobile-step is-active" id="mob-step-1" onclick="handleStepNavClick(1)">
                                 <div class="reg-mobile-dot" id="mob-dot-1">1</div>
-                                <span>Vacancy Info</span>
+                                <span>Vacancy</span>
                             </div>
                             <i class="bi bi-chevron-right text-muted-custom small"></i>
                             <div class="reg-mobile-step" id="mob-step-2" onclick="handleStepNavClick(2)">
@@ -141,7 +141,7 @@ require_once __DIR__ . '/../header.php';
                             <i class="bi bi-chevron-right text-muted-custom small"></i>
                             <div class="reg-mobile-step" id="mob-step-3" onclick="handleStepNavClick(3)">
                                 <div class="reg-mobile-dot" id="mob-dot-3">3</div>
-                                <span>Terms & Quota</span>
+                                <span>Terms</span>
                             </div>
                         </div>
 
@@ -153,7 +153,7 @@ require_once __DIR__ . '/../header.php';
                                     <h2 class="reg-progress-title" id="progress-step-title">Vacancy Information</h2>
                                 </div>
                                 <div>
-                                    <span class="badge bg-surface text-ink border border-line fw-semibold py-2 px-3">
+                                    <span class="badge bg-surface text-ink border border-line fw-semibold py-2 px-3 text-nowrap">
                                         <i class="bi bi-building me-1 text-accent"></i>
                                         <?= htmlspecialchars($user['organization_name'] ?? ($user['department'] ?? 'Campus Requisition')) ?>
                                     </span>
@@ -293,10 +293,10 @@ require_once __DIR__ . '/../header.php';
 
                                     <!-- Step 1 Navigation Actions -->
                                     <div class="reg-step-actions">
-                                        <a href="dashboard.php" class="btn-step-prev text-decoration-none">
+                                        <a href="dashboard.php" class="btn-step-prev text-decoration-none text-nowrap">
                                             <i class="bi bi-x-circle"></i> Cancel
                                         </a>
-                                        <button type="button" class="btn-step-next" onclick="nextStep()">
+                                        <button type="button" class="btn-step-next text-nowrap" onclick="nextStep()">
                                             Next: Hiring Flyer <i class="bi bi-arrow-right"></i>
                                         </button>
                                     </div>
@@ -353,10 +353,10 @@ require_once __DIR__ . '/../header.php';
 
                                     <!-- Step 2 Navigation Actions -->
                                     <div class="reg-step-actions">
-                                        <button type="button" class="btn-step-prev" onclick="prevStep()">
+                                        <button type="button" class="btn-step-prev text-nowrap" onclick="prevStep()">
                                             <i class="bi bi-arrow-left"></i> Back: Vacancy Info
                                         </button>
-                                        <button type="button" class="btn-step-next" onclick="nextStep()">
+                                        <button type="button" class="btn-step-next text-nowrap" onclick="nextStep()">
                                             Next: Terms & Quota <i class="bi bi-arrow-right"></i>
                                         </button>
                                     </div>
@@ -447,10 +447,10 @@ require_once __DIR__ . '/../header.php';
 
                                     <!-- Step 3 Navigation Actions -->
                                     <div class="reg-step-actions">
-                                        <button type="button" class="btn-step-prev" onclick="prevStep()">
+                                        <button type="button" class="btn-step-prev text-nowrap" onclick="prevStep()">
                                             <i class="bi bi-arrow-left"></i> Back: Hiring Flyer
                                         </button>
-                                        <button type="submit" class="btn-step-next" id="btn-publish-job" style="background-color: var(--accent); color: var(--ink); border: none;">
+                                        <button type="submit" class="btn-step-next text-nowrap" id="btn-publish-job" style="background-color: var(--accent); color: var(--ink); border: none;">
                                             <i class="bi bi-check-circle-fill"></i> PUBLISH REQUISITION
                                         </button>
                                     </div>

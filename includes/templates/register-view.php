@@ -141,7 +141,7 @@ require_once __DIR__ . '/../header.php';
                             <i class="bi bi-chevron-right text-muted-custom small"></i>
                             <div class="reg-mobile-step" id="mob-step-3" onclick="handleStepNavClick(3)">
                                 <div class="reg-mobile-dot" id="mob-dot-3">3</div>
-                                <span>Verification</span>
+                                <span id="mob-label-3">Verify</span>
                             </div>
                         </div>
 
@@ -315,10 +315,10 @@ require_once __DIR__ . '/../header.php';
 
                                 <!-- Step 1 Actions -->
                                 <div class="reg-step-actions">
-                                    <div class="text-muted-custom small">
+                                    <div class="reg-step-counter text-muted-custom small text-nowrap">
                                         <i class="bi bi-check2-circle text-accent"></i> Step 1 of 3
                                     </div>
-                                    <button type="button" class="btn-step-next" onclick="nextStep()">
+                                    <button type="button" class="btn-step-next text-nowrap" onclick="nextStep()">
                                         Continue to Profile <i class="bi bi-arrow-right"></i>
                                     </button>
                                 </div>
@@ -437,10 +437,10 @@ require_once __DIR__ . '/../header.php';
 
                                 <!-- Step 2 Actions -->
                                 <div class="reg-step-actions">
-                                    <button type="button" class="btn-step-prev" onclick="prevStep()">
+                                    <button type="button" class="btn-step-prev text-nowrap" onclick="prevStep()">
                                         <i class="bi bi-arrow-left"></i> Previous Step
                                     </button>
-                                    <button type="button" class="btn-step-next" onclick="nextStep()">
+                                    <button type="button" class="btn-step-next text-nowrap" onclick="nextStep()">
                                         Continue to Verification <i class="bi bi-arrow-right"></i>
                                     </button>
                                 </div>
@@ -564,10 +564,10 @@ require_once __DIR__ . '/../header.php';
 
                                 <!-- Step 3 Actions -->
                                 <div class="reg-step-actions">
-                                    <button type="button" class="btn-step-prev" onclick="prevStep()">
+                                    <button type="button" class="btn-step-prev text-nowrap" onclick="prevStep()">
                                         <i class="bi bi-arrow-left"></i> Previous Step
                                     </button>
-                                    <button type="submit" class="btn-pill px-4" id="btn-submit-registration">
+                                    <button type="submit" class="btn-pill px-4 text-nowrap" id="btn-submit-registration">
                                         <i class="bi bi-check-circle-fill"></i> REGISTER ACCOUNT
                                     </button>
                                 </div>
