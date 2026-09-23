@@ -438,10 +438,12 @@
 }
 
 #devblogModal .modal-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  padding-right: 3rem;
 }
 
 #devblogModal .modal-header > .d-flex {
@@ -452,8 +454,12 @@
 }
 
 #devblogModal .modal-header .btn-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   flex-shrink: 0;
-  margin-left: auto;
+  margin: 0;
+  z-index: 5;
 }
 
 /* Modal Content Styling */
@@ -500,6 +506,7 @@
   align-items: center;
   white-space: normal !important;
   word-break: break-word;
+  overflow-wrap: anywhere;
   line-height: 1.35;
   max-width: 100%;
 }
