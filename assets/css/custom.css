@@ -8,10 +8,10 @@
 @import url('base.css?v=1.6');
 @import url('components/notifications.css?v=1.5');
 @import url('features/auth.css?v=2.0');
-@import url('features/devblog.css?v=2.3');
+@import url('features/devblog.css?v=2.4');
 @import url('features/chatbot.css?v=1.5');
 @import url('features/print.css?v=1.5');
-@import url('features/dark-overrides.css?v=1.5');
+@import url('features/dark-overrides.css?v=1.6');
 @import url('features/tech-graph.css?v=1.0');
 
 /* --------------------------------------------------------------------------
@@ -82,6 +82,14 @@
 .reveal-fade-rise.is-revealed {
   opacity: 1;
   transform: translate3d(0, 0, 0);
+}
+
+@media (max-width: 991.98px), (prefers-reduced-motion: reduce) {
+  .reveal-fade-rise {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* Stagger delay helpers */

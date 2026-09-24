@@ -1623,6 +1623,10 @@
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
 
+[data-theme="dark"] #devblogModal .btn-close {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
 [data-theme="dark"] #devblog-modal-sprint-badge i {
   color: var(--accent) !important;
 }

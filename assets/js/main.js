@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 2. INTERSECTION OBSERVER (Fade + Rise Reveals)
   // ------------------------------------------------------------------------
   const revealElements = document.querySelectorAll('.reveal-fade-rise');
-  if ('IntersectionObserver' in window && revealElements.length > 0) {
+  if ('IntersectionObserver' in window && revealElements.length > 0 && window.innerWidth >= 992) {
     const revealObserver = new IntersectionObserver(
       function (entries, observer) {
         entries.forEach(function (entry) {
@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       },
       {
-        threshold: 0.12,
-        rootMargin: '0px 0px -40px 0px'
+        threshold: 0.01,
+        rootMargin: '100px 0px 100px 0px'
       }
     );
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
       revealObserver.observe(el);
     });
   } else {
-    // Fallback if IntersectionObserver is unsupported
+    // Mobile viewports (<992px) or unsupported: reveal immediately to ensure no blank states
     revealElements.forEach(function (el) {
       el.classList.add('is-revealed');
     });

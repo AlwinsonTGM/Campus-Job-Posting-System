@@ -413,6 +413,15 @@ require_once __DIR__ . '/../header.php';
                             <div class="d-flex flex-wrap gap-2" id="devblog-modal-techstack"></div>
                         </div>
                     </div>
+
+                    <div class="modal-footer border-top border-line bg-surface d-flex justify-content-between align-items-center py-2 px-3">
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" id="devblog-modal-prev-btn">
+                            <i class="bi bi-chevron-left"></i> Previous Day
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" id="devblog-modal-next-btn">
+                            Next Day <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
