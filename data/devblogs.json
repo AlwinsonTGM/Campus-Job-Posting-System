@@ -1,5 +1,43 @@
 [
     {
+        "id": "day-18",
+        "sprint_number": "18",
+        "sprint_badge": "DAY 18 · CLEAN ARCHITECTURE & FULL MOBILE AUDIT",
+        "title": "End-to-End Modernization: 3-Stage Clean Architecture Refactoring, 29-Route Playwright Mobile Audit & Zero-Defect UX Stabilization",
+        "date": "September 24, 2026",
+        "read_time": "9 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Executed comprehensive 3-stage clean architecture modernization across 29 routes, enforced PHP 8.2 strict typing, engineered an automated headless Playwright mobile audit suite, eliminated the blank reveal-state trap, and resolved mobile overflow barriers to certify institutional production readiness.",
+        "tags": [
+            "Clean Architecture",
+            "Stage 1-3 Refactoring",
+            "Playwright Mobile Audit",
+            "PHP 8.2 Modernization",
+            "TypeSafe Jev Gate",
+            "Mobile UX Stabilization",
+            "Zero-Defect Quality"
+        ],
+        "cover_image": "assets/img/devblog/day-18.jpg",
+        "full_story": "<p class='lead text-ink fw-semibold'>September 24 marked the culmination of our full-stack codebase overhaul. We unified our 3-stage clean architecture modernization across all 29 portal routes, engineered an automated headless Playwright test harness at mobile phone viewport (390×844) across both light and dark themes, uncovered and solved the elusive 'Nothing is showing here' blank reveal trap, and stabilized all mobile touch interactions, typography scales, and modal viewports.</p><p>Following our initial feature sprints, the codebase required architectural distillation to eliminate monolithic scripts, enforce strict type contracts, and guarantee absolute reliability on handheld student devices. With thousands of undergraduates accessing campus employment opportunities on mobile smartphones, ensuring an uncompromising, responsive, zero-defect user experience was our paramount priority.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-layers-fill text-accent me-2'></i>3-Stage Clean Architecture Modernization</h5><p>We executed a disciplined three-phase structural refactoring without disrupting runtime features: in <strong>Stage 1</strong>, monolithic page controllers were decoupled into dedicated domain services and clean presentation view partials; in <strong>Stage 2</strong>, we updated the runtime to PHP 8.2 standards, adding strict type declarations, typed return signatures, and replacing loose equality with strict identity operators (<code class='bg-cream text-ink px-1 rounded'>===</code>); in <strong>Stage 3</strong>, oversized routines were decomposed into modular, cohesive single-responsibility functions.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-phone-fill text-accent me-2'></i>29-Route Headless Playwright Mobile Audit</h5><p>Rather than relying on manual ad-hoc testing, we engineered an automated Playwright Chromium audit suite. Running against an emulated 390×844 mobile viewport with touch support and device pixel ratio of 2, the suite captured over 60 high-resolution full-page and above-the-fold screenshots across every public, student, employer, and administrative route in both Light and Dark color schemes.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-bug-fill text-accent me-2'></i>Diagnosing and Eliminating the Mobile Reveal-State Trap</h5><p>The automated audit revealed a critical UX defect: on high-volume tables such as User Management, Category Configurations, and Employer Applicants, entire rosters appeared completely blank. Forensic DOM inspection identified that <code class='bg-cream text-ink px-1 rounded'>.reveal-fade-rise</code> initialized containers with <code class='bg-cream text-ink px-1 rounded'>opacity: 0</code>. On mobile viewports, large table containers exceeded the IntersectionObserver scroll threshold and remained permanently invisible. We implemented a responsive CSS override guaranteeing immediate visibility (<code class='bg-cream text-ink px-1 rounded'>opacity: 1 !important</code>) on mobile viewports while tuning desktop observer margins for seamless pre-scroll reveals.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-sliders text-accent me-2'></i>Precision Mobile UI Stabilization &amp; Modal Ergonomics</h5><p>We eliminated multi-line button wrapping across registration personas and job posting steppers, engineered horizontal scrollable containment for the DevBlog navigation cluster and 17 step dots, enforced 33px clearance between long sprint badges and modal close controls, and restored interactive in-modal previous/next navigation buttons (<code class='bg-cream text-ink px-1 rounded'>#devblog-modal-prev-btn</code> / <code class='bg-cream text-ink px-1 rounded'>#devblog-modal-next-btn</code>) for frictionless mobile reading.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-shield-check text-accent me-2'></i>TypeSafe Clean Architecture Certification (0.8800)</h5><p>Every commit across this stabilization sprint was certified through the TypeSafe System One (<code class='bg-cream text-ink px-1 rounded'>jev-gate</code>) automated quality gate, scoring <strong>0.8800</strong> (exceeding the strict 0.8500 clean architecture threshold). All 29 routes passed runtime execution tests with zero warnings, certifying full production readiness.</p>",
+        "key_takeaways": [
+            "Executed 3-stage clean architecture modernization: extracted domain services, enforced PHP 8.2 types, and decomposed monoliths.",
+            "Built automated Playwright Chromium test suite capturing 60+ mobile screenshots across all 29 routes in dual themes.",
+            "Eliminated the mobile reveal-fade-rise opacity trap, ensuring data tables and forms render immediately on all mobile screens.",
+            "Eliminated 2-liner button wrapping, pinned modal close controls with 33px clearance, and restored in-modal daily log navigation.",
+            "Certified 0.8800 clean architecture under TypeSafe System One (jev-gate) and 100% pass on 29 runtime route tests."
+        ],
+        "tech_stack": [
+            "PHP 8.2 Strict Types",
+            "Playwright Chromium Engine",
+            "TypeSafe System One (Jev 1.13)",
+            "CSS Custom Properties & Media Queries",
+            "IntersectionObserver API",
+            "Bootstrap 5.3 Responsive Grid"
+        ]
+    },
+    {
         "id": "day-17",
         "sprint_number": "17",
         "sprint_badge": "DAY 17 · PASSWORD ENTROPY & DNS DOMAIN HARDENING",
