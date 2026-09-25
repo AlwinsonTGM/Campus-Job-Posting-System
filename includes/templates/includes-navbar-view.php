@@ -156,10 +156,10 @@
                                             <div class="notif-icon-circle bg-<?= htmlspecialchars($item['badge_color'] ?? 'primary') ?>-subtle text-<?= htmlspecialchars($item['badge_color'] ?? 'primary') ?> flex-shrink-0">
                                                 <i class="bi <?= htmlspecialchars($item['icon'] ?? 'bi-bell') ?>"></i>
                                             </div>
-                                            <div class="flex-grow-1 min-w-0">
-                                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                                    <h6 class="small fw-bold text-ink mb-0 text-truncate pe-2"><?= htmlspecialchars($item['title']) ?></h6>
-                                                    <span class="text-muted-custom x-small" title="<?= htmlspecialchars(format_display_date($item['created_at'], true)) ?>"><?= htmlspecialchars(time_ago_short($item['created_at'])) ?></span>
+                                            <div class="notification-item-content min-w-0">
+                                                <div class="notification-item-header">
+                                                    <h6 class="small fw-bold text-ink mb-0 notification-item-title" title="<?= htmlspecialchars($item['title']) ?>"><?= htmlspecialchars($item['title']) ?></h6>
+                                                    <span class="text-muted-custom notification-item-time" title="<?= htmlspecialchars(format_display_date($item['created_at'], true)) ?>"><?= htmlspecialchars(time_ago_short($item['created_at'])) ?></span>
                                                 </div>
                                                 <p class="small text-muted-custom mb-0 line-clamp-2"><?= htmlspecialchars($item['message']) ?></p>
                                             </div>

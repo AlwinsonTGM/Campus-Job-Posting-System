@@ -2783,7 +2783,7 @@ section.py-5.py-lg-6 {
 
 /* Unified Integrated Input Group (One Seamless Body for Icon + Input + Eye Button) */
 .input-group-integrated,
-.form-paper .input-group {
+.form-paper .input-group:not(.input-group-seamless) {
   display: flex !important;
   align-items: center !important;
   background-color: var(--surface) !important;
@@ -2797,14 +2797,14 @@ section.py-5.py-lg-6 {
 }
 
 .input-group-integrated:focus-within,
-.form-paper .input-group:focus-within {
+.form-paper .input-group:not(.input-group-seamless):focus-within {
   border-color: var(--accent) !important;
   background-color: var(--white) !important;
   box-shadow: 0 0 0 3.5px var(--accent-soft) !important;
 }
 
 .input-group-integrated .input-group-text,
-.form-paper .input-group .input-group-text {
+.form-paper .input-group:not(.input-group-seamless) .input-group-text {
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
@@ -2817,12 +2817,12 @@ section.py-5.py-lg-6 {
 }
 
 .input-group-integrated:focus-within .input-group-text,
-.form-paper .input-group:focus-within .input-group-text {
+.form-paper .input-group:not(.input-group-seamless):focus-within .input-group-text {
   color: var(--ink) !important;
 }
 
 .input-group-integrated .form-control,
-.form-paper .input-group .form-control {
+.form-paper .input-group:not(.input-group-seamless) .form-control {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -2837,7 +2837,7 @@ section.py-5.py-lg-6 {
 }
 
 .input-group-integrated .form-control:focus,
-.form-paper .input-group .form-control:focus {
+.form-paper .input-group:not(.input-group-seamless) .form-control:focus {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -2845,7 +2845,7 @@ section.py-5.py-lg-6 {
 }
 
 .input-group-integrated .btn-toggle-password,
-.form-paper .input-group .btn-toggle-password {
+.form-paper .input-group:not(.input-group-seamless) .btn-toggle-password {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -2861,9 +2861,143 @@ section.py-5.py-lg-6 {
 }
 
 .input-group-integrated .btn-toggle-password:hover,
-.form-paper .input-group .btn-toggle-password:hover {
+.form-paper .input-group:not(.input-group-seamless) .btn-toggle-password:hover {
   color: var(--ink) !important;
   transform: scale(1.08) !important;
+}
+
+/* Seamless Unified Input Group (Currency Prefix + Input + Frequency Dropdown) */
+.input-group-seamless,
+.form-paper .input-group.input-group-seamless {
+  display: flex !important;
+  align-items: stretch !important;
+  background-color: var(--surface) !important;
+  border: 1.5px solid var(--line) !important;
+  border-radius: var(--radius-input) !important;
+  padding: 0 !important;
+  min-height: 48px !important;
+  overflow: hidden !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+  position: relative !important;
+  width: 100% !important;
+}
+
+.input-group-seamless:focus-within,
+.form-paper .input-group.input-group-seamless:focus-within {
+  border-color: var(--accent) !important;
+  background-color: var(--white) !important;
+  box-shadow: 0 0 0 3.5px var(--accent-soft) !important;
+}
+
+.input-group-seamless .input-group-text,
+.form-paper .input-group.input-group-seamless .input-group-text {
+  background: transparent !important;
+  border: none !important;
+  border-right: 1.5px solid var(--line) !important;
+  border-radius: 0 !important;
+  padding: 0 1rem !important;
+  color: var(--muted) !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  min-height: 48px !important;
+}
+
+.input-group-seamless:focus-within .input-group-text,
+.form-paper .input-group.input-group-seamless:focus-within .input-group-text {
+  color: var(--ink) !important;
+}
+
+.input-group-seamless .form-control,
+.form-paper .input-group.input-group-seamless .form-control {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0.65rem 0.85rem !important;
+  color: var(--ink) !important;
+  font-size: 15px !important;
+  min-height: 48px !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.input-group-seamless .form-control:focus,
+.form-paper .input-group.input-group-seamless .form-control:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.input-group-seamless .form-select,
+.form-paper .input-group.input-group-seamless .form-select {
+  background-color: transparent !important;
+  border: none !important;
+  border-left: 1.5px solid var(--line) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  padding: 0.65rem 2.25rem 0.65rem 1rem !important;
+  color: var(--ink) !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  min-height: 48px !important;
+  height: 100% !important;
+  cursor: pointer !important;
+  width: 160px !important;
+  min-width: 150px !important;
+  flex: 0 0 160px !important;
+}
+
+.input-group-seamless .form-select:focus,
+.form-paper .input-group.input-group-seamless .form-select:focus {
+  background-color: transparent !important;
+  border: none !important;
+  border-left: 1.5px solid var(--line) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Crisp Adjacent "+ Add Line" Action Button */
+.btn-add-line {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 1.35rem !important;
+  border-radius: var(--radius-pill) !important;
+  background-color: var(--accent) !important;
+  color: var(--ink) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  border: 1px solid var(--accent) !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+  box-shadow: 0 3px 10px rgba(46, 204, 94, 0.2) !important;
+}
+
+.btn-add-line:hover,
+.btn-add-line:focus-visible {
+  background-color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: var(--ink) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 5px 15px rgba(46, 204, 94, 0.32) !important;
+}
+
+.btn-add-line:active {
+  transform: translateY(0) !important;
 }
 
 /* Integrated Search Input with Icon Inside Before Text */
@@ -2953,6 +3087,7 @@ section.py-5.py-lg-6 {
   padding: 1.25rem 1.45rem;
   border-bottom: 1.5px solid var(--line);
   white-space: nowrap;
+  text-align: center;
 }
 
 .table-paper tbody td {
@@ -2972,6 +3107,207 @@ section.py-5.py-lg-6 {
   background-color: var(--cream);
 }
 
+/* Embedded table inside .card-paper: flush edges without redundant nested borders */
+.card-paper > .table-responsive > .table-paper {
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+/* Dedicated Roster Table: mathematical alignment and consistent layout */
+.table-paper-roster {
+  width: 100%;
+  table-layout: fixed;
+  min-width: 1020px;
+}
+
+.table-paper-roster thead th {
+  padding: 1.1rem 0.65rem;
+  vertical-align: middle;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.table-paper-roster tbody td {
+  padding: 1.1rem 0.65rem;
+  vertical-align: middle;
+  font-size: 14.5px;
+}
+
+.table-paper-roster th:first-child,
+.table-paper-roster td:first-child,
+.table-paper-roster th.ps-4,
+.table-paper-roster td.ps-4 {
+  padding-left: 1.5rem !important;
+}
+
+.table-paper-roster th:last-child,
+.table-paper-roster td:last-child,
+.table-paper-roster th.pe-4,
+.table-paper-roster td.pe-4 {
+  padding-right: 1.5rem !important;
+}
+
+.table-paper-roster .badge-status--pending,
+.table-paper-roster .badge-status--review,
+.table-paper-roster .badge-status--interview,
+.table-paper-roster .badge-status--accepted,
+.table-paper-roster .badge-status--declined {
+  font-size: 10px !important;
+  padding: 0.2rem 0.55rem !important;
+  letter-spacing: 0.04em !important;
+  gap: 0.35rem !important;
+  white-space: nowrap !important;
+}
+
+.table-paper-roster .btn-pill-sm:not(.table-action-btn),
+.table-paper-roster .btn-pill-outline.btn-pill-sm:not(.table-action-btn),
+.table-paper-roster a.btn-pill-sm:not(.table-action-btn),
+.table-paper-roster a.btn-pill-outline:not(.table-action-btn) {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 0.65rem !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 30px !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+}
+
+/* Dedicated Department Vacancies Table: uniform left alignment & proportional layout */
+.table-paper-dept {
+  width: 100%;
+  table-layout: fixed;
+  min-width: 980px;
+}
+
+.table-paper-dept thead th {
+  padding: 1.15rem 0.85rem;
+  vertical-align: middle;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center !important;
+}
+
+.table-paper-dept tbody td {
+  padding: 1.15rem 0.85rem;
+  vertical-align: middle;
+  font-size: 14.5px;
+  text-align: left !important;
+}
+
+.table-paper-dept th:first-child,
+.table-paper-dept td:first-child,
+.table-paper-dept th.ps-4,
+.table-paper-dept td.ps-4 {
+  padding-left: 1.5rem !important;
+}
+
+.table-paper-dept th:last-child,
+.table-paper-dept td:last-child,
+.table-paper-dept th.pe-4,
+.table-paper-dept td.pe-4 {
+  padding-right: 1.5rem !important;
+}
+
+.table-paper-dept .btn-pill-sm:not(.table-action-btn),
+.table-paper-dept .btn-pill-outline.btn-pill-sm:not(.table-action-btn),
+.table-paper-dept a.btn-pill-sm:not(.table-action-btn),
+.table-paper-dept a.btn-pill-outline:not(.table-action-btn) {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 0.85rem !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 32px !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+}
+
+/* Responsive Action Buttons Container in Tables
+   The action cell always spans the full column width (no fixed max-width cap),
+   so no dead space is left beside the buttons at any screen size. */
+.table-actions-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: nowrap !important;
+  gap: clamp(0.35rem, 0.55vw, 0.85rem) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Fluid action button sizing: height, padding, label and icon scale with the
+   viewport width, so full-screen layouts automatically get larger buttons. */
+.table-action-btn,
+.table-paper-roster .table-action-btn,
+.table-paper-dept .table-action-btn,
+.table-paper-roster a.table-action-btn,
+.table-paper-dept a.table-action-btn {
+  flex: 1 1 0 !important;
+  max-width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: clamp(0.3rem, 0.45vw, 0.6rem) !important;
+  height: clamp(34px, 2.2vw, 46px) !important;
+  min-height: clamp(34px, 2.2vw, 46px) !important;
+  padding: 0 clamp(0.7rem, 1vw, 1.6rem) !important;
+  font-size: clamp(11.5px, 0.7vw + 2px, 14px) !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+  border-radius: var(--radius-pill) !important;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.table-action-btn i,
+.table-paper-roster .table-action-btn i,
+.table-paper-dept .table-action-btn i {
+  font-size: clamp(12px, 0.8vw + 2px, 16px) !important;
+}
+
+/* Desktop screens (1200px+): hand more of the row over to the Actions column */
+@media (min-width: 1200px) {
+  .table-paper-roster col:nth-child(2) { width: 14% !important; }
+  .table-paper-roster col:nth-child(3) { width: 12% !important; }
+  .table-paper-roster col:nth-child(5) { width: 10% !important; }
+  .table-paper-roster col:nth-child(7) { width: 20% !important; }
+
+  .table-paper-dept col:nth-child(2) { width: 12% !important; }
+  .table-paper-dept col:nth-child(4) { width: 10% !important; }
+  .table-paper-dept col:nth-child(7) { width: 20% !important; }
+}
+
+/* Fullscreen / wide screens (1400px+): Actions column keeps growing with the window */
+@media (min-width: 1400px) {
+  .table-paper-roster col:nth-child(4) { width: 12% !important; }
+  .table-paper-roster col:nth-child(6) { width: 12% !important; }
+  .table-paper-roster col:nth-child(7) { width: 22% !important; }
+
+  .table-paper-dept col:nth-child(3) { width: 12% !important; }
+  .table-paper-dept col:nth-child(5) { width: 11% !important; }
+  .table-paper-dept col:nth-child(7) { width: 22% !important; }
+}
+
+/* Ultra-wide screens (1600px+): full-bodied buttons seamlessly balancing the table */
+@media (min-width: 1600px) {
+  .table-paper-roster col:nth-child(2) { width: 13% !important; }
+  .table-paper-roster col:nth-child(3) { width: 11% !important; }
+  .table-paper-roster col:nth-child(7) { width: 24% !important; }
+
+  .table-paper-dept col:nth-child(2) { width: 11% !important; }
+  .table-paper-dept col:nth-child(6) { width: 8% !important; }
+  .table-paper-dept col:nth-child(7) { width: 24% !important; }
+}
+
 @media (max-width: 767.98px) {
   .table-paper-responsive thead {
     display: none;
@@ -2988,6 +3324,13 @@ section.py-5.py-lg-6 {
     display: block;
     width: 100%;
   }
+
+  .table-paper-roster,
+  .table-paper-dept {
+    min-width: 100% !important;
+    table-layout: auto !important;
+  }
+
 
   .card-paper:has(.table-paper-responsive) {
     background-color: var(--cream);
@@ -3053,7 +3396,8 @@ section.py-5.py-lg-6 {
     display: none;
   }
 
-  .table-paper-responsive td:last-child .d-flex {
+  .table-paper-responsive td:last-child .d-flex,
+  .table-paper-responsive td:last-child .table-actions-wrap {
     width: 100%;
     display: flex !important;
     justify-content: stretch !important;
@@ -3061,15 +3405,17 @@ section.py-5.py-lg-6 {
   }
 
   .table-paper-responsive td:last-child .d-flex .btn-pill,
-  .table-paper-responsive td:last-child .d-flex .btn-pill-outline {
-    flex: 1 1 0%;
+  .table-paper-responsive td:last-child .d-flex .btn-pill-outline,
+  .table-paper-responsive td:last-child .table-action-btn {
+    flex: 1 1 0% !important;
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
     min-height: 38px;
+    height: 38px !important;
     text-align: center;
-    font-size: 12px;
-    padding: 0.45rem 0.75rem;
+    font-size: 12px !important;
+    padding: 0.45rem 0.75rem !important;
   }
 
   .table-paper-responsive td .fw-bold,
@@ -5203,6 +5549,10 @@ body.modal-open {
   border-radius: 16px;
   padding: 1rem 1.25rem;
   margin-top: 1rem;
+}
+
+.pointer-events-none {
+  pointer-events: none !important;
 }
 
 

@@ -35,7 +35,10 @@ function resolveApiKey() {
   loadEnvFile(join(process.cwd(), ".env.local"));
   loadEnvFile(join(homedir(), ".typesafe.env"));
   const key = process.env.TYPESAFE_API_KEY?.trim();
-  if (!key) throw new Error("TYPESAFE_API_KEY not found. Set it in ~/.typesafe.env or run: jev-setup-key");
+  if (!key) {
+    console.log("[DEV INFO] No TYPESAFE_API_KEY found. Falling back to local Laya decision engine (:8100).");
+    return null;
+  }
   return key;
 }
 
@@ -64,10 +67,11 @@ function discoverPhpFiles(root) {
   return results.sort((a, b) => b.size - a.size);
 }
 
-const ENDPOINT  = "https://api.typesafe.ai/v1/systemone";
-const MODEL     = "jev-latest";
-const MAX_CHARS = 50000;
-const RETRYABLE = /429|529|ECONNRESET|fetch failed/i;
+const ENDPOINT      = "https://api.typesafe.ai/v1/systemone";
+const LAYA_ENDPOINT = "http://127.0.0.1:8100/predict";
+const MODEL         = "jev-latest";
+const MAX_CHARS     = 50000;
+const RETRYABLE     = /429|529|ECONNRESET|fetch failed/i;
 
 async function withRetry(fn, attempts = 4, delay = 800) {
   try {
@@ -100,11 +104,43 @@ async function fetchJev(payload, apiKey) {
   }
 }
 
+async function fetchLayaFallback(state, questions) {
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 20000);
+  try {
+    const res = await fetch(LAYA_ENDPOINT, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ state, questions }),
+      signal:  ctrl.signal,
+    });
+    if (!res.ok) throw new Error(`Laya HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const json = await res.json();
+    return json.data ?? json;
+  } catch (err) {
+    throw new Error(`Laya fallback failed: ${err.message}`);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function callJev(code, apiKey, questions) {
   const state   = { code: code.length > MAX_CHARS ? `${code.slice(0, MAX_CHARS)}\n\n…[truncated]` : code };
   const payload = { model: MODEL, state, questions };
-  return withRetry(() => fetchJev(payload, apiKey));
+
+  // Primary: maximize TypeSafe Jev API credits when key is provided
+  if (apiKey && !process.env.FORCE_LAYA) {
+    try {
+      return await withRetry(() => fetchJev(payload, apiKey));
+    } catch (err) {
+      console.warn(`\n[DEV NOTE] Jev primary API failed (${err.message}). Cascading to local Laya fallback engine (:8100)...`);
+    }
+  }
+
+  // Fallback: local Laya decision engine
+  return await fetchLayaFallback(state, questions);
 }
+
 
 function extractNoul(ans) {
   if (!ans || typeof ans !== "object") return null;

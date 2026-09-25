@@ -55,8 +55,12 @@ pnpm-debug.log*
 # Temporary Test Upload Artifacts
 uploads/proofs/proof_*
 !uploads/proofs/proof_1787818447_8a7d0655.pdf
+!uploads/proofs/proof_1789903369_190c86d6.jpg
+!uploads/proofs/proof_1789904998_523463f5.jpg
+!uploads/proofs/proof_1790331069_26ebdc49.pdf
 uploads/jobs/job_*
 uploads/resumes/resume_*
+screenshots/
 
 # Local Backups
 *.bak

@@ -153,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $page_title = 'Post New Opportunity';
 
+
 // Preload view data — no service/DB calls in the template
 $form = $_POST;
 $query = $_GET;

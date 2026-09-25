@@ -22,13 +22,32 @@
         "deadline": "2026-11-15",
         "status": "active",
         "image": "assets/img/jobs/job-01.jpg",
-        "tags": "\"[\\\"Flexible Schedule\\\",\\\"Urgent\\\",\\\"Tech Support\\\",\\\"University Office\\\"]\"",
-        "badges": "\"[\\\"Student Assistant\\\",\\\"Flexible Schedule\\\",\\\"Urgent\\\"]\"",
+        "tags": [
+            "Flexible Schedule",
+            "Urgent",
+            "Tech Support",
+            "University Office"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Flexible Schedule",
+            "Urgent"
+        ],
         "description": "Assist the MIS team in maintaining student computer laboratories, performing routine hardware/software troubleshooting, monitoring laboratory usage, and assisting students during hands-on classes.",
-        "responsibilities": "\"[\\\"Check PC hardware and peripheral operability before daily lab sessions.\\\",\\\"Assist students and professors with network login, compiler installations, and software tools.\\\",\\\"Maintain cleanliness and enforce lab safety regulations.\\\",\\\"Log hardware faults and escalate critical network disruptions to senior network engineers.\\\"]\"",
-        "qualifications": "\"[\\\"Currently enrolled 2nd to 4th year BSIS, BSCS, or BSDS student.\\\",\\\"General Weighted Average (GWA) of 2.25 or better.\\\",\\\"Basic knowledge in PC troubleshooting, Windows\\\\\\/Linux OS, and local networking.\\\",\\\"Responsible, punctual, and equipped with strong interpersonal skills.\\\"]\"",
+        "responsibilities": [
+            "Check PC hardware and peripheral operability before daily lab sessions.",
+            "Assist students and professors with network login, compiler installations, and software tools.",
+            "Maintain cleanliness and enforce lab safety regulations.",
+            "Log hardware faults and escalate critical network disruptions to senior network engineers."
+        ],
+        "qualifications": [
+            "Currently enrolled 2nd to 4th year BSIS, BSCS, or BSDS student.",
+            "General Weighted Average (GWA) of 2.25 or better.",
+            "Basic knowledge in PC troubleshooting, Windows/Linux OS, and local networking.",
+            "Responsible, punctual, and equipped with strong interpersonal skills."
+        ],
         "created_at": "2026-08-20 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 2,
@@ -53,23 +72,40 @@
         "deadline": "2026-11-20",
         "status": "active",
         "image": "assets/img/jobs/job-02.jpg",
-        "tags": "\"[\\\"Part-Time\\\",\\\"Office Work\\\",\\\"University Office\\\"]\"",
-        "badges": "\"[\\\"Student Assistant\\\",\\\"Part-time\\\"]\"",
+        "tags": [
+            "Part-Time",
+            "Office Work",
+            "University Office"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Part-time"
+        ],
         "description": "Support the University Registrar in organizing student records, encoding registration documents, sorting physical course binders, and assisting visitors at the information desk.",
-        "responsibilities": "\"[\\\"Scan and index student transcript documents into the digital archive.\\\",\\\"Assist in receiving and sorting incoming student clearance and graduation applications.\\\",\\\"Organize student physical 201 filing cabinets.\\\",\\\"Provide courteous frontline queue direction during peak enrollment periods.\\\"]\"",
-        "qualifications": "\"[\\\"Open to all undergraduate programs in good standing.\\\",\\\"Proficient in Microsoft Excel, Word, and Google Workspace.\\\",\\\"High attention to detail and strong adherence to data privacy and confidentiality.\\\",\\\"Must have at least 3 consecutive free hours during weekdays.\\\"]\"",
+        "responsibilities": [
+            "Scan and index student transcript documents into the digital archive.",
+            "Assist in receiving and sorting incoming student clearance and graduation applications.",
+            "Organize student physical 201 filing cabinets.",
+            "Provide courteous frontline queue direction during peak enrollment periods."
+        ],
+        "qualifications": [
+            "Open to all undergraduate programs in good standing.",
+            "Proficient in Microsoft Excel, Word, and Google Workspace.",
+            "High attention to detail and strong adherence to data privacy and confidentiality.",
+            "Must have at least 3 consecutive free hours during weekdays."
+        ],
         "created_at": "2026-08-21 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 3,
         "title": "Digital Cataloging & Library Aid",
         "department": "University Library Services",
-        "organization_name": "KLD University Library",
+        "organization_name": "University Library Services",
         "category": "Library Services",
         "category_id": 2,
-        "employer_id": 3,
-        "employer_name": "Ms. Teresa Cruz (Chief Librarian)",
+        "employer_id": 23,
+        "employer_name": "Ms. Teresa Cruz",
         "employer_type": "university_office",
         "job_type": "Student Assistant",
         "work_setup": "On-Campus",
@@ -84,13 +120,29 @@
         "deadline": "2026-11-25",
         "status": "active",
         "image": "assets/img/jobs/job-03.jpg",
-        "tags": "\"[\\\"Quiet Environment\\\",\\\"Study Friendly\\\",\\\"University Office\\\"]\"",
-        "badges": "\"[\\\"Student Assistant\\\",\\\"Flexible Schedule\\\"]\"",
+        "tags": [
+            "Quiet Environment",
+            "Study Friendly",
+            "University Office"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Flexible Schedule"
+        ],
         "description": "Assist librarians with book circulation, Dewey Decimal sorting, barcode scanning, thesis collection archiving, and patron assistance in the quiet study hub.",
-        "responsibilities": "\"[\\\"Check in and check out library reference books using the barcode circulation scanner.\\\",\\\"Shelve books according to cataloging standards and perform shelf-reading.\\\",\\\"Assist students and faculty in navigating OPAC (Online Public Access Catalog).\\\",\\\"Monitor study areas to ensure a conducive, quiet learning atmosphere.\\\"]\"",
-        "qualifications": "\"[\\\"Bona fide student with at least 1 remaining academic year.\\\",\\\"Diligent, polite, organized, and fond of reading and books.\\\",\\\"Can commit to either morning (8:00 AM - 12:00 PM) or afternoon (1:00 PM - 5:00 PM) shifts.\\\"]\"",
+        "responsibilities": [
+            "Check in and check out library reference books using the barcode circulation scanner.",
+            "Shelve books according to cataloging standards and perform shelf-reading.",
+            "Assist students and faculty in navigating OPAC (Online Public Access Catalog).",
+            "Monitor study areas to ensure a conducive, quiet learning atmosphere."
+        ],
+        "qualifications": [
+            "Bona fide student with at least 1 remaining academic year.",
+            "Diligent, polite, organized, and fond of reading and books.",
+            "Can commit to either morning (8:00 AM - 12:00 PM) or afternoon (1:00 PM - 5:00 PM) shifts."
+        ],
         "created_at": "2026-08-22 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 4,
@@ -99,95 +151,150 @@
         "organization_name": "Institute of Science and Mathematics (ISM)",
         "category": "Peer Tutor",
         "category_id": 5,
-        "employer_id": 4,
-        "employer_name": "Dr. Antonio Valderama",
+        "employer_id": 5,
+        "employer_name": "KLD Campus System Admin",
         "employer_type": "university_office",
-        "job_type": "Peer Tutor",
+        "job_type": "Student Assistant",
         "work_setup": "On-Campus",
         "verified_employer": 1,
-        "location": "Learning Commons · Room 204",
+        "location": "Math Learning Center · Room 215",
         "pay_rate": "₱100.00 / hour",
         "pay_type": "Hourly",
         "hours_per_week": "8 - 12 hrs/week",
-        "vacancies": 2,
-        "slots_total": 2,
+        "vacancies": 3,
+        "slots_total": 3,
         "slots_filled": 1,
-        "deadline": "2026-12-05",
+        "deadline": "2026-11-30",
         "status": "active",
         "image": "assets/img/jobs/job-04.jpg",
-        "tags": "\"[\\\"High Pay\\\",\\\"Academic\\\",\\\"Peer Tutor\\\"]\"",
-        "badges": "\"[\\\"Peer Tutor\\\",\\\"Part-time\\\",\\\"Flexible Schedule\\\"]\"",
-        "description": "Provide scheduled one-on-one and small group peer tutoring for 1st and 2nd year students struggling with Linear Algebra, Discrete Mathematics, and Calculus.",
-        "responsibilities": "\"[\\\"Conduct structured 1-hour tutorial sessions according to student bookings.\\\",\\\"Prepare sample problem worksheets and concept explanation summaries.\\\",\\\"Maintain student attendance logs and report progress to the Department Chair.\\\",\\\"Encourage active problem solving and confidence building.\\\"]\"",
-        "qualifications": "\"[\\\"Currently enrolled in BSCS, BSIS, BSDS, or BSCE.\\\",\\\"Must have earned a final grade of 1.50 or higher in Linear Algebra and Discrete Math.\\\",\\\"Patient, articulate, and passionate about teaching math concepts.\\\",\\\"Endorsement letter from an ISM faculty member is a plus.\\\"]\"",
+        "tags": [
+            "High Pay",
+            "Academic Coaching",
+            "Peer Mentoring"
+        ],
+        "badges": [
+            "Peer Tutor",
+            "High Pay",
+            "Academic Coaching"
+        ],
+        "description": "Provide one-on-one and small group tutoring assistance to freshmen and sophomores taking Linear Algebra, Discrete Structures, and Calculus I.",
+        "responsibilities": [
+            "Conduct structured problem-solving sessions for struggling students.",
+            "Explain abstract proofs, matrix operations, and recurrence relations clearly.",
+            "Review lecture materials and prepare practice worksheets.",
+            "Submit weekly student attendance and progress logs to the department coordinator."
+        ],
+        "qualifications": [
+            "Completed Linear Algebra and Discrete Math with a grade of 1.50 or higher.",
+            "Patient, articulate, and dedicated to helping peers succeed.",
+            "Recommended by at least one mathematics faculty instructor."
+        ],
         "created_at": "2026-08-23 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 5,
-        "title": "Junior Web Developer Intern (OJT)",
-        "department": "Software & Web Development Partner",
+        "title": "Junior Web Developer & QA Assistant",
+        "department": "TechVanguard Solutions Inc.",
         "organization_name": "TechVanguard Solutions Inc.",
         "category": "IT & Technical Support",
         "category_id": 1,
         "employer_id": 6,
         "employer_name": "Atty. Katrina Alcantara",
         "employer_type": "approved_partner",
-        "job_type": "Internship / OJT",
+        "job_type": "Part-Time",
         "work_setup": "Hybrid",
         "verified_employer": 1,
-        "location": "Dasma Tech Park / Hybrid (Near Campus)",
+        "location": "Dasma Tech Park · Suite 401 & Remote",
         "pay_rate": "₱120.00 / hour",
         "pay_type": "Hourly",
         "hours_per_week": "15 - 20 hrs/week",
-        "vacancies": 3,
-        "slots_total": 3,
+        "vacancies": 2,
+        "slots_total": 2,
         "slots_filled": 1,
-        "deadline": "2026-12-12",
+        "deadline": "2026-12-01",
         "status": "active",
         "image": "assets/img/jobs/job-05.jpg",
-        "tags": "\"[\\\"Internship\\\",\\\"Web Dev\\\",\\\"Approved Partner\\\",\\\"High Pay\\\"]\"",
-        "badges": "\"[\\\"Internship \\\\\\/ OJT\\\",\\\"Approved Partner\\\",\\\"Hybrid\\\"]\"",
-        "description": "Join an accredited industry technology partner to develop real-world client web applications using HTML/CSS, JavaScript, PHP/Node, and modern API integrations. Perfect for 3rd and 4th year computing students seeking academic OJT credits.",
-        "responsibilities": "\"[\\\"Collaborate with lead developers in building responsive UI layouts and backend APIs.\\\",\\\"Participate in daily agile sprint standups and code reviews.\\\",\\\"Debug cross-browser frontend issues and write clean, modular documentation.\\\",\\\"Submit weekly supervisor evaluations for college OJT accreditation.\\\"]\"",
-        "qualifications": "\"[\\\"Currently enrolled in BSIS, BSCS, or related technical degrees.\\\",\\\"Familiar with Git, JavaScript, PHP, and responsive CSS frameworks.\\\",\\\"Able to commit 15\\\\u201320 hours\\\\\\/week in a hybrid setup (2 days on-site, 2 days remote).\\\",\\\"Official endorsement form from the KLD Practicum Coordinator.\\\"]\"",
+        "tags": [
+            "Hybrid",
+            "High Pay",
+            "Industry Partner",
+            "Accredited Partner"
+        ],
+        "badges": [
+            "Industry Partner",
+            "High Pay",
+            "Hybrid Setup"
+        ],
+        "description": "Work with our software engineering squad to build responsive front-end components, write automated unit tests, and inspect web applications for responsive design bugs.",
+        "responsibilities": [
+            "Implement responsive UI slices using HTML5, CSS3/Tailwind, and vanilla JavaScript.",
+            "Conduct exploratory cross-browser testing on mobile, tablet, and desktop viewports.",
+            "Log reproducible defect reports with clear reproduction steps in Jira.",
+            "Collaborate during bi-weekly sprint planning and code reviews."
+        ],
+        "qualifications": [
+            "3rd or 4th Year BSCS, BSIS, or BSECE student.",
+            "Familiarity with Git version control, GitHub workflows, and modern web standards.",
+            "Knowledge of JavaScript (ES6+), CSS Flexbox/Grid, and responsive layout principles.",
+            "Self-starter with good communication skills for hybrid team collaboration."
+        ],
         "created_at": "2026-08-24 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 6,
-        "title": "Part-Time Social Media & Content Creator",
-        "department": "Creative & Digital Media Partner",
+        "title": "Multimedia Content & Video Assistant",
+        "department": "Dasma Creative Media Studio",
         "organization_name": "Dasma Creative Media Studio",
         "category": "Administrative Clerk",
         "category_id": 3,
         "employer_id": 7,
         "employer_name": "Marco V. Domingo",
         "employer_type": "approved_partner",
-        "job_type": "Part-Time Job",
-        "work_setup": "Near-Campus",
+        "job_type": "Part-Time",
+        "work_setup": "Hybrid",
         "verified_employer": 1,
-        "location": "Creative Hub Center (Near Campus)",
-        "pay_rate": "₱110.00 / hour",
+        "location": "Creative Hub Center · Studio 201",
+        "pay_rate": "₱95.00 / hour",
         "pay_type": "Hourly",
         "hours_per_week": "12 - 16 hrs/week",
         "vacancies": 2,
         "slots_total": 2,
-        "slots_filled": 0,
-        "deadline": "2026-12-18",
+        "slots_filled": 1,
+        "deadline": "2026-12-15",
         "status": "active",
         "image": "assets/img/jobs/job-06.jpg",
-        "tags": "\"[\\\"Part-Time\\\",\\\"Creative\\\",\\\"Approved Partner\\\"]\"",
-        "badges": "\"[\\\"Part-Time Job\\\",\\\"Approved Partner\\\",\\\"Creative\\\"]\"",
-        "description": "Create engaging short-form TikTok/Reels video content, design Canva graphics for local marketing campaigns, and assist in copywriting for an approved regional media partner.",
-        "responsibilities": "\"[\\\"Shoot and edit engaging vertical video content highlighting youth lifestyle and education.\\\",\\\"Design branded social media post carousels and promotional posters.\\\",\\\"Monitor engagement metrics and respond to community comments under guidance.\\\",\\\"Ensure all published material adheres to university partner ethical standards.\\\"]\"",
-        "qualifications": "\"[\\\"Passionate about video editing (CapCut, Premiere, or Canva).\\\",\\\"Creative eye for typography, layouts, and storytelling.\\\",\\\"Flexible schedule tailored around class timetables.\\\"]\"",
+        "tags": [
+            "Creative",
+            "Graphic Design",
+            "Video Editing",
+            "Accredited Partner"
+        ],
+        "badges": [
+            "Industry Partner",
+            "Creative Work",
+            "Flexible Schedule"
+        ],
+        "description": "Assist creative directors in producing campus digital flyers, short-form video reels, and promotional photo assets for social media and university broadcasts.",
+        "responsibilities": [
+            "Edit short vertical videos (TikTok/Reels format) showcasing campus highlights and events.",
+            "Design clean promotional graphics using Canva, Adobe Photoshop, or Figma.",
+            "Organize digital asset libraries and maintain media file nomenclature standards.",
+            "Provide production assistance during studio and campus on-location shoots."
+        ],
+        "qualifications": [
+            "Portfolio or sample links demonstrating graphic design or video editing work.",
+            "Proficiency in CapCut, Premiere Pro, Photoshop, or Figma.",
+            "Creative mindset with strong sense of typography, pacing, and color palette.",
+            "Open to 2nd to 4th year students across all degree programs."
+        ],
         "created_at": "2026-08-25 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 7,
-        "title": "Student Barista & Customer Service Crew",
+        "title": "Campus Student Barista & Cafe Cashier",
         "department": "Campus Food Concessionaire Partner",
         "organization_name": "Campus Cafe & Co.",
         "category": "Administrative Clerk",
@@ -195,7 +302,7 @@
         "employer_id": 8,
         "employer_name": "Chef Patricia Reyes",
         "employer_type": "approved_partner",
-        "job_type": "Part-Time Job",
+        "job_type": "Student Assistant",
         "work_setup": "On-Campus",
         "verified_employer": 1,
         "location": "University Student Pavilion & Food Arcade",
@@ -208,23 +315,41 @@
         "deadline": "2026-12-20",
         "status": "active",
         "image": "assets/img/jobs/job-07.jpg",
-        "tags": "\"[\\\"Part-Time\\\",\\\"Customer Service\\\",\\\"On-Campus\\\"]\"",
-        "badges": "\"[\\\"Part-Time Job\\\",\\\"On-Campus\\\",\\\"Flexible Schedule\\\"]\"",
+        "tags": [
+            "Part-Time",
+            "Customer Service",
+            "On-Campus",
+            "Accredited Partner"
+        ],
+        "badges": [
+            "Part-Time Job",
+            "On-Campus",
+            "Flexible Schedule"
+        ],
         "description": "Learn specialty espresso brewing, assist in counter POS cashiering, and provide friendly hospitality at the official campus student cafe located inside the Student Pavilion.",
-        "responsibilities": "\"[\\\"Prepare espresso drinks, cold brews, and seasonal refreshments following recipes.\\\",\\\"Operate touch-screen point-of-sale register and issue official receipts.\\\",\\\"Maintain strict cleanliness and food safety sanitation in the dining area.\\\",\\\"Coordinate with supervisor for weekly shift planning aligned with class schedules.\\\"]\"",
-        "qualifications": "\"[\\\"Cheerful, friendly demeanor with strong work ethic.\\\",\\\"No prior barista experience required; complete paid on-site training provided.\\\",\\\"Available for morning (7:30 AM - 11:30 AM) or afternoon (1:30 PM - 5:30 PM) slots.\\\"]\"",
+        "responsibilities": [
+            "Prepare espresso drinks, cold brews, and seasonal refreshments following recipes.",
+            "Operate touch-screen point-of-sale register and issue official receipts.",
+            "Maintain strict cleanliness and food safety sanitation in the dining area.",
+            "Coordinate with supervisor for weekly shift planning aligned with class schedules."
+        ],
+        "qualifications": [
+            "Cheerful, friendly demeanor with strong work ethic.",
+            "No prior barista experience required; complete paid on-site training provided.",
+            "Available for morning (7:30 AM - 11:30 AM) or afternoon (1:30 PM - 5:30 PM) slots."
+        ],
         "created_at": "2026-08-26 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 8,
         "title": "Science & Computer Lab Assistant",
-        "department": "College of Science & Laboratories",
-        "organization_name": "College of Science & Laboratories",
+        "department": "College of Science & Nursing Skills Labs",
+        "organization_name": "College of Science & Nursing Skills Labs",
         "category": "Science & Computer Lab Assistant",
         "category_id": 4,
-        "employer_id": 5,
-        "employer_name": "Lab Head Dr. Reyes",
+        "employer_id": 24,
+        "employer_name": "Prof. Corazon Navarro",
         "employer_type": "university_office",
         "job_type": "Student Assistant",
         "work_setup": "On-Campus",
@@ -239,23 +364,39 @@
         "deadline": "2026-12-10",
         "status": "active",
         "image": "assets/img/jobs/job-08.jpg",
-        "tags": "\"[\\\"Science\\\",\\\"Lab Prep\\\",\\\"University Office\\\"]\"",
-        "badges": "\"[\\\"Student Assistant\\\",\\\"Urgent\\\"]\"",
+        "tags": [
+            "Science",
+            "Lab Prep",
+            "University Office"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Urgent"
+        ],
         "description": "Assist laboratory custodians in preparing glassware, non-hazardous reagent solutions, setting up microscope benches, and conducting equipment sanitation.",
-        "responsibilities": "\"[\\\"Distribute apparatus to students before experiments and inspect returns for breakage.\\\",\\\"Wash and autoclave laboratory glassware following strict chemical hygiene procedures.\\\",\\\"Maintain reagent inventory and log chemical consumption.\\\",\\\"Ensure proper waste segregation and disposal compliance.\\\"]\"",
-        "qualifications": "\"[\\\"Enrolled in Allied Science, Computer, or Engineering programs.\\\",\\\"Passed Chemistry\\\\\\/Lab fundamentals with high marks.\\\",\\\"Strict compliance with lab safety goggles, lab coat, and chemical handling guidelines.\\\"]\"",
+        "responsibilities": [
+            "Distribute apparatus to students before experiments and inspect returns for breakage.",
+            "Wash and autoclave laboratory glassware following strict chemical hygiene procedures.",
+            "Maintain reagent inventory and log chemical consumption.",
+            "Ensure proper waste segregation and disposal compliance."
+        ],
+        "qualifications": [
+            "Enrolled in Allied Science, Computer, or Engineering programs.",
+            "Passed Chemistry/Lab fundamentals with high marks.",
+            "Strict compliance with lab safety goggles, lab coat, and chemical handling guidelines."
+        ],
         "created_at": "2026-08-25 00:00:00",
-        "updated_at": "2026-09-09 19:40:16"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 9,
         "title": "Gymnasium Equipment Custodian & Court Monitor",
-        "department": "Student Affairs & Services Office (SASO)",
-        "organization_name": "Student Affairs & Services Office (SASO)",
+        "department": "Athletics & Sports Development Unit",
+        "organization_name": "Athletics & Sports Development Unit",
         "category": "Sports & Athletics Aide",
         "category_id": 6,
-        "employer_id": 3,
-        "employer_name": "Prof. Roberto Hernandez",
+        "employer_id": 25,
+        "employer_name": "Coach Gary Belmonte",
         "employer_type": "university_office",
         "job_type": "Student Assistant",
         "work_setup": "On-Campus",
@@ -270,23 +411,41 @@
         "deadline": "2026-11-30",
         "status": "active",
         "image": "assets/img/jobs/job-09.jpg",
-        "tags": "[\"Sports\",\"Equipment Logistics\",\"University Office\",\"On-Campus\"]",
-        "badges": "[\"Student Assistant\",\"Flexible Schedule\"]",
+        "tags": [
+            "Sports",
+            "Equipment Logistics",
+            "University Office",
+            "On-Campus"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Flexible Schedule"
+        ],
         "description": "Assist the Athletics & Sports Development Office in issuing and logging sports equipment, monitoring gymnasium court reservations, ensuring court safety regulations, and maintaining equipment cleanliness.",
-        "responsibilities": "[\"Inspect and distribute balls, nets, and athletics equipment before varsity practice and intramural games.\",\"Maintain digital check-in\\/check-out logs for student equipment borrowings.\",\"Monitor court bookings and enforce footwear and gymnasium safety rules.\",\"Report damaged equipment and assist in periodic inventory audits.\"]",
-        "qualifications": "[\"Currently enrolled KLD student in good academic standing.\",\"Punctual, physically active, and responsible with university property.\",\"Available for afternoon shifts (1:00 PM - 5:00 PM) or weekend sports events.\",\"Previous involvement in sports or athletics is an advantage but not required.\"]",
+        "responsibilities": [
+            "Inspect and distribute balls, nets, and athletics equipment before varsity practice and intramural games.",
+            "Maintain digital check-in/check-out logs for student equipment borrowings.",
+            "Monitor court bookings and enforce footwear and gymnasium safety rules.",
+            "Report damaged equipment and assist in periodic inventory audits."
+        ],
+        "qualifications": [
+            "Currently enrolled KLD student in good academic standing.",
+            "Punctual, physically active, and responsible with university property.",
+            "Available for afternoon shifts (1:00 PM - 5:00 PM) or weekend sports events.",
+            "Previous involvement in sports or athletics is an advantage but not required."
+        ],
         "created_at": "2026-08-27 00:00:00",
-        "updated_at": "2026-09-03 07:53:52"
+        "updated_at": "2026-09-25 18:11:13"
     },
     {
         "id": 10,
         "title": "Intramural Tournament Scorekeeper & Athletics Aide",
-        "department": "Student Affairs & Services Office (SASO)",
-        "organization_name": "Student Affairs & Services Office (SASO)",
+        "department": "Athletics & Sports Development Unit",
+        "organization_name": "Athletics & Sports Development Unit",
         "category": "Sports & Athletics Aide",
         "category_id": 6,
-        "employer_id": 3,
-        "employer_name": "Prof. Roberto Hernandez",
+        "employer_id": 25,
+        "employer_name": "Coach Gary Belmonte",
         "employer_type": "university_office",
         "job_type": "Student Assistant",
         "work_setup": "On-Campus",
@@ -301,12 +460,520 @@
         "deadline": "2026-12-05",
         "status": "active",
         "image": "assets/img/jobs/job-10.jpg",
-        "tags": "[\"Scorekeeper\",\"Intramurals\",\"University Office\",\"High Pay\"]",
-        "badges": "[\"Student Assistant\",\"Part-Time\",\"Flexible Schedule\"]",
+        "tags": [
+            "Scorekeeper",
+            "Intramurals",
+            "University Office",
+            "High Pay"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Part-Time",
+            "Flexible Schedule"
+        ],
         "description": "Support campus sports tournaments and intramural leagues through official digital scorekeeping, scoreboard operation, equipment staging, and referee table coordination.",
-        "responsibilities": "[\"Operate the electronic scoreboard and official timer during scheduled tournament matches.\",\"Record points, fouls, timeouts, and player statistics on official score sheets.\",\"Coordinate with game officials and tournament directors to ensure smooth match flow.\",\"Assist in trophy staging, court setup, and post-game record filing.\"]",
-        "qualifications": "[\"Enrolled student with GWA of 2.50 or better.\",\"High focus, attention to detail, and familiarity with basketball, volleyball, or badminton rules.\",\"Ability to work calmly under the excitement of live competitive games.\",\"Willing to work flexible schedules during intramural tournament weeks.\"]",
+        "responsibilities": [
+            "Operate the electronic scoreboard and official timer during scheduled tournament matches.",
+            "Record points, fouls, timeouts, and player statistics on official score sheets.",
+            "Coordinate with game officials and tournament directors to ensure smooth match flow.",
+            "Assist in trophy staging, court setup, and post-game record filing."
+        ],
+        "qualifications": [
+            "Enrolled student with GWA of 2.50 or better.",
+            "High focus, attention to detail, and familiarity with basketball, volleyball, or badminton rules.",
+            "Ability to work calmly under the excitement of live competitive games.",
+            "Willing to work flexible schedules during intramural tournament weeks."
+        ],
         "created_at": "2026-08-28 00:00:00",
-        "updated_at": "2026-09-03 07:53:52"
+        "updated_at": "2026-09-25 18:11:13"
+    },
+    {
+        "id": 11,
+        "title": "Peer Tutor - Data Structures & Algorithms (Java/Python)",
+        "department": "Management Information Systems (MIS)",
+        "organization_name": "Management Information Systems (MIS)",
+        "category": "Peer Tutor",
+        "category_id": 5,
+        "employer_id": 4,
+        "employer_name": "Engr. Clara Villanueva",
+        "employer_type": "university_office",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "Tech Building · Coding Commons 308",
+        "pay_rate": "₱100.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "10 - 15 hrs/week",
+        "vacancies": 2,
+        "slots_total": 2,
+        "slots_filled": 1,
+        "deadline": "2026-11-28",
+        "status": "active",
+        "image": "assets/img/jobs/job-11.jpg",
+        "tags": [
+            "Peer Tutor",
+            "Coding",
+            "DSA",
+            "Python",
+            "Java"
+        ],
+        "badges": [
+            "Peer Tutor",
+            "High Pay",
+            "Academic Coaching"
+        ],
+        "description": "Mentor 1st and 2nd year computing students in linked lists, trees, graph traversals, and algorithmic complexity in Java and Python.",
+        "responsibilities": [
+            "Hold drop-in coding consultation hours at the Tech Building learning commons.",
+            "Guide students through debugging and algorithmic problem formulation without giving solutions.",
+            "Prepare weekly coding review problems aligned with instructor syllabus.",
+            "Track attendee progress and coordinate with faculty instructors."
+        ],
+        "qualifications": [
+            "3rd or 4th Year BSCS or BSIS student with GWA of 1.75 or better in DSA courses.",
+            "Strong command of Java, Python, or C++ and clear instructional ability.",
+            "Patience and passion for helping fellow peers develop solid programming logic."
+        ],
+        "created_at": "2026-09-01 09:00:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 12,
+        "title": "Nursing Skills & Simulation Lab Aide",
+        "department": "College of Science & Nursing Skills Labs",
+        "organization_name": "College of Science & Nursing Skills Labs",
+        "category": "Science & Computer Lab Assistant",
+        "category_id": 4,
+        "employer_id": 24,
+        "employer_name": "Prof. Corazon Navarro",
+        "employer_type": "university_office",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "Allied Health Wing · Simulation Ward 202",
+        "pay_rate": "₱85.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "12 - 16 hrs/week",
+        "vacancies": 3,
+        "slots_total": 3,
+        "slots_filled": 1,
+        "deadline": "2026-12-05",
+        "status": "active",
+        "image": "assets/img/jobs/job-12.jpg",
+        "tags": [
+            "Nursing",
+            "Simulation Ward",
+            "Health Sciences",
+            "Laboratory"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Healthcare",
+            "On-Campus"
+        ],
+        "description": "Support clinical instructors in setting up patient simulation manikins, medical equipment trays, sterile gloves, and vitals monitoring stations.",
+        "responsibilities": [
+            "Stage clinical ward beds, IV stands, and simulator manikins prior to OSCE clinical exams.",
+            "Manage medical consumable inventory (bandages, syringes, PPE, antiseptic supplies).",
+            "Disinfect simulation equipment following institutional biosafety guidelines.",
+            "Log student clinical laboratory attendance and room reservations."
+        ],
+        "qualifications": [
+            "Currently enrolled 2nd to 4th year BS Nursing or Midwifery student.",
+            "Strong adherence to medical hygiene, infection control, and clinical protocol.",
+            "Dependable, methodical, and attentive to equipment upkeep."
+        ],
+        "created_at": "2026-09-02 10:30:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 13,
+        "title": "Student Guidance Frontdesk & Peer Facilitator",
+        "department": "Guidance & Counseling Center",
+        "organization_name": "Guidance & Counseling Center",
+        "category": "Administrative Clerk",
+        "category_id": 3,
+        "employer_id": 22,
+        "employer_name": "Dr. Evelyn Ramos",
+        "employer_type": "university_office",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "Student Center · Room 204",
+        "pay_rate": "₱80.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "10 - 14 hrs/week",
+        "vacancies": 2,
+        "slots_total": 2,
+        "slots_filled": 1,
+        "deadline": "2026-11-20",
+        "status": "active",
+        "image": "assets/img/jobs/job-13.jpg",
+        "tags": [
+            "Counseling",
+            "Frontline",
+            "Mental Health",
+            "Peer Facilitation"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Support Services"
+        ],
+        "description": "Welcoming students to the Guidance Center, assisting with counseling appointment bookings, preparing psychometric testing packets, and supporting mental health awareness drives.",
+        "responsibilities": [
+            "Greet students warmly and handle confidential appointment scheduling.",
+            "Prepare standardized testing materials and tally psychological inventory scores.",
+            "Assist in organizing campus Mental Health Week activities and wellness seminars.",
+            "Strictly observe Data Privacy Act (RA 10173) concerning student counseling records."
+        ],
+        "qualifications": [
+            "2nd to 4th year BS Psychology or BA Communication student preferred.",
+            "Warm, empathetic demeanor with exceptional discretion and confidentiality.",
+            "Good organizational skills and proficiency in Google Forms and Docs."
+        ],
+        "created_at": "2026-09-03 08:45:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 14,
+        "title": "Campus Scholarship Records & Encoding Clerk",
+        "department": "Admissions & Scholarship Office",
+        "organization_name": "Admissions & Scholarship Office",
+        "category": "Administrative Clerk",
+        "category_id": 3,
+        "employer_id": 26,
+        "employer_name": "Mr. Arnold Santos",
+        "employer_type": "university_office",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "Admin Building · Ground Floor",
+        "pay_rate": "₱80.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "12 - 15 hrs/week",
+        "vacancies": 3,
+        "slots_total": 3,
+        "slots_filled": 2,
+        "deadline": "2026-11-18",
+        "status": "active",
+        "image": "assets/img/jobs/job-14.jpg",
+        "tags": [
+            "Scholarships",
+            "Data Encoding",
+            "Admin Building",
+            "Frontline"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Office Work"
+        ],
+        "description": "Support scholarship coordinators in evaluating applicant documentary requirements, validating GWA grades, and encoding LGU scholarship grantee records.",
+        "responsibilities": [
+            "Verify completeness of incoming city scholarship grant forms and grade slips.",
+            "Encode student applicant records into the scholarship database spreadsheet.",
+            "Answer student queries regarding renewal deadlines and documentary prerequisites.",
+            "Assist in preparing official scholarship payroll lists for stipend disbursement."
+        ],
+        "qualifications": [
+            "Open to all undergraduate students in good academic standing.",
+            "High proficiency in MS Excel / Google Sheets and fast 10-key numeric typing.",
+            "Attention to detail and polite interpersonal telephone and counter etiquette."
+        ],
+        "created_at": "2026-09-04 11:00:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 15,
+        "title": "Junior Frontend Web Assistant (React / CSS)",
+        "department": "Software & Web Development Partner",
+        "organization_name": "TechVanguard Solutions Inc.",
+        "category": "IT & Technical Support",
+        "category_id": 1,
+        "employer_id": 6,
+        "employer_name": "Atty. Katrina Alcantara",
+        "employer_type": "approved_partner",
+        "job_type": "Part-Time",
+        "work_setup": "Hybrid",
+        "verified_employer": 1,
+        "location": "Dasma Tech Park · 4th Floor",
+        "pay_rate": "₱120.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "15 - 20 hrs/week",
+        "vacancies": 2,
+        "slots_total": 2,
+        "slots_filled": 1,
+        "deadline": "2026-12-08",
+        "status": "active",
+        "image": "assets/img/jobs/job-15.jpg",
+        "tags": [
+            "Web Development",
+            "React",
+            "Frontend",
+            "High Pay",
+            "Accredited Partner"
+        ],
+        "badges": [
+            "Industry Partner",
+            "High Pay",
+            "Hybrid"
+        ],
+        "description": "Join an agile engineering team building web applications for regional clients. Perfect for students looking for real-world production code experience.",
+        "responsibilities": [
+            "Convert Figma design wireframes into responsive modular HTML/CSS/React components.",
+            "Write basic Cypress or Playwright end-to-end user tests for client workflows.",
+            "Participate in weekly sprint sync meetings and Git pull request reviews."
+        ],
+        "qualifications": [
+            "Demonstrated proficiency in JavaScript (ES6+), React or Vue, and modern CSS.",
+            "Active GitHub profile with personal or coursework projects.",
+            "Ability to dedicate 15 hours per week without conflicting with class schedules."
+        ],
+        "created_at": "2026-09-05 13:30:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 16,
+        "title": "Creative Graphics & Social Media Assistant",
+        "department": "Creative & Digital Media Partner",
+        "organization_name": "Dasma Creative Media Studio",
+        "category": "Administrative Clerk",
+        "category_id": 3,
+        "employer_id": 7,
+        "employer_name": "Marco V. Domingo",
+        "employer_type": "approved_partner",
+        "job_type": "Part-Time",
+        "work_setup": "Hybrid",
+        "verified_employer": 1,
+        "location": "Creative Hub Center · Suite 201",
+        "pay_rate": "₱95.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "12 - 16 hrs/week",
+        "vacancies": 2,
+        "slots_total": 2,
+        "slots_filled": 2,
+        "deadline": "2026-11-10",
+        "status": "active",
+        "image": "assets/img/jobs/job-16.jpg",
+        "tags": [
+            "Design",
+            "Graphics",
+            "Social Media",
+            "Accredited Partner",
+            "Filled"
+        ],
+        "badges": [
+            "Industry Partner",
+            "Filled Quota",
+            "Creative"
+        ],
+        "description": "Assist our creative team with social media copywriting, layout design for campus infographics, and brand asset management.",
+        "responsibilities": [
+            "Produce eye-catching visual banners for Facebook, Instagram, and LinkedIn.",
+            "Write engaging captions following brand voice guidelines.",
+            "Schedule and monitor post engagement analytics."
+        ],
+        "qualifications": [
+            "Solid graphic portfolio using Canva, Adobe Illustrator, or Photoshop.",
+            "Good English and Filipino written communication skills.",
+            "Enrolled 2nd or 3rd year student in BACOMM, BSHM, or ICDI."
+        ],
+        "created_at": "2026-09-06 09:15:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 17,
+        "title": "Bookstore Inventory & POS Cashier Aide",
+        "department": "Campus Bookstore & Retail Partner",
+        "organization_name": "GreenLeaf Academic Books & Campus Supplies",
+        "category": "Administrative Clerk",
+        "category_id": 3,
+        "employer_id": 27,
+        "employer_name": "Ms. Hazel Dimaculangan",
+        "employer_type": "approved_partner",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "Commercial Arcade · Unit 105",
+        "pay_rate": "₱85.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "12 - 16 hrs/week",
+        "vacancies": 2,
+        "slots_total": 2,
+        "slots_filled": 0,
+        "deadline": "2026-12-15",
+        "status": "active",
+        "image": "assets/img/jobs/job-17.jpg",
+        "tags": [
+            "Bookstore",
+            "Cashier",
+            "Inventory",
+            "Retail",
+            "On-Campus"
+        ],
+        "badges": [
+            "Student Assistant",
+            "On-Campus",
+            "Retail"
+        ],
+        "description": "Assist in receiving textbook deliveries, shelf stocking, barcode pricing, and friendly counter cashiering at the on-campus bookstore.",
+        "responsibilities": [
+            "Operate point-of-sale cash register and issue itemized receipts.",
+            "Unpack textbook boxes, verify shipment invoices, and affix barcode tags.",
+            "Keep academic textbook shelves neatly organized by college and subject code.",
+            "Assist students and faculty in locating required course syllabi materials."
+        ],
+        "qualifications": [
+            "Bona fide student with honest, dependable, and pleasant personality.",
+            "Basic math and cashiering accuracy.",
+            "Available for shifts during weekday morning or lunch hours."
+        ],
+        "created_at": "2026-09-07 10:00:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 18,
+        "title": "Campus Health Clinic & First Aid Support Aide",
+        "department": "College of Science & Nursing Skills Labs",
+        "organization_name": "College of Science & Nursing Skills Labs",
+        "category": "Science & Computer Lab Assistant",
+        "category_id": 4,
+        "employer_id": 24,
+        "employer_name": "Prof. Corazon Navarro",
+        "employer_type": "university_office",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "Main Clinic · Health Services Wing",
+        "pay_rate": "₱85.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "10 - 14 hrs/week",
+        "vacancies": 2,
+        "slots_total": 2,
+        "slots_filled": 1,
+        "deadline": "2026-11-25",
+        "status": "active",
+        "image": "assets/img/jobs/job-18.jpg",
+        "tags": [
+            "Clinic",
+            "First Aid",
+            "Health Services",
+            "Nursing",
+            "On-Campus"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Healthcare"
+        ],
+        "description": "Assist the university registered nurses with patient queue registration, temperature/BP checks, medicine cabinet inventory, and first-aid standby during campus gatherings.",
+        "responsibilities": [
+            "Record student and employee vital signs in clinic logbooks.",
+            "Prepare basic first-aid kits and check expiration dates of over-the-counter medicine.",
+            "Provide standby assistance during university sports meets and outdoor events.",
+            "Maintain clinic sanitization and rest-bed linen freshness."
+        ],
+        "qualifications": [
+            "Currently enrolled 2nd to 4th year BS Nursing, Midwifery, or Psychology student.",
+            "Certified in Basic Life Support (BLS) or First Aid is an advantage.",
+            "Compassionate, composed under emergencies, and reliable."
+        ],
+        "created_at": "2026-09-08 14:00:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 19,
+        "title": "Varsity Intramural Field Marshal & Athletics Aide",
+        "department": "Athletics & Sports Development Unit",
+        "organization_name": "Athletics & Sports Development Unit",
+        "category": "Sports & Athletics Aide",
+        "category_id": 6,
+        "employer_id": 25,
+        "employer_name": "Coach Gary Belmonte",
+        "employer_type": "university_office",
+        "job_type": "Student Assistant",
+        "work_setup": "On-Campus",
+        "verified_employer": 1,
+        "location": "University Track Oval & Grandstand",
+        "pay_rate": "₱85.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "8 - 12 hrs/week",
+        "vacancies": 3,
+        "slots_total": 3,
+        "slots_filled": 1,
+        "deadline": "2026-12-10",
+        "status": "active",
+        "image": "assets/img/jobs/job-19.jpg",
+        "tags": [
+            "Athletics",
+            "Field Marshal",
+            "Intramurals",
+            "Sports Complex"
+        ],
+        "badges": [
+            "Student Assistant",
+            "Athletics"
+        ],
+        "description": "Direct field logistics, enforce spectator boundary rules, manage hydration coolers, and coordinate tournament schedules for inter-institute competitions.",
+        "responsibilities": [
+            "Set up cones, timing gates, and boundary ropes prior to track and football matches.",
+            "Manage ice and water hydration stations for competing varsity and collegiate athletes.",
+            "Coordinate team rosters and signal warm-up call times.",
+            "Assist tournament referees with line calling and score certification."
+        ],
+        "qualifications": [
+            "Energetic student with enthusiasm for sports and outdoor event management.",
+            "Good voice projection and authority to enforce spectator safety boundaries.",
+            "Available on Friday afternoons and Saturday tournament mornings."
+        ],
+        "created_at": "2026-09-09 09:30:00",
+        "updated_at": "2026-09-25 18:19:55"
+    },
+    {
+        "id": 20,
+        "title": "Technical Customer Care Student Intern",
+        "department": "Customer Experience & BPO Partner",
+        "organization_name": "Cavite BPO Solutions & Customer Care Hub",
+        "category": "IT & Technical Support",
+        "category_id": 1,
+        "employer_id": 28,
+        "employer_name": "Roland Dela Torre",
+        "employer_type": "approved_partner",
+        "job_type": "Part-Time",
+        "work_setup": "Hybrid",
+        "verified_employer": 1,
+        "location": "Robinsons Dasma Tech Wing · 3rd Floor",
+        "pay_rate": "₱110.00 / hour",
+        "pay_type": "Hourly",
+        "hours_per_week": "16 - 20 hrs/week",
+        "vacancies": 4,
+        "slots_total": 4,
+        "slots_filled": 2,
+        "deadline": "2026-12-18",
+        "status": "active",
+        "image": "assets/img/jobs/job-20.jpg",
+        "tags": [
+            "Customer Care",
+            "Tech Support",
+            "High Pay",
+            "Night Shift Allowed"
+        ],
+        "badges": [
+            "Industry Partner",
+            "High Pay",
+            "Flexible Shifts"
+        ],
+        "description": "Answer technical support tickets via email, web chat, and voice calls for international software users. Offers flexible 4-hour micro-shifts tailored around college class schedules.",
+        "responsibilities": [
+            "Handle tier-1 software troubleshooting via omnichannel ticketing system (Zendesk).",
+            "Guide users through password resets, configuration settings, and billing queries.",
+            "Document issue resolution steps and maintain internal knowledge base articles.",
+            "Adhere to quality assurance standards and customer satisfaction targets."
+        ],
+        "qualifications": [
+            "2nd to 4th year student with excellent English verbal and written communication.",
+            "Fast typing speed (at least 40 WPM) and comfortable with computer multitasking.",
+            "Willing to undergo 2 weeks of paid virtual onboarding."
+        ],
+        "created_at": "2026-09-10 11:00:00",
+        "updated_at": "2026-09-25 18:19:55"
     }
 ]

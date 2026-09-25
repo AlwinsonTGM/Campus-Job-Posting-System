@@ -83,7 +83,7 @@ function switch_system_data_mode(string $mode, string $switched_by = 'User'): bo
 
     // 1. Sync seed files to data/
     $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
-                   'profile_requests.json', 'updates.json', 'devblogs.json'];
+                   'profile_requests.json', 'updates.json', 'devblogs.json', 'notifications.json'];
 
     foreach ($data_files as $file) {
         $src = $seed_dir . '/' . $file;
@@ -422,7 +422,7 @@ function get_user_notifications(int|string $user_id, int $limit = 30, bool $unre
         if ($unread_only) {
             $sql .= " AND `is_read` = 0";
         }
-        $sql .= " ORDER BY `created_at` DESC LIMIT :limit";
+        $sql .= " ORDER BY `created_at` DESC, `id` DESC LIMIT :limit";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':user_id', (int)$user_id, PDO::PARAM_INT);
         $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);

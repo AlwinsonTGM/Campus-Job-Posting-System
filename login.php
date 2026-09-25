@@ -35,7 +35,7 @@ if (isset($_GET['reset'])) {
     $demo_dir = DATA_DIR . '/seeds/demo';
     if (is_dir($demo_dir)) {
         $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
-                       'profile_requests.json', 'updates.json', 'devblogs.json'];
+                       'profile_requests.json', 'updates.json', 'devblogs.json', 'notifications.json'];
         foreach ($data_files as $file) {
             $src = $demo_dir . '/' . $file;
             $dst = DATA_DIR . '/' . $file;

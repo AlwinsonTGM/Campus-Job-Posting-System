@@ -58,6 +58,35 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 </div>
 
+                <!-- Department Analytics: Quota narrative (read-only explainer, no-print) -->
+                <div class="no-print">
+                    <?php $quota_notes = $laya_narrative['notes'] ?? []; ?>
+                    <?php if (!empty($quota_notes)): ?>
+                        <div class="card-paper p-4 mb-4 border border-line">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-bar-chart-line text-accent"></i> Department Analytics — Funnel & Quota Breakdown
+                                </span>
+                                <span class="small text-muted-custom">Funnel: <?= (int)($laya_narrative['funnel']['applied'] ?? 0) ?> applied &bull; <?= (int)($laya_narrative['funnel']['interview_rate'] ?? 0) ?>% to interview &bull; <?= (int)($laya_narrative['funnel']['hire_rate'] ?? 0) ?>% hired</span>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <?php foreach ($quota_notes as $note): ?>
+                                    <div class="p-2 bg-cream rounded-3 border border-line small">
+                                        <strong class="text-ink"><?= htmlspecialchars($note['dept'] ?? '') ?></strong>
+                                        <span class="text-muted-custom"> — <?= (int)($note['fill_pct'] ?? 0) ?>% quota filled, <?= (int)($note['conversion'] ?? 0) ?>% applicant conversion</span>
+                                        <?php foreach (($note['flags'] ?? []) as $flag): ?>
+                                            <span class="text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-dot"></i><?= htmlspecialchars($flag) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <p class="small text-muted-custom mt-2 mb-0" style="font-size: 11px;">
+                                <i class="bi bi-info-circle me-1"></i> Advisory insights only — quotas and postings are unchanged; all decisions stay with the administrator.
+                            </p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
                 <!-- 3 Pure-CSS Bar Chart Blocks per Archetype G Spec -->
                 <div class="row g-4 mb-5">
                     <!-- Chart 1: Most In-Demand Categories -->

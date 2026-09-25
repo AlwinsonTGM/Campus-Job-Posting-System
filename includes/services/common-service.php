@@ -96,6 +96,9 @@ function hydrate_application(mixed $row): ?array {
     } elseif (!isset($row['availability']) || !is_array($row['availability'])) {
         $row['availability'] = [];
     }
+    if (function_exists('normalize_availability_slots')) {
+        $row['availability'] = normalize_availability_slots($row['availability']);
+    }
 
     $status_map = [
         'pending'             => 'Pending Review',

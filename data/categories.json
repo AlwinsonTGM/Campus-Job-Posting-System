@@ -9,13 +9,13 @@
         "badge_tag": "Most In-Demand",
         "badge_icon": "bi-fire",
         "job_count": 4,
-        "hourly_range": "₱85.00 / hr",
+        "hourly_range": "₱85 - ₱120 / hr",
         "image": "assets/img/categories/cat-tech.jpg",
         "popular_roles": [
             "Computer Lab Assistant",
             "Network Technician",
             "MIS Helpdesk",
-            "Workstation Support"
+            "Frontend Assistant"
         ]
     },
     {
@@ -27,7 +27,7 @@
         "theme": "kld-green",
         "badge_tag": "Quiet Study Hub",
         "badge_icon": "bi-bookmark-star",
-        "job_count": 3,
+        "job_count": 1,
         "hourly_range": "₱80.00 / hr",
         "image": "assets/img/categories/cat-library.jpg",
         "popular_roles": [
@@ -45,13 +45,15 @@
         "theme": "kld-green",
         "badge_tag": "Campus Admin",
         "badge_icon": "bi-building-check",
-        "job_count": 5,
-        "hourly_range": "₱80.00 / hr",
+        "job_count": 6,
+        "hourly_range": "₱80 - ₱95 / hr",
         "image": "assets/img/categories/cat-admin.jpg",
         "popular_roles": [
             "Records Clerk",
             "Data Encoder",
-            "Frontline Desk Aid"
+            "Frontline Desk Aid",
+            "Barista",
+            "Bookstore Aide"
         ]
     },
     {
@@ -63,13 +65,14 @@
         "theme": "kld-green",
         "badge_tag": "Science & Health",
         "badge_icon": "bi-moisture",
-        "job_count": 2,
+        "job_count": 3,
         "hourly_range": "₱85.00 / hr",
         "image": "assets/img/categories/cat-lab.jpg",
         "popular_roles": [
             "Medical Lab Aid",
+            "Nursing Sim Lab Aide",
             "Apparatus Prep",
-            "Inventory Custodian"
+            "Clinic Support"
         ]
     },
     {
@@ -86,7 +89,7 @@
         "image": "assets/img/categories/cat-tutor.jpg",
         "popular_roles": [
             "Math & Calc Tutor",
-            "Programming Mentor",
+            "DSA Programming Mentor",
             "Peer Coach"
         ]
     },
@@ -99,13 +102,13 @@
         "theme": "kld-green",
         "badge_tag": "Campus Athletics",
         "badge_icon": "bi-trophy-fill",
-        "job_count": 2,
+        "job_count": 3,
         "hourly_range": "₱85.00 / hr",
         "image": "assets/img/categories/cat-sports.jpg",
         "popular_roles": [
             "Equipment Custodian",
             "Tournament Scorekeeper",
-            "Court Monitor"
+            "Field Marshal"
         ]
     }
 ]

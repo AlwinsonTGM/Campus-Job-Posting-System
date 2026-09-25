@@ -57,6 +57,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = 'Evaluate: ' . $target_app['student_name'];
+
+// Laya Decision Engine Advisory Guidance (Non-automated, purely decision-support for human supervisors)
+$force_guidance_refresh = isset($_GET['refresh_guidance']);
+$laya_available = laya_is_available();
+$laya_guidance = null;
+if ($laya_available && $job) {
+    $laya_guidance = laya_get_applicant_guidance($target_app, $job, $force_guidance_refresh);
+}
+
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-review-app-view.php';
+
 

@@ -75,6 +75,44 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 <?php endif; ?>
 
+                <!-- Verification triage: document completeness summary -->
+                <?php $triage_items = $laya_triage['items'] ?? []; ?>
+                <?php if (!empty($triage_items)): ?>
+                    <div class="card-paper p-4 mb-4 border border-line">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-clipboard-check text-accent"></i> Verification Queue Triage
+                            </span>
+                            <span class="small text-muted-custom"><?= htmlspecialchars($laya_triage['summary'] ?? '') ?></span>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <?php foreach ($triage_items as $item): ?>
+                                <?php
+                                $tier_badge = ($item['tier'] ?? '') === 'ready' ? 'bg-success-subtle text-success border-success-subtle' : (((($item['tier'] ?? '') === 'blocked') ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-warning-subtle text-warning border-warning-subtle'));
+                                ?>
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 p-2 bg-cream rounded-3 border border-line small">
+                                    <div class="min-w-0">
+                                        <span class="badge <?= $tier_badge ?> border me-1" style="font-size: 10px;"><?= (int)($item['score'] ?? 0) ?>% <?= htmlspecialchars(ucfirst($item['tier'] ?? 'review')) ?></span>
+                                        <strong class="text-ink"><?= htmlspecialchars($item['name'] ?? 'Item') ?></strong>
+                                        <span class="text-muted-custom"> — <?= htmlspecialchars($item['kind_label'] ?? '') ?></span>
+                                        <?php foreach (($item['flags'] ?? []) as $flag): ?>
+                                            <span class="text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-dot"></i><?= htmlspecialchars($flag) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2 flex-shrink-0">
+                                        <?php foreach (($item['choices'] ?? []) as $choice): ?>
+                                            <a href="<?= htmlspecialchars($choice['href'] ?? 'users.php') ?>" class="btn-pill-outline btn-pill-sm"><?= htmlspecialchars($choice['label'] ?? 'Review') ?></a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <p class="small text-muted-custom mt-2 mb-0" style="font-size: 11px;">
+                            <i class="bi bi-info-circle me-1"></i> Advisory insights only — the administrator maintains full discretion over approvals and rejections.
+                        </p>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Student Profile Verification Requests Queue -->
                 <?php if (!empty($all_profile_requests)): ?>
                     <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise" id="student-requests-section">
@@ -337,7 +375,29 @@ require_once __DIR__ . '/../header.php';
             $curr = $req['current_profile'] ?? [];
             $next = $req['requested_profile'] ?? [];
             $proof = $req['proof_file'] ?? '';
-            $has_proof = !empty($proof) && file_exists(__DIR__ . '/../' . $proof);
+            $proof_disk_path = dirname(__DIR__, 2) . '/' . ltrim((string)$proof, '/');
+            $has_proof = !empty($proof) && file_exists($proof_disk_path);
+
+            // Establish full baseline student profile from live user record
+            $live_user = get_user_by_id($req['user_id'] ?? 0) ?: [];
+            $base_profile = [
+                'name'       => $live_user['name'] ?? ($req['user_name'] ?? ''),
+                'email'      => $live_user['email'] ?? ($req['user_email'] ?? ''),
+                'department' => $live_user['department'] ?? '',
+                'course'     => $live_user['course'] ?? '',
+                'year_level' => $live_user['year_level'] ?? '',
+                'sex'        => $live_user['sex'] ?? 'Male',
+                'birthdate'  => $live_user['birthdate'] ?? '',
+                'age'        => (string)($live_user['age'] ?? ''),
+            ];
+
+            $clean_curr = is_array($curr) ? array_filter($curr, fn($v) => !empty(trim((string)$v))) : [];
+            $clean_next = is_array($next) ? array_filter($next, fn($v) => !empty(trim((string)$v))) : [];
+
+            // Merge so full student identity is always visible
+            $curr = array_merge($base_profile, $clean_curr);
+            $next = array_merge($curr, $clean_next);
+            $student_id_disp = !empty($req['student_id']) ? $req['student_id'] : ($live_user['student_id'] ?? 'Student');
         ?>
         <div class="modal fade" id="inspectProfileReqModal<?= $req['id'] ?>" tabindex="-1" aria-labelledby="inspectProfileReqModalLabel<?= $req['id'] ?>" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -352,7 +412,7 @@ require_once __DIR__ . '/../header.php';
                                     Student Profile Update Request #REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?>
                                 </h5>
                                 <span class="small text-muted-custom">
-                                    <?= htmlspecialchars($req['user_name']) ?> (<?= htmlspecialchars($req['student_id'] ?? '') ?>) &bull; <?= format_display_date($req['created_at'], true) ?>
+                                    <?= htmlspecialchars($req['user_name']) ?> (<?= htmlspecialchars($student_id_disp) ?>) &bull; <?= format_display_date($req['created_at'], true) ?>
                                 </span>
                             </div>
                         </div>
@@ -367,8 +427,13 @@ require_once __DIR__ . '/../header.php';
                                     <i class="bi bi-arrow-left-right text-accent me-2"></i> Current vs. Requested Changes (Diff Comparison)
                                 </h4>
 
-                                <div class="table-responsive mb-3">
-                                    <table class="table-paper mb-0 small">
+                                <div class="mb-3">
+                                    <table class="table-paper mb-0 small w-100" style="table-layout: fixed;">
+                                        <colgroup>
+                                            <col style="width: 38%;">
+                                            <col style="width: 31%;">
+                                            <col style="width: 31%;">
+                                        </colgroup>
                                         <thead>
                                             <tr>
                                                 <th>Profile Field</th>
@@ -388,6 +453,11 @@ require_once __DIR__ . '/../header.php';
                                                 'birthdate' => 'Date of Birth',
                                                 'age' => 'Derived Age'
                                             ];
+                                            foreach (array_keys($clean_next) as $extra_k) {
+                                                if (!isset($fields_to_compare[$extra_k])) {
+                                                    $fields_to_compare[$extra_k] = ucwords(str_replace('_', ' ', $extra_k));
+                                                }
+                                            }
                                             foreach ($fields_to_compare as $f_key => $f_label):
                                                 $curr_val = (string)($curr[$f_key] ?? '');
                                                 $next_val = (string)($next[$f_key] ?? '');
@@ -396,16 +466,16 @@ require_once __DIR__ . '/../header.php';
                                                 $next_disp = ($f_key === 'birthdate' && $next_val && $next_val !== '—') ? format_display_date($next_val) : ($next_val ?: '—');
                                             ?>
                                                 <tr class="<?= $is_changed ? 'bg-cream' : '' ?>">
-                                                    <td class="fw-bold text-ink">
+                                                    <td class="fw-bold text-ink" style="word-break: break-word; overflow-wrap: break-word;">
                                                         <?= $f_label ?>
                                                         <?php if ($is_changed): ?>
                                                             <span class="badge bg-warning text-dark ms-1" style="font-size: 9px;">MODIFIED</span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td class="text-muted-custom">
+                                                    <td class="text-muted-custom" style="word-break: break-word; overflow-wrap: break-word;">
                                                         <?= htmlspecialchars($curr_disp) ?>
                                                     </td>
-                                                    <td class="<?= $is_changed ? 'fw-bold text-accent' : 'text-ink' ?>">
+                                                    <td class="<?= $is_changed ? 'fw-bold text-accent' : 'text-ink' ?>" style="word-break: break-word; overflow-wrap: break-word;">
                                                         <?= htmlspecialchars($next_disp) ?>
                                                     </td>
                                                 </tr>
@@ -495,9 +565,15 @@ require_once __DIR__ . '/../header.php';
                                 <?php else: ?>
                                     <div class="p-3 bg-cream rounded-4 border border-line text-center">
                                         <?php if ($req_status === 'approved'): ?>
-                                            <span class="badge-status--accepted fs-6 d-inline-block py-2 px-3"><i class="bi bi-check-circle me-1"></i> Request Approved &amp; Record Updated</span>
+                                            <div class="badge-status--accepted d-inline-flex align-items-center gap-1 py-2 px-3 rounded-3" style="font-size: 0.85rem; white-space: normal; text-align: center; line-height: 1.3;">
+                                                <i class="bi bi-check-circle flex-shrink-0"></i>
+                                                <span>Request Approved &amp; Record Updated</span>
+                                            </div>
                                         <?php else: ?>
-                                            <span class="badge-status--declined fs-6 d-inline-block py-2 px-3"><i class="bi bi-x-circle me-1"></i> Request Declined</span>
+                                            <div class="badge-status--declined d-inline-flex align-items-center gap-1 py-2 px-3 rounded-3" style="font-size: 0.85rem; white-space: normal; text-align: center; line-height: 1.3;">
+                                                <i class="bi bi-x-circle flex-shrink-0"></i>
+                                                <span>Request Declined</span>
+                                            </div>
                                         <?php endif; ?>
                                         <div class="small text-muted-custom mt-2">Resolved on <?= format_display_date($req['resolved_at'] ?? $req['created_at'], true) ?></div>
                                     </div>

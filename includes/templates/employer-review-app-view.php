@@ -83,7 +83,19 @@ require_once __DIR__ . '/../header.php';
                                 <h3 class="card-paper-title fs-5 mb-0">
                                     <i class="bi bi-calendar-week text-accent me-2"></i> 3. Candidate Shift Availability
                                 </h3>
-                                <span class="chip" style="font-size: 10px;">&le; 20 hrs/week</span>
+                                <?php
+                                    $app_norm_slots = function_exists('normalize_availability_slots') 
+                                        ? normalize_availability_slots($target_app['availability'] ?? []) 
+                                        : ($target_app['availability'] ?? []);
+                                    $slot_count = count($app_norm_slots);
+                                ?>
+                                <?php if ($slot_count > 0): ?>
+                                    <span class="chip" style="font-size: 10px;"><?= $slot_count ?> slot<?= $slot_count > 1 ? 's' : '' ?> (~<?= $slot_count * 4 ?> hrs/wk)</span>
+                                <?php else: ?>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 10px;">
+                                        <i class="bi bi-exclamation-triangle-fill"></i> 0 Slots Declared
+                                    </span>
+                                <?php endif; ?>
                             </div>
                             <p class="small text-muted-custom mb-3">
                                 Periods when the student is free from academic lectures and can perform on-campus assistantship duty:
@@ -137,9 +149,170 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             </div>
 
+                            <!-- Supervisor Advisory Guide (Laya System 1 Engine) -->
+                            <div class="p-3 bg-cream rounded-4 border border-line mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-compass text-accent"></i> Supervisor Advisory Dossier
+                                    </span>
+                                    <?php if (!empty($laya_available)): ?>
+                                        <div class="d-inline-flex align-items-center gap-2">
+                                            <button type="button" class="btn btn-link p-0 text-muted-custom text-decoration-none d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#layaMetricGuideModal" title="Explain Laya Percentages & Confidence" style="font-size: 10px;">
+                                                <i class="bi bi-question-circle"></i> Metric Guide
+                                            </button>
+                                            <?php if (!empty($laya_guidance['evaluated_at'])): ?>
+                                                <span class="text-muted-custom" style="font-size: 10px;" title="Timestamp of last neural evaluation">Live: <?= htmlspecialchars($laya_guidance['evaluated_at']) ?></span>
+                                            <?php endif; ?>
+                                            <a href="review-app.php?id=<?= (int)$target_app['id'] ?>&refresh_guidance=1" class="text-muted-custom small text-decoration-none d-inline-flex align-items-center gap-1 border border-line rounded px-1" title="Bust cache and re-query Laya ModernBERT neural daemon" style="font-size: 10px;">
+                                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <?php if (!empty($laya_guidance)): ?>
+                                    <?php
+                                        $sched_status = $laya_guidance['schedule_assessment']['status'] ?? 'success';
+                                        $sched_text_class = ($sched_status === 'danger') ? 'text-danger' : (($sched_status === 'warning') ? 'text-warning' : 'text-success');
+                                        $sched_icon = ($sched_status === 'danger') ? 'bi-exclamation-triangle-fill text-danger' : (($sched_status === 'warning') ? 'bi-exclamation-circle text-warning' : 'bi-calendar-check text-success');
+                                        $sched_conf = round(($laya_guidance['schedule_assessment']['confidence'] ?? 0.95) * 100);
+
+                                        $prog_conf = round(($laya_guidance['qualification_assessment']['confidence'] ?? 0.5) * 100);
+                                        $prog_score = round((float)($laya_guidance['qualification_assessment']['score'] ?? 2.0), 1);
+
+                                        $skills_text = $laya_guidance['skills_assessment']['summary'] ?? 'Assessed';
+                                        $skills_score = round((float)($laya_guidance['skills_assessment']['score'] ?? 1.5), 1);
+                                        $skills_conf = round(($laya_guidance['skills_assessment']['confidence'] ?? 0.5) * 100);
+
+                                        $readiness = $laya_guidance['readiness_assessment'] ?? [];
+                                        $readiness_prob = round(($readiness['probability'] ?? 0.5) * 100);
+
+                                        $workload = $laya_guidance['workload_risk'] ?? [];
+                                        $workload_prob = round(($workload['probability'] ?? 0.3) * 100);
+
+                                        $intent_prob = round(($laya_guidance['intent_assessment']['probability'] ?? 0.5) * 100);
+                                        $spec_conf = round(($laya_guidance['specificity_assessment']['confidence'] ?? 0.5) * 100);
+                                    ?>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-6">
+                                            <div class="p-2 bg-white rounded-3 border border-line h-100 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="text-muted-custom" style="font-size: 10px;">Schedule Fit</span>
+                                                        <span class="badge bg-light text-muted-custom border" style="font-size: 9px; padding: 2px 4px;" title="Rule-based certainty against weekly 20-hour academic limit"><?= $sched_conf ?>% Match</span>
+                                                    </div>
+                                                    <strong class="<?= $sched_text_class ?> d-block" style="font-size: 11.5px; line-height: 1.2;">
+                                                        <i class="bi <?= $sched_icon ?> me-1"></i>
+                                                        <?= htmlspecialchars($laya_guidance['schedule_assessment']['summary'] ?? 'Assessed') ?>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="p-2 bg-white rounded-3 border border-line h-100 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="text-muted-custom" style="font-size: 10px;">Program Fit</span>
+                                                        <span class="badge bg-light text-muted-custom border" style="font-size: 9px; padding: 2px 4px;" title="ModernBERT confidence in academic qualification alignment"><?= $prog_conf ?>% Confidence</span>
+                                                    </div>
+                                                    <strong class="text-ink d-block" style="font-size: 11.5px; line-height: 1.2;">
+                                                        <i class="bi bi-mortarboard text-primary me-1"></i>
+                                                        <?= htmlspecialchars($laya_guidance['qualification_assessment']['summary'] ?? 'Evaluated') ?>
+                                                    </strong>
+                                                </div>
+                                                <span class="text-muted-custom" style="font-size: 9.5px; margin-top: 2px;">Score: <?= $prog_score ?> / 3.0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-6">
+                                            <div class="p-2 bg-white rounded-3 border border-line h-100 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="text-muted-custom" style="font-size: 10px;">Skills Match</span>
+                                                        <span class="badge bg-light text-muted-custom border" style="font-size: 9px; padding: 2px 4px;" title="ModernBERT confidence in practical skills alignment"><?= $skills_conf ?>% Confidence</span>
+                                                    </div>
+                                                    <strong class="text-ink d-block" style="font-size: 11.5px; line-height: 1.2;">
+                                                        <i class="bi bi-cpu text-accent me-1"></i>
+                                                        <?= htmlspecialchars($skills_text) ?>
+                                                    </strong>
+                                                </div>
+                                                <span class="text-muted-custom" style="font-size: 9.5px; margin-top: 2px;">Score: <?= $skills_score ?> / 3.0</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="p-2 bg-white rounded-3 border border-line h-100 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="text-muted-custom" style="font-size: 10px;">Role Readiness</span>
+                                                        <span class="badge <?= !empty($readiness['ready']) ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning' ?> border" style="font-size: 9px; padding: 2px 4px;" title="Calibrated model confidence in candidate readiness"><?= $readiness_prob ?>% Confidence</span>
+                                                    </div>
+                                                    <strong class="<?= (!empty($readiness['ready'])) ? 'text-success' : 'text-muted-custom' ?> d-block" style="font-size: 11.5px; line-height: 1.2;">
+                                                        <i class="bi <?= (!empty($readiness['ready'])) ? 'bi-check-circle-fill text-success' : 'bi-hourglass-split text-warning' ?> me-1"></i>
+                                                        <?= htmlspecialchars($readiness['label'] ?? 'Evaluated') ?>
+                                                    </strong>
+                                                </div>
+                                                <span class="text-muted-custom" style="font-size: 9.5px; margin-top: 2px;">Model readiness confidence</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-2 bg-white rounded-3 border border-line mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="text-muted-custom" style="font-size: 10px;">Academic Overload Risk</span>
+                                            <span class="badge <?= !empty($workload['at_risk']) ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' ?> border" style="font-size: 9px; padding: 2px 4px;" title="Estimated risk of academic burnout / schedule strain. Under 40% is Balanced"><?= $workload_prob ?>% Risk</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong class="<?= (!empty($workload['at_risk'])) ? 'text-warning' : 'text-success' ?>" style="font-size: 11.5px;">
+                                                <i class="bi <?= (!empty($workload['at_risk'])) ? 'bi-exclamation-triangle-fill text-warning' : 'bi-shield-check text-success' ?> me-1"></i>
+                                                <?= htmlspecialchars($workload['label'] ?? 'Balanced') ?>
+                                            </strong>
+                                            <span class="text-muted-custom" style="font-size: 10px;">Coursework vs duty load</span>
+                                        </div>
+                                    </div>
+
+                                    <?php if (!empty($laya_guidance['schedule_assessment']['warning'])): ?>
+                                        <div class="alert <?= $sched_status === 'danger' ? 'alert-danger' : 'alert-warning' ?> py-1 px-2 mb-2 small rounded-3 border-0 d-flex align-items-center gap-2" style="font-size: 11px;">
+                                            <i class="bi <?= $sched_status === 'danger' ? 'bi-exclamation-octagon-fill text-danger' : 'bi-info-circle-fill text-warning' ?> flex-shrink-0"></i>
+                                            <span><?= htmlspecialchars($laya_guidance['schedule_assessment']['warning']) ?></span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="p-2 bg-white rounded-3 border border-line mb-2" style="font-size: 11px;">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="fw-semibold text-ink">
+                                                <i class="bi bi-chat-left-dots text-accent me-1"></i> Suggested Interview Probe:
+                                            </span>
+                                            <button type="button" class="btn btn-link p-0 text-accent text-decoration-none" style="font-size: 10px;" onclick="copyLayaProbeToNotes(<?= htmlspecialchars(json_encode($laya_guidance['suggested_interview_probe']['guidance_tip'] ?? ''), ENT_QUOTES, 'UTF-8') ?>)">
+                                                <i class="bi bi-clipboard-plus"></i> Use in Notes
+                                            </button>
+                                        </div>
+                                        <div class="text-muted-custom">
+                                            <strong><?= htmlspecialchars($laya_guidance['suggested_interview_probe']['topic'] ?? 'Topic') ?>:</strong>
+                                            <?= htmlspecialchars($laya_guidance['suggested_interview_probe']['guidance_tip'] ?? '') ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1" style="font-size: 10px;">
+                                        <span class="text-muted-custom">
+                                            <i class="bi bi-info-circle me-1"></i> Transparent AI: ModernBERT calibrated outputs.
+                                        </span>
+                                        <span class="text-muted-custom">
+                                            Sincerity: <strong><?= htmlspecialchars($laya_guidance['intent_assessment']['sincerity_rating'] ?? 'Reviewed') ?></strong> (<span class="badge bg-light text-muted-custom border" style="font-size: 9px; padding: 1px 3px;"><?= $intent_prob ?>% Confidence</span>) &bull; Specificity: <strong><?= htmlspecialchars($laya_guidance['specificity_assessment']['summary'] ?? '') ?></strong> (<span class="badge bg-light text-muted-custom border" style="font-size: 9px; padding: 1px 3px;"><?= $spec_conf ?>% Confidence</span>)
+                                        </span>
+                                    </div>
+                                <?php else: ?>
+                                    <p class="small text-muted-custom mb-0" style="font-size: 11px;">
+                                        <i class="bi bi-shield me-1"></i> Standard manual evaluation mode. The supervisor maintains full discretion over candidate selection.
+                                    </p>
+                                <?php endif; ?>
+                            </div>
+
                             <!-- Status Transition Form -->
                             <form action="review-app.php?id=<?= $target_app['id'] ?>" method="POST" class="form-paper">
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+
                                 
                                 <div class="mb-3">
                                     <label class="form-label" for="eval-status">Update Candidate Stage <span class="text-danger">*</span></label>
@@ -270,6 +443,51 @@ require_once __DIR__ . '/../header.php';
             </div>
         </div>
 
+        <!-- Laya Metric Guide Modal -->
+        <div class="modal fade" id="layaMetricGuideModal" tabindex="-1" aria-labelledby="layaMetricGuideModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 border border-line shadow-sm">
+                    <div class="modal-header border-bottom border-line py-3 px-4">
+                        <h5 class="modal-title fs-6 fw-bold text-ink d-flex align-items-center gap-2" id="layaMetricGuideModalLabel">
+                            <i class="bi bi-compass text-accent"></i> Understanding Laya Advisory Metrics
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4 small text-muted-custom">
+                        <p class="mb-3 text-ink">
+                            All scores are computed by a fine-tuned <strong>ModernBERT neural engine</strong>. ModernBERT evaluates semantic context without keyword matching. Percentages are calibrated to assist—never replace—your hiring discretion:
+                        </p>
+                        <div class="d-flex flex-column gap-2 mb-3">
+                            <div class="p-3 bg-cream rounded-3 border border-line">
+                                <strong class="text-ink d-block mb-1">
+                                    <i class="bi bi-shield-check text-primary me-1"></i> % Confidence (Certainty Rate)
+                                </strong>
+                                <span>Reflects statistical certainty based on explicit textual evidence in the student's degree and cover letter. Scores between <strong>35%–60%</strong> represent realistic, calibrated evidence (not arbitrary 99% hype).</span>
+                            </div>
+                            <div class="p-3 bg-cream rounded-3 border border-line">
+                                <strong class="text-ink d-block mb-1">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> % Risk (Academic Overload)
+                                </strong>
+                                <span>Estimates the likelihood that this assistantship's hours combined with academic coursework will cause schedule strain. <strong>Under 40%</strong> is a safe, balanced workload.</span>
+                            </div>
+                            <div class="p-3 bg-cream rounded-3 border border-line">
+                                <strong class="text-ink d-block mb-1">
+                                    <i class="bi bi-bar-chart-fill text-accent me-1"></i> Rubric Scores (0.0 to 3.0)
+                                </strong>
+                                <span>Academic rubric scale: <strong>0</strong> = Minimal evidence, <strong>1</strong> = Baseline fit, <strong>2</strong> = Solid match, <strong>3</strong> = Exemplary alignment.</span>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted-custom" style="font-size: 11px;">
+                            <i class="bi bi-info-circle me-1"></i> Tip: Use the <strong>Suggested Interview Probe</strong> during the interview to verify areas where the student provided brief or partial information.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-top border-line py-2 px-4">
+                        <button type="button" class="btn btn-sm btn-dark rounded-pill px-3" data-bs-dismiss="modal">Close Guide</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
 </div>
@@ -297,7 +515,21 @@ function toggleInterviewFields(status) {
     }
 }
 
+function copyLayaProbeToNotes(text) {
+    if (!text) return;
+    const notes = document.getElementById('supervisor_notes');
+    if (!notes) return;
+    const prefix = "Suggested Interview Discussion Probe: ";
+    if (notes.value.trim() === '') {
+        notes.value = prefix + text;
+    } else {
+        notes.value = notes.value.trim() + "\n\n" + prefix + text;
+    }
+    notes.focus();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+
     const select = document.getElementById('eval-status');
     if (select) {
         toggleInterviewFields(select.value);

@@ -28,6 +28,14 @@ if ($user) {
     }
 }
 
+// Phase 1-A: Laya student-fit advisory (read-only, never gates the Apply CTA).
+// Guests see a neutral signed-out state; closed/expired/filled jobs hide the panel in the view.
+// Applicant demand is counted live so competition reflects real contention, not fill state.
+$fit_student = $user ?? ['id' => null, 'availability' => []];
+$job_applicant_count = count(get_applications(null, (int)($job['id'] ?? 0)));
+$laya_student_fit = get_student_schedule_fit($fit_student, $job, $job_applicant_count);
+$laya_ml_fit = (!empty($user['id']) && !empty($user['course'])) ? laya_assess_student_fit($user, $job) : null;
+
 $is_partner = ($job['employer_type'] ?? '') === 'approved_partner';
 $org_name = $job['organization_name'] ?? ($job['department'] ?? 'Campus Organization');
 $jtype = $job['job_type'] ?? 'Student Assistant';

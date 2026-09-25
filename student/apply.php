@@ -125,6 +125,7 @@ $default_availability = (isset($_POST['availability']) && is_array($_POST['avail
 
 $page_title = 'Apply for ' . $job['title'];
 
+
 // Preload view data — no service/DB calls in the template
 $form = $_POST;
 $query = $_GET;

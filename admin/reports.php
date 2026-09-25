@@ -55,6 +55,10 @@ foreach ($all_apps as $a) {
         $departments[$dept_name]['hired']++;
     }
 }
+
+// Phase 3-B: Laya quota narrative (read-only explainer over existing rollups;
+// never changes quotas or postings — admin actions stay the sole gate).
+$laya_narrative = laya_quota_narrative($departments, $total_jobs, $total_apps, $total_hired, $total_interviews);
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-reports-view.php';
 

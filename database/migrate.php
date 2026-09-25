@@ -304,11 +304,11 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 ':deadline'          => $deadline,
                 ':status'            => $j['status'] ?? 'active',
                 ':image'             => $j['image'] ?? null,
-                ':tags'              => isset($j['tags']) ? json_encode($j['tags']) : null,
-                ':badges'            => isset($j['badges']) ? json_encode($j['badges']) : null,
+                ':tags'              => isset($j['tags']) ? (is_array($j['tags']) ? json_encode($j['tags']) : $j['tags']) : null,
+                ':badges'            => isset($j['badges']) ? (is_array($j['badges']) ? json_encode($j['badges']) : $j['badges']) : null,
                 ':description'       => $j['description'] ?? '',
-                ':responsibilities'  => isset($j['responsibilities']) ? json_encode($j['responsibilities']) : null,
-                ':qualifications'    => isset($j['qualifications']) ? json_encode($j['qualifications']) : null,
+                ':responsibilities'  => isset($j['responsibilities']) ? (is_array($j['responsibilities']) ? json_encode($j['responsibilities']) : $j['responsibilities']) : null,
+                ':qualifications'    => isset($j['qualifications']) ? (is_array($j['qualifications']) ? json_encode($j['qualifications']) : $j['qualifications']) : null,
                 ':created_at'        => $created_at
             ]);
             $count_jobs++;
@@ -494,6 +494,44 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $count_blogs++;
         }
         $log_fn("Imported $count_blogs devblog sprints.", "success");
+
+        // 9. Migrate Notifications
+        $log_fn("Migrating notifications...");
+        $notifications = $read_json('notifications.json');
+        if (!empty($notifications)) {
+            $stmt_notif = $pdo->prepare("
+                INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `link`, `icon`, `badge_color`, `is_read`, `created_at`)
+                VALUES (:id, :user_id, :type, :title, :message, :link, :icon, :badge_color, :is_read, :created_at)
+                ON DUPLICATE KEY UPDATE
+                    `user_id` = VALUES(`user_id`),
+                    `type` = VALUES(`type`),
+                    `title` = VALUES(`title`),
+                    `message` = VALUES(`message`),
+                    `link` = VALUES(`link`),
+                    `icon` = VALUES(`icon`),
+                    `badge_color` = VALUES(`badge_color`),
+                    `is_read` = VALUES(`is_read`),
+                    `created_at` = VALUES(`created_at`)
+            ");
+            $count_notifs = 0;
+            foreach ($notifications as $n) {
+                $stmt_notif->execute([
+                    ':id'          => $n['id'],
+                    ':user_id'     => (int)$n['user_id'],
+                    ':type'        => $n['type'] ?? 'system',
+                    ':title'       => $n['title'] ?? 'Notification',
+                    ':message'     => $n['message'] ?? '',
+                    ':link'        => $n['link'] ?? null,
+                    ':icon'        => $n['icon'] ?? 'bi-bell',
+                    ':badge_color' => $n['badge_color'] ?? 'primary',
+                    ':is_read'     => !empty($n['is_read']) ? 1 : 0,
+                    ':created_at'  => $n['created_at'] ?? date('Y-m-d H:i:s')
+                ]);
+                $count_notifs++;
+            }
+            $log_fn("Imported $count_notifs notifications.", "success");
+        }
+
         $pdo->commit();
         $log_fn("ALL DATA MIGRATED TO MYSQL SUCCESSFULLY!", "success");
 

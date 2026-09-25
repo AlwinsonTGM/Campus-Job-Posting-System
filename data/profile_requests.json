@@ -1,34 +1,157 @@
 [
     {
         "id": 1,
-        "user_id": 1,
-        "user_name": "Juan Dela Cruz",
-        "user_email": "student@kld.edu.ph",
-        "student_id": "2024-00123",
+        "user_id": 13,
         "current_profile": {
-            "name": "Juan Dela Cruz",
+            "name": "Camille Del Rosario",
+            "email": "camille.delrosario@kld.edu.ph",
+            "department": "Institute of Business and Public Governance",
+            "course": "BS Accountancy (BSA)",
+            "year_level": "2nd Year",
+            "sex": "Female",
+            "birthdate": "2004-06-18",
+            "age": 22
+        },
+        "requested_profile": {
+            "name": "Camille Del Rosario",
+            "email": "camille.delrosario@kld.edu.ph",
+            "department": "Institute of Business and Public Governance",
+            "course": "BS Accountancy (BSA)",
+            "year_level": "3rd Year",
+            "sex": "Female",
+            "birthdate": "2004-06-18",
+            "age": 22
+        },
+        "proof_file": "uploads/proofs/proof_1787818447_8a7d0655.pdf",
+        "reason": "Officially completed 2nd year curriculum; advancing to 3rd Year standing per latest Registrar Evaluation.",
+        "status": "pending",
+        "admin_notes": "",
+        "dismissed_by_user": 0,
+        "created_at": "2026-09-22 09:15:00",
+        "resolved_at": null
+    },
+    {
+        "id": 2,
+        "user_id": 10,
+        "current_profile": {
+            "name": "Alwinson Bustamante",
+            "email": "abustamante@kld.edu.ph",
             "department": "Institute of Computing and Digital Innovation (ICDI)",
             "course": "BS Information Systems (BSIS)",
             "year_level": "2nd Year",
             "sex": "Male",
-            "birthdate": "",
-            "age": 20
+            "birthdate": "2004-11-20",
+            "age": 21
+        },
+        "requested_profile": {
+            "name": "Alwinson T. Bustamante",
+            "email": "abustamante@kld.edu.ph",
+            "department": "Institute of Computing and Digital Innovation (ICDI)",
+            "course": "BS Computer Science (BSCS)",
+            "year_level": "2nd Year",
+            "sex": "Male",
+            "birthdate": "2004-11-20",
+            "age": 21
+        },
+        "proof_file": "uploads/proofs/proof_1789903369_190c86d6.jpg",
+        "reason": "Approved internal program shifting to BSCS and updating legal middle initial per PSA Birth Certificate.",
+        "status": "pending",
+        "admin_notes": "",
+        "dismissed_by_user": 0,
+        "created_at": "2026-09-20 10:30:00",
+        "resolved_at": null
+    },
+    {
+        "id": 3,
+        "user_id": 16,
+        "current_profile": {
+            "name": "Mark Dave Bautista",
+            "email": "mark.bautista@kld.edu.ph",
+            "department": "Institute of Hospitality and Tourism Management",
+            "course": "BS Hospitality Management (BSHM)",
+            "year_level": "1st Year",
+            "sex": "Male",
+            "birthdate": "2005-03-12",
+            "age": 21
+        },
+        "requested_profile": {
+            "name": "Mark Dave Bautista",
+            "email": "mark.bautista@kld.edu.ph",
+            "department": "Institute of Hospitality and Tourism Management",
+            "course": "BS Hospitality Management (BSHM)",
+            "year_level": "2nd Year",
+            "sex": "Male",
+            "birthdate": "2005-03-12",
+            "age": 21
+        },
+        "proof_file": "uploads/proofs/proof_1789904998_523463f5.jpg",
+        "reason": "Cleared first-year prerequisite subjects; advancing to 2nd year status with validated registration slip.",
+        "status": "approved",
+        "admin_notes": "Verified enrollment clearance with College of Hospitality records.",
+        "dismissed_by_user": 0,
+        "created_at": "2026-09-12 14:00:00",
+        "resolved_at": "2026-09-13 11:20:00"
+    },
+    {
+        "id": 4,
+        "user_id": 20,
+        "current_profile": {
+            "name": "Ralph Matthew Santos",
+            "email": "ralph.santos@kld.edu.ph",
+            "department": "Institute of Computing and Digital Innovation (ICDI)",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "1st Year",
+            "sex": "Male",
+            "birthdate": "2005-08-25",
+            "age": 21
+        },
+        "requested_profile": {
+            "name": "Ralph Matthew Santos",
+            "email": "ralph.santos@kld.edu.ph",
+            "department": "Institute of Computing and Digital Innovation (ICDI)",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "2nd Year",
+            "sex": "Male",
+            "birthdate": "2005-08-25",
+            "age": 21
+        },
+        "proof_file": "uploads/proofs/proof_1790331069_26ebdc49.pdf",
+        "reason": "Submitted 1st Semester official Certificate of Registration (COR) validating progression to 2nd Year standing.",
+        "status": "pending",
+        "admin_notes": "",
+        "dismissed_by_user": 0,
+        "created_at": "2026-09-23 09:05:00",
+        "resolved_at": null
+    },
+    {
+        "id": 5,
+        "user_id": 1,
+        "current_profile": {
+            "name": "Juan Dela Cruz",
+            "email": "student@kld.edu.ph",
+            "department": "Institute of Computing and Digital Innovation (ICDI)",
+            "course": "BS Information Technology (BSIT)",
+            "year_level": "2nd Year",
+            "sex": "Male",
+            "birthdate": "2004-05-15",
+            "age": 22
         },
         "requested_profile": {
             "name": "Juan Dela Cruz",
+            "email": "student@kld.edu.ph",
             "department": "Institute of Computing and Digital Innovation (ICDI)",
             "course": "BS Information Systems (BSIS)",
             "year_level": "2nd Year",
             "sex": "Male",
-            "birthdate": "2007-04-10",
-            "age": 19
+            "birthdate": "2004-05-15",
+            "age": 22
         },
-        "proof_file": "uploads\/proofs\/proof_1787818447_8a7d0655.pdf",
-        "reason": "",
-        "status": "pending",
-        "admin_notes": "",
-        "dismissed_by_user": false,
-        "created_at": "2026-08-27 10:14:07",
-        "resolved_at": null
+        "proof_file": "uploads/proofs/proof_1787818447_8a7d0655.pdf",
+        "reason": "Program credit realigned from BSIT to BSIS following Institute Dean endorsement.",
+        "status": "approved",
+        "admin_notes": "Curriculum credit conversion approved and validated in registrar ledger.",
+        "dismissed_by_user": 0,
+        "created_at": "2026-08-25 10:00:00",
+        "resolved_at": "2026-08-26 15:00:00"
     }
 ]

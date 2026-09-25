@@ -137,10 +137,10 @@
                     <div class="notif-icon-circle bg-${badgeColor}-subtle text-${badgeColor} flex-shrink-0">
                         <i class="bi ${iconClass}"></i>
                     </div>
-                    <div class="flex-grow-1 min-w-0">
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                            <h6 class="small fw-bold text-ink mb-0 text-truncate pe-2">${escapeHtml(item.title)}</h6>
-                            <span class="text-muted-custom x-small">${escapeHtml(item.time_ago)}</span>
+                    <div class="notification-item-content min-w-0">
+                        <div class="notification-item-header">
+                            <h6 class="small fw-bold text-ink mb-0 notification-item-title" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h6>
+                            <span class="text-muted-custom notification-item-time">${escapeHtml(item.time_ago)}</span>
                         </div>
                         <p class="small text-muted-custom mb-0 line-clamp-2">${escapeHtml(item.message)}</p>
                     </div>

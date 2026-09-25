@@ -13,6 +13,8 @@ $page_title = 'Applicant Evaluation Roster';
 $dept = $user['organization_name'] ?? ($user['department'] ?? 'Office of the University Registrar');
 $job_filter = $_GET['job_id'] ?? null;
 $status_filter = $_GET['status'] ?? null;
+$fit_filter = $_GET['fit'] ?? null;
+$rank_sort = $_GET['sort'] ?? null;
 $search = trim($_GET['q'] ?? '');
 
 // Handle decision submissions via POST
@@ -56,6 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
 $emp_id_filter = ($user['role'] === 'admin') ? null : (int)$user['id'];
 $all_dept_apps = get_applications(null, $job_filter, null, $emp_id_filter);
 
+// Pre-calculate Laya advisory fit for each candidate
+foreach ($all_dept_apps as &$app) {
+    $app['laya_fit'] = laya_get_candidate_fit($app);
+}
+unset($app);
+
 if ($status_filter) {
     $all_dept_apps = array_filter($all_dept_apps, function($a) use ($status_filter) {
         $st = strtolower($a['status'] ?? '');
@@ -69,6 +77,14 @@ if ($status_filter) {
     });
 }
 
+// Filter by Laya Advisory Fit Tier
+if (!empty($fit_filter)) {
+    $all_dept_apps = array_filter($all_dept_apps, function($a) use ($fit_filter) {
+        $tier = $a['laya_fit']['tier'] ?? '';
+        return $tier === $fit_filter;
+    });
+}
+
 if (!empty($search)) {
     $all_dept_apps = array_filter($all_dept_apps, function($a) use ($search) {
         return stripos($a['student_name'] ?? '', $search) !== false
@@ -78,7 +94,31 @@ if (!empty($search)) {
     });
 }
 
+// Rank & Sort Candidates
+if (!empty($rank_sort)) {
+    uasort($all_dept_apps, function($a, $b) use ($rank_sort) {
+        if ($rank_sort === 'laya_desc') {
+            $diff = ($b['laya_fit']['score'] ?? 0) <=> ($a['laya_fit']['score'] ?? 0);
+            if ($diff !== 0) return $diff;
+            return strcmp($b['applied_at'] ?? '', $a['applied_at'] ?? '');
+        }
+        if ($rank_sort === 'laya_asc') {
+            $diff = ($a['laya_fit']['score'] ?? 0) <=> ($b['laya_fit']['score'] ?? 0);
+            if ($diff !== 0) return $diff;
+            return strcmp($b['applied_at'] ?? '', $a['applied_at'] ?? '');
+        }
+        if ($rank_sort === 'name_asc') {
+            return strcasecmp($a['student_name'] ?? '', $b['student_name'] ?? '');
+        }
+        if ($rank_sort === 'date_asc') {
+            return strcmp($a['applied_at'] ?? '', $b['applied_at'] ?? '');
+        }
+        return 0;
+    });
+}
+
 $dept_jobs = get_jobs(null, null, null, null, null, null, null, $emp_id_filter);
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-applicants-view.php';
+
 

@@ -41,7 +41,7 @@ require_once __DIR__ . '/../header.php';
                 <div class="card-paper p-4 mb-4">
                     <form action="applicants.php" method="GET" class="form-paper auto-filter-form">
                         <div class="row g-3 align-items-end">
-                            <div class="col-12 col-xl-4 col-lg-4 col-md-12">
+                            <div class="col-12 col-md-6 col-lg-6">
                                 <label class="form-label" for="search-candidate">Search Candidates</label>
                                 <div class="search-input-wrap">
                                     <i class="bi bi-search text-muted-custom"></i>
@@ -49,7 +49,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             </div>
 
-                            <div class="col-12 col-xl-4 col-lg-4 col-md-6">
+                            <div class="col-12 col-md-6 col-lg-6">
                                 <label class="form-label" for="filter-job">Filter by Job Requisition</label>
                                 <select name="job_id" id="filter-job" class="form-select">
                                     <option value="">All Department Openings</option>
@@ -61,7 +61,7 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-8 col-xl-3 col-lg-3 col-md-5">
+                            <div class="col-12 col-md-4 col-lg-4">
                                 <label class="form-label" for="filter-status">Filter by Status</label>
                                 <select name="status" id="filter-status" class="form-select">
                                     <option value="">All Application Stages</option>
@@ -73,7 +73,29 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-4 col-xl-1 col-lg-1 col-md-1 d-flex justify-content-end">
+                            <div class="col-12 col-md-4 col-lg-4">
+                                <label class="form-label" for="filter-fit">Filter by Laya Advisory Fit</label>
+                                <select name="fit" id="filter-fit" class="form-select">
+                                    <option value="">All Advisory Levels</option>
+                                    <option value="optimal" <?= ($fit_filter === 'optimal') ? 'selected' : '' ?>>Strong Fit (20h+ / Optimal)</option>
+                                    <option value="moderate" <?= ($fit_filter === 'moderate') ? 'selected' : '' ?>>Moderate Fit (12–16h / Balanced)</option>
+                                    <option value="limited" <?= ($fit_filter === 'limited') ? 'selected' : '' ?>>Limited Fit (4–8h / Limited Hours)</option>
+                                    <option value="conflict" <?= ($fit_filter === 'conflict') ? 'selected' : '' ?>>Conflict Risk (0h / No Shifts)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-10 col-md-3 col-lg-3">
+                                <label class="form-label" for="filter-sort">Rank Candidates</label>
+                                <select name="sort" id="filter-sort" class="form-select">
+                                    <option value="">Default (Latest Submissions)</option>
+                                    <option value="laya_desc" <?= ($rank_sort === 'laya_desc') ? 'selected' : '' ?>>Laya Fit: Highest Availability</option>
+                                    <option value="laya_asc" <?= ($rank_sort === 'laya_asc') ? 'selected' : '' ?>>Laya Fit: Conflict Risk First</option>
+                                    <option value="name_asc" <?= ($rank_sort === 'name_asc') ? 'selected' : '' ?>>Candidate Name (A–Z)</option>
+                                    <option value="date_asc" <?= ($rank_sort === 'date_asc') ? 'selected' : '' ?>>Date Applied (Oldest First)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-2 col-md-1 col-lg-1 d-flex justify-content-end align-items-end">
                                 <div>
                                     <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
                                     <a href="applicants.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
@@ -97,30 +119,46 @@ require_once __DIR__ . '/../header.php';
                     <?php if (empty($all_dept_apps)): ?>
                         <div class="p-4">
                             <?php
+                            $empty_desc = !empty($job_filter)
+                                ? 'No student candidates have submitted applications for this specific vacancy yet. Check back once students apply, or reset filters to view all submissions across your department.'
+                                : 'No student candidates have submitted applications matching the selected criteria.';
                             render_empty_state(
                                 'bi-people',
                                 'No Applicants Found',
-                                'No student candidates have submitted applications matching the selected criteria.',
+                                $empty_desc,
                                 'applicants.php',
                                 'Reset Roster Filters'
                             );
                             ?>
                         </div>
+
                     <?php else: ?>
                         <div class="table-responsive">
-                            <table class="table-paper table-paper-responsive mb-0">
+                            <table class="table-paper table-paper-responsive table-paper-roster mb-0">
+                                <colgroup>
+                                    <col style="width: 18%;">
+                                    <col style="width: 15%;">
+                                    <col style="width: 13%;">
+                                    <col style="width: 13%;">
+                                    <col style="width: 11%;">
+                                    <col style="width: 13%;">
+                                    <col style="width: 17%;">
+                                </colgroup>
                                 <thead>
                                     <tr>
                                         <th class="ps-4">Candidate Profile</th>
                                         <th>Target Vacancy</th>
                                         <th>Degree Program</th>
+                                        <th>Laya Advisory</th>
                                         <th>Applied Date</th>
                                         <th>Status</th>
-                                        <th class="text-end pe-4">Actions</th>
+                                        <th class="pe-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($all_dept_apps as $app): ?>
+                                    <?php foreach ($all_dept_apps as $app): 
+                                        $laya_fit = $app['laya_fit'] ?? laya_get_candidate_fit($app);
+                                    ?>
                                         <tr>
                                             <td class="ps-4" data-label="Candidate Profile">
                                                 <div class="fw-bold text-ink"><?= htmlspecialchars($app['student_name']) ?></div>
@@ -138,26 +176,42 @@ require_once __DIR__ . '/../header.php';
                                                 <div class="small fw-semibold text-ink"><?= htmlspecialchars($app['course'] ?? 'BS Information Systems') ?></div>
                                                 <div class="small text-muted-custom"><?= htmlspecialchars($app['year_level'] ?? '2nd Year') ?></div>
                                             </td>
+                                            <td data-label="Laya Advisory">
+                                                <div class="d-inline-flex flex-column align-items-start gap-1">
+                                                    <span class="badge <?= $laya_fit['badge_bg'] ?> border py-1 px-2 d-inline-flex align-items-center gap-1" style="font-size: 11.5px; font-weight: 600;">
+                                                        <i class="bi <?= $laya_fit['icon'] ?>"></i>
+                                                        <?= htmlspecialchars($laya_fit['label']) ?>
+                                                    </span>
+                                                    <span class="text-muted-custom" style="font-size: 11px;">
+                                                        <?= htmlspecialchars($laya_fit['hours_desc']) ?>
+                                                    </span>
+                                                </div>
+                                            </td>
                                             <td data-label="Applied Date" class="small text-muted-custom">
                                                 <?= format_display_date($app['applied_at']) ?>
                                             </td>
                                             <td data-label="Status">
                                                 <?= render_status_badge($app['status']) ?>
                                             </td>
-                                            <td class="text-end pe-4" data-label="Actions">
-                                                <div class="d-flex align-items-center justify-content-end gap-1">
-                                                    <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-2" title="View Attached PDF Resume" style="font-size: 11px;">
+                                            <td class="pe-4" data-label="Actions">
+                                                <div class="table-actions-wrap">
+                                                    <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm table-action-btn" title="View Attached PDF Resume">
                                                         <i class="bi bi-file-earmark-pdf text-danger"></i> Resume
                                                     </a>
-                                                    <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm py-1 px-3">
+                                                    <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm table-action-btn" title="Evaluate Application">
                                                         <i class="bi bi-clipboard-check"></i> Evaluate
                                                     </a>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
+
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="px-4 py-2 border-top border-line bg-surface d-flex align-items-center gap-2">
+                            <i class="bi bi-info-circle text-muted-custom flex-shrink-0"></i>
+                            <span class="small text-muted-custom" style="font-size: 11px;">Laya Advisory insights only — the supervisor maintains full discretion over shortlisting and hiring decisions.</span>
                         </div>
                     <?php endif; ?>
                 </div>

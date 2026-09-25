@@ -381,8 +381,9 @@ function login_user(string $email, string $password): array {
     }
 }
 
-function quick_login(string $role, int|string|null $user_id = null): array {
+function quick_login(string $role, int|string|null $user_id = null): ?array {
     try {
+
         $pdo = get_db_connection();
         if ($user_id) {
             $stmt = $pdo->prepare(get_user_base_query() . " WHERE u.`id` = :id LIMIT 1");
@@ -846,7 +847,7 @@ function dispatch_profile_request_notification(string $user_name): void {
     );
 }
 
-function create_profile_request(int|string $user_id, array $requested_data, ?array $proof_file, string $reason = ''): array {
+function create_profile_request(int|string $user_id, array $requested_data, array|string|null $proof_file = null, string $reason = ''): array {
     try {
         $pdo = get_db_connection();
         $user_id = (int)$user_id;

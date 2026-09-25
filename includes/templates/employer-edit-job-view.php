@@ -103,9 +103,9 @@ require_once __DIR__ . '/../header.php';
                                     <div class="small text-muted-custom mb-2">Type a task and click <strong class="text-ink">+</strong> (or press Enter) to add.</div>
 
                                     <!-- Addable Input Bar -->
-                                    <div class="input-group mb-2">
+                                    <div class="d-flex gap-2 mb-2">
                                         <input type="text" id="resp-input-bar" class="form-control" placeholder="e.g. Assist student visitors with computer lab login...">
-                                        <button type="button" class="btn btn-accent px-3 fw-bold" id="btn-add-resp" title="Add Duty">
+                                        <button type="button" class="btn-add-line" id="btn-add-resp" title="Add Duty">
                                             <i class="bi bi-plus-lg me-1"></i> Add Line
                                         </button>
                                     </div>
@@ -137,9 +137,9 @@ require_once __DIR__ . '/../header.php';
                                     <div class="small text-muted-custom mb-2">Type a requirement and click <strong class="text-ink">+</strong> (or press Enter) to add.</div>
 
                                     <!-- Addable Input Bar -->
-                                    <div class="input-group mb-2">
+                                    <div class="d-flex gap-2 mb-2">
                                         <input type="text" id="qual-input-bar" class="form-control" placeholder="e.g. GWA of 2.25 or better...">
-                                        <button type="button" class="btn btn-accent px-3 fw-bold" id="btn-add-qual" title="Add Qualification">
+                                        <button type="button" class="btn-add-line" id="btn-add-qual" title="Add Qualification">
                                             <i class="bi bi-plus-lg me-1"></i> Add Line
                                         </button>
                                     </div>
@@ -240,10 +240,10 @@ require_once __DIR__ . '/../header.php';
                                 <!-- Separated Stipend Rate & Compensation -->
                                 <div class="mb-3">
                                     <label class="form-label" for="edit-pay-amount">Stipend Rate &amp; Frequency <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light fw-bold text-muted">₱</span>
+                                    <div class="input-group input-group-seamless">
+                                        <span class="input-group-text">₱</span>
                                         <input type="number" name="pay_amount" id="edit-pay-amount" class="form-control" placeholder="85.00" step="0.50" min="0" value="<?= htmlspecialchars($parsed_amount) ?>" required>
-                                        <select name="pay_period" id="edit-pay-period" class="form-select" style="max-width: 155px;" required>
+                                        <select name="pay_period" id="edit-pay-period" class="form-select" required>
                                             <option value="/ hour" <?= ($parsed_period === '/ hour') ? 'selected' : '' ?>>/ hour</option>
                                             <option value="/ day" <?= ($parsed_period === '/ day') ? 'selected' : '' ?>>/ day</option>
                                             <option value="/ week" <?= ($parsed_period === '/ week') ? 'selected' : '' ?>>/ week</option>

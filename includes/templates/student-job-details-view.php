@@ -166,6 +166,62 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             </div>
 
+                            <!-- Laya Advisory: Why this fits you (read-only, human decides) -->
+                            <?php
+                            $fit = $laya_student_fit ?? null;
+                            $fit_closed = strtolower($job['status'] ?? '') !== 'active';
+                            $fit_expired = !empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d'));
+                            $fit_filled = ((int)($job['slots_total'] ?? $job['vacancies'] ?? 1) > 0) && ((int)($job['slots_filled'] ?? 0) >= (int)($job['slots_total'] ?? $job['vacancies'] ?? 1));
+                            ?>
+                            <?php if (!empty($fit) && !$fit_closed && !$fit_expired && !$fit_filled): ?>
+                                <div class="p-3 bg-cream rounded-3 border border-line mb-3" style="font-size: 12px;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-compass text-accent"></i> Laya Advisory — Why this fits you
+                                        </span>
+                                        <span class="badge <?= htmlspecialchars($fit['badge_bg'] ?? '') ?> border" style="font-size: 10.5px;">
+                                            <i class="bi <?= htmlspecialchars($fit['icon'] ?? 'bi-info-circle') ?>"></i>
+                                            <?= htmlspecialchars($fit['label'] ?? 'Assessed') ?>
+                                        </span>
+                                    </div>
+                                    <?php if (!empty($fit['is_guest'])): ?>
+                                        <p class="small text-muted-custom mb-2">Sign in with your student account to see personal schedule and degree fit.</p>
+                                    <?php else: ?>
+                                        <?php if (!empty($laya_ml_fit['program_fit'])): ?>
+                                            <div class="p-2 bg-white rounded-3 border border-line mb-2">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="text-ink fw-semibold" style="font-size: 11.5px;">
+                                                        <i class="bi bi-mortarboard text-primary me-1"></i> Degree Alignment:
+                                                    </span>
+                                                    <span class="badge bg-primary-subtle text-primary border" style="font-size: 10px;" title="ModernBERT confidence in degree program fit">
+                                                        <?= htmlspecialchars($laya_ml_fit['program_fit']['label'] ?? 'Assessed') ?> (<?= round(($laya_ml_fit['program_fit']['confidence'] ?? 0.75) * 100) ?>% Confidence)
+                                                    </span>
+                                                </div>
+                                                <div class="small text-muted-custom d-flex justify-content-between align-items-center" style="font-size: 11px;">
+                                                    <span><i class="bi bi-stars text-accent me-1"></i><?= htmlspecialchars($laya_ml_fit['growth_opportunity']['label'] ?? 'Career-Relevant Development') ?></span>
+                                                    <span class="badge bg-light text-muted-custom border" style="font-size: 9.5px;" title="ModernBERT career growth relevance"><?= round(($laya_ml_fit['growth_opportunity']['probability'] ?? 0.5) * 100) ?>% Match Confidence</span>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="small text-muted-custom mb-1">Schedule overlap: <strong class="text-ink"><?= (int)($fit['overlap_pct'] ?? 0) ?>%</strong> &bull; Est. load: <strong class="text-ink"><?= htmlspecialchars($fit['hours'] . ' hrs/wk (cap 20h)') ?></strong></div>
+                                        <div class="small text-muted-custom mb-1">Competition: <strong class="text-ink"><?= htmlspecialchars(ucfirst($fit['competition'] ?? 'low')) ?></strong> (<?= htmlspecialchars($fit['demand_desc'] ?? '') ?>, <?= (int)($fit['slots_filled'] ?? 0) ?> of <?= (int)($fit['slots_total'] ?? 1) ?> filled) &bull; Deadline: <strong class="<?= (($fit['deadline_risk'] ?? 'low') === 'high') ? 'text-danger' : 'text-ink' ?>"><?= $fit['days_left'] === null ? 'Open' : ((int)$fit['days_left'] . ' day(s) left') ?></strong></div>
+                                        <?php if (!empty($fit['workload_warning'])): ?>
+                                            <div class="alert alert-warning py-1 px-2 mb-2 small rounded-3 border-0" style="font-size: 11px;">
+                                                <i class="bi bi-exclamation-circle-fill me-1"></i><?= htmlspecialchars($fit['workload_warning']) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        <?php foreach (($fit['choices'] ?? []) as $choice): ?>
+                                            <a href="<?= htmlspecialchars($choice['href'] ?? 'jobs.php') ?>" class="btn-pill-outline btn-pill-sm"><?= htmlspecialchars($choice['label'] ?? 'View') ?></a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <p class="small text-muted-custom mt-2 mb-0" style="font-size: 10.5px;">
+                                        <i class="bi bi-info-circle me-1"></i> Advisory insights only — you maintain full discretion over whether to apply.
+                                    </p>
+                                </div>
+                            <?php endif; ?>
+
                             <!-- Action CTA -->
                             <?php if ($already_applied): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">

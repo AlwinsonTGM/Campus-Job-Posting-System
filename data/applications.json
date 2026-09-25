@@ -2,29 +2,17 @@
     {
         "id": 1,
         "job_id": 1,
-        "job_title": "Computer Lab Technical Assistant",
-        "department": "Management Information Systems (MIS)",
         "student_id": 1,
-        "student_name": "Juan Dela Cruz",
-        "student_number": "2024-00123",
-        "student_email": "student@kld.edu.ph",
-        "course": "BS Information Systems (BSIS)",
-        "year_level": "2nd Year",
-        "sex": "Male",
-        "age": 21,
-        "phone": "+63 917 123 4567",
         "cover_letter": "I am eager to apply for the Computer Lab Technical Assistant position. As a 2nd year BS Information Systems student at KLD, I have solid experience troubleshooting PC hardware, setting up local area networks, and installing development environments. I am enthusiastic about supporting fellow KLD students and keeping our laboratories running smoothly.",
         "availability": [
-            "Monday (1:00 PM - 5:00 PM)",
-            "Wednesday (1:00 PM - 5:00 PM)",
-            "Friday (8:00 AM - 12:00 PM)"
+            "Mon - Afternoon (1PM–5PM)",
+            "Wed - Afternoon (1PM–5PM)",
+            "Fri - Morning (8AM–12NN)"
         ],
         "resume_file": "Juan_Dela_Cruz_Resume.pdf",
         "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
         "status": "interview_scheduled",
-        "status_label": "Interview Scheduled",
-        "status_badge": "info",
-        "interview_date": "2026-08-30",
+        "interview_date": "2026-09-28",
         "interview_time": "02:00 PM",
         "interview_venue": "KLD Tech Building, Room 305 (MIS Office)",
         "supervisor_notes": "Strong background in PC troubleshooting. Scheduled for face-to-face technical interview.",
@@ -34,28 +22,16 @@
     {
         "id": 2,
         "job_id": 2,
-        "job_title": "Student Records & Archival Assistant",
-        "department": "Office of the University Registrar",
         "student_id": 1,
-        "student_name": "Juan Dela Cruz",
-        "student_number": "2024-00123",
-        "student_email": "student@kld.edu.ph",
-        "course": "BS Information Systems (BSIS)",
-        "year_level": "2nd Year",
-        "sex": "Male",
-        "age": 21,
-        "phone": "+63 917 123 4567",
         "cover_letter": "I would like to offer my clerical and database encoding skills to the Office of the University Registrar at KLD. I am proficient in MS Excel spreadsheets and data archiving.",
         "availability": [
-            "Tuesday (8:00 AM - 12:00 PM)",
-            "Thursday (8:00 AM - 12:00 PM)"
+            "Tue - Morning (8AM–12NN)",
+            "Thu - Morning (8AM–12NN)"
         ],
         "resume_file": "Juan_Dela_Cruz_Resume.pdf",
         "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
         "status": "interview_scheduled",
-        "status_label": "Interview Scheduled",
-        "status_badge": "info",
-        "interview_date": "2026-08-28",
+        "interview_date": "2026-09-29",
         "interview_time": "02:00 PM",
         "interview_venue": "KLD Admin Building, 1st Floor, Room 102",
         "supervisor_notes": "Application received, awaiting registrar committee evaluation.",
@@ -65,32 +41,372 @@
     {
         "id": 3,
         "job_id": 3,
-        "job_title": "Digital Cataloging & Library Aid",
-        "department": "KLD University Library",
         "student_id": 2,
-        "student_name": "Maria Santos",
-        "student_number": "2024-00456",
-        "student_email": "maria.santos@kld.edu.ph",
-        "course": "BS Computer Science (BSCS)",
-        "year_level": "3rd Year",
-        "sex": "Female",
-        "age": 21,
-        "phone": "+63 928 234 5678",
         "cover_letter": "I am applying for the Library Aid role. I spend a lot of time in the KLD library, have high attention to detail, and can commit to morning shifts.",
         "availability": [
-            "Monday (8:00 AM - 12:00 PM)",
-            "Wednesday (8:00 AM - 12:00 PM)"
+            "Mon - Morning (8AM–12NN)",
+            "Wed - Morning (8AM–12NN)"
         ],
         "resume_file": "Maria_Santos_Resume.pdf",
         "study_load_file": "Maria_Santos_StudyLoad.pdf",
         "status": "accepted",
-        "status_label": "Accepted \/ Hired",
-        "status_badge": "success",
         "interview_date": "2026-08-23",
         "interview_time": "10:00 AM",
         "interview_venue": "KLD Main Library 2nd Floor Office",
         "supervisor_notes": "Excellent communication skills and schedule fit. Officially approved for 1st Semester duty.",
         "applied_at": "2026-08-20 11:00:00",
         "updated_at": "2026-08-24 16:20:00"
+    },
+    {
+        "id": 4,
+        "job_id": 9,
+        "student_id": 1,
+        "cover_letter": "I am interested in assisting the Athletics office with sports equipment and gym floor monitoring. I have experience in logistics and event setup.",
+        "availability": [
+            "Fri - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Juan_Dela_Cruz_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "pending",
+        "interview_date": null,
+        "interview_time": null,
+        "interview_venue": null,
+        "supervisor_notes": "Dossier under review by coach Belmonte.",
+        "applied_at": "2026-08-28 16:00:00",
+        "updated_at": "2026-08-28 16:00:00"
+    },
+    {
+        "id": 5,
+        "job_id": 1,
+        "student_id": 12,
+        "cover_letter": "Good day! As a 1st year BSIT student, I am very enthusiastic about hands-on laboratory hardware and networking. I want to assist upperclassmen and laboratory engineers while supporting my college expenses.",
+        "availability": [
+            "Tue - Afternoon (1PM–5PM)",
+            "Thu - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Joshua_Garcia_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "pending",
+        "interview_date": null,
+        "interview_time": null,
+        "interview_venue": null,
+        "supervisor_notes": "Received application. Resume passed initial pre-screening.",
+        "applied_at": "2026-09-05 10:15:00",
+        "updated_at": "2026-09-05 10:15:00"
+    },
+    {
+        "id": 6,
+        "job_id": 2,
+        "student_id": 13,
+        "cover_letter": "As an Accountancy junior, meticulous record-keeping and data integrity are my strongest skills. I can assist the Registrar with student document archiving and spreadsheet audit trails.",
+        "availability": [
+            "Mon - Afternoon (1PM–5PM)",
+            "Wed - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Camille_Del_Rosario_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-12",
+        "interview_time": "01:30 PM",
+        "interview_venue": "Admin Building, Room 102",
+        "supervisor_notes": "Candidate has outstanding analytical precision and GWA. Approved for 15 hours weekly duty.",
+        "applied_at": "2026-09-02 09:00:00",
+        "updated_at": "2026-09-14 11:30:00"
+    },
+    {
+        "id": 7,
+        "job_id": 14,
+        "student_id": 13,
+        "cover_letter": "I am applying for the Scholarship Records & Encoding Clerk role. I am proficient in Google Sheets formulas, pivot tables, and verifying documentary prerequisites.",
+        "availability": [
+            "Fri - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Camille_Del_Rosario_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-15",
+        "interview_time": "10:00 AM",
+        "interview_venue": "Admissions & Scholarship Office, Window 4",
+        "supervisor_notes": "Hired to assist during upcoming LGU scholarship renewal rush.",
+        "applied_at": "2026-09-08 14:20:00",
+        "updated_at": "2026-09-16 15:00:00"
+    },
+    {
+        "id": 8,
+        "job_id": 9,
+        "student_id": 14,
+        "cover_letter": "I have participated in collegiate basketball and understand the care required for athletics facilities and hardwood court maintenance. Ready for afternoon shifts.",
+        "availability": [
+            "Sat - Whole Day (8AM–5PM)"
+        ],
+        "resume_file": "Ethan_Vance_Reyes_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "interview_scheduled",
+        "interview_date": "2026-09-28",
+        "interview_time": "11:00 AM",
+        "interview_venue": "University Gymnasium, Coach Office 101",
+        "supervisor_notes": "Strong physical aptitude and availability for weekend intramural games. Scheduled for interview.",
+        "applied_at": "2026-09-12 11:45:00",
+        "updated_at": "2026-09-18 16:20:00"
+    },
+    {
+        "id": 9,
+        "job_id": 6,
+        "student_id": 15,
+        "cover_letter": "Hello! As a Communication major, visual storytelling is my passion. Attached is my portfolio showcasing reels and graphics created for campus student organizations.",
+        "availability": [
+            "Mon - Morning (8AM–12NN)",
+            "Thu - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Sofia_Mendoza_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-10",
+        "interview_time": "03:00 PM",
+        "interview_venue": "Dasma Creative Media Studio, Suite 201",
+        "supervisor_notes": "Exceptional portfolio quality. Officially brought on board as Junior Content Creator.",
+        "applied_at": "2026-09-01 13:00:00",
+        "updated_at": "2026-09-11 17:00:00"
+    },
+    {
+        "id": 10,
+        "job_id": 16,
+        "student_id": 15,
+        "cover_letter": "Applying to coordinate social media graphic posts and layout design. Excited to contribute to KLD's digital presence.",
+        "availability": [
+            "Thu - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Sofia_Mendoza_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-14",
+        "interview_time": "02:00 PM",
+        "interview_venue": "Creative Hub Center",
+        "supervisor_notes": "Assigned to the campus campaign visual rollout team.",
+        "applied_at": "2026-09-07 10:30:00",
+        "updated_at": "2026-09-15 14:15:00"
+    },
+    {
+        "id": 11,
+        "job_id": 7,
+        "student_id": 16,
+        "cover_letter": "As a Hospitality Management major, customer warmth, beverage preparation, and dining sanitation are part of my core training. Excited to brew great coffee for our KLD community!",
+        "availability": [
+            "Wed - Morning (8AM–12NN)",
+            "Sat - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Mark_Dave_Bautista_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-09",
+        "interview_time": "09:30 AM",
+        "interview_venue": "Campus Cafe Counter, Student Pavilion",
+        "supervisor_notes": "Completed food safety orientation and barista espresso training. Start date approved.",
+        "applied_at": "2026-09-03 14:00:00",
+        "updated_at": "2026-09-10 16:45:00"
+    },
+    {
+        "id": 12,
+        "job_id": 13,
+        "student_id": 17,
+        "cover_letter": "As a Psychology student, I want to actively support fellow students facing academic stress and life transitions. I will maintain absolute confidentiality at the Guidance frontdesk.",
+        "availability": [
+            "Mon - Morning (8AM–12NN)",
+            "Tue - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Angela_Nicole_Cruz_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-11",
+        "interview_time": "10:30 AM",
+        "interview_venue": "Guidance Center, Room 204",
+        "supervisor_notes": "Very mature, professional demeanor with deep understanding of ethical confidentiality. Hired as Peer Facilitator.",
+        "applied_at": "2026-09-04 15:30:00",
+        "updated_at": "2026-09-12 11:00:00"
+    },
+    {
+        "id": 13,
+        "job_id": 11,
+        "student_id": 18,
+        "cover_letter": "I have consistently achieved 1.25 in Data Structures, Algorithms, and Advanced Java. I enjoy mentoring freshmen and helping them overcome the fear of pointers and recursion.",
+        "availability": [
+            "Mon - Afternoon (1PM–5PM)",
+            "Wed - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Gabriel_Tan_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-08",
+        "interview_time": "04:00 PM",
+        "interview_venue": "MIS Center, Room 305",
+        "supervisor_notes": "Outstanding technical exam score (98/100). Approved as Lead Peer Tutor for DSA.",
+        "applied_at": "2026-09-02 16:15:00",
+        "updated_at": "2026-09-09 10:00:00"
+    },
+    {
+        "id": 14,
+        "job_id": 5,
+        "student_id": 18,
+        "cover_letter": "Applying for the Junior Web Developer position. I have built full-stack web applications and automated QA pipelines using Playwright and Jest.",
+        "availability": [
+            "Fri - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Gabriel_Tan_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "interview_scheduled",
+        "interview_date": "2026-09-29",
+        "interview_time": "03:00 PM",
+        "interview_venue": "TechVanguard Solutions, Suite 401",
+        "supervisor_notes": "Impressive GitHub repositories. Technical interview scheduled with lead architect.",
+        "applied_at": "2026-09-10 11:20:00",
+        "updated_at": "2026-09-17 14:00:00"
+    },
+    {
+        "id": 15,
+        "job_id": 12,
+        "student_id": 11,
+        "cover_letter": "As a Level III Nursing student, I am well-versed in aseptic technique, clinical manikin setup, and hospital simulation ward maintenance. I want to assist our instructors during clinical laboratory hours.",
+        "availability": [
+            "Mon - Morning (8AM–12NN)",
+            "Wed - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Bea_Alonzo_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-07",
+        "interview_time": "08:30 AM",
+        "interview_venue": "Science & Allied Health Building, Room 301",
+        "supervisor_notes": "Top student in Medical-Surgical nursing rotation. Assigned to Simulation Ward 202 duty.",
+        "applied_at": "2026-09-03 09:15:00",
+        "updated_at": "2026-09-08 14:30:00"
+    },
+    {
+        "id": 16,
+        "job_id": 18,
+        "student_id": 11,
+        "cover_letter": "Offering my clinical skills to assist campus nurses during clinic consultations and student annual medical checkups.",
+        "availability": [
+            "Fri - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Bea_Alonzo_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "interview_scheduled",
+        "interview_date": "2026-09-30",
+        "interview_time": "09:00 AM",
+        "interview_venue": "Campus Health Clinic, Room 105",
+        "supervisor_notes": "Passed document check. Interview with clinic physician scheduled.",
+        "applied_at": "2026-09-12 10:00:00",
+        "updated_at": "2026-09-18 11:15:00"
+    },
+    {
+        "id": 17,
+        "job_id": 3,
+        "student_id": 19,
+        "cover_letter": "As an Education student, fostering literacy and library engagement is central to my calling. I would love to assist students with research finding and shelf indexing.",
+        "availability": [
+            "Tue - Afternoon (1PM–5PM)",
+            "Thu - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Chloe_Danielle_Perez_Resume.pdf",
+        "study_load_file": "Maria_Santos_StudyLoad.pdf",
+        "status": "pending",
+        "interview_date": null,
+        "interview_time": null,
+        "interview_venue": null,
+        "supervisor_notes": "Dossier under review by chief librarian Ms. Cruz.",
+        "applied_at": "2026-09-21 14:10:00",
+        "updated_at": "2026-09-21 14:10:00"
+    },
+    {
+        "id": 18,
+        "job_id": 15,
+        "student_id": 1,
+        "cover_letter": "Applying for the Junior Frontend Web Assistant role at TechVanguard. I have solid experience with HTML5, responsive CSS, and JavaScript interfaces.",
+        "availability": [
+            "Mon - Morning (8AM–12NN)",
+            "Wed - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Juan_Dela_Cruz_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "reviewed",
+        "interview_date": null,
+        "interview_time": null,
+        "interview_venue": null,
+        "supervisor_notes": "Profile reviewed and shortlisted by Atty. Alcantara for the next batch of interviews.",
+        "applied_at": "2026-09-14 16:30:00",
+        "updated_at": "2026-09-19 10:20:00"
+    },
+    {
+        "id": 19,
+        "job_id": 17,
+        "student_id": 12,
+        "cover_letter": "I am applying for the Bookstore Cashier & Inventory Aide role. I am honest, quick with computer inventory logs, and punctual.",
+        "availability": [
+            "Thu - Afternoon (1PM–5PM)"
+        ],
+        "resume_file": "Joshua_Garcia_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "pending",
+        "interview_date": null,
+        "interview_time": null,
+        "interview_venue": null,
+        "supervisor_notes": "Application received, waiting for bookstore manager review.",
+        "applied_at": "2026-09-22 09:45:00",
+        "updated_at": "2026-09-22 09:45:00"
+    },
+    {
+        "id": 20,
+        "job_id": 1,
+        "student_id": 10,
+        "cover_letter": "I have hands-on experience managing network switches, server deployment, and student computer lab hygiene. Dedicated to delivering top-tier technical support to KLD.",
+        "availability": [
+            "Mon - Morning (8AM–12NN)",
+            "Wed - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Alwinson_Bustamante_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-08-29",
+        "interview_time": "03:00 PM",
+        "interview_venue": "MIS Center, Room 305",
+        "supervisor_notes": "Approved as Senior Student Laboratory Lead.",
+        "applied_at": "2026-08-27 11:00:00",
+        "updated_at": "2026-09-01 10:00:00"
+    },
+    {
+        "id": 21,
+        "job_id": 10,
+        "student_id": 16,
+        "cover_letter": "I would like to apply as intramural scorekeeper during tournament weekends.",
+        "availability": [
+            "Sat - Morning (8AM–12NN)"
+        ],
+        "resume_file": "Mark_Dave_Bautista_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "rejected",
+        "interview_date": null,
+        "interview_time": null,
+        "interview_venue": null,
+        "supervisor_notes": "Thank you for applying. Unfortunately, your Saturday morning availability conflicted with mandatory varsity traveling schedules. We encourage you to re-apply next semester.",
+        "applied_at": "2026-09-05 15:00:00",
+        "updated_at": "2026-09-10 14:00:00"
+    },
+    {
+        "id": 22,
+        "job_id": 20,
+        "student_id": 14,
+        "cover_letter": "I am applying for the Technical Customer Care internship. I have solid troubleshooting logic and articulate communication skills.",
+        "availability": [
+            "Sat - Whole Day (8AM–5PM)"
+        ],
+        "resume_file": "Ethan_Vance_Reyes_Resume.pdf",
+        "study_load_file": "Juan_Dela_Cruz_StudyLoad.pdf",
+        "status": "accepted",
+        "interview_date": "2026-09-18",
+        "interview_time": "04:30 PM",
+        "interview_venue": "Robinsons Dasma Tech Wing, 3rd Floor",
+        "supervisor_notes": "Passed English proficiency evaluation (CEFR B2+). Assigned to weekend technical support team.",
+        "applied_at": "2026-09-13 10:30:00",
+        "updated_at": "2026-09-20 16:00:00"
     }
 ]

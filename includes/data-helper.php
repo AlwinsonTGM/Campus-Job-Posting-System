@@ -12,8 +12,12 @@ require_once __DIR__ . '/db.php';
 
 define('DATA_DIR', dirname(__DIR__) . '/data');
 
+require_once __DIR__ . '/components.php';
+
 // Domain services (order matters: common first for shared helpers)
 require_once __DIR__ . '/services/common-service.php';
 require_once __DIR__ . '/services/user-service.php';
 require_once __DIR__ . '/services/job-service.php';
 require_once __DIR__ . '/services/system-service.php';
+require_once __DIR__ . '/services/system-checks.php';
+require_once __DIR__ . '/services/laya-service.php';

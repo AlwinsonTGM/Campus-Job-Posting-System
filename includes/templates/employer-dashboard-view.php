@@ -77,6 +77,7 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 </div>
 
+
                 <!-- Manage Department Requisitions Table -->
                 <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
                     <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
@@ -105,7 +106,16 @@ require_once __DIR__ . '/../header.php';
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
-                            <table class="table-paper table-paper-responsive mb-0">
+                            <table class="table-paper table-paper-responsive table-paper-dept mb-0">
+                                <colgroup>
+                                    <col style="width: 24%;">
+                                    <col style="width: 13%;">
+                                    <col style="width: 13%;">
+                                    <col style="width: 11%;">
+                                    <col style="width: 12%;">
+                                    <col style="width: 9%;">
+                                    <col style="width: 18%;">
+                                </colgroup>
                                 <thead>
                                     <tr>
                                         <th class="ps-4">Vacancy Title</th>
@@ -114,7 +124,7 @@ require_once __DIR__ . '/../header.php';
                                         <th>Rate</th>
                                         <th>Deadline</th>
                                         <th>Status</th>
-                                        <th class="text-end pe-4">Actions</th>
+                                        <th class="pe-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,11 +144,11 @@ require_once __DIR__ . '/../header.php';
                                                 <span class="chip"><?= htmlspecialchars($job['category']) ?></span>
                                             </td>
                                             <td data-label="Slot Quota">
-                                                <div class="d-flex align-items-center gap-2" style="min-width: 110px;">
+                                                <div class="d-flex align-items-center gap-2" style="min-width: 125px;" title="Hiring Quota: <?= $slots_filled ?> hired of <?= $slots_total ?> total vacancies">
                                                     <div class="progress-paper flex-grow-1">
                                                         <div class="progress-paper-bar" style="width: <?= $pct ?>%;"></div>
                                                     </div>
-                                                    <span class="small text-ink fw-bold"><?= $slots_filled ?>/<?= $slots_total ?></span>
+                                                    <span class="small text-ink fw-bold text-nowrap"><?= $slots_filled ?>/<?= $slots_total ?> <span class="text-muted-custom fw-normal" style="font-size: 11px;">hired</span></span>
                                                 </div>
                                             </td>
                                             <td data-label="Rate" class="fw-bold text-ink">
@@ -150,12 +160,13 @@ require_once __DIR__ . '/../header.php';
                                             <td data-label="Status">
                                                 <?= render_status_badge($job['status'] ?? 'Active') ?>
                                             </td>
-                                            <td class="text-end pe-4" data-label="Actions">
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    <a href="applicants.php?job_id=<?= $job['id'] ?>" class="btn-pill btn-pill-sm">
-                                                        <i class="bi bi-people"></i> Applicants
+                                            <td class="pe-4" data-label="Actions">
+                                                <?php $job_apps = $job_applicant_counts[(int)$job['id']] ?? 0; ?>
+                                                <div class="table-actions-wrap">
+                                                    <a href="applicants.php?job_id=<?= $job['id'] ?>" class="btn-pill btn-pill-sm table-action-btn <?= ($job_apps > 0) ? '' : 'btn-pill-outline' ?>" title="<?= $job_apps ?> candidate(s) submitted">
+                                                        <i class="bi bi-people"></i> Applicants (<?= $job_apps ?>)
                                                     </a>
-                                                    <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm" title="Edit Posting">
+                                                    <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm table-action-btn" title="Edit Posting">
                                                         <i class="bi bi-pencil"></i> Edit
                                                     </a>
                                                 </div>

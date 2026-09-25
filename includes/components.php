@@ -99,8 +99,19 @@ if (!function_exists('render_status_badge')) {
         if ($raw === 'Declined / Position Filled' || $raw === 'Declined' || $raw === 'Rejected' || $normalized === 'declined' || $normalized === 'rejected' || $normalized === 'declined / position filled') {
             return '<span class="badge-status--declined"><i class="bi bi-x-circle-fill"></i> <span class="d-none d-sm-inline">Declined / Position Filled</span><span class="d-sm-none">Declined / Filled</span></span>';
         }
-        if ($raw === 'Active' || $normalized === 'active') {
+        if ($raw === 'Active' || $normalized === 'active' || $normalized === 'open') {
             return '<span class="badge-status--accepted"><i class="bi bi-check-circle"></i> Active</span>';
+        }
+        // Vacancy / requisition terminal & interim states — same uniform pill box as Active,
+        // meaning carried by icon + label only (never a plain chip).
+        if ($normalized === 'closed' || $normalized === 'closed / position filled' || $normalized === 'position filled' || $raw === 'Closed / Position Filled') {
+            return '<span class="badge-status--declined"><i class="bi bi-slash-circle"></i> Closed</span>';
+        }
+        if ($normalized === 'filled') {
+            return '<span class="badge-status--declined"><i class="bi bi-check-circle-fill"></i> Filled</span>';
+        }
+        if ($normalized === 'paused') {
+            return '<span class="badge-status--pending"><i class="bi bi-pause-circle"></i> Paused</span>';
         }
         if ($raw === 'Suspended' || $normalized === 'suspended') {
             return '<span class="badge-status--declined"><i class="bi bi-slash-circle"></i> Suspended</span>';
@@ -210,11 +221,11 @@ if (!function_exists('render_job_card')) {
                 </a>
                 
                 <!-- Subtle Gradient Overlay -->
-                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none" style="background: linear-gradient(180deg, rgba(17, 24, 39, 0.35) 0%, rgba(17, 24, 39, 0.0) 40%, rgba(17, 24, 39, 0.35) 100%);"></div>
+                <div class="position-absolute top-0 start-0 w-100 h-100 pe-none pointer-events-none" style="pointer-events: none; background: linear-gradient(180deg, rgba(17, 24, 39, 0.35) 0%, rgba(17, 24, 39, 0.0) 40%, rgba(17, 24, 39, 0.35) 100%);"></div>
 
                 <!-- Single Overlay: Featured ribbon only (1-overlay-max rule) -->
                 <?php if (!empty($job['image']) || !empty($job['is_featured'])): ?>
-                <div class="position-absolute top-0 start-0 end-0 p-3 d-flex justify-content-end align-items-start pointer-events-none">
+                <div class="position-absolute top-0 start-0 end-0 p-3 d-flex justify-content-end align-items-start pe-none pointer-events-none" style="pointer-events: none;">
                         <span class="badge rounded-pill shadow-sm border border-white-50 d-inline-flex align-items-center gap-1 px-2 py-1 fw-semibold text-white" style="font-size: 11px; backdrop-filter: blur(8px); background: rgba(17, 24, 39, 0.75);">
                             <i class="bi bi-stars text-warning"></i> Featured
                         </span>
@@ -380,21 +391,99 @@ if (!function_exists('render_stepper')) {
     }
 }
 
+if (!function_exists('normalize_availability_slots')) {
+    /**
+     * Normalizes free-text, legacy format, or partial shift availability inputs into
+     * canonical matrix slot strings: "{Mon|Tue|Wed|Thu|Fri|Sat} - {Slot}".
+     *
+     * @param mixed $slots Array of slots, JSON string, or delimited string
+     * @return array Canonical list of unique slot keys
+     */
+    function normalize_availability_slots($slots): array {
+        if (empty($slots)) {
+            return [];
+        }
+        if (is_string($slots)) {
+            $decoded = json_decode($slots, true);
+            if (is_array($decoded)) {
+                $slots = $decoded;
+            } else {
+                $slots = array_filter(array_map('trim', preg_split('/[,;\n]+/', $slots)));
+            }
+        }
+        if (!is_array($slots)) {
+            return [];
+        }
+
+        $day_map = [
+            'monday' => 'Mon', 'mon' => 'Mon',
+            'tuesday' => 'Tue', 'tue' => 'Tue',
+            'wednesday' => 'Wed', 'wed' => 'Wed',
+            'thursday' => 'Thu', 'thu' => 'Thu',
+            'friday' => 'Fri', 'fri' => 'Fri',
+            'saturday' => 'Sat', 'sat' => 'Sat',
+        ];
+
+        $canonical = [];
+        foreach ($slots as $raw_slot) {
+            $slot_str = trim((string)$raw_slot);
+            if (empty($slot_str)) continue;
+
+            // Check if already in canonical form "Day - Slot"
+            if (preg_match('/^(Mon|Tue|Wed|Thu|Fri|Sat)\s*-\s*(Morning \(8AM–12NN\)|Afternoon \(1PM–5PM\)|Evening \(5PM–8PM\))$/u', $slot_str, $m)) {
+                $canonical[] = "{$m[1]} - {$m[2]}";
+                continue;
+            }
+
+            $lower = strtolower($slot_str);
+
+            // Match Day
+            $matched_day = null;
+            foreach ($day_map as $d_needle => $d_code) {
+                if (preg_match('/\b' . $d_needle . '\b/i', $lower)) {
+                    $matched_day = $d_code;
+                    break;
+                }
+            }
+
+            // Match Slot
+            $matched_slot = null;
+            if (str_contains($lower, 'morning') || str_contains($lower, '8:00') || str_contains($lower, '8am') || str_contains($lower, '12nn') || str_contains($lower, '12:00 pm') || str_contains($lower, '12 pm')) {
+                $matched_slot = 'Morning (8AM–12NN)';
+            } elseif (str_contains($lower, 'afternoon') || str_contains($lower, '1:00') || str_contains($lower, '1pm') || str_contains($lower, '5:00') || str_contains($lower, '5pm')) {
+                $matched_slot = 'Afternoon (1PM–5PM)';
+            } elseif (str_contains($lower, 'evening') || str_contains($lower, '6:00') || str_contains($lower, '6pm') || str_contains($lower, '8:00 pm') || str_contains($lower, '8pm') || str_contains($lower, '5pm–8pm')) {
+                $matched_slot = 'Evening (5PM–8PM)';
+            }
+
+            if ($matched_day && $matched_slot) {
+                $canonical[] = "{$matched_day} - {$matched_slot}";
+            } elseif ($slot_str) {
+                $canonical[] = $slot_str;
+            }
+        }
+
+        return array_values(array_unique($canonical));
+    }
+}
+
 if (!function_exists('render_availability_matrix')) {
     /**
      * Renders Mon–Sat x Timeslots Availability Checkbox Matrix
      */
     function render_availability_matrix($selected = [], $name = 'availability[]', $readonly = false) {
-        if (is_string($selected)) {
-            $decoded = json_decode($selected, true);
-            $selected = is_array($decoded) ? $decoded : [];
-        } elseif (!is_array($selected)) {
-            $selected = [];
-        }
+        $selected = normalize_availability_slots($selected);
+        $slot_count = count($selected);
 
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         $slots = ['Morning (8AM–12NN)', 'Afternoon (1PM–5PM)', 'Evening (5PM–8PM)'];
         ?>
+        <?php if ($readonly && $slot_count === 0): ?>
+            <div class="alert alert-warning py-2 px-3 mb-2 rounded-3 small border-0 d-flex align-items-center gap-2">
+                <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0"></i>
+                <span><strong>No Shifts Declared:</strong> The applicant did not select any duty time slots in this matrix.</span>
+            </div>
+        <?php endif; ?>
         <div class="small text-muted-custom d-md-none mb-2" style="font-size: 11px;">
             <i class="bi bi-arrow-left-right text-accent me-1"></i> Swipe horizontally to view full schedule (Mon–Sat)
         </div>
