@@ -103,7 +103,7 @@ function laya_get_applicant_guidance(array $application, array $job, bool $force
             'method'  => 'POST',
             'header'  => "Content-Type: application/json\r\nAccept: application/json\r\n",
             'content' => $payload,
-            'timeout' => 12.0,
+            'timeout' => 25.0,
             'ignore_errors' => true,
         ],
     ]);
