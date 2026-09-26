@@ -149,12 +149,20 @@ require_once __DIR__ . '/../header.php';
                                             <strong class="text-ink small">Resubmit for Verification</strong>
                                         </div>
                                         <p class="small text-muted-custom mb-3" style="font-size: 11.5px;">
-                                            Update your student identity or correct your email and submit updated proof (COR/ID) to restore verified status.
+                                            <?php if (($user['role'] ?? '') === 'employer'): ?>
+                                                Update your company credentials or submit updated business documents (Business / Mayor's Permit, BIR Form 2303) to restore verified status.
+                                            <?php else: ?>
+                                                Update your student identity or correct your email and submit updated proof (COR/ID) to restore verified status.
+                                            <?php endif; ?>
                                         </p>
                                     </div>
                                     <?php if (($user['role'] ?? '') === 'student'): ?>
                                         <button type="button" class="btn-pill-outline btn-pill-sm w-100 text-center" data-bs-toggle="modal" data-bs-target="#requestProfileModal">
                                             <i class="bi bi-pencil-square me-1"></i> Update Info &amp; Proof
+                                        </button>
+                                    <?php elseif (($user['role'] ?? '') === 'employer'): ?>
+                                        <button type="button" class="btn-pill-outline btn-pill-sm w-100 text-center" data-bs-toggle="modal" data-bs-target="#requestEmployerModal">
+                                            <i class="bi bi-file-earmark-arrow-up me-1"></i> Update Info &amp; Documents
                                         </button>
                                     <?php endif; ?>
                                 </div>
@@ -272,22 +280,85 @@ require_once __DIR__ . '/../header.php';
                                 <?php endif; ?>
 
                                 <?php if (($user['role'] ?? '') === 'employer'): ?>
+                                    <!-- Company & Accreditation Identity Lock Section -->
+                                    <div class="p-3 bg-cream rounded-4 border border-line mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-shield-lock-fill text-accent fs-5"></i>
+                                                <span class="small fw-bold text-ink">Company &amp; Accreditation Identity Record</span>
+                                            </div>
+                                            <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="modal" data-bs-target="#requestEmployerModal">
+                                                <i class="bi bi-pencil-square"></i> Request Record Update
+                                            </button>
+                                        </div>
+                                        <p class="small text-muted-custom mb-3" style="font-size: 11.5px;">
+                                            To maintain institutional compliance and verified employer trust, official company credentials and business permits are locked. Modifications require administrative re-verification.
+                                        </p>
+
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Company / Office Name</span>
+                                                    <strong class="text-ink small"><?= htmlspecialchars($user['organization_name'] ?? ($user['department'] ?? 'Partner Organization')) ?></strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Authorized Representative</span>
+                                                    <strong class="text-ink small"><?= htmlspecialchars($user['name']) ?></strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Employer Entity Type</span>
+                                                    <span class="text-ink small fw-semibold">
+                                                        <?= (($user['employer_type'] ?? '') === 'approved_partner') ? 'Approved Industry Partner' : 'University Department / Office' ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                    <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Accreditation Status</span>
+                                                    <span class="text-ink small fw-semibold">
+                                                        <?php if (($user['verification_status'] ?? '') === 'verified'): ?>
+                                                            <span class="text-success"><i class="bi bi-patch-check-fill me-1"></i>Verified &amp; Accredited</span>
+                                                        <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
+                                                            <span class="text-danger"><i class="bi bi-exclamation-octagon-fill me-1"></i>Revision Required</span>
+                                                        <?php else: ?>
+                                                            <span class="text-warning"><i class="bi bi-hourglass-split me-1"></i>Pending Verification</span>
+                                                        <?php endif; ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <?php if (!empty($user['business_permit']) || !empty($user['permit_file'])): 
+                                                $permit_doc = $user['business_permit'] ?? $user['permit_file'];
+                                            ?>
+                                                <div class="col-12 mt-1">
+                                                    <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-white rounded-3 border border-line small">
+                                                        <span class="text-muted-custom"><i class="bi bi-file-earmark-check text-accent me-1"></i>Accreditation Proof on File</span>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($permit_doc)) ?></span>
+                                                            <a href="<?= htmlspecialchars($permit_doc) ?>" target="_blank" rel="noopener noreferrer" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px;">
+                                                                <i class="bi bi-eye"></i> View
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <!-- Editable Operational Workplace Settings -->
                                     <div class="row g-3 mb-3">
                                         <div class="col-md-6">
-                                            <label class="form-label" for="settings-name">Representative Name <span class="text-danger">*</span></label>
-                                            <input type="text" name="name" id="settings-name" class="form-control" value="<?= htmlspecialchars($user['name']) ?>" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Company / Office Name</label>
-                                            <input type="text" name="organization_name" class="form-control" value="<?= htmlspecialchars($user['organization_name'] ?? ($user['department'] ?? '')) ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Workplace Location</label>
-                                            <input type="text" name="office_location" class="form-control" value="<?= htmlspecialchars($user['office_location'] ?? '') ?>" placeholder="Campus Office / Tech Park">
+                                            <label class="form-label" for="settings-location">Workplace Location / Suite</label>
+                                            <input type="text" name="office_location" id="settings-location" class="form-control" value="<?= htmlspecialchars($user['office_location'] ?? '') ?>" placeholder="Campus Office / Tech Park / Suite No.">
+                                            <span class="small text-muted-custom" style="font-size: 11px;">Primary reporting office or physical facility for student assistants.</span>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label" for="settings-dept">Department / Division</label>
-                                            <input type="text" name="department" id="settings-dept" class="form-control" value="<?= htmlspecialchars($user['department'] ?? '') ?>">
+                                            <input type="text" name="department" id="settings-dept" class="form-control" value="<?= htmlspecialchars($user['department'] ?? '') ?>" placeholder="e.g. IT Department, Creative Media">
+                                            <span class="small text-muted-custom" style="font-size: 11px;">Specific operational unit posting student assistant requisitions.</span>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -625,6 +696,101 @@ require_once __DIR__ . '/../header.php';
                 <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn-pill btn-pill-sm">
                     <i class="bi bi-send-fill"></i> Submit Verification
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if (($user['role'] ?? '') === 'employer'): ?>
+<!-- Employer Accreditation & Profile Request Modal -->
+<div class="modal fade" id="requestEmployerModal" tabindex="-1" aria-labelledby="requestEmployerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form action="settings.php" method="POST" enctype="multipart/form-data" class="modal-content card-paper border-0 shadow-lg p-0 overflow-hidden">
+            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+            <input type="hidden" name="action" value="request_employer_profile_change">
+
+            <div class="modal-header bg-cream border-bottom border-line py-2 px-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="icon-circle icon-circle-sm icon-circle-success" style="width: 32px; height: 32px; font-size: 14px;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold text-ink mb-0" id="requestEmployerModalLabel">Accreditation &amp; Company Profile Update</h6>
+                        <span class="small text-muted-custom" style="font-size: 11px;">Update official organization credentials and upload supporting business documents</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-3">
+                <div class="row g-3">
+                    <!-- Left Column: Company & Representative Credentials -->
+                    <div class="col-md-6 border-end-md border-line pe-md-3">
+                        <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
+                            <i class="bi bi-building text-accent me-1"></i> Organization Identity
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small mb-1" for="emp-req-org">Company / Office Name <span class="text-danger">*</span></label>
+                            <input type="text" name="organization_name" id="emp-req-org" class="form-control form-control-sm" value="<?= htmlspecialchars($user['organization_name'] ?? ($user['department'] ?? '')) ?>" required>
+                            <span class="small text-muted-custom" style="font-size: 10.5px;">Official business or department name as accredited.</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small mb-1" for="emp-req-name">Authorized Representative Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="emp-req-name" class="form-control form-control-sm" value="<?= htmlspecialchars($user['name']) ?>" required>
+                            <span class="small text-muted-custom" style="font-size: 10.5px;">Designated signatory or supervisor managing campus student assistants.</span>
+                        </div>
+
+                        <div class="p-2 px-3 bg-cream rounded-3 border border-line small text-muted-custom" style="font-size: 11px;">
+                            <i class="bi bi-info-circle text-accent me-1"></i>
+                            Official institutional email (<strong class="text-ink"><?= htmlspecialchars($user['email']) ?></strong>) cannot be edited here. Contact Career Services / MIS for email updates.
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Document Proof & Justification -->
+                    <div class="col-md-6 ps-md-3 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="small fw-bold text-ink text-uppercase mb-2 pb-1 border-bottom border-line" style="font-size: 11px; letter-spacing: 0.5px;">
+                                <i class="bi bi-file-earmark-check text-accent me-1"></i> Accreditation Proof Document
+                            </div>
+
+                            <?php 
+                            $is_rejected = (($user['verification_status'] ?? '') === 'rejected');
+                            $has_existing_permit = !empty($user['business_permit']) || !empty($user['permit_file']);
+                            $doc_required = $is_rejected || !$has_existing_permit;
+                            ?>
+
+                            <div class="mb-3">
+                                <label class="form-label small mb-1" for="emp-req-permit">
+                                    Business Permit / Mayor's Permit / BIR 2303 <?= $doc_required ? '<span class="text-danger">*</span>' : '<span class="text-muted-custom fw-normal">(Optional if unchanged)</span>' ?>
+                                </label>
+                                <input type="file" name="permit_file" id="emp-req-permit" class="form-control form-control-sm" accept="image/*,application/pdf" <?= $doc_required ? 'required' : '' ?>>
+                                <span class="small text-muted-custom mt-1 d-block" style="font-size: 10.5px;">
+                                    Attach valid City Business Permit, Mayor's Permit, or BIR Form 2303 registration certificate (PDF, JPG, PNG &le; 5MB).
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small mb-1" for="emp-req-reason">Remarks / Revision Justification</label>
+                                <textarea name="reason" id="emp-req-reason" rows="3" class="form-control form-control-sm" placeholder="e.g. Attached requested Mayor's Business Permit and updated BIR 2303 certificate."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="p-2 px-3 bg-cream rounded-3 border border-line small text-muted-custom" style="font-size: 11px;">
+                            <i class="bi bi-shield-lock-fill text-accent me-1"></i>
+                            Submitting will update your credentials and place your account into the Administrative Accreditation Queue for verification.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-surface border-top border-line py-2 px-3">
+                <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn-pill btn-pill-sm">
+                    <i class="bi bi-send-fill"></i> Submit for Verification
                 </button>
             </div>
         </form>

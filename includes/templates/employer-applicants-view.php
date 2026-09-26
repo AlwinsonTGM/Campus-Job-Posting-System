@@ -74,9 +74,9 @@ require_once __DIR__ . '/../header.php';
                             </div>
 
                             <div class="col-12 col-md-4 col-lg-4">
-                                <label class="form-label" for="filter-fit">Filter by Laya Advisory Fit</label>
+                                <label class="form-label" for="filter-fit">Filter by Schedule Availability</label>
                                 <select name="fit" id="filter-fit" class="form-select">
-                                    <option value="">All Advisory Levels</option>
+                                    <option value="">All Availability Levels</option>
                                     <option value="optimal" <?= ($fit_filter === 'optimal') ? 'selected' : '' ?>>Strong Fit (20h+ / Optimal)</option>
                                     <option value="moderate" <?= ($fit_filter === 'moderate') ? 'selected' : '' ?>>Moderate Fit (12–16h / Balanced)</option>
                                     <option value="limited" <?= ($fit_filter === 'limited') ? 'selected' : '' ?>>Limited Fit (4–8h / Limited Hours)</option>
@@ -88,8 +88,8 @@ require_once __DIR__ . '/../header.php';
                                 <label class="form-label" for="filter-sort">Rank Candidates</label>
                                 <select name="sort" id="filter-sort" class="form-select">
                                     <option value="">Default (Latest Submissions)</option>
-                                    <option value="laya_desc" <?= ($rank_sort === 'laya_desc') ? 'selected' : '' ?>>Laya Fit: Highest Availability</option>
-                                    <option value="laya_asc" <?= ($rank_sort === 'laya_asc') ? 'selected' : '' ?>>Laya Fit: Conflict Risk First</option>
+                                    <option value="sched_desc" <?= ($rank_sort === 'sched_desc') ? 'selected' : '' ?>>Availability: Highest Availability</option>
+                                    <option value="sched_asc" <?= ($rank_sort === 'sched_asc') ? 'selected' : '' ?>>Availability: Conflict Risk First</option>
                                     <option value="name_asc" <?= ($rank_sort === 'name_asc') ? 'selected' : '' ?>>Candidate Name (A–Z)</option>
                                     <option value="date_asc" <?= ($rank_sort === 'date_asc') ? 'selected' : '' ?>>Date Applied (Oldest First)</option>
                                 </select>
@@ -149,7 +149,7 @@ require_once __DIR__ . '/../header.php';
                                         <th class="ps-4">Candidate Profile</th>
                                         <th>Target Vacancy</th>
                                         <th>Degree Program</th>
-                                        <th>Laya Advisory</th>
+                                        <th>Schedule Availability</th>
                                         <th>Applied Date</th>
                                         <th>Status</th>
                                         <th class="pe-4">Actions</th>
@@ -157,7 +157,7 @@ require_once __DIR__ . '/../header.php';
                                 </thead>
                                 <tbody>
                                     <?php foreach ($all_dept_apps as $app): 
-                                        $laya_fit = $app['laya_fit'] ?? laya_get_candidate_fit($app);
+                                        $sched_fit = $app['schedule_summary'] ?? get_schedule_summary($app);
                                     ?>
                                         <tr>
                                             <td class="ps-4" data-label="Candidate Profile">
@@ -176,14 +176,14 @@ require_once __DIR__ . '/../header.php';
                                                 <div class="small fw-semibold text-ink"><?= htmlspecialchars($app['course'] ?? 'BS Information Systems') ?></div>
                                                 <div class="small text-muted-custom"><?= htmlspecialchars($app['year_level'] ?? '2nd Year') ?></div>
                                             </td>
-                                            <td data-label="Laya Advisory">
+                                            <td data-label="Schedule Availability">
                                                 <div class="d-inline-flex flex-column align-items-start gap-1">
-                                                    <span class="badge <?= $laya_fit['badge_bg'] ?> border py-1 px-2 d-inline-flex align-items-center gap-1" style="font-size: 11.5px; font-weight: 600;">
-                                                        <i class="bi <?= $laya_fit['icon'] ?>"></i>
-                                                        <?= htmlspecialchars($laya_fit['label']) ?>
+                                                    <span class="badge <?= $sched_fit['badge_bg'] ?> border py-1 px-2 d-inline-flex align-items-center gap-1" style="font-size: 11.5px; font-weight: 600;">
+                                                        <i class="bi <?= $sched_fit['icon'] ?>"></i>
+                                                        <?= htmlspecialchars($sched_fit['label']) ?>
                                                     </span>
                                                     <span class="text-muted-custom" style="font-size: 11px;">
-                                                        <?= htmlspecialchars($laya_fit['hours_desc']) ?>
+                                                        <?= htmlspecialchars($sched_fit['hours_desc']) ?>
                                                     </span>
                                                 </div>
                                             </td>
@@ -210,8 +210,8 @@ require_once __DIR__ . '/../header.php';
                             </table>
                         </div>
                         <div class="px-4 py-2 border-top border-line bg-surface d-flex align-items-center gap-2">
-                            <i class="bi bi-info-circle text-muted-custom flex-shrink-0"></i>
-                            <span class="small text-muted-custom" style="font-size: 11px;">Laya Advisory insights only — the supervisor maintains full discretion over shortlisting and hiring decisions.</span>
+                            <i class="bi bi-clock-history text-muted-custom flex-shrink-0"></i>
+                            <span class="small text-muted-custom" style="font-size: 11px;">Schedule availability is evaluated from student declared shift slots against the institutional 20-hour workload policy.</span>
                         </div>
                     <?php endif; ?>
                 </div>

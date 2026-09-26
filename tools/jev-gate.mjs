@@ -3,17 +3,14 @@
  * jev-gate.mjs — VERY STRICT deterministic quality gate for JEV outputs.
  *
  * Strict superset of jev-verify.mjs static checks. Runs OFFLINE by default
- * (no API key, no Laya daemon required). Opt-in network check via --api.
+ * (no API key required). Opt-in network check via --api.
  *
  * Usage:
  *   node tools/jev-gate.mjs --file <path> [--api] [--apply] [--json]
  *   node tools/jev-gate.mjs --chunk <paths...> [--api]
- *   node tools/jev-gate.mjs --laya-suite            gate all Laya-touching files
  *   node tools/jev-gate.mjs --structure             aggregator + controller/view sweep
  *
  *   npm run jev:gate -- --file employer/review-app.php
- *   npm run jev:gate:strict -- --file includes/services/laya-service.php
- *   npm run jev:check:laya
  *   npm run jev:structure
  *
  * Exit codes: 0 = PASS, 1 = FAIL, 2 = usage/config error
@@ -29,20 +26,13 @@
  *      - view (*-view.php) bans: header(, session_start(, $pdo->, mysqli_,
  *        update_/create_/delete_/approve_/reject_ mutations,
  *        get_jobs(/get_applications(/get_all_users(/get_user (service reads belong in controller)
- *        allows: laya_get_*, htmlspecialchars, generate_csrf_token, require header/navbar/footer
+ *        allows: htmlspecialchars, generate_csrf_token, require header/navbar/footer
  *  S6  aggregator thinness: includes/data-helper.php + includes/ai-config.php
  *      must be <= 60 lines and contain only session/define/require_once
- *  S7  Laya advisory-only (files touching laya OR --laya-suite):
- *      - laya-service.php bans auto-mutation fns + header(Location
- *      - laya-service.php must have: declare(strict_types=1), LAYA_ENDPOINT,
- *        laya_is_available, $_SESSION['laya_guidance'] cache, timeout guard
- *      - controller call-sites must guard laya_get_* with laya_is_available()
- *      - views showing laya_* must contain "Advisory" + human-discretion label
- *        (/discretion|human decides|insights only|maintains full/i)
- *  S8  size caps (strict): controller <= 450 lines, view <= 1100 lines,
+ *  S7  size caps (strict): controller <= 450 lines, view <= 1100 lines,
  *      service <= 900 lines — else FAIL (split_monolith required)
  *
- *  API MODE (--api): additionally calls Jev primary API with Laya fallback,
+ *  API MODE (--api): additionally calls Jev primary API,
  *  requiring all four noul >= 0.80 AND verdict == "verified".
  *  API error => FAIL closed (never silently pass).
  */
@@ -55,26 +45,6 @@ import { spawnSync } from "node:child_process";
 // ── config ─────────────────────────────────────────────────────────────────
 const STRICT_NOUL_MIN = 0.8;
 const LIMITS = { controller: 450, view: 1100, service: 900, aggregator: 60 };
-const LAYA_SUITE_FILES = [
-  "includes/services/laya-service.php",
-  "includes/data-helper.php",
-  "employer/review-app.php",
-  "employer/applicants.php",
-  "employer/dashboard.php",
-  "employer/create-job.php",
-  "student/job-details.php",
-  "student/apply.php",
-  "admin/users.php",
-  "admin/reports.php",
-  "includes/templates/employer-review-app-view.php",
-  "includes/templates/employer-applicants-view.php",
-  "includes/templates/employer-dashboard-view.php",
-  "includes/templates/employer-create-job-view.php",
-  "includes/templates/student-job-details-view.php",
-  "includes/templates/student-apply-view.php",
-  "includes/templates/admin-users-view.php",
-  "includes/templates/admin-reports-view.php",
-];
 const STRUCTURE_FILES = [
   "includes/data-helper.php",
   "includes/ai-config.php",
@@ -182,48 +152,6 @@ function checkAggregatorThin(rel, code) {
   return { ok, lines, reason: ok ? `thin (${lines} lines)` : `fat: ${lines} lines (max ${LIMITS.aggregator}), non-wiring lines: ${bad.slice(0, 3).join(" | ").slice(0, 160)}` };
 }
 
-const LAYA_BANNED_IN_SERVICE = [
-  "update_application_status", "update_user_verification",
-  "approve_profile_request", "reject_profile_request",
-  "create_application", "delete_application", "create_job",
-];
-function checkLayaService(rel, code) {
-  if (!rel.endsWith("laya-service.php")) return { checks: [], fail: [] };
-  const checks = [];
-  const fail = [];
-  for (const fn of LAYA_BANNED_IN_SERVICE) {
-    if (new RegExp(`\\b${fn}\\s*\\(`).test(code)) fail.push(`banned auto-mutation ${fn}() inside laya-service.php`);
-    else checks.push(`no ${fn}() OK`);
-  }
-  if (/header\s*\([^)]*Location/.test(code)) fail.push("header(Location) redirect inside laya-service.php");
-  else checks.push("no redirect OK");
-  const must = [
-    [/declare\s*\(\s*strict_types\s*=\s*1/, "declare(strict_types=1)"],
-    [/LAYA_ENDPOINT/, "LAYA_ENDPOINT const"],
-    [/function\s+laya_is_available/, "laya_is_available()"],
-    [/\$_SESSION\['laya_guidance'\]/, "session cache $_SESSION['laya_guidance']"],
-    [/timeout/i, "timeout guard"],
-  ];
-  for (const [re, label] of must) {
-    if (re.test(code)) checks.push(`${label} OK`);
-    else fail.push(`missing ${label} in laya-service.php`);
-  }
-  return { checks, fail };
-}
-
-function checkLayaCallSite(rel, code) {
-  const touches = /laya_get_|laya_fit|laya_guidance|laya_available|laya_student_fit|laya_risks|laya_job_fit|laya_hiring_risks|laya_requisition|laya_apply_self|laya_req_check|laya_selfcheck|laya_verification|laya_quota|laya_triage|laya_narrative/.test(code);
-  if (!touches) return { applies: false, fail: [] };
-  const fail = [];
-  if (/laya_get_applicant_guidance/.test(code) && !/laya_is_available\s*\(/.test(code))
-    fail.push(`${rel}: calls laya_get_applicant_guidance() without laya_is_available() guard`);
-  if (isView(rel)) {
-    if (!/Advisory/i.test(code)) fail.push(`${rel}: shows Laya output without "Advisory" label`);
-    if (!/discretion|human decides|insights only|maintains full/i.test(code))
-      fail.push(`${rel}: shows Laya output without human-discretion label`);
-  }
-  return { applies: true, fail };
-}
 
 function checkSizeCap(rel, code) {
   const lines = code.split(/\r?\n/).length;
@@ -252,12 +180,10 @@ async function callJevStrict(combined, apiKey) {
       return await r.json();
     } finally { clearTimeout(t); }
   };
-  if (apiKey && !process.env.FORCE_LAYA) {
-    try { return { data: await tryFetch("https://api.typesafe.ai/v1/systemone", { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }), engine: "jev" }; }
-    catch (e) { console.warn(`[jev-gate] Jev primary failed (${e.message}) — cascading to Laya :8100...`); }
+  if (apiKey) {
+    return { data: await tryFetch("https://api.typesafe.ai/v1/systemone", { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }), engine: "jev" };
   }
-  const r = await tryFetch("http://127.0.0.1:8100/predict", { "Content-Type": "application/json" });
-  return { data: r.data ?? r, engine: "laya" };
+  throw new Error("No TYPESAFE_API_KEY provided for --api mode.");
 }
 
 // ── main ───────────────────────────────────────────────────────────────────
@@ -270,8 +196,7 @@ async function main() {
   const against = getFlag("--against");
 
   let patterns = [];
-  if (argv.includes("--laya-suite")) patterns = [...LAYA_SUITE_FILES];
-  else if (argv.includes("--structure")) patterns = [...STRUCTURE_FILES];
+  if (argv.includes("--structure")) patterns = [...STRUCTURE_FILES];
   else {
     const chunkIdx = argv.indexOf("--chunk");
     if (chunkIdx !== -1) for (let i = chunkIdx + 1; i < argv.length; i++) { if (argv[i].startsWith("--")) break; patterns.push(argv[i]); }
@@ -285,7 +210,7 @@ async function main() {
       if (existsSync(a) && !patterns.includes(a)) patterns.push(a);
     }
   }
-  if (!patterns.length) { console.error("Usage: node tools/jev-gate.mjs --file <p> | --chunk <ps...> | --laya-suite | --structure [--api] [--apply] [--json]"); process.exit(2); }
+  if (!patterns.length) { console.error("Usage: node tools/jev-gate.mjs --file <p> | --chunk <ps...> | --structure [--api] [--apply] [--json]"); process.exit(2); }
 
   const absFiles = expandPaths(patterns);
   if (!absFiles.length) { console.error("[jev-gate] No files matched."); process.exit(2); }
@@ -310,12 +235,8 @@ async function main() {
     for (const v of checkViewPurity(rel, code)) fileFail.push(`S5 view purity: ${v}`);
     const ag = checkAggregatorThin(rel, code);
     if (!ag.ok) fileFail.push(`S6 aggregator: ${ag.reason}`);
-    const ls = checkLayaService(rel, code);
-    fileFail.push(...ls.fail.map((m) => `S7 ${m}`));
-    const cs = checkLayaCallSite(rel, code);
-    fileFail.push(...cs.fail.map((m) => `S7 ${m}`));
     const sc = checkSizeCap(rel, code);
-    if (!sc.ok) fileFail.push(`S8 ${sc.reason}`);
+    if (!sc.ok) fileFail.push(`S7 ${sc.reason}`);
 
     let baselineMissing = [];
     if (against && existsSync(against)) {
@@ -339,12 +260,6 @@ async function main() {
     const missing = base.filter((n) => !have.has(n));
     if (missing.length) failures.push(`  ✗ S4 missing vs baseline (${missing.length}): ${missing.slice(0, 12).join(", ")}${missing.length > 12 ? "…" : ""}`);
     else passes.push("  ✓ S4 baseline inventory intact");
-  }
-
-  // S7-laya-suite extra: suite must include the single-model service file
-  if (argv.includes("--laya-suite")) {
-    const rels = absFiles.map(norm);
-    if (!rels.some((r) => r.endsWith("laya-service.php"))) failures.push("  ✗ S7 laya-suite must include includes/services/laya-service.php (single-model rule)");
   }
 
   // Optional API at 0.80 + verdict==verified

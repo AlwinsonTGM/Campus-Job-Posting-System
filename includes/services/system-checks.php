@@ -6,9 +6,6 @@ declare(strict_types=1);
  * 
  * Houses deterministic business logic, schedule calculations, verification
  * checklist evaluations, and department analytics.
- * 
- * Separated from ML decision services to keep genuine AI distinct from
- * standard procedural calculations.
  */
 
 if (!defined('SYS_STALLED_APPS_MIN')) {
@@ -93,20 +90,6 @@ function get_schedule_summary(array $application, ?array $job = null): array {
         'icon'          => $icon,
         'advisory_note' => $note,
     ];
-}
-
-/**
- * Backward compatibility alias for candidate schedule evaluation
- */
-function laya_get_candidate_fit(array $application, ?array $job = null): array {
-    $res = get_schedule_summary($application, $job);
-    $res['program_fit'] = 'Candidate Profile Evaluated';
-    $app_id = $application['id'] ?? 0;
-    if ($app_id && !empty($_SESSION['laya_guidance'][$app_id]['qualification_assessment']['summary'])) {
-        $res['program_fit'] = $_SESSION['laya_guidance'][$app_id]['qualification_assessment']['summary'];
-    }
-    $res['has_laya_dossier'] = !empty($_SESSION['laya_guidance'][$app_id]);
-    return $res;
 }
 
 /**
@@ -223,12 +206,6 @@ function get_student_schedule_fit(array $student, array $job, int $applicant_cou
     ];
 }
 
-/**
- * Backward compatibility alias for student schedule fit
- */
-function laya_job_fit_for_student(array $student, array $job, int $applicant_count = 0): array {
-    return get_student_schedule_fit($student, $job, $applicant_count);
-}
 
 /**
  * Verification queue triage scoring document completeness.
@@ -374,12 +351,6 @@ function get_verification_triage(array $pending_users, array $pending_profile_re
     ];
 }
 
-/**
- * Backward compatibility alias for verification triage
- */
-function laya_verification_triage(array $pending_users, array $pending_profile_requests): array {
-    return get_verification_triage($pending_users, $pending_profile_requests);
-}
 
 /**
  * Quota and conversion analytics over department rollups.
@@ -447,9 +418,3 @@ function get_quota_narrative(array $departments, int $total_jobs, int $total_app
     return ['funnel' => $funnel, 'notes' => $notes, 'note_count' => $flagged, 'summary' => $summary];
 }
 
-/**
- * Backward compatibility alias for quota narrative
- */
-function laya_quota_narrative(array $departments, int $total_jobs, int $total_apps, int $total_hired, int $total_interviews): array {
-    return get_quota_narrative($departments, $total_jobs, $total_apps, $total_hired, $total_interviews);
-}

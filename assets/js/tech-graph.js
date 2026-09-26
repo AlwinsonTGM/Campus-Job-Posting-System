@@ -8,7 +8,7 @@
   'use strict';
 
   // --------------------------------------------------------------------------
-  // 1. GRAPH DATA SPECIFICATION (14 Technologies + 4 Clusters + 1 Central Hub)
+  // 1. GRAPH DATA SPECIFICATION (15 Technologies + 4 Clusters + 1 Central Hub)
   // --------------------------------------------------------------------------
   const GRAPH_DATA = {
     nodes: [
@@ -76,6 +76,15 @@
         tag: '3D Engine & Mascot',
         icon: 'bi-boxes',
         detail: 'Hardware-accelerated 3D mascot (cute_robot.glb) with 13 procedural kinematics & OLED visor shader.'
+      },
+      {
+        id: 'chartjs',
+        name: 'Chart.js 4.4 Data Visualizations',
+        shortName: 'Chart.js',
+        cluster: 'frontend',
+        tag: 'Analytics & Charts',
+        icon: 'bi-bar-chart-line-fill',
+        detail: 'Interactive canvas data visualizations for administrative reports, hiring quota progress gauges, and applicant demographics.'
       },
       {
         id: 'css-tokens',
@@ -211,6 +220,7 @@
 
       // Frontend Cluster to Leaves
       { source: 'c-frontend', target: 'threejs', length: 65, width: 1.4 },
+      { source: 'c-frontend', target: 'chartjs', length: 65, width: 1.4 },
       { source: 'c-frontend', target: 'css-tokens', length: 60, width: 1.4 },
       { source: 'c-frontend', target: 'bootstrap', length: 60, width: 1.4 },
       { source: 'c-frontend', target: 'vanillajs', length: 65, width: 1.4 },
@@ -235,7 +245,8 @@
       { source: 'php', target: 'pdo', length: 75, width: 0.9, dashed: true },
       { source: 'nvidia', target: 'fallback-ai', length: 55, width: 0.9, dashed: true },
       { source: 'vanillajs', target: 'poller', length: 75, width: 0.9, dashed: true },
-      { source: 'css-tokens', target: 'bootstrap', length: 55, width: 0.9, dashed: true }
+      { source: 'css-tokens', target: 'bootstrap', length: 55, width: 0.9, dashed: true },
+      { source: 'chartjs', target: 'vanillajs', length: 55, width: 0.9, dashed: true }
     ]
   };
 
@@ -392,9 +403,9 @@
         const leaves = this.nodes.filter(n => n.cluster === cId && n.id !== clusterNode.id);
         const count = leaves.length;
         const baseAngle = Math.atan2(clusterNode.y - cy, clusterNode.x - cx);
-        const arc = Math.PI * 0.65;
+        const arc = (count >= 5) ? (Math.PI * 0.82) : (Math.PI * 0.65);
         const startAngle = baseAngle - arc / 2;
-        const leafDist = 65;
+        const leafDist = (count >= 5) ? 70 : 65;
 
         leaves.forEach((leaf, idx) => {
           const angle = (count > 1) ? (startAngle + (idx / (count - 1)) * arc) : baseAngle;

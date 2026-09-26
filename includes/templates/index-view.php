@@ -107,9 +107,13 @@ require_once __DIR__ . '/../header.php';
                                             </button>
                                         </div>
 
-                                        <!-- Speech Bubble Footer with expand button & next tip button -->
-                                        <div class="speech-bubble-footer justify-content-end">
-                                            <div class="speech-footer-actions d-flex align-items-center gap-2">
+                                        <!-- Speech Bubble Footer with privacy link, expand button & next tip button -->
+                                        <div class="speech-bubble-footer d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                            <div class="d-flex align-items-center gap-1 text-muted-custom" style="font-size: 0.68rem;">
+                                                <i class="bi bi-cpu text-accent"></i>
+                                                <span>NVIDIA AI &bull; <a href="privacy.php#sec-4" target="_blank" class="text-ink text-decoration-underline">Privacy &amp; Training Notice</a></span>
+                                            </div>
+                                            <div class="speech-footer-actions d-flex align-items-center gap-2 ms-auto">
                                                 <button type="button" id="speech-fullscreen-btn" class="speech-fullscreen-btn" title="Open Fullscreen Studio" aria-label="Expand Fullscreen Studio">
                                                     <i class="bi bi-arrows-fullscreen"></i>
                                                     <span>Expand</span>
@@ -955,6 +959,11 @@ require_once __DIR__ . '/../header.php';
                                 <button type="submit" id="fullscreen-submit-btn" class="fs-submit-btn" title="Send question">
                                     <i class="bi bi-arrow-up-circle-fill"></i>
                                 </button>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center gap-1 mt-2 text-muted-custom text-center" style="font-size: 0.72rem;">
+                                <i class="bi bi-shield-check text-accent flex-shrink-0"></i>
+                                <span>Powered by NVIDIA Cloud AI (Free Tier). Conversations may be used for AI model training. Do not submit sensitive data.</span>
+                                <a href="privacy.php#sec-4" target="_blank" class="text-ink fw-bold text-decoration-underline ms-1 text-nowrap">Privacy Notice</a>
                             </div>
                         </form>
                     </div>

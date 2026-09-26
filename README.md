@@ -23,7 +23,7 @@ The platform connects students with on-campus employment opportunities (e.g., St
 - **Partner Accreditation Queue**: Inspect business permits, SEC/DTI documents, and verify campus partner employers.
 - **Student Profile Change Queue**: Review and approve official academic profile modification requests.
 - **Category Taxonomy Management**: Real-time CRUD for campus job categories with Bootstrap Icons.
-- **Institutional Analytics & Reports**: Pure-CSS hiring quota gauges, in-demand job charts, and printable PDF export via `window.print()`.
+- **Institutional Analytics & Reports**: Chart.js 4.4 interactive hiring quota gauges, departmental vacancy distribution charts, applicant analytics, and printable PDF export via `window.print()`.
 - **Global Updates Management**: Full editorial control over Career Center news, tips, and system alerts.
 
 ### 🌐 Universal Enhancements
@@ -35,10 +35,11 @@ The platform connects students with on-campus employment opportunities (e.g., St
 
 ## 🛠️ Technology Stack & Architecture
 
-- **Backend**: Native PHP 8.2 (Modular Architecture, zero external dependencies).
-- **Data Tier**: Flat-file JSON Datastores in `data/` (`users.json`, `jobs.json`, `applications.json`, `categories.json`, `updates.json`, `devblogs.json`, `profile_requests.json`) protected by `data/.htaccess`.
-- **Frontend**: Server-Side Rendered (SSR) HTML5, Bootstrap 5.3, Bootstrap Icons, Custom Paper CSS3, Vanilla JavaScript (ES6).
-- **Security**: Multi-tier RBAC (`student`, `employer`, `admin`), Anti-CSRF token verification on all POST actions, IDOR authorization contracts (`can_manage_job`, `can_review_application`, `can_view_student_resume`), Bcrypt password hashing (`PASSWORD_DEFAULT`), and client-side double-submit debouncing.
+- **Backend**: Native PHP 8.2 (Modular Architecture, zero external runtime dependencies).
+- **Data Tier**: Flat-file JSON Datastores in `data/` (`users.json`, `jobs.json`, `applications.json`, `categories.json`, `updates.json`, `devblogs.json`, `profile_requests.json`) protected by `data/.htaccess` with dual Dataset Switcher (Demo Fixtures vs. Real Clean Slate).
+- **Frontend & Data Visualization**: Server-Side Rendered (SSR) HTML5, Bootstrap 5.3, Bootstrap Icons, Custom Paper CSS3, **Chart.js 4.4+ (Canvas visualizations & interactive analytics)**, Three.js WebGL (Interactive 3D mascot kinematics), and Vanilla JavaScript (ES6+).
+- **AI Cloud & Intelligence Gateway**: Dual-tier NVIDIA NIM AI Cloud Inference Gateway (Nemotron-3.5, Llama-3.2/3.3, Mistral NeMo, DeepSeek V4) with localized rule-based heuristic fallback for zero-downtime offline assistance.
+- **Security & Access Control**: Multi-tier RBAC (`student`, `employer`, `admin`), Anti-CSRF token verification on all POST actions, IDOR authorization contracts (`can_manage_job`, `can_review_application`, `can_view_student_resume`), Bcrypt password hashing (`PASSWORD_DEFAULT`), and client-side double-submit debouncing.
 - **Test Automation**: Playwright End-to-End test harness in TypeScript (`tests/e2e/`) with 100% pass rate across 40+ specs.
 
 ---

@@ -20,4 +20,3 @@ require_once __DIR__ . '/services/user-service.php';
 require_once __DIR__ . '/services/job-service.php';
 require_once __DIR__ . '/services/system-service.php';
 require_once __DIR__ . '/services/system-checks.php';
-require_once __DIR__ . '/services/laya-service.php';

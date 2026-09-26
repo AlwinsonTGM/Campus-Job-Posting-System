@@ -76,14 +76,14 @@ require_once __DIR__ . '/../header.php';
                 <?php endif; ?>
 
                 <!-- Verification triage: document completeness summary -->
-                <?php $triage_items = $laya_triage['items'] ?? []; ?>
+                <?php $triage_items = $verification_triage['items'] ?? []; ?>
                 <?php if (!empty($triage_items)): ?>
                     <div class="card-paper p-4 mb-4 border border-line">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
                                 <i class="bi bi-clipboard-check text-accent"></i> Verification Queue Triage
                             </span>
-                            <span class="small text-muted-custom"><?= htmlspecialchars($laya_triage['summary'] ?? '') ?></span>
+                            <span class="small text-muted-custom"><?= htmlspecialchars($verification_triage['summary'] ?? '') ?></span>
                         </div>
                         <div class="d-flex flex-column gap-2">
                             <?php foreach ($triage_items as $item): ?>

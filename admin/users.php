@@ -112,12 +112,12 @@ if ($search) {
     $users = array_filter($users, fn($u) => stripos($u['name'] ?? '', $q) !== false || stripos($u['email'] ?? '', $q) !== false || stripos($u['student_id'] ?? '', $q) !== false || stripos($u['organization_name'] ?? '', $q) !== false || stripos($u['accreditation_number'] ?? '', $q) !== false);
 }
 
-// Phase 3-A: Laya verification triage (read-only completeness scoring; never
+// Verification queue triage (read-only completeness scoring; never
 // approves or rejects — POST actions stay sole gate). Scope note: account items
 // respect the current role/search filter ($users), while profile requests are
 // always unfiltered (that queue has no filter in this controller).
-$laya_triage_users = array_values(array_filter($users, fn($u) => ($u['verification_status'] ?? '') === 'pending_approval'));
-$laya_triage = laya_verification_triage($laya_triage_users, array_values($pending_profile_requests));
+$triage_users = array_values(array_filter($users, fn($u) => ($u['verification_status'] ?? '') === 'pending_approval'));
+$verification_triage = get_verification_triage($triage_users, array_values($pending_profile_requests));
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-users-view.php';
 

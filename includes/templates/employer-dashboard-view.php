@@ -49,14 +49,19 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 <?php elseif (($user['verification_status'] ?? '') === 'rejected'): ?>
                     <div class="alert-paper alert-paper--danger mb-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-exclamation-triangle-fill text-danger fs-3 flex-shrink-0"></i>
-                            <div>
-                                <strong class="text-ink d-block mb-1">Accreditation Requires Revision</strong>
-                                <span class="small text-muted-custom">
-                                    <?= htmlspecialchars($user['rejection_reason'] ?: 'Your permit documents or institutional accreditation were not approved.') ?>
-                                </span>
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-exclamation-triangle-fill text-danger fs-3 flex-shrink-0"></i>
+                                <div>
+                                    <strong class="text-ink d-block mb-1">Accreditation Requires Revision</strong>
+                                    <span class="small text-muted-custom">
+                                        <?= htmlspecialchars($user['rejection_reason'] ?: 'Your permit documents or institutional accreditation were not approved.') ?>
+                                    </span>
+                                </div>
                             </div>
+                            <a href="settings.php" class="btn-pill-outline btn-pill-sm text-nowrap">
+                                <i class="bi bi-file-earmark-arrow-up me-1"></i> Resubmit Credentials
+                            </a>
                         </div>
                     </div>
                 <?php endif; ?>

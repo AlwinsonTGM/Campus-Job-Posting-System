@@ -45,13 +45,11 @@ function resolveApiKey() {
   loadEnvFile(join(homedir(), ".typesafe.env"));
   const key = process.env.TYPESAFE_API_KEY?.trim();
   if (!key) {
-    console.log("[DEV INFO] No TYPESAFE_API_KEY found. Falling back to local Laya decision engine (:8100).");
+    console.log("[DEV INFO] No TYPESAFE_API_KEY found.");
     return null;
   }
   return key;
 }
-
-const LAYA_ENDPOINT = "http://127.0.0.1:8100/predict";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -86,35 +84,11 @@ async function fetchJev(payload, apiKey) {
   }
 }
 
-async function fetchLayaFallback(state, questions) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 20000);
-  try {
-    const res = await fetch(LAYA_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ state, questions }),
-      signal: ctrl.signal,
-    });
-    if (!res.ok) throw new Error(`Laya HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
-    const json = await res.json();
-    return json.data ?? json;
-  } catch (err) {
-    throw new Error(`Laya fallback failed: ${err.message}`);
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function callDecisionEngine(payload, apiKey) {
-  if (apiKey && !process.env.FORCE_LAYA) {
-    try {
-      return await withRetry(() => fetchJev(payload, apiKey));
-    } catch (err) {
-      console.warn(`[DEV NOTE] Jev primary verification API failed (${err.message}). Cascading to local Laya fallback (:8100)...`);
-    }
+  if (!apiKey) {
+    throw new Error("No TYPESAFE_API_KEY found. Configure TYPESAFE_API_KEY in .env to run verification.");
   }
-  return await fetchLayaFallback(payload.state, payload.questions);
+  return await withRetry(() => fetchJev(payload, apiKey));
 }
 
 

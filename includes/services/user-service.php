@@ -1078,6 +1078,79 @@ function reject_profile_request(int|string $request_id, string $admin_notes = ''
     }
 }
 
+function resubmit_employer_accreditation(int $user_id, array $data, ?string $permit_path, string $reason = ''): array {
+    try {
+        $pdo = get_db_connection();
+        $pdo->beginTransaction();
+
+        $emp = get_user_by_id($user_id);
+        if (!$emp || ($emp['role'] ?? '') !== 'employer') {
+            return ['success' => false, 'message' => 'Invalid employer account.'];
+        }
+
+        // 1. Update representative name in users table if provided
+        $req_name = trim($data['name'] ?? '');
+        if (!empty($req_name)) {
+            $stmt_u = $pdo->prepare("UPDATE `users` SET `name` = :name, `updated_at` = NOW() WHERE `id` = :id");
+            $stmt_u->execute([':name' => $req_name, ':id' => $user_id]);
+        }
+
+        // 2. Update employer_profiles (organization_name, contact_person, business_permit, reset verification_status)
+        $emp_updates = [
+            "`verification_status` = 'pending_approval'",
+            "`rejection_reason` = NULL",
+            "`updated_at` = NOW()"
+        ];
+        $emp_params = [':id' => $user_id];
+
+        $req_org = trim($data['organization_name'] ?? '');
+        if (!empty($req_org)) {
+            $emp_updates[] = "`organization_name` = :org";
+            $emp_params[':org'] = $req_org;
+        }
+
+        if (!empty($req_name)) {
+            $emp_updates[] = "`contact_person` = :contact";
+            $emp_params[':contact'] = $req_name;
+        }
+
+        if (!empty($permit_path)) {
+            $emp_updates[] = "`business_permit` = :permit";
+            $emp_params[':permit'] = $permit_path;
+        }
+
+        $stmt_ep = $pdo->prepare("UPDATE `employer_profiles` SET " . implode(', ', $emp_updates) . " WHERE `user_id` = :id");
+        $stmt_ep->execute($emp_params);
+
+        // 3. Notify administrators of resubmitted accreditation
+        $stmt_admins = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'");
+        $admin_ids = $stmt_admins->fetchAll(PDO::FETCH_COLUMN);
+        $display_org = !empty($req_org) ? $req_org : ($emp['organization_name'] ?? 'Employer');
+        $display_name = !empty($req_name) ? $req_name : ($emp['name'] ?? 'Representative');
+        $note_text = !empty($reason) ? " Reason: {$reason}" : '';
+        foreach ($admin_ids as $adm_id) {
+            create_notification(
+                (int)$adm_id,
+                'system',
+                "Employer Accreditation Resubmitted: {$display_org}",
+                "Employer '{$display_org}' (Rep: {$display_name}) resubmitted updated accreditation documents for verification.{$note_text}",
+                "admin/users.php?ver_status=pending_approval",
+                "bi-patch-check",
+                "warning"
+            );
+        }
+
+        $pdo->commit();
+        return ['success' => true, 'message' => 'Accreditation credentials and documents submitted successfully.'];
+    } catch (Exception $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log("resubmit_employer_accreditation error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to submit accreditation: ' . $e->getMessage()];
+    }
+}
+
 function update_user_profile(int $user_id, string $role, array $data): bool {
     try {
         $pdo = get_db_connection();
@@ -1090,7 +1163,9 @@ function update_user_profile(int $user_id, string $role, array $data): bool {
             ':id'    => $user_id
         ];
 
-        if ($role === 'employer' || $role === 'admin') {
+        // Only admins can change display name directly in standard profile update
+        // (Students and Employers have locked identity records requiring verification)
+        if ($role === 'admin') {
             $name = trim($data['name'] ?? '');
             if (!empty($name)) {
                 $user_updates[] = "`name` = :name";
@@ -1107,12 +1182,18 @@ function update_user_profile(int $user_id, string $role, array $data): bool {
                 ':avail' => json_encode($data['availability']),
                 ':id'    => $user_id
             ]);
-        } elseif ($role === 'employer' && !empty($data['office_location'])) {
-            $stmt_ep = $pdo->prepare("UPDATE `employer_profiles` SET `office_location` = :office_location, `updated_at` = NOW() WHERE `user_id` = :id");
-            $stmt_ep->execute([
-                ':office_location' => htmlspecialchars(trim($data['office_location'])),
-                ':id'              => $user_id
-            ]);
+        } elseif ($role === 'employer') {
+            $ep_updates = [];
+            $ep_params = [':id' => $user_id];
+            if (isset($data['office_location'])) {
+                $ep_updates[] = "`office_location` = :office_location";
+                $ep_params[':office_location'] = htmlspecialchars(trim($data['office_location']));
+            }
+            if (!empty($ep_updates)) {
+                $ep_updates[] = "`updated_at` = NOW()";
+                $stmt_ep = $pdo->prepare("UPDATE `employer_profiles` SET " . implode(', ', $ep_updates) . " WHERE `user_id` = :id");
+                $stmt_ep->execute($ep_params);
+            }
         }
 
         $pdo->commit();

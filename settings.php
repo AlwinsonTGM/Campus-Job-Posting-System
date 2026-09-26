@@ -44,12 +44,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['user'] = $fresh;
                     }
 
-                    set_flash('success', 'Contact information and weekly availability settings have been updated successfully.');
+                    set_flash('success', 'Profile and operational settings have been updated successfully.');
                     header('Location: settings.php');
                     exit;
                 }
 
                 $error = 'Failed to update profile settings. Please try again.';
+            }
+        } elseif ($action === 'request_employer_profile_change') {
+            if (($user['role'] ?? '') !== 'employer') {
+                $error = 'Unauthorized operation: Employer accreditation requests are restricted to employer accounts.';
+            } else {
+                $org_name = trim($_POST['organization_name'] ?? '');
+                $rep_name = trim($_POST['name'] ?? '');
+                $reason = trim($_POST['reason'] ?? '');
+
+                if (empty($org_name) || empty($rep_name)) {
+                    $error = 'Company / Office Name and Authorized Representative Name are required.';
+                } else {
+                    $permit_path = null;
+                    if (isset($_FILES['permit_file']) && ($_FILES['permit_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                        $permit_path = save_uploaded_permit($_FILES['permit_file']);
+                        if (!$permit_path) {
+                            $error = 'Uploaded document must be a valid PDF, JPG, or PNG under 5MB.';
+                        }
+                    }
+
+                    $is_rejected = (($user['verification_status'] ?? '') === 'rejected');
+                    $has_permit = !empty($user['business_permit']) || !empty($user['permit_file']);
+
+                    if (!$error && ($is_rejected || !$has_permit) && empty($permit_path)) {
+                        $error = 'Please attach an official Business Permit, Mayor\'s Permit, or BIR Form 2303 certificate to resolve the revision requirement.';
+                    }
+
+                    if (!$error) {
+                        $res = resubmit_employer_accreditation((int)$user['id'], [
+                            'organization_name' => $org_name,
+                            'name'              => $rep_name
+                        ], $permit_path, $reason);
+
+                        if ($res['success']) {
+                            $fresh = get_user_by_id((int)$user['id']);
+                            if ($fresh) {
+                                unset($fresh['password']);
+                                $_SESSION['user'] = $fresh;
+                            }
+                            set_flash('success', 'Your updated organization credentials and business documents have been submitted for administrative verification.');
+                            header('Location: settings.php');
+                            exit;
+                        } else {
+                            $error = $res['message'];
+                        }
+                    }
+                }
             }
         } elseif ($action === 'request_profile_change') {
             $reason = trim($_POST['reason'] ?? '');

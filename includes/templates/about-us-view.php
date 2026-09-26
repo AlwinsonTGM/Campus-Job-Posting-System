@@ -430,7 +430,7 @@ require_once __DIR__ . '/../header.php';
         <script id="devblogs-data" type="application/json">
             <?= json_encode($devblogs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>
         </script>
-        <script src="<?= $base_url ?>assets/js/tech-graph.js?v=1.0"></script>
+        <script src="<?= $base_url ?>assets/js/tech-graph.js?v=<?= time() ?>"></script>
 
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
