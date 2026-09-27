@@ -243,51 +243,35 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 </section>
 
-                <!-- Mission & Vision and Tech Stack -->
-                <div class="row g-4 pt-2">
-                    <!-- Project Mission & Vision -->
-                    <div class="col-lg-5">
-                        <div class="card-paper h-100 reveal-fade-rise d-flex flex-column">
+                <!-- Unified Project Mission & Technical Architecture Section -->
+                <div class="pt-2">
+                    <div class="card-paper reveal-fade-rise tech-graph-card p-4 p-md-5">
+                        <!-- Project Mission (First) -->
+                        <div class="tech-graph-mission-wrap pb-4 mb-4 border-bottom border-line">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
+                                <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; aspect-ratio: 1 / 1; font-size: 1.35rem;">
                                     <i class="bi bi-compass"></i>
                                 </div>
-                                <h3 class="card-paper-title mb-0">Our Project Mission</h3>
-                            </div>
-                            <p class="text-muted-custom mb-3">
-                                To simplify and digitize the student assistantship application workflow across KLD institutes and offices. By replacing manual paperwork and unorganized bulletin boards with an automated portal, we empower KLD students to gain valuable workplace experience while prioritizing their studies.
-                            </p>
-                            <div class="p-3 bg-cream rounded-3 border border-line mb-3">
-                                <span class="d-block small fw-bold text-ink mb-1">Academic Alignment</span>
-                                <div class="small text-muted-custom d-flex flex-column gap-1">
-                                    <div>Course: <strong>COAL101 - Web Systems and Technologies</strong></div>
-                                    <div>Activity: <strong>Midterm Lab Project</strong></div>
-                                    <div>Submission Deadline: <strong>September 2, 2026</strong></div>
-                                    <div>Institution: <strong>Kolehiyo ng Lungsod ng Dasmariñas (KLD)</strong></div>
+                                <div>
+                                    <span class="d-block small fw-bold text-accent text-uppercase" style="letter-spacing: 0.08em; font-size: 11px;">Core Objective</span>
+                                    <h3 class="card-paper-title mb-0" style="font-size: 1.65rem;">Our Project Mission</h3>
                                 </div>
                             </div>
-                            <div class="p-3 bg-surface rounded-3 border border-line mt-auto">
-                                <span class="d-block small fw-bold text-ink mb-2">Institutional Safeguards &amp; Compliance</span>
-                                <ul class="list-unstyled small text-muted-custom mb-0 d-flex flex-column gap-1">
-                                    <li><i class="bi bi-shield-check text-accent me-1"></i> RA 10173 Data Privacy Act (2012) compliant storage</li>
-                                    <li><i class="bi bi-clock-history text-accent me-1"></i> Statutory 20-hour weekly academic labor cap enforcement</li>
-                                    <li><i class="bi bi-calendar-check text-accent me-1"></i> Class schedule conflict prevention matrix</li>
-                                    <li><i class="bi bi-person-check text-accent me-1"></i> Equal-opportunity, transparent hiring audit trail</li>
-                                </ul>
-                            </div>
+                            <p class="text-muted-custom mb-0 lead" style="font-size: 1.15rem; line-height: 1.75; max-width: 1040px;">
+                                To simplify and digitize the student assistantship application workflow across KLD institutes and offices. By replacing manual paperwork and unorganized bulletin boards with an automated portal, we empower KLD students to gain valuable workplace experience while prioritizing their studies.
+                            </p>
                         </div>
-                    </div>
 
-                    <!-- Tech Stack Showcase: Interactive Knowledge Graph -->
-                    <div class="col-lg-7">
-                        <div class="card-paper h-100 reveal-fade-rise tech-graph-card">
+                        <!-- Technical Architecture (Below) -->
+                        <div class="tech-graph-architecture-wrap">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 44px; height: 44px; min-width: 44px; min-height: 44px; aspect-ratio: 1 / 1; font-size: 1.2rem;">
+                                <div class="faq-help-icon-box m-0 flex-shrink-0" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; aspect-ratio: 1 / 1; font-size: 1.35rem;">
                                     <i class="bi bi-diagram-3"></i>
                                 </div>
                                 <div>
-                                    <h3 class="card-paper-title mb-0">Technical Architecture</h3>
-                                    <span class="small text-muted-custom">Interactive knowledge graph · Drag nodes to explore ecosystem connections</span>
+                                    <span class="d-block small fw-bold text-accent text-uppercase" style="letter-spacing: 0.08em; font-size: 11px;">System Engineering</span>
+                                    <h3 class="card-paper-title mb-0" style="font-size: 1.5rem;">Technical Architecture</h3>
+                                    <span class="small text-muted-custom" style="font-size: 13.5px;">Interactive knowledge graph · Drag nodes to explore ecosystem connections</span>
                                 </div>
                             </div>
 
@@ -310,9 +294,14 @@ require_once __DIR__ . '/../header.php';
                                         <i class="bi bi-shield-check"></i> AI &amp; QA
                                     </button>
                                 </div>
-                                <button type="button" class="tech-graph-reset-btn" id="tech-graph-reset-btn" title="Reset Graph Layout">
-                                    <i class="bi bi-arrow-counterclockwise"></i> Reset View
-                                </button>
+                                <div class="d-flex align-items-center gap-3 ms-auto">
+                                    <span class="tech-graph-scale-legend d-none d-lg-inline-flex align-items-center gap-1 text-muted-custom">
+                                        <i class="bi bi-diagram-2 text-accent"></i> Node Size = System Architectural Weight
+                                    </span>
+                                    <button type="button" class="tech-graph-reset-btn" id="tech-graph-reset-btn" title="Reset Graph Layout">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Reset View
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Canvas Viewport -->
@@ -330,18 +319,21 @@ require_once __DIR__ . '/../header.php';
                             </div>
 
                             <!-- Bottom Inspector HUD Panel (Click-to-Pin) -->
-                            <div class="tech-graph-inspector mt-auto" id="tech-graph-inspector" aria-live="polite">
+                            <div class="tech-graph-inspector mt-3" id="tech-graph-inspector" aria-live="polite">
                                 <div class="tech-graph-inspector-icon">
-                                    <i class="bi bi-boxes"></i>
+                                    <i class="bi bi-mortarboard-fill"></i>
                                 </div>
                                 <div class="tech-graph-inspector-content">
                                     <div class="tech-graph-inspector-meta">
-                                        <span class="tech-graph-inspector-tag">3D Engine &amp; Mascot</span>
-                                        <span class="tech-graph-inspector-cluster">3D &amp; UI</span>
+                                        <span class="tech-graph-inspector-tag">Platform Ecosystem</span>
+                                        <span class="tech-graph-inspector-cluster">Core Hub</span>
+                                        <span class="tech-graph-inspector-tier" id="tech-graph-inspector-tier">
+                                            <i class="bi bi-award text-accent"></i> Central Core Platform · 100% Scale
+                                        </span>
                                     </div>
-                                    <h4 class="tech-graph-inspector-title">Three.js WebGL &amp; GLTFLoader</h4>
+                                    <h4 class="tech-graph-inspector-title">Campus Job Posting System</h4>
                                     <p class="tech-graph-inspector-desc">
-                                        Hardware-accelerated 3D mascot (<code>cute_robot.glb</code>) with 13 procedural kinematics &amp; OLED visor shader
+                                        Central student assistantship application, scheduling, and campus office hiring ecosystem built for Kolehiyo ng Lungsod ng Dasmariñas (KLD).
                                     </p>
                                 </div>
                             </div>
