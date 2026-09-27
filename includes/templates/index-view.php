@@ -960,11 +960,9 @@ require_once __DIR__ . '/../header.php';
                                     <i class="bi bi-arrow-up-circle-fill"></i>
                                 </button>
                             </div>
-                            <div class="d-flex align-items-center justify-content-center gap-1 mt-2 text-muted-custom text-center" style="font-size: 0.72rem;">
-                                <i class="bi bi-shield-check text-accent flex-shrink-0"></i>
-                                <span>Powered by NVIDIA Cloud AI (Free Tier). Conversations may be used for AI model training. Do not submit sensitive data.</span>
-                                <a href="privacy.php#sec-4" target="_blank" class="text-ink fw-bold text-decoration-underline ms-1 text-nowrap">Privacy Notice</a>
-                            </div>
+                            <p class="text-center mt-2 mb-0 text-muted-custom" style="font-size: 0.73rem; line-height: 1.5;">
+                                <i class="bi bi-shield-check text-accent me-1" style="vertical-align: -1px;"></i>Powered by NVIDIA Cloud AI (Free Tier). Conversations may be used for AI model training. Do not submit sensitive data. <a href="privacy.php#sec-4" target="_blank" class="text-ink fw-bold text-decoration-underline text-nowrap ms-1">Privacy Notice</a>
+                            </p>
                         </form>
                     </div>
 

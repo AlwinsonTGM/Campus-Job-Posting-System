@@ -3965,8 +3965,8 @@ section.py-5.py-lg-6 {
 .prose {
   max-width: 720px;
   margin: 0 auto;
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 1.0625rem;
+  line-height: 1.85;
   color: var(--ink);
 }
 
@@ -3974,32 +3974,65 @@ section.py-5.py-lg-6 {
 .prose h3,
 .prose h4 {
   font-weight: 800;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   color: var(--ink);
   margin-top: 2.25rem;
-  margin-bottom: 0.85rem;
+  margin-bottom: 1rem;
 }
 
 .prose p {
   color: var(--ink);
-  margin-bottom: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  margin-bottom: 1.35rem;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.prose p.lead {
+  font-size: 1.15rem;
+  line-height: 1.85;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .prose ul,
 .prose ol {
   color: var(--ink);
+  font-size: 1.0625rem;
+  line-height: 1.85;
   padding-left: 1.35rem;
   margin-bottom: 1.35rem;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .prose li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
 }
 
 .prose.prose-wide,
 .prose-wide {
   max-width: 100% !important;
   margin: 0 !important;
+}
+
+.prose .card-paper p {
+  font-size: 1.02rem;
+  line-height: 1.8;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.prose .card-paper h2,
+.prose .card-paper h3,
+.prose .card-paper h4 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .toc-card {
