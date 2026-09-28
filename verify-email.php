@@ -52,18 +52,17 @@ if (!$existing_user) {
 
 // Seamlessly graduate already-verified users to their dashboard
 if ((int)($existing_user['is_email_verified'] ?? 0) === 1) {
-    unset($_SESSION['pending_verification']);
-    $_SESSION['user'] = $existing_user;
+    SessionGuard::graduateVerification($user_id);
     if ($is_ajax) {
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
-            'redirect' => get_role_dashboard_url($existing_user['role'] ?? null),
+            'redirect' => SessionGuard::getRoleDashboardUrl($existing_user['role'] ?? null),
             'message' => 'Your email is already verified!'
         ]);
         exit;
     }
-    redirect_by_role($existing_user['role'] ?? null);
+    SessionGuard::redirectByRole($existing_user['role'] ?? null);
 }
 
 $pending_email = $existing_user['email'] ?? ($pending['email'] ?? '');
@@ -140,15 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
     } else {
         $verify_res = verify_email_code($user_id, $clean_code);
         if ($verify_res['success']) {
-            $user = get_user_by_id($user_id);
-            if ($user) {
-                unset($user['password']);
-            }
-            $_SESSION['user'] = $user;
-            unset($_SESSION['pending_verification']);
-
+            $user = SessionGuard::graduateVerification($user_id);
             $role = $user['role'] ?? 'student';
-            $dest_url = get_role_dashboard_url($role);
+            $dest_url = SessionGuard::getRoleDashboardUrl($role);
 
             $role_msg = !empty($pending['role_message'])
                 ? 'Email verified! ' . $pending['role_message']
@@ -165,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
                 exit;
             }
 
-            redirect_by_role($role);
+            SessionGuard::redirectByRole($role);
         } else {
             if ($is_ajax) {
                 header('Content-Type: application/json');

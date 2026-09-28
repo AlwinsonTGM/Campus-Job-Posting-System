@@ -165,24 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         : 'Your organization credentials have been submitted for administrative verification.')
                     : 'Your student registration and attached credentials are under review by the Administrator.';
 
-                $_SESSION['pending_verification'] = [
-                    'user_id'      => (int)$new_u['id'],
-                    'email'        => $new_u['email'],
-                    'name'         => $new_u['name'],
-                    'role'         => $new_u['role'],
-                    'role_message' => $role_msg
-                ];
-
-                $code = create_email_verification_code((int)$new_u['id']);
-                $mail_res = send_verification_code_email($new_u['email'], $new_u['name'], $code);
-
-                if ($mail_res['smtp_configured']) {
-                    set_flash('info', 'We sent a 6-digit verification code to your institutional email.');
-                } else {
-                    set_flash('warning', 'Notice: Outbound SMTP is not configured in .env. Please configure MAIL_USERNAME and MAIL_PASSWORD.');
-                }
-
-                header('Location: verify-email.php');
+                SessionGuard::quarantineForVerification($new_u, $role_msg);
                 exit;
             } else {
                 $error = $res['message'];

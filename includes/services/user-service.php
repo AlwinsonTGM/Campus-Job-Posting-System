@@ -34,40 +34,51 @@ function is_logged_in(): bool {
     return isset($_SESSION['user']);
 }
 
-function has_role(string $role): bool {
-    $user = get_logged_user();
-    return $user && ($user['role'] ?? '') === $role;
+if (!function_exists('has_role')) {
+    function has_role(string $role): bool {
+        if (class_exists('SessionGuard')) {
+            return SessionGuard::hasRole($role);
+        }
+        $user = get_logged_user();
+        return $user && ($user['role'] ?? '') === $role;
+    }
 }
 
-function require_auth(array $allowed_roles = []): void {
-    $script = $_SERVER['SCRIPT_NAME'] ?? '';
-    $prefix = (strpos($script, '/admin/') !== false || strpos($script, '/employer/') !== false || strpos($script, '/student/') !== false) ? '../' : '';
+if (!function_exists('require_auth')) {
+    function require_auth(array $allowed_roles = []): void {
+        if (class_exists('SessionGuard')) {
+            SessionGuard::protect($allowed_roles);
+            return;
+        }
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+        $prefix = (strpos($script, '/admin/') !== false || strpos($script, '/employer/') !== false || strpos($script, '/student/') !== false) ? '../' : '';
 
-    if (!is_logged_in()) {
-        set_flash('warning', 'Please sign in to access this page.');
-        header('Location: ' . $prefix . 'login.php');
-        exit;
-    }
-
-    $user = get_logged_user();
-    if ($user && isset($user['is_email_verified']) && (int)$user['is_email_verified'] === 0 && ($user['role'] ?? '') !== 'admin') {
-        $_SESSION['pending_verification'] = [
-            'user_id' => (int)$user['id'],
-            'email'   => $user['email'],
-            'name'    => $user['name'],
-            'role'    => $user['role']
-        ];
-        unset($_SESSION['user']);
-        set_flash('warning', 'Please verify your institutional email address to continue.');
-        header('Location: ' . $prefix . 'verify-email.php');
-        exit;
-    }
-
-    if (!empty($allowed_roles)) {
-        if (!in_array($user['role'] ?? '', $allowed_roles)) {
-            set_flash('danger', 'Unauthorized access for your account role.');
-            header('Location: ' . $prefix . 'index.php');
+        if (!is_logged_in()) {
+            set_flash('warning', 'Please sign in to access this page.');
+            header('Location: ' . $prefix . 'login.php');
             exit;
+        }
+
+        $user = get_logged_user();
+        if ($user && isset($user['is_email_verified']) && (int)$user['is_email_verified'] === 0 && ($user['role'] ?? '') !== 'admin') {
+            $_SESSION['pending_verification'] = [
+                'user_id' => (int)$user['id'],
+                'email'   => $user['email'],
+                'name'    => $user['name'],
+                'role'    => $user['role']
+            ];
+            unset($_SESSION['user']);
+            set_flash('warning', 'Please verify your institutional email address to continue.');
+            header('Location: ' . $prefix . 'verify-email.php');
+            exit;
+        }
+
+        if (!empty($allowed_roles)) {
+            if (!in_array($user['role'] ?? '', $allowed_roles)) {
+                set_flash('danger', 'Unauthorized access for your account role.');
+                header('Location: ' . $prefix . 'index.php');
+                exit;
+            }
         }
     }
 }

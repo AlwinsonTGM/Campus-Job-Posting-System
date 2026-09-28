@@ -111,23 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect_by_role($u['role'] ?? null);
     } elseif (!empty($res['unverified'])) {
-        require_once __DIR__ . '/includes/mailer.php';
-        $u = $res['user'];
-        $_SESSION['pending_verification'] = [
-            'user_id' => (int)$u['id'],
-            'email'   => $u['email'],
-            'name'    => $u['name'],
-            'role'    => $u['role']
-        ];
-        $code = create_email_verification_code((int)$u['id']);
-        $mail_res = send_verification_code_email($u['email'], $u['name'], $code);
-
-        if (!$mail_res['smtp_configured']) {
-            set_flash('warning', 'Notice: SMTP is not configured in your .env file. Please configure MAIL_USERNAME and MAIL_PASSWORD to receive verification emails.');
-        } else {
-            set_flash('info', 'Please verify your institutional email. A new verification code has been dispatched to your inbox.');
-        }
-        header('Location: verify-email.php');
+        SessionGuard::quarantineForVerification($res['user']);
         exit;
     } else {
         $error = $res['message'];

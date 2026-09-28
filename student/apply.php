@@ -8,23 +8,12 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 // Ensure student auth - employers and admins cannot apply.
 // Guests go to the plain login form (never a demo auto-login), then return here.
-if (!is_logged_in()) {
-    set_flash('info', 'Please sign in with your student account to submit an application.');
-    $return_to = 'student/apply.php?id=' . urlencode((string)($_GET['id'] ?? ($_GET['job_id'] ?? '')));
-    header('Location: ../login.php?next=' . urlencode($return_to));
-    exit;
-}
-
-$user = get_logged_user();
-if (($user['role'] ?? '') !== 'student') {
-    set_flash('warning', 'Access Restricted: Only enrolled students can submit job applications. Employer accounts cannot apply for campus vacancies.');
-    if (($user['role'] ?? '') === 'employer') {
-        header('Location: ../employer/dashboard.php');
-    } else {
-        header('Location: ../admin/users.php');
-    }
-    exit;
-}
+$return_to = 'student/apply.php?id=' . urlencode((string)($_GET['id'] ?? ($_GET['job_id'] ?? '')));
+$user = SessionGuard::protect(
+    ['student'],
+    $return_to,
+    'Please sign in with your student account to submit an application.'
+);
 $job_id = $_GET['id'] ?? ($_GET['job_id'] ?? null);
 $job = get_job_by_id($job_id);
 

@@ -1,5 +1,45 @@
 [
     {
+        "id": "day-22",
+        "sprint_number": "22",
+        "sprint_badge": "DAY 22 · SESSIONGUARD ARCHITECTURE, AUTH STATE MACHINE & DOMAIN SEAMS",
+        "title": "Deep Module Architecture: Introducing SessionGuard, In-Process Auth Interception, Return-To Sanitization & Verification Quarantine",
+        "date": "September 28, 2026",
+        "read_time": "10 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Executed an architectural survey and deep-module refactor: transformed the shallow 38-line auth-check file into SessionGuard, collapsed the fragmented session state machine, eliminated unmockable process exits in favor of an interceptable redirect responder seam, hardened return-to deep linking against open redirects, encapsulated unverified email quarantine and OTP code generation, initialized our formal CONTEXT.md domain glossary, and delivered an exhaustive 20-assertion in-process test suite passing with 100% compliance.",
+        "tags": [
+            "SessionGuard Architecture",
+            "Deep Modules & Codebase Design",
+            "Authentication State Machine",
+            "Verification Quarantine",
+            "Return-To Deep Linking",
+            "Open Redirect Protection",
+            "In-Process Testing Seam",
+            "Domain Modeling (CONTEXT.md)"
+        ],
+        "cover_image": "assets/img/devblog/day-22.jpg",
+        "full_story": "<p class='lead text-ink fw-semibold'>Following our legal modernization and knowledge graph expansion, Day 22 initiated a focused architectural evolution across the platform's authentication perimeter. Guided by deep-module design principles, we replaced the shallow, pass-through auth-check helper with a unified SessionGuard engine, collapsed the fragmented authentication and OTP verification state machines, eliminated unmockable process exit side effects with an interceptable responder seam, hardened return-to deep linking against open redirect exploits, initialized the platform's formal domain model in CONTEXT.md, and validated the overhaul with a comprehensive 20-assertion in-process test suite.</p><p>In high-leverage application engineering, modules should be deep: presenting a concise, intuitive interface that conceals substantial internal complexity. Prior to this sprint, 36 controllers across the codebase relied on a superficial helper file that merely computed dashboard URLs, while critical authentication checks and OTP handoffs were duplicated across login, registration, and role controllers. Today's sprint concentrated this scattered complexity behind a single robust authority.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-shield-lock-fill text-accent me-2'></i>1. Transforming auth-check.php into the SessionGuard Engine</h5><p>We deepened <code class='bg-cream text-ink px-1 rounded'>includes/auth-check.php</code> from a 38-line redirect stub into <code class='bg-cream text-ink px-1 rounded'>SessionGuard</code>. This module serves as the single source of truth for request authentication, role-based access control (RBAC), and user session lifecycle management. Rather than forcing callers to manage session arrays and manually resolve nested directory paths, callers across all tiers now invoke <code class='bg-cream text-ink px-1 rounded'>SessionGuard::protect()</code> with full backward compatibility preserved for legacy helper shims.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-arrow-repeat text-accent me-2'></i>2. Eliminating Unmockable Process Exits via Interceptable Seam</h5><p>A longstanding impediment to test automation was that legacy authentication functions called <code class='bg-cream text-ink px-1 rounded'>header('Location: ...'); exit;</code> directly, instantly halting PHP CLI test runners and headless evaluation harnesses. We engineered an interceptable HTTP responder seam via <code class='bg-cream text-ink px-1 rounded'>SessionGuard::setRedirectHandler()</code>. In web production, requests execute standard HTTP headers; in testing environments, redirection attempts, HTTP status codes, and flash messages are cleanly captured in memory without terminating the test runner.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-link-45deg text-accent me-2'></i>3. Hardened Return-To Deep Linking &amp; Open-Redirect Protection</h5><p>When unauthenticated students attempt to access restricted application workflows (such as applying for a specific job vacancy), the platform must preserve their target destination across the login flow. We implemented automated, sanitized return-to resolution that extracts the relative request URI and appends a safe <code class='bg-cream text-ink px-1 rounded'>?next=</code> parameter. To prevent open redirect vulnerabilities, <code class='bg-cream text-ink px-1 rounded'>SessionGuard::sanitizeReturnTo()</code> rigorously validates destination paths, stripping protocol schemes (<code class='bg-cream text-ink px-1 rounded'>https:</code>), protocol-relative slashes (<code class='bg-cream text-ink px-1 rounded'>//</code>), and script execution vectors.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-envelope-check-fill text-accent me-2'></i>4. Encapsulation of Verification Quarantine &amp; OTP Lifecycle</h5><p>Previously, when unverified users signed in or registered, the setup of pending verification sessions, six-digit OTP generation, and email dispatch was duplicated across <code class='bg-cream text-ink px-1 rounded'>login.php</code>, <code class='bg-cream text-ink px-1 rounded'>register.php</code>, and <code class='bg-cream text-ink px-1 rounded'>user-service.php</code>. We encapsulated this entire state machine within <code class='bg-cream text-ink px-1 rounded'>SessionGuard::quarantineForVerification()</code> and <code class='bg-cream text-ink px-1 rounded'>SessionGuard::graduateVerification()</code>, ensuring that unverified accounts are securely quarantined and smoothly elevated upon code submission.</p><h5 class='fw-bold text-ink mt-4 mb-2'><i class='bi bi-journal-text text-accent me-2'></i>5. Formal Domain Glossary (CONTEXT.md) &amp; Comprehensive Test Harness</h5><p>To establish long-term architectural clarity, we inaugurated the project's official domain model in <code class='bg-cream text-ink px-1 rounded'>CONTEXT.md</code>, recording canonical definitions for SessionGuard, Verification Quarantine, Return-To Target, and Role Dashboard. We accompanied the implementation with an automated unit test harness (<code class='bg-cream text-ink px-1 rounded'>tests/test-session-guard.php</code>) containing 20 granular assertions that verify open-redirect immunity, in-process redirect interception, role permission gating, and session graduation with 100% pass rate.</p>",
+        "key_takeaways": [
+            "Deepened includes/auth-check.php into SessionGuard, consolidating auth gating, RBAC, and session state.",
+            "Eliminated unmockable exit statements using an interceptable redirect responder seam for CLI and unit testing.",
+            "Engineered automated return-to deep linking with strict open-redirect sanitization against external schemes.",
+            "Encapsulated unverified account quarantine, six-digit OTP creation, and session graduation into a single state machine.",
+            "Inaugurated CONTEXT.md defining formal domain language for authentication and session lifecycle concepts.",
+            "Created a 20-assertion in-process unit test harness passing with 100% success alongside the JEV structural gate."
+        ],
+        "tech_stack": [
+            "PHP 8.2 Deep Module Architecture",
+            "SessionGuard State Machine",
+            "Cryptographic OTP Dispatch",
+            "In-Process HTTP Responder Seam",
+            "Open-Redirect Sanitization Engine",
+            "Domain Modeling & CONTEXT.md"
+        ]
+    },
+    {
         "id": "day-21",
         "sprint_number": "21",
         "sprint_badge": "DAY 21 · LEGAL CODEX PROSE, FULL-SCREEN KNOWLEDGE GRAPH & ARCHITECTURAL SIZING",
