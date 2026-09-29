@@ -56,66 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
 }
 
 $emp_id_filter = ($user['role'] === 'admin') ? null : (int)$user['id'];
-$all_dept_apps = get_applications(null, $job_filter, null, $emp_id_filter);
-
-// Calculate candidate schedule availability summary
-foreach ($all_dept_apps as &$app) {
-    $app['schedule_summary'] = get_schedule_summary($app);
-}
-unset($app);
-
-if ($status_filter) {
-    $all_dept_apps = array_filter($all_dept_apps, function($a) use ($status_filter) {
-        $st = strtolower($a['status'] ?? '');
-        $target = strtolower($status_filter);
-        if ($target === 'pending') return in_array($st, ['pending', 'pending review']);
-        if ($target === 'review') return in_array($st, ['under_review', 'under review', 'under evaluation']);
-        if ($target === 'interview') return in_array($st, ['interview_scheduled', 'interview scheduled']);
-        if ($target === 'accepted') return in_array($st, ['accepted', 'accepted / hired']);
-        if ($target === 'declined') return in_array($st, ['declined', 'rejected', 'declined / position filled']);
-        return $st === $target;
-    });
-}
-
-// Filter by Schedule Availability Tier
-if (!empty($fit_filter)) {
-    $all_dept_apps = array_filter($all_dept_apps, function($a) use ($fit_filter) {
-        $tier = $a['schedule_summary']['tier'] ?? '';
-        return $tier === $fit_filter;
-    });
-}
-
-if (!empty($search)) {
-    $all_dept_apps = array_filter($all_dept_apps, function($a) use ($search) {
-        return stripos($a['student_name'] ?? '', $search) !== false
-            || stripos($a['student_email'] ?? '', $search) !== false
-            || stripos($a['course'] ?? '', $search) !== false
-            || stripos($a['job_title'] ?? '', $search) !== false;
-    });
-}
-
-// Rank & Sort Candidates
-if (!empty($rank_sort)) {
-    uasort($all_dept_apps, function($a, $b) use ($rank_sort) {
-        if ($rank_sort === 'sched_desc') {
-            $diff = ($b['schedule_summary']['score'] ?? 0) <=> ($a['schedule_summary']['score'] ?? 0);
-            if ($diff !== 0) return $diff;
-            return strcmp($b['applied_at'] ?? '', $a['applied_at'] ?? '');
-        }
-        if ($rank_sort === 'sched_asc') {
-            $diff = ($a['schedule_summary']['score'] ?? 0) <=> ($b['schedule_summary']['score'] ?? 0);
-            if ($diff !== 0) return $diff;
-            return strcmp($b['applied_at'] ?? '', $a['applied_at'] ?? '');
-        }
-        if ($rank_sort === 'name_asc') {
-            return strcasecmp($a['student_name'] ?? '', $b['student_name'] ?? '');
-        }
-        if ($rank_sort === 'date_asc') {
-            return strcmp($a['applied_at'] ?? '', $b['applied_at'] ?? '');
-        }
-        return 0;
-    });
-}
+$all_dept_apps = ApplicationService::search([
+    'employer_id' => $emp_id_filter,
+    'job_id'      => $job_filter,
+    'status'      => $status_filter,
+    'fit_tier'    => $fit_filter,
+    'search'      => $search,
+    'rank_sort'   => $rank_sort
+]);
 
 $dept_jobs = get_jobs(null, null, null, null, null, null, null, $emp_id_filter);
 // Last line: view template

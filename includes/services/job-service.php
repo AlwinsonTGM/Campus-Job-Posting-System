@@ -445,40 +445,17 @@ function create_application(array $data): array {
             return ['success' => false, 'message' => 'Job posting not found.'];
         }
 
-        // 1. Enforce Job Status Gating (closed, paused, etc.)
-        if (strtolower($job['status'] ?? '') !== 'active') {
-            return ['success' => false, 'message' => 'This job vacancy has been closed or paused and is no longer accepting applications.'];
-        }
-
-        // 2. Enforce Application Deadline Gating
-        if (!empty($job['deadline'])) {
-            $today = strtotime(date('Y-m-d'));
-            $deadline = strtotime($job['deadline']);
-            if ($deadline && $deadline < $today) {
-                return ['success' => false, 'message' => 'The application deadline for this position has passed.'];
+        // Enforce Requisition Gating & Eligibility via ApplicationService
+        if (class_exists('ApplicationService')) {
+            $eligibility = ApplicationService::checkEligibility($job, $user);
+            if (!$eligibility->isAllowed()) {
+                return ['success' => false, 'message' => $eligibility->message()];
             }
-        }
-
-        // 3. Enforce Vacancy Slot Gating
-        $slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
-        $slots_filled = (int)($job['slots_filled'] ?? 0);
-        if ($slots_total > 0 && $slots_filled >= $slots_total) {
-            return ['success' => false, 'message' => 'All available vacancy slots for this position have already been filled.'];
         }
 
         $student_id = (int)($user['id'] ?? 0);
         if ($student_id <= 0) {
             return ['success' => false, 'message' => 'Invalid student authentication session.'];
-        }
-
-        // 4. Duplicate Check
-        $check_stmt = $pdo->prepare("SELECT `id` FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id LIMIT 1");
-        $check_stmt->execute([
-            ':job_id'     => $job['id'],
-            ':student_id' => $student_id
-        ]);
-        if ($check_stmt->fetch()) {
-            return ['success' => false, 'message' => 'You have already submitted an application for this position.'];
         }
 
         $availability = !empty($data['availability']) ? (is_array($data['availability']) ? $data['availability'] : explode(',', $data['availability'])) : ['Flexible Weekdays'];

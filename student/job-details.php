@@ -16,23 +16,15 @@ if (!$job) {
 }
 
 $user = get_logged_user();
-$already_applied = false;
-if ($user) {
-    $my_apps = get_applications($user['id'] ?? 0);
-    foreach ($my_apps as $a) {
-        if ((int)($a['job_id'] ?? 0) === (int)$job['id']) {
-            $already_applied = true;
-            $app_status = $a['status'] ?? 'pending';
-            break;
-        }
-    }
-}
+$eligibility = ApplicationService::checkEligibility($job, $user);
+$already_applied = ($eligibility->reason() === 'already_applied');
+$app_status = $eligibility->applicationStatus() ?? 'pending';
 
 // Student schedule compatibility overview (read-only, never gates the Apply CTA).
 // Guests see a neutral signed-out state; closed/expired/filled jobs hide the panel in the view.
 // Applicant demand is counted live so competition reflects real contention, not fill state.
 $fit_student = $user ?? ['id' => null, 'availability' => []];
-$job_applicant_count = count(get_applications(null, (int)($job['id'] ?? 0)));
+$job_applicant_count = ApplicationService::getApplicantCount((int)($job['id'] ?? 0));
 $student_schedule_fit = get_student_schedule_fit($fit_student, $job, $job_applicant_count);
 
 $is_partner = ($job['employer_type'] ?? '') === 'approved_partner';

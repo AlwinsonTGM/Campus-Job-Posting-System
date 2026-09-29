@@ -63,10 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = 'Company / Office Name and Authorized Representative Name are required.';
                 } else {
                     $permit_path = null;
-                    if (isset($_FILES['permit_file']) && ($_FILES['permit_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-                        $permit_path = save_uploaded_permit($_FILES['permit_file']);
-                        if (!$permit_path) {
-                            $error = 'Uploaded document must be a valid PDF, JPG, or PNG under 5MB.';
+                    if (isset($_FILES['permit_file'])) {
+                        $permitRes = AttachmentStore::storePermit($_FILES['permit_file']);
+                        if ($permitRes->isOk()) {
+                            $permit_path = $permitRes->path();
+                        } elseif ($permitRes->errorCode() !== 'no_file') {
+                            $error = $permitRes->errorMessage();
                         }
                     }
 
@@ -101,13 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'request_profile_change') {
             $reason = trim($_POST['reason'] ?? '');
             $proof_path = null;
-            if (isset($_FILES['proof_file']) && ($_FILES['proof_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-                $proof_path = save_uploaded_proof($_FILES['proof_file']);
-            }
-
-            if (!$proof_path) {
-                $error = 'Please attach an official Certificate of Registration (COR), Student ID, or PSA document to verify your request.';
-            } else {
+            $proofRes = AttachmentStore::storeProof($_FILES['proof_file'] ?? null);
+            if ($proofRes->isOk()) {
+                $proof_path = $proofRes->path();
                 $res = create_profile_request($user['id'], $_POST, $proof_path, $reason);
                 if ($res['success']) {
                     set_flash('success', 'Your official profile change request has been submitted to the University Admin / Registrar for review.');
@@ -116,6 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $error = $res['message'];
                 }
+            } else {
+                $error = $proofRes->errorMessage();
             }
         } elseif ($action === 'dismiss_notice') {
             dismiss_profile_request_notice($user['id']);

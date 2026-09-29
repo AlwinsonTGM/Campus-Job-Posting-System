@@ -282,126 +282,36 @@ function validate_upload_mime(string $tmp_name, array $allowed_mimes): bool {
 }
 
 function save_uploaded_permit(?array $file): ?string {
-    if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
-    $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
-    $allowed_mimes = ['application/pdf', 'image/jpeg', 'image/png'];
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
-        return null;
-    }
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return null;
-    }
-    $upload_dir = dirname(__DIR__, 2) . '/uploads/permits';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    $filename = 'permit_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-    $target = $upload_dir . '/' . $filename;
-    if (move_uploaded_file($file['tmp_name'], $target)) {
-        return 'uploads/permits/' . $filename;
+    if (class_exists('AttachmentStore')) {
+        return AttachmentStore::storePermit($file)->path();
     }
     return null;
 }
 
 function save_uploaded_proof(?array $file): ?string {
-    if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
-    $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
-    $allowed_mimes = ['application/pdf', 'image/jpeg', 'image/png'];
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
-        return null;
-    }
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return null;
-    }
-    $upload_dir = dirname(__DIR__, 2) . '/uploads/proofs';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    $filename = 'proof_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-    $target = $upload_dir . '/' . $filename;
-    if (move_uploaded_file($file['tmp_name'], $target)) {
-        return 'uploads/proofs/' . $filename;
+    if (class_exists('AttachmentStore')) {
+        return AttachmentStore::storeProof($file)->path();
     }
     return null;
 }
 
 function save_uploaded_resume(?array $file): ?string {
-    if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
-    $allowed_exts = ['pdf', 'doc', 'docx'];
-    $allowed_mimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/octet-stream'];
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
-        return null;
-    }
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return null;
-    }
-    $upload_dir = dirname(__DIR__, 2) . '/uploads/resumes';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    $filename = 'resume_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-    $target = $upload_dir . '/' . $filename;
-    if (move_uploaded_file($file['tmp_name'], $target)) {
-        return 'uploads/resumes/' . $filename;
+    if (class_exists('AttachmentStore')) {
+        return AttachmentStore::storeResume($file)->path();
     }
     return null;
 }
 
 function save_uploaded_job_photo(?array $file): ?string {
-    if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
-    $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
-    $allowed_mimes = ['image/jpeg', 'image/png', 'image/webp'];
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
-        return null;
-    }
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return null;
-    }
-    $upload_dir = dirname(__DIR__, 2) . '/uploads/jobs';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    $filename = 'job_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-    $target = $upload_dir . '/' . $filename;
-    if (move_uploaded_file($file['tmp_name'], $target)) {
-        return 'uploads/jobs/' . $filename;
+    if (class_exists('AttachmentStore')) {
+        return AttachmentStore::storeJobPhoto($file)->path();
     }
     return null;
 }
 
 function save_uploaded_category_photo(?array $file): ?string {
-    if (!$file || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
-    $allowed_exts = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
-    $allowed_mimes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowed_exts, true) || !validate_upload_mime($file['tmp_name'], $allowed_mimes)) {
-        return null;
-    }
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return null;
-    }
-    $upload_dir = dirname(__DIR__, 2) . '/uploads/categories';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    $filename = 'cat_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-    $target = $upload_dir . '/' . $filename;
-    if (move_uploaded_file($file['tmp_name'], $target)) {
-        return 'uploads/categories/' . $filename;
+    if (class_exists('AttachmentStore')) {
+        return AttachmentStore::storeCategoryPhoto($file)->path();
     }
     return null;
 }

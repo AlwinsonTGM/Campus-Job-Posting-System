@@ -120,17 +120,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $initial_step = 2;
     } else {
         $permit_file_path = null;
-        if ($role === 'employer' && isset($_FILES['permit_photo']) && ($_FILES['permit_photo']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            $permit_file_path = save_uploaded_permit($_FILES['permit_photo']);
+        if ($role === 'employer' && isset($_FILES['permit_photo'])) {
+            $permitRes = AttachmentStore::storePermit($_FILES['permit_photo']);
+            if ($permitRes->isOk()) {
+                $permit_file_path = $permitRes->path();
+            } elseif ($permitRes->errorCode() !== 'no_file') {
+                $error = $permitRes->errorMessage();
+                $initial_step = 3;
+            }
         }
 
         $proof_file_path = null;
         if ($role === 'student') {
-            if (isset($_FILES['student_proof']) && ($_FILES['student_proof']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-                $proof_file_path = save_uploaded_proof($_FILES['student_proof']);
-            }
-            if (!$proof_file_path) {
-                $error = 'Please upload a valid Certificate of Registration (COR) or Student ID attachment (PDF, JPG, PNG).';
+            $proofRes = AttachmentStore::storeProof($_FILES['student_proof'] ?? null);
+            if ($proofRes->isOk()) {
+                $proof_file_path = $proofRes->path();
+            } else {
+                $error = $proofRes->errorMessage();
                 $initial_step = 3;
             }
         }

@@ -169,9 +169,9 @@ require_once __DIR__ . '/../header.php';
                             <!-- Schedule Compatibility Overview -->
                             <?php
                             $fit = $student_schedule_fit ?? null;
-                            $fit_closed = strtolower($job['status'] ?? '') !== 'active';
-                            $fit_expired = !empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d'));
-                            $fit_filled = ((int)($job['slots_total'] ?? $job['vacancies'] ?? 1) > 0) && ((int)($job['slots_filled'] ?? 0) >= (int)($job['slots_total'] ?? $job['vacancies'] ?? 1));
+                            $fit_closed = isset($eligibility) ? ($eligibility->reason() === 'closed') : (strtolower($job['status'] ?? '') !== 'active');
+                            $fit_expired = isset($eligibility) ? ($eligibility->reason() === 'deadline_passed') : (!empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d')));
+                            $fit_filled = isset($eligibility) ? ($eligibility->reason() === 'slots_filled') : (((int)($job['slots_total'] ?? $job['vacancies'] ?? 1) > 0) && ((int)($job['slots_filled'] ?? 0) >= (int)($job['slots_total'] ?? $job['vacancies'] ?? 1)));
                             ?>
                             <?php if (!empty($fit) && !$fit_closed && !$fit_expired && !$fit_filled): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line mb-3" style="font-size: 12px;">
@@ -245,11 +245,11 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             <?php else: ?>
                                 <?php 
-                                $is_closed = strtolower($job['status'] ?? '') !== 'active';
-                                $is_expired = !empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d'));
+                                $is_closed = isset($eligibility) ? ($eligibility->reason() === 'closed') : (strtolower($job['status'] ?? '') !== 'active');
+                                $is_expired = isset($eligibility) ? ($eligibility->reason() === 'deadline_passed') : (!empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d')));
                                 $slots_total_val = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
                                 $slots_filled_val = (int)($job['slots_filled'] ?? 0);
-                                $is_filled = $slots_total_val > 0 && $slots_filled_val >= $slots_total_val;
+                                $is_filled = isset($eligibility) ? ($eligibility->reason() === 'slots_filled') : ($slots_total_val > 0 && $slots_filled_val >= $slots_total_val);
                                 ?>
 
                                 <?php if ($is_closed): ?>

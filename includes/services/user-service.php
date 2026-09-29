@@ -1233,21 +1233,7 @@ function update_user_password(int|string $user_id, string $hashed_password): boo
 }
 
 function ensure_password_resets_table(): void {
-    try {
-        $pdo = get_db_connection();
-        $pdo->exec("CREATE TABLE IF NOT EXISTS `password_resets` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `user_id` INT NOT NULL,
-            `token_hash` VARCHAR(255) NOT NULL UNIQUE,
-            `expires_at` DATETIME NOT NULL,
-            `used_at` DATETIME NULL,
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            INDEX `idx_resets_user` (`user_id`),
-            INDEX `idx_resets_expires` (`expires_at`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-    } catch (Exception $e) {
-        error_log("ensure_password_resets_table error: " . $e->getMessage());
-    }
+    DatastoreManager::ensureSchema();
 }
 
 function create_password_reset(int|string $user_id): ?string {
@@ -1331,34 +1317,7 @@ function validate_password_strength(string $password): array {
 }
 
 function ensure_email_verifications_table(): void {
-    static $ensured = false;
-    if ($ensured) {
-        return;
-    }
-    try {
-        $pdo = get_db_connection();
-        $col_check = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'is_email_verified'")->fetch();
-        if (!$col_check) {
-            $pdo->exec("ALTER TABLE `users` ADD COLUMN `is_email_verified` TINYINT(1) NOT NULL DEFAULT 1");
-            $pdo->exec("UPDATE `users` SET `is_email_verified` = 1 WHERE `is_email_verified` IS NULL");
-        }
-
-        $pdo->exec("CREATE TABLE IF NOT EXISTS `email_verifications` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `user_id` INT NOT NULL,
-            `code_hash` VARCHAR(255) NOT NULL,
-            `expires_at` DATETIME NOT NULL,
-            `attempts` INT NOT NULL DEFAULT 0,
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            INDEX `idx_verify_user` (`user_id`),
-            INDEX `idx_verify_expires` (`expires_at`),
-            CONSTRAINT `fk_verify_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-
-        $ensured = true;
-    } catch (Exception $e) {
-        error_log("ensure_email_verifications_table error: " . $e->getMessage());
-    }
+    DatastoreManager::ensureSchema();
 }
 
 function create_email_verification_code(int $user_id): string {

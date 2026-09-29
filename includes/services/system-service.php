@@ -67,78 +67,25 @@ function get_metrics_avg_hourly_pay(): string {
 }
 
 function get_system_data_mode(): string {
-    $mode_file = DATA_DIR . '/system_mode.json';
-    if (file_exists($mode_file)) {
-        $data = json_decode(file_get_contents($mode_file), true);
-        return ($data['active_mode'] ?? 'demo');
-    }
-    return 'demo';
+    return DatastoreManager::getMode();
 }
 
 function switch_system_data_mode(string $mode, string $switched_by = 'User'): bool {
-    $seed_dir = DATA_DIR . '/seeds/' . $mode;
-    if (!is_dir($seed_dir)) {
-        return false;
-    }
-
-    // 1. Sync seed files to data/
-    $data_files = ['users.json', 'jobs.json', 'applications.json', 'categories.json',
-                   'profile_requests.json', 'updates.json', 'devblogs.json', 'notifications.json'];
-
-    foreach ($data_files as $file) {
-        $src = $seed_dir . '/' . $file;
-        $dst = DATA_DIR . '/' . $file;
-        if (file_exists($src)) {
-            copy($src, $dst);
-        }
-    }
-
-    // 2. Re-import into MySQL
-    try {
-        require_once dirname(__DIR__, 2) . '/database/migrate.php';
-        execute_migration_and_seed(false, DATA_DIR, false, true);
-    } catch (Exception $e) {
-        error_log("switch_system_data_mode db error: " . $e->getMessage());
-    }
-
-    // Record mode change
-    $mode_data = [
-        'active_mode' => $mode,
-        'last_switched_at' => date('Y-m-d H:i:s'),
-        'switched_by' => $switched_by
-    ];
-    file_put_contents(DATA_DIR . '/system_mode.json', json_encode($mode_data, JSON_PRETTY_PRINT));
-
-    // Clear session user if not admin; refresh admin user from newly loaded database
-    $was_admin = (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin');
-    if ($was_admin) {
-        $fresh_admin = get_user_by_email('admin@kld.edu.ph');
-        if ($fresh_admin) {
-            unset($fresh_admin['password']);
-            $_SESSION['user'] = $fresh_admin;
-        } else {
-            unset($_SESSION['user']);
-        }
-    } else {
-        unset($_SESSION['user']);
-    }
-
-    return true;
+    return DatastoreManager::switchMode($mode, $switched_by);
 }
 
 function reset_current_data_mode(string $switched_by = 'User'): bool {
-    $current_mode = get_system_data_mode();
-    return switch_system_data_mode($current_mode, $switched_by);
+    return DatastoreManager::resetCurrent($switched_by);
 }
 
 function wipe_real_data_fresh(): bool {
-    return switch_system_data_mode('real', 'System Wipe');
+    return DatastoreManager::wipeReal();
 }
 
 function reset_demo_data(): bool {
-    switch_system_data_mode('demo', 'System Reset');
+    $success = DatastoreManager::resetToDemo();
     set_flash('info', 'Demo dataset has been reset to default campus state.');
-    return true;
+    return $success;
 }
 
 function get_career_updates(): array {

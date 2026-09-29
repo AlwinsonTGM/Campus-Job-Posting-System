@@ -23,31 +23,13 @@ if (!$job) {
     exit;
 }
 
-// Verification Check
-if (($user['verification_status'] ?? 'verified') !== 'verified') {
-    set_flash('warning', 'Account Verification Required: Your student registration is currently awaiting administrative review. The administrator must verify your account before you can submit applications.');
-    header('Location: dashboard.php');
-    exit;
-}
-
-// Gating Checks
-if (strtolower($job['status'] ?? '') !== 'active') {
-    set_flash('danger', 'This requisition has been closed or paused and is not accepting applications.');
-    header('Location: job-details.php?id=' . $job['id']);
-    exit;
-}
-
-if (!empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d'))) {
-    set_flash('danger', 'The application deadline for this position has passed.');
-    header('Location: job-details.php?id=' . $job['id']);
-    exit;
-}
-
-$slots_total = (int)($job['slots_total'] ?? $job['vacancies'] ?? 1);
-$slots_filled = (int)($job['slots_filled'] ?? 0);
-if ($slots_total > 0 && $slots_filled >= $slots_total) {
-    set_flash('danger', 'All vacancy slots for this position have been filled.');
-    header('Location: job-details.php?id=' . $job['id']);
+// Enforce Requisition Eligibility
+$eligibility = ApplicationService::checkEligibility($job, $user);
+if (!$eligibility->isAllowed()) {
+    $flashType = ($eligibility->reason() === 'unverified_student') ? 'warning' : 'danger';
+    set_flash($flashType, $eligibility->message());
+    $dest = ($eligibility->reason() === 'unverified_student') ? 'dashboard.php' : ('job-details.php?id=' . $job['id']);
+    header('Location: ' . $dest);
     exit;
 }
 
