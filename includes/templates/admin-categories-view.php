@@ -52,7 +52,7 @@ require_once __DIR__ . '/../header.php';
                 <!-- Visual Hero Showcase Banner -->
                 <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise border-line position-relative shadow-sm" style="background: linear-gradient(135deg, #0d3b2e 0%, #175343 55%, #1e6955 100%); color: #ffffff;">
                     <!-- Decorative Background Icon Accent -->
-                    <div style="position: absolute; right: -30px; bottom: -30px; opacity: 0.08; pointer-events: none;">
+                    <div style="position: absolute; right: -30px; bottom: -30px; opacity: 0.08; pointer-events: none; overflow: hidden; max-width: 100%; max-height: 100%;">
                         <i class="bi bi-diagram-3-fill" style="font-size: 240px; line-height: 1;"></i>
                     </div>
 

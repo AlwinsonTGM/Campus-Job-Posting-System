@@ -183,17 +183,8 @@ require_once __DIR__ . '/../header.php';
                         <div class="fs-robot-ambient-glow"></div>
                         <!-- 3D Canvas Reparent Target Slot -->
                         <div id="fullscreen-robot-stage-slot" class="fullscreen-robot-stage-slot">
-                            <div id="hero-robot-canvas-container" class="hero-robot-canvas-container is-fullscreen" data-model-path="<?= $base_url ?>assets/models/cute_robot.glb" title="Click me to chat and see my animations!">
-                                <!-- Dynamic Progress & Loading Skeleton -->
-                                <div id="hero-robot-loader" class="hero-robot-loader">
-                                    <div class="spinner-border text-success" role="status" style="width: 2rem; height: 2rem;">
-                                        <span class="visually-hidden">Loading 3D Model...</span>
-                                    </div>
-                                    <div class="loader-text mt-2 small text-dark fw-bold">Waking Up 3D Assistant...</div>
-                                    <div class="progress mt-2" style="width: 130px; height: 4px; background: #e2e8f0; border-radius: 99px;">
-                                        <div id="hero-robot-progress" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 15%"></div>
-                                    </div>
-                                </div>
+                            <?php render_hero_robot_stage($base_url, true); ?>
+                        </div>
                             </div>
                         </div>
                         <div class="fs-robot-hint">

@@ -129,10 +129,8 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 </div>
 
-                                <!-- Mascot Assistant Container (Lightweight Photo Mode) -->
-                                <div id="hero-robot-canvas-container" class="hero-robot-canvas-container" data-model-path="none" title="Click me to chat and get campus tips!">
-                                    <img id="hero-robot-image" src="<?= $base_url ?>assets/img/assistant-robot.jpg" alt="Campus AI Assistant Mascot" class="hero-robot-static-img" />
-                                </div>
+                                <!-- Mascot Assistant Container (Adaptive: 3D on Localhost, Photo on Hosted) -->
+                                <?php render_hero_robot_stage($base_url, false); ?>
                             </div>
                         </div>
                     </div>

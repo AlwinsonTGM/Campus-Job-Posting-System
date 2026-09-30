@@ -544,3 +544,79 @@ if (!function_exists('render_availability_matrix')) {
         <?php
     }
 }
+
+if (!function_exists('is_local_environment')) {
+    /**
+     * Determines whether the current application is running on local development (e.g. localhost, XAMPP).
+     * Used to selectively enable heavy assets like the 54MB Three.js 3D model on local, while keeping
+     * lightweight photo companion mode on hosted production environments (InfinityFree).
+     */
+    function is_local_environment() {
+        if (isset($_GET['mode_3d'])) return true;
+        if (isset($_GET['mode_photo'])) return false;
+
+        $host = parse_url('http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'), PHP_URL_HOST);
+        if (in_array($host, ['localhost', '127.0.0.1', '::1'])) {
+            return true;
+        }
+        if (isset($_SERVER['SERVER_ADDR']) && in_array($_SERVER['SERVER_ADDR'], ['127.0.0.1', '::1'])) {
+            return true;
+        }
+        if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'local') {
+            return true;
+        }
+        if (substr($host, -5) === '.test' || substr($host, -6) === '.local') {
+            return true;
+        }
+        return false;
+    }
+}
+
+if (!function_exists('is_3d_robot_enabled')) {
+    /**
+     * Determines whether the interactive 3D WebGL robot should be loaded.
+     * With cute_robot.glb compressed from 54MB to 7.45MB, 3D mode can now run
+     * safely on both local development and hosted production environments (e.g. InfinityFree).
+     * Can still be overridden via ?mode_3d or ?mode_photo or ENABLE_3D_ROBOT in .env.
+     */
+    function is_3d_robot_enabled() {
+        if (isset($_GET['mode_3d'])) return true;
+        if (isset($_GET['mode_photo'])) return false;
+        if (isset($_ENV['ENABLE_3D_ROBOT'])) {
+            return filter_var($_ENV['ENABLE_3D_ROBOT'], FILTER_VALIDATE_BOOLEAN);
+        }
+        return true;
+    }
+}
+
+if (!function_exists('render_hero_robot_stage')) {
+    /**
+     * Renders either the interactive 3D WebGL robot canvas (on localhost & supported hosted)
+     * or the lightweight animated photo mascot.
+     */
+    function render_hero_robot_stage($base_url = '', $is_fullscreen = false) {
+        $is_3d = function_exists('is_3d_robot_enabled') ? is_3d_robot_enabled() : is_local_environment();
+        $fullscreen_class = $is_fullscreen ? ' is-fullscreen' : '';
+        if ($is_3d): ?>
+            <!-- 3D WebGL Canvas Container (High-Performance 7.45MB Model) -->
+            <div id="hero-robot-canvas-container" class="hero-robot-canvas-container<?= $fullscreen_class ?>" data-model-path="<?= $base_url ?>assets/models/cute_robot.glb" title="Click me to chat and see my animations!">
+                <!-- Dynamic Progress & Loading Skeleton -->
+                <div id="hero-robot-loader" class="hero-robot-loader">
+                    <div class="spinner-border text-success" role="status" style="width: 2rem; height: 2rem;">
+                        <span class="visually-hidden">Loading 3D Model...</span>
+                    </div>
+                    <div class="loader-text mt-2 small text-dark fw-bold">Waking Up 3D Assistant...</div>
+                    <div class="progress mt-2" style="width: 130px; height: 4px; background: #e2e8f0; border-radius: 99px;">
+                        <div id="hero-robot-progress" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 15%"></div>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <!-- Mascot Assistant Container (Hosted Lightweight Photo Mode) -->
+            <div id="hero-robot-canvas-container" class="hero-robot-canvas-container<?= $fullscreen_class ?>" data-model-path="none" title="Click me to chat and get campus tips!">
+                <img id="hero-robot-image" src="<?= $base_url ?>assets/img/assistant-robot.jpg" alt="Campus AI Assistant Mascot" class="hero-robot-static-img" />
+            </div>
+        <?php endif;
+    }
+}
+

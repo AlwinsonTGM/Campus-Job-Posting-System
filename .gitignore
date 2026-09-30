@@ -17,6 +17,8 @@ ehthumbs_vista.db
 *.njsproj
 *.sln
 *.sw?
+__pycache__/
+*.pyc
 
 # Dependencies
 node_modules/
@@ -51,6 +53,10 @@ pnpm-debug.log*
 .env.local
 .env.*
 !.env.example
+
+# Sensitive temporary upload tools & diagnostics
+tools/upload_*.py
+dbtest.php
 
 # Temporary Test Upload Artifacts
 uploads/proofs/proof_*

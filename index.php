@@ -30,12 +30,19 @@ $metric_partnered_offices = get_metrics_partnered_offices();
 $metric_students_hired = get_metrics_students_hired();
 $metric_avg_pay = get_metrics_avg_hourly_pay();
 
-// Interactive 3D Hero Scripts
-$extra_js = [
-    'assets/js/three.min.js',
-    'assets/js/GLTFLoader.js',
-    'assets/js/hero-robot.js?v=' . time()
-];
+// Interactive 3D Hero Scripts (Hardware-Accelerated 3D WebGL Mascot)
+$is_3d = function_exists('is_3d_robot_enabled') ? is_3d_robot_enabled() : (function_exists('is_local_environment') && is_local_environment());
+if ($is_3d) {
+    $extra_js = [
+        'assets/js/three.min.js',
+        'assets/js/GLTFLoader.js',
+        'assets/js/hero-robot.js?v=' . time()
+    ];
+} else {
+    $extra_js = [
+        'assets/js/hero-robot.js?v=' . time()
+    ];
+};
 // Last line: view template
 require __DIR__ . '/includes/templates/index-view.php';
 

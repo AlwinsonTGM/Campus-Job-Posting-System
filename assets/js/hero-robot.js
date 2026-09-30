@@ -1331,59 +1331,64 @@
                 ]);
                 const partiallySharedMeshIndices = new Set([11, 12, 30, 33]);
 
-                // Filter objects and geometries to isolate the main big robot
-                const objectsToRemove = [];
-                robotModel.traverse(function (child) {
-                    if (child.isMesh) {
-                        const match = child.name.match(/Object_(\d+)/);
-                        if (match) {
-                            const nodeIdx = parseInt(match[1], 10);
-                            const meshIdx = nodeIdx - 2;
+                // Check if model is already pre-optimized (e.g. compressed solo robot model without secondary meshes)
+                const isPreOptimized = !robotModel.getObjectByName('Object_2');
 
-                            if (fullyRemovedMeshIndices.has(meshIdx)) {
-                                objectsToRemove.push(child);
-                            } else if (partiallySharedMeshIndices.has(meshIdx)) {
-                                const geom = child.geometry;
-                                const pos = geom.attributes.position;
-                                const index = geom.index;
-                                if (pos && index) {
-                                    const oldIndices = index.array;
-                                    const keptIndices = [];
-                                    for (let t = 0; t < oldIndices.length; t += 3) {
-                                        const i0 = oldIndices[t];
-                                        const i1 = oldIndices[t + 1];
-                                        const i2 = oldIndices[t + 2];
+                if (!isPreOptimized) {
+                    // Legacy fallback filter: isolate main robot from raw multi-model GLB
+                    const objectsToRemove = [];
+                    robotModel.traverse(function (child) {
+                        if (child.isMesh) {
+                            const match = child.name.match(/Object_(\d+)/);
+                            if (match) {
+                                const nodeIdx = parseInt(match[1], 10);
+                                const meshIdx = nodeIdx - 2;
 
-                                        const x0 = pos.getX(i0), y0 = pos.getY(i0);
-                                        const x1 = pos.getX(i1), y1 = pos.getY(i1);
-                                        const x2 = pos.getX(i2), y2 = pos.getY(i2);
+                                if (fullyRemovedMeshIndices.has(meshIdx)) {
+                                    objectsToRemove.push(child);
+                                } else if (partiallySharedMeshIndices.has(meshIdx)) {
+                                    const geom = child.geometry;
+                                    const pos = geom.attributes.position;
+                                    const index = geom.index;
+                                    if (pos && index) {
+                                        const oldIndices = index.array;
+                                        const keptIndices = [];
+                                        for (let t = 0; t < oldIndices.length; t += 3) {
+                                            const i0 = oldIndices[t];
+                                            const i1 = oldIndices[t + 1];
+                                            const i2 = oldIndices[t + 2];
 
-                                        // Reject triangles belonging to small robot (x >= 1.15) or front tray (y <= -1.65)
-                                        const isSmall = (x0 >= 1.15 || x1 >= 1.15 || x2 >= 1.15);
-                                        const isFront = (y0 <= -1.65 || y1 <= -1.65 || y2 <= -1.65);
+                                            const x0 = pos.getX(i0), y0 = pos.getY(i0);
+                                            const x1 = pos.getX(i1), y1 = pos.getY(i1);
+                                            const x2 = pos.getX(i2), y2 = pos.getY(i2);
 
-                                        if (!isSmall && !isFront) {
-                                            keptIndices.push(i0, i1, i2);
+                                            // Reject triangles belonging to small robot (x >= 1.15) or front tray (y <= -1.65)
+                                            const isSmall = (x0 >= 1.15 || x1 >= 1.15 || x2 >= 1.15);
+                                            const isFront = (y0 <= -1.65 || y1 <= -1.65 || y2 <= -1.65);
+
+                                            if (!isSmall && !isFront) {
+                                                keptIndices.push(i0, i1, i2);
+                                            }
                                         }
-                                    }
 
-                                    if (keptIndices.length === 0) {
-                                        objectsToRemove.push(child);
-                                    } else {
-                                        const IndexArrayType = pos.count > 65535 ? Uint32Array : Uint16Array;
-                                        geom.setIndex(new THREE.BufferAttribute(new IndexArrayType(keptIndices), 1));
-                                        geom.computeBoundingBox();
-                                        geom.computeBoundingSphere();
+                                        if (keptIndices.length === 0) {
+                                            objectsToRemove.push(child);
+                                        } else {
+                                            const IndexArrayType = pos.count > 65535 ? Uint32Array : Uint16Array;
+                                            geom.setIndex(new THREE.BufferAttribute(new IndexArrayType(keptIndices), 1));
+                                            geom.computeBoundingBox();
+                                            geom.computeBoundingSphere();
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                });
+                    });
 
-                objectsToRemove.forEach(function (obj) {
-                    if (obj.parent) obj.parent.remove(obj);
-                });
+                    objectsToRemove.forEach(function (obj) {
+                        if (obj.parent) obj.parent.remove(obj);
+                    });
+                }
 
                 // Center model bounding box of the solo main robot
                 const box = new THREE.Box3().setFromObject(robotModel);

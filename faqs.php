@@ -98,12 +98,19 @@ if ($target_faq !== null) {
     }
 }
 
-// Interactive 3D Companion Studio Scripts
-$extra_js = [
-    'assets/js/three.min.js',
-    'assets/js/GLTFLoader.js',
-    'assets/js/hero-robot.js?v=' . time()
-];
+// Interactive 3D Companion Studio Scripts (Hardware-Accelerated 3D WebGL Mascot)
+$is_3d = function_exists('is_3d_robot_enabled') ? is_3d_robot_enabled() : (function_exists('is_local_environment') && is_local_environment());
+if ($is_3d) {
+    $extra_js = [
+        'assets/js/three.min.js',
+        'assets/js/GLTFLoader.js',
+        'assets/js/hero-robot.js?v=' . time()
+    ];
+} else {
+    $extra_js = [
+        'assets/js/hero-robot.js?v=' . time()
+    ];
+};
 // Last line: view template
 require __DIR__ . '/includes/templates/faqs-view.php';
 

@@ -21,7 +21,7 @@
         </a>
 
         <!-- Mobile Controls (Search & Notifications to the left of the Hamburger) -->
-        <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
+        <div class="mobile-header-controls d-flex align-items-center gap-2 d-lg-none ms-auto">
             <button type="button" class="btn-circle-icon btn-nav-search-mobile" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs" aria-label="Search Jobs">
                 <i class="bi bi-search"></i>
             </button>
@@ -33,7 +33,7 @@
                     </span>
                 </a>
             <?php endif; ?>
-            <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler btn-circle-icon shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="bi bi-list"></i>
             </button>
         </div>
@@ -55,7 +55,7 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 gap-xl-2 align-items-lg-center">
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center gap-1 <?= ($current_script === 'users.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/users.php">
-                            USERS &amp; VERIFICATION
+                            <span class="d-inline d-lg-none d-xxl-inline">USERS &amp;&nbsp;</span>VERIFICATION
                             <?php if ($nav_pending_count > 0): ?>
                                 <span class="badge bg-danger rounded-pill px-2" style="font-size: 10px;"><?= $nav_pending_count ?></span>
                             <?php endif; ?>
@@ -78,7 +78,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
-                            JOBS DIRECTORY
+                            JOBS<span class="d-inline d-lg-none d-xxl-inline">&nbsp;DIRECTORY</span>
                         </a>
                     </li>
                 </ul>
