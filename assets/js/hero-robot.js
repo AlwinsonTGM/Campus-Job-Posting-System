@@ -73,7 +73,7 @@
         const heroStageWrapper = document.querySelector('.hero-3d-stage-wrapper');
         const bubbleCloseBtn = document.getElementById('speech-bubble-close-btn');
         const hintPill = document.getElementById('hero-robot-hint-pill');
-        let isBubbleOpen = false;
+        let isBubbleOpen = true;
 
         const chatHistory = [];
         let isFullscreenOpen = false;
@@ -546,6 +546,7 @@
                 heroStageWrapper.classList.add('bubble-active');
             }
             bubbleContainer.classList.remove('d-none');
+            bubbleContainer.classList.remove('is-closed');
             bubbleContainer.style.display = 'block';
             void bubbleContainer.offsetWidth; // Force layout reflow
             bubbleContainer.classList.add('is-open');
@@ -576,6 +577,7 @@
                 heroStageWrapper.classList.remove('bubble-active');
             }
             bubbleContainer.classList.remove('is-open');
+            bubbleContainer.classList.add('is-closed');
 
             if (hintPill) {
                 hintPill.classList.remove('d-none');
@@ -1262,15 +1264,24 @@
             });
         });
 
-        // Initialize mode to FAQ silently without triggering typewriter before user clicks
-        setMode('faq', false);
+        // Initialize mode to FAQ and start typewriter welcome message immediately
+        setMode('faq', true);
         initAIStatus();
         appendFullscreenMessage('assistant', "Hey there! Looking for a campus assistantship or flexible internship? I'm your Campus AI companion! Ask me anything about student jobs, shift scheduling, or interview tips.", 'Campus AI', 'faq');
 
-        // Ensure bubble container starts 100% hidden in Form 1
+        // Ensure bubble container starts active and visible in hero stage
         if (bubbleContainer) {
-            bubbleContainer.classList.add('d-none');
-            bubbleContainer.style.display = 'none';
+            bubbleContainer.classList.remove('d-none');
+            bubbleContainer.classList.remove('is-closed');
+            bubbleContainer.style.display = 'block';
+            bubbleContainer.classList.add('is-open');
+        }
+        if (heroStageWrapper) {
+            heroStageWrapper.classList.add('bubble-active');
+        }
+        if (hintPill) {
+            hintPill.classList.add('d-none');
+            hintPill.style.display = 'none';
         }
 
         // Click / Tap Handler on 3D Container (drag detection vs click, left-click only)
@@ -1335,13 +1346,8 @@
             });
         }
 
-        // Dismiss bubble if clicking outside hero wrapper
-        document.addEventListener('pointerdown', function (e) {
-            if (!isBubbleOpen || isFullscreenOpen || !heroStageWrapper) return;
-            if (!heroStageWrapper.contains(e.target)) {
-                closeSpeechBubble();
-            }
-        });
+        // Hero speech bubble stays persistent as an integrated companion stage
+        // (Users can still dismiss via the bubble's top-right X button if desired)
 
         // If static image mode, or Three.js / GLTFLoader is missing, speech bubble still works
         const hasStaticImg = !!container.querySelector('.hero-robot-static-img');
@@ -1426,8 +1432,8 @@
         const targetEye = { x: 0, z: 0 };
         const currentEye = { x: 0, z: 0 };
         const basePosition = { x: 0, y: 0, z: 0 };
-        let currentBaseY = 0;
-        let currentScale = 1.0;
+        let currentBaseY = -0.80;
+        let currentScale = 0.58;
 
         const eyeMeshes = [];
         const eyeMaterials = [];

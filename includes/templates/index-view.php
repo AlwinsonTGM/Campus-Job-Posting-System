@@ -67,9 +67,9 @@ require_once __DIR__ . '/../header.php';
 
                         <!-- Right Column: Interactive 3D Robot Companion -->
                         <div class="col-12 col-lg-5 col-xl-5">
-                            <div class="hero-3d-stage-wrapper">
-                                <!-- Interactive Robot Message / Speech Bubble (Initially hidden, revealed when robot is clicked) -->
-                                <div id="hero-robot-speech-bubble" class="hero-robot-speech-bubble d-none" style="display: none;" aria-live="polite">
+                            <div class="hero-3d-stage-wrapper bubble-active">
+                                <!-- Interactive Robot Message / Speech Bubble (Open by default) -->
+                                <div id="hero-robot-speech-bubble" class="hero-robot-speech-bubble is-open" aria-live="polite">
                                     <div class="speech-bubble-card">
                                         <!-- Dismiss button back to full robot stage -->
                                         <button type="button" id="speech-bubble-close-btn" class="speech-bubble-close-btn" title="Dismiss chat bubble" aria-label="Dismiss chat bubble">
@@ -136,8 +136,8 @@ require_once __DIR__ . '/../header.php';
                                 <!-- Mascot Assistant Container (Consumes full stage in Form 1) -->
                                 <?php render_hero_robot_stage($base_url, false); ?>
 
-                                <!-- Sleek Interactive Hint Pill (Visible in Form 1, triggers Form 2 on click) -->
-                                <div id="hero-robot-hint-pill" class="hero-robot-hint-pill" role="button" tabindex="0" title="Click robot to chat and explore!">
+                                <!-- Sleek Interactive Hint Pill (Visible only if user dismisses bubble via X button) -->
+                                <div id="hero-robot-hint-pill" class="hero-robot-hint-pill d-none" style="display: none;" role="button" tabindex="0" title="Click robot to chat and explore!">
                                     <span class="hint-dot"></span>
                                     <i class="bi bi-chat-quote-fill text-accent"></i>
                                     <span>Click robot to chat</span>
