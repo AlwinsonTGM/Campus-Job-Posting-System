@@ -5601,7 +5601,7 @@ body.modal-open {
 
 .donut-center-callout {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 18px);
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;

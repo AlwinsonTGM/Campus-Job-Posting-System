@@ -49,6 +49,9 @@ require_once __DIR__ . '/../header.php';
                     <a href="my-applications.php?status=declined" class="chip chip-selectable <?= ($filter_status === 'declined') ? 'active' : '' ?>">
                         <i class="bi bi-x-circle text-danger"></i> Declined / Filled
                     </a>
+                    <a href="my-applications.php?status=withdrawn" class="chip chip-selectable <?= ($filter_status === 'withdrawn') ? 'active' : '' ?>">
+                        <i class="bi bi-dash-circle text-muted"></i> Withdrawn
+                    </a>
                 </div>
 
                 <!-- Applications List -->

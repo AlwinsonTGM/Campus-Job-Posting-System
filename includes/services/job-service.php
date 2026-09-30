@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Extracted from includes/data-helper.php — 100% function contract preserved.
  */
 
-function get_jobs(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null): array {
+function get_jobs(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false): array {
     try {
         $pdo = get_db_connection();
         $sql = "
@@ -24,6 +24,12 @@ function get_jobs(string|array|null $category = null, ?string $keyword = null, ?
             WHERE 1=1
         ";
         $params = [];
+
+        if ($only_archived) {
+            $sql .= " AND j.`is_archived` = 1";
+        } elseif (!$include_archived) {
+            $sql .= " AND (j.`is_archived` = 0 OR j.`is_archived` IS NULL)";
+        }
 
         if ($employer_id !== null) {
             $sql .= " AND j.`employer_id` = :emp_owner_id";
@@ -224,11 +230,13 @@ function create_job(array $data, ?array $photo_file = null): int {
             )
         ");
 
+        $emp_id = !empty($data['employer_id']) ? (int)$data['employer_id'] : (!empty($user['id']) ? (int)$user['id'] : null);
+
         $stmt->execute([
             ':title'             => $data['title'] ?? '',
             ':department'        => $data['department'] ?? $org_name,
             ':category_id'       => $attrs['category_id'],
-            ':employer_id'       => (int)($user['id'] ?? 0),
+            ':employer_id'       => $emp_id,
             ':job_type'          => $attrs['job_type'],
             ':work_setup'        => $attrs['work_setup'],
             ':location'          => $data['location'] ?? 'Campus Main Office',
@@ -310,28 +318,46 @@ function update_job(int|string $id, array $data, ?array $photo_file = null): boo
     }
 }
 
-function delete_job(int|string $id): bool {
+function archive_job(int|string $id, ?array $user = null): bool {
     try {
         $pdo = get_db_connection();
-        $pdo->beginTransaction();
-
-        // 1. Delete dependent applications for this job to prevent orphaned candidate applications
-        $stmt_app = $pdo->prepare("DELETE FROM `applications` WHERE `job_id` = :job_id");
-        $stmt_app->execute([':job_id' => (int)$id]);
-
-        // 2. Delete the job record
-        $stmt = $pdo->prepare("DELETE FROM `jobs` WHERE `id` = :id");
-        $stmt->execute([':id' => (int)$id]);
-
-        $pdo->commit();
-        return true;
-    } catch (Exception $e) {
-        if (isset($pdo) && $pdo->inTransaction()) {
-            $pdo->rollBack();
+        $job = get_job_by_id($id);
+        if (!$job) {
+            return false;
         }
-        error_log("delete_job error: " . $e->getMessage());
+
+        // Authorization check: User must be admin or the owning employer
+        if ($user !== null && function_exists('can_manage_job') && !can_manage_job($job, $user)) {
+            return false;
+        }
+
+        $stmt = $pdo->prepare("UPDATE `jobs` SET `is_archived` = 1, `archived_at` = NOW() WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("archive_job error: " . $e->getMessage());
         return false;
     }
+}
+
+function restore_job(int|string $id, ?array $user = null): bool {
+    try {
+        // Enforce: Admin ONLY has restore privileges
+        if ($user !== null && ($user['role'] ?? '') !== 'admin') {
+            return false;
+        }
+
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("UPDATE `jobs` SET `is_archived` = 0, `archived_at` = NULL WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("restore_job error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function delete_job(int|string $id): bool {
+    // Non-destructive: professor requirement: archive only
+    return archive_job($id);
 }
 
 function get_applications(int|string|null $student_id = null, int|string|null $job_id = null, ?string $department = null, int|string|null $employer_id = null): array {
@@ -438,7 +464,7 @@ function get_application_by_id(int|string|null $id): ?array {
 function create_application(array $data): array {
     try {
         $pdo = get_db_connection();
-        $user = get_logged_user();
+        $user = get_logged_user() ?? (!empty($data['student_id']) ? get_user_by_id((int)$data['student_id']) : null);
         $job = get_job_by_id($data['job_id'] ?? 0);
 
         if (!$job) {
@@ -453,7 +479,7 @@ function create_application(array $data): array {
             }
         }
 
-        $student_id = (int)($user['id'] ?? 0);
+        $student_id = (int)($data['student_id'] ?? ($user['id'] ?? 0));
         if ($student_id <= 0) {
             return ['success' => false, 'message' => 'Invalid student authentication session.'];
         }
@@ -472,6 +498,14 @@ function create_application(array $data): array {
                 :resume_file, :study_load_file, 'pending',
                 'Application submitted and queued for evaluation.', NOW(), NOW()
             )
+            ON DUPLICATE KEY UPDATE
+                `cover_letter` = VALUES(`cover_letter`),
+                `availability` = VALUES(`availability`),
+                `resume_file` = VALUES(`resume_file`),
+                `study_load_file` = VALUES(`study_load_file`),
+                `status` = 'pending',
+                `supervisor_notes` = 'Application re-submitted and queued for evaluation.',
+                `updated_at` = NOW()
         ");
 
         $stmt->execute([
@@ -484,6 +518,11 @@ function create_application(array $data): array {
         ]);
 
         $new_id = (int)$pdo->lastInsertId();
+        if ($new_id === 0) {
+            $findStmt = $pdo->prepare("SELECT `id` FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id LIMIT 1");
+            $findStmt->execute([':job_id' => $job['id'], ':student_id' => $student_id]);
+            $new_id = (int)$findStmt->fetchColumn();
+        }
 
         // Dispatch notification to hiring employer
         if ($new_id > 0 && !empty($job['employer_id'])) {
@@ -704,10 +743,16 @@ function update_application_status(int|string $id, string $status, string $notes
     }
 }
 
-function get_categories(): array {
+function get_categories(bool $include_archived = false, bool $only_archived = false): array {
     try {
         $pdo = get_db_connection();
-        $stmt_cat = $pdo->query("SELECT * FROM `categories` ORDER BY `id` ASC");
+        $where = "WHERE 1=1";
+        if ($only_archived) {
+            $where .= " AND (`is_archived` = 1)";
+        } elseif (!$include_archived) {
+            $where .= " AND (`is_archived` = 0 OR `is_archived` IS NULL)";
+        }
+        $stmt_cat = $pdo->query("SELECT * FROM `categories` {$where} ORDER BY `id` ASC");
         $cats = array_map('hydrate_category', $stmt_cat->fetchAll());
 
         // Dynamic active job counts
@@ -831,30 +876,55 @@ function update_category(int|string $id, array $data, ?array $photo_file = null)
     }
 }
 
-function delete_category(int|string $id): bool {
+function archive_category(int|string $id): bool {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("DELETE FROM `categories` WHERE `id` = :id");
+        $stmt = $pdo->prepare("UPDATE `categories` SET `is_archived` = 1, `archived_at` = NOW() WHERE `id` = :id");
         return $stmt->execute([':id' => (int)$id]);
     } catch (Exception $e) {
-        error_log("delete_category error: " . $e->getMessage());
+        error_log("archive_category error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function restore_category(int|string $id, ?array $user = null): bool {
+    try {
+        // Enforce: Admin ONLY has restore privileges
+        if ($user !== null && ($user['role'] ?? '') !== 'admin') {
+            return false;
+        }
+
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("UPDATE `categories` SET `is_archived` = 0, `archived_at` = NULL WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("restore_category error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function delete_category(int|string $id): bool {
+    // Non-destructive: professor requirement: archive only
+    return archive_category($id);
+}
+
+function withdraw_application(int|string $id, int|string|null $student_id = null): bool {
+    try {
+        $pdo = get_db_connection();
+        if ($student_id) {
+            $stmt = $pdo->prepare("UPDATE `applications` SET `status` = 'withdrawn', `updated_at` = NOW() WHERE `id` = :id AND `student_id` = :sid");
+            return $stmt->execute([':id' => (int)$id, ':sid' => (int)$student_id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE `applications` SET `status` = 'withdrawn', `updated_at` = NOW() WHERE `id` = :id");
+            return $stmt->execute([':id' => (int)$id]);
+        }
+    } catch (Exception $e) {
+        error_log("withdraw_application error: " . $e->getMessage());
         return false;
     }
 }
 
 function delete_application(int|string $id, int|string|null $student_id = null): bool {
-    try {
-        $pdo = get_db_connection();
-        if ($student_id) {
-            $stmt = $pdo->prepare("DELETE FROM `applications` WHERE `id` = :id AND `student_id` = :sid");
-            $stmt->execute([':id' => (int)$id, ':sid' => (int)$student_id]);
-        } else {
-            $stmt = $pdo->prepare("DELETE FROM `applications` WHERE `id` = :id");
-            $stmt->execute([':id' => (int)$id]);
-        }
-        return true;
-    } catch (Exception $e) {
-        error_log("delete_application error: " . $e->getMessage());
-        return false;
-    }
+    // Non-destructive: professor requirement: archive via withdrawn status
+    return withdraw_application($id, $student_id);
 }

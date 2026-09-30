@@ -9,10 +9,11 @@
 
 ---
 
-## 📅 Chronological Development Roadmap (Days 01 – 11)
+## 📅 Chronological Development Roadmap (Days 01 – 24)
 
 | Sprint / Day | Date | Milestone Focus | Key Technical Achievements | Primary Commits |
 | :--- | :--- | :--- | :--- | :--- |
+| **Day 24** | Sep 30, 2026 | **Non-Destructive Archival & Final Defense Readiness** | Soft-delete architecture across jobs, categories, and updates ('archive only'), student application withdrawal & re-submission, account suspension/reactivation, OTP verification testing fallback, API key masking, and complete Obsidian defense review vault (`docs/codebase/`). | `HEAD` |
 | **Day 11** | Sep 08, 2026 | **Modular CSS & 20H Labor Safeguards** | Disassembled `custom.css` into 7 scoped modules, 3-column CSS Grid navbar with dynamic persona routing & Google-style center search, multi-turn AI memory, and statutory 20h/wk labor cap enforcement. | `fc0da08`, `5551d43`, `b6f3d28`, `d554021` |
 | **Day 10** | Sep 07, 2026 | **Real-Time Notifications & Migration Whitelist** | Relational `notifications` table, 30s background polling with `visibilitychange` lifecycle pause, floating toast alerts, full-page Notification Center, and regex-guarded table migration whitelist. | `b63c467`, `82661b1` |
 | **Day 09** | Sep 06, 2026 | **NVIDIA NIM AI Studio & Visual Taxonomy** | Enterprise NVIDIA NIM AI gateway (`Llama-3.3-70B`), fullscreen 2-column studio layout, domain photography across 8 job families, and zero-reload AJAX category filtering with scroll preservation. | `d6ae349`, `70c9a30`, `fbdd6ca`, `6cd00e4`, `28e6e97`, `1218e2f` |
@@ -28,6 +29,37 @@
 ---
 
 ## 📖 Detailed Daily Engineering Chronicles
+
+### Day 24 · September 30, 2026
+#### Culmination & Defense Readiness: Non-Destructive Soft-Delete Archival, Student Candidate Autonomy, Verification Hardening & Complete Defense Knowledge Vault
+
+As our team nears the final capstone defense milestone for the KLD Campus Job Posting System, Day 24 establishes the definitive stability, audit-integrity, and security perimeter across the entire platform. In response to our professor's institutional compliance mandate, we replaced all hard destructive deletions with an enterprise non-destructive soft-delete archival architecture across jobs, categories, dispatches, and user accounts. Furthermore, we granted student applicants full candidate autonomy via application withdrawal and seamless re-submission, engineered a frictionless in-session OTP verification fallback for offline defense evaluation, fortified application secrets with API key masking and Apache directory shielding, and finalized a comprehensive 50-file Obsidian defense review vault.
+
+##### 1. The Institutional 'Archive Only' Mandate: Non-Destructive Archival Architecture
+We expanded `database/schema.sql` and updated our domain services (`includes/services/job-service.php`, `includes/services/system-service.php`) with indexed `is_archived` (BOOLEAN) and `archived_at` (DATETIME) columns across `categories`, `jobs`, and `updates`. Destructive `DELETE` queries were deprecated and redirected to safe archival updates. In the administrative and employer dashboards, we introduced dedicated dual-tab navigation allowing users to toggle seamlessly between **Active** listings and **Archived** repositories.
+
+##### 2. Student Candidate Autonomy & Withdrawn Invariants
+Students must possess the autonomy to retract pending applications if their academic schedule conflicts or if they accept alternative assistantships. We extended the application status enum to include `withdrawn`. When a student withdraws their application, all evaluation notes, interview schedules, and availability heatmaps are locked in archive mode rather than purged. Should the student wish to re-apply later, `ApplicationService::create_application()` now leverages atomic `ON DUPLICATE KEY UPDATE` to smoothly re-activate the application record without unique constraint collisions.
+
+##### 3. Account Suspension & Administrative Restoration Authority
+To address non-compliant user accounts without corrupting student records or employer job listings, we implemented account deactivation via `suspend_user()` and `reactivate_user()` in `includes/services/user-service.php`. Suspended users are immediately denied access across all login checkpoints with an informative institutional deactivation notice. Crucially, to prevent unauthorized data resurrection, restoration privileges (`restore_job`, `restore_category`, `restore_career_update`) are restricted exclusively to institutional administrators.
+
+##### 4. Frictionless Defense Evaluation: In-Session OTP Passcode Fallback
+During the live capstone evaluation and local defense presentations, access to external internet SMTP relays (e.g. Gmail or SendGrid) may be restricted or firewalled on campus Wi-Fi. To guarantee zero presentation downtime, we enhanced `SessionGuard` and `verify-email.php`: when outbound SMTP is unconfigured in `.env`, the cryptographic 6-digit verification OTP is securely passed to `$_SESSION['pending_verification']['dev_code']` and cleanly rendered within a testing mode banner on screen. This enables frictionless evaluation while strictly preserving the authentic multi-step verification quarantine state machine.
+
+##### 5. Defense-in-Depth Security Shielding & Environment Standardization
+We completed three critical security shielding operations:
+- **API Key Masking:** Introduced `mask_ai_api_key()` in `includes/ai/security.php`, preventing NVIDIA NIM API keys from being exposed in DOM text or browser inspector tools.
+- **Apache Directory Shielding:** Deployed `database/.htaccess`, blocking all direct HTTP web access to SQL schemas, database dumps, logs, and seed files.
+- **Environment Standardization:** Standardized database environment loading in `includes/db.php` via `.env`, ensuring clean separation between local development and production deployment parameters.
+
+##### 6. Complete Obsidian Defense Knowledge Vault (`docs/codebase/`)
+To prepare our six-member engineering team for the BSIS201 Midterm and Capstone Defense, we built an exhaustive, Obsidian-compatible documentation vault under `docs/codebase/`. Structured around a Master Map of Content (MOC), the vault provides architectural sequence diagrams, line-by-line function breakdowns, security audits, and high-yield defense Q&A talking points for every single controller, service, and template across all five architectural layers.
+
+* **Key Deliverables:** Non-destructive soft-delete archival system ('archive only'); candidate application withdrawal and idempotent re-submission; account suspension and admin restoration governance; in-session OTP verification testing fallback; API key masking and Apache `.htaccess` security; complete 50-file Obsidian defense review vault (`docs/codebase/`).
+* **Tech Stack:** PHP 8.2, MySQL InnoDB Archival Indexes, MySQL `ON DUPLICATE KEY UPDATE`, Role-Based Access Control, Apache `.htaccess`, Obsidian Markdown Knowledge Vault.
+
+---
 
 ### Day 11 · September 08, 2026
 #### Modular CSS Architecture, Role-Based Navbar, Multi-Turn AI Memory & 20-Hour Academic Labor Cap

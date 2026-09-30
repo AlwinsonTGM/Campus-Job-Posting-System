@@ -123,21 +123,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $error = "Failed to update category '{$name}'.";
             }
-        } elseif ($action === 'delete') {
+        } elseif ($action === 'archive' || $action === 'delete') {
             $id = (int)($_POST['id'] ?? 0);
             if ($id > 0) {
-                delete_category($id);
-                set_flash('success', "Category #{$id} was deleted permanently.");
+                archive_category($id);
+                set_flash('success', "Category #{$id} has been moved to Archive. Existing jobs retain their classification.");
                 header('Location: categories.php');
                 exit;
             }
-            $error = 'Invalid category ID specified for deletion.';
+            $error = 'Invalid category ID specified for archiving.';
+        } elseif ($action === 'restore') {
+            $id = (int)($_POST['id'] ?? 0);
+            if ($id > 0) {
+                restore_category($id, $user);
+                set_flash('success', "Category #{$id} has been restored to active taxonomy.");
+                header('Location: categories.php?tab=archived');
+                exit;
+            }
+            $error = 'Invalid category ID specified for restoration.';
         }
     }
 }
 
-$categories = get_categories();
-$all_jobs = get_jobs();
+$tab = $_GET['tab'] ?? 'active';
+$active_categories = get_categories(false, false);
+$archived_categories = get_categories(true, true);
+$categories = ($tab === 'archived') ? $archived_categories : $active_categories;
+$all_jobs = get_jobs(null, null, null, null, null, null, null, null, true);
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-categories-view.php';
 

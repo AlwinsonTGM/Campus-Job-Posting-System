@@ -42,10 +42,18 @@ require_once __DIR__ . '/../header.php';
 
                 <!-- Dispatches Table Card -->
                 <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
-                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center">
+                    <div class="p-4 border-bottom border-line d-flex flex-wrap justify-content-between align-items-center gap-3">
                         <div>
-                            <h3 class="card-paper-title h6 mb-1">Published Dispatches (<?= count($all_updates) ?>)</h3>
-                            <p class="text-muted-custom small mb-0">Live on the homepage and public Career Center feed.</p>
+                            <h3 class="card-paper-title h6 mb-1"><?= ($tab === 'archived') ? 'Archived Bulletins' : 'Published Dispatches' ?> (<?= count($all_updates) ?>)</h3>
+                            <p class="text-muted-custom small mb-0"><?= ($tab === 'archived') ? 'Archived dispatches hidden from public view. Only Admins can restore.' : 'Live on the homepage and public Career Center feed.' ?></p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="updates.php" class="chip chip-selectable <?= ($tab !== 'archived') ? 'active' : '' ?>">
+                                <i class="bi bi-newspaper text-accent"></i> Active (<?= count($active_updates) ?>)
+                            </a>
+                            <a href="updates.php?tab=archived" class="chip chip-selectable <?= ($tab === 'archived') ? 'active' : '' ?>">
+                                <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_updates) ?>)
+                            </a>
                         </div>
                     </div>
 
@@ -113,14 +121,25 @@ require_once __DIR__ . '/../header.php';
                                                         style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Edit Dispatch">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
-                                                    <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this dispatch? This cannot be undone.');">
-                                                        <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                                        <input type="hidden" name="action" value="delete">
-                                                        <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
-                                                        <button type="submit" class="btn-circle-icon text-danger" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Delete Dispatch">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                    <?php if ($tab === 'archived'): ?>
+                                                        <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Restore this dispatch to active bulletins?');">
+                                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                                            <input type="hidden" name="action" value="restore">
+                                                            <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
+                                                            <button type="submit" class="btn-pill btn-pill-sm btn-pill-outline text-success" style="font-size: 11px; padding: 2px 8px;" title="Restore Dispatch">
+                                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                            </button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Archive this dispatch? It will be safely hidden while preserving institutional records.');">
+                                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                                            <input type="hidden" name="action" value="archive">
+                                                            <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
+                                                            <button type="submit" class="btn-circle-icon text-muted" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Archive Dispatch">
+                                                                <i class="bi bi-archive"></i>
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>

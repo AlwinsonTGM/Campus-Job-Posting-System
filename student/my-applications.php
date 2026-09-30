@@ -79,6 +79,7 @@ if (!empty($filter_status)) {
         if ($target === 'interview') return in_array($st, ['interview_scheduled', 'interview scheduled']);
         if ($target === 'accepted') return in_array($st, ['accepted', 'accepted / hired']);
         if ($target === 'declined') return in_array($st, ['declined', 'rejected', 'declined / position filled']);
+        if ($target === 'withdrawn') return in_array($st, ['withdrawn']);
         return true;
     });
 }

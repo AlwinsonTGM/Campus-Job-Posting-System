@@ -115,12 +115,12 @@ require_once __DIR__ . '/../header.php';
                                                         style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Edit Dispatch">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
-                                                    <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Delete this dispatch?');">
+                                                    <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Archive this dispatch? It will be safely archived while preserving campus records.');">
                                                         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="action" value="archive">
                                                         <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
-                                                        <button type="submit" class="btn-circle-icon text-danger" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Delete Dispatch">
-                                                            <i class="bi bi-trash"></i>
+                                                        <button type="submit" class="btn-circle-icon text-muted" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Archive Dispatch">
+                                                            <i class="bi bi-archive"></i>
                                                         </button>
                                                     </form>
                                                 </div>

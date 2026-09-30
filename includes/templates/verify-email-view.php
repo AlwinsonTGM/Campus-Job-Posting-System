@@ -88,9 +88,12 @@ require_once __DIR__ . '/../header.php';
                                     <div class="d-flex align-items-start gap-2">
                                         <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
                                         <div>
-                                            <strong class="d-block text-ink small mb-1">Notice: Outbound Mail Server Unconfigured</strong>
+                                            <strong class="d-block text-ink small mb-1">Testing Mode: Outbound Mail Server Unconfigured</strong>
                                             <span class="small text-muted-custom">
                                                 SMTP credentials (<code>MAIL_USERNAME</code> and <code>MAIL_PASSWORD</code>) are not configured in <code>.env</code>.
+                                                <?php if (!empty($_SESSION['pending_verification']['dev_code'])): ?>
+                                                    <span class="d-block mt-2">Verification passcode for this session: <code class="fs-6 fw-bold text-ink px-2 py-1 bg-white rounded border border-line"><?= htmlspecialchars($_SESSION['pending_verification']['dev_code']) ?></code></span>
+                                                <?php endif; ?>
                                             </span>
                                         </div>
                                     </div>

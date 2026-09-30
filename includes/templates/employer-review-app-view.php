@@ -166,6 +166,15 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             <?php endif; ?>
 
+                            <?php if (($target_app['status'] ?? '') === 'withdrawn'): ?>
+                                <div class="alert alert-warning border border-warning-subtle rounded-3 p-3 mb-3 small">
+                                    <div class="d-flex align-items-center gap-2 mb-1 fw-bold text-warning-emphasis">
+                                        <i class="bi bi-info-circle-fill"></i> Candidate Withdrawn
+                                    </div>
+                                    <div>This student candidate has withdrawn their application. All evaluation and audit records remain preserved in archive mode.</div>
+                                </div>
+                            <?php endif; ?>
+
                             <!-- Status Transition Form -->
                             <form action="review-app.php?id=<?= $target_app['id'] ?>" method="POST" class="form-paper">
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
@@ -173,7 +182,10 @@ require_once __DIR__ . '/../header.php';
                                 
                                 <div class="mb-3">
                                     <label class="form-label" for="eval-status">Update Candidate Stage <span class="text-danger">*</span></label>
-                                    <select name="status" id="eval-status" class="form-select" onchange="toggleInterviewFields(this.value)">
+                                    <select name="status" id="eval-status" class="form-select" <?= ($target_app['status'] === 'withdrawn') ? 'disabled' : '' ?> onchange="toggleInterviewFields(this.value)">
+                                        <?php if ($target_app['status'] === 'withdrawn'): ?>
+                                            <option value="withdrawn" selected>Candidate Withdrawn</option>
+                                        <?php endif; ?>
                                         <option value="pending" <?= in_array($target_app['status'], ['pending', 'Pending Review']) ? 'selected' : '' ?>>Pending Review</option>
                                         <option value="under_review" <?= in_array($target_app['status'], ['under_review', 'under review', 'Under Evaluation']) ? 'selected' : '' ?>>Under Evaluation</option>
                                         <option value="interview_scheduled" <?= in_array($target_app['status'], ['interview_scheduled', 'Interview Scheduled']) ? 'selected' : '' ?>>Shortlist & Schedule Interview</option>
@@ -256,9 +268,11 @@ require_once __DIR__ . '/../header.php';
                                     <textarea name="supervisor_notes" id="supervisor_notes" rows="3" class="form-control" placeholder="Add specific feedback, instructions, or internal notes..."><?= htmlspecialchars($target_app['supervisor_notes'] ?? '') ?></textarea>
                                 </div>
 
-                                <button type="submit" id="btn-save-decision" class="btn-pill w-100 mb-2">
-                                    <i class="bi bi-check2-circle"></i> Save Evaluation Decision
-                                </button>
+                                <?php if (($target_app['status'] ?? '') !== 'withdrawn'): ?>
+                                    <button type="submit" id="btn-save-decision" class="btn-pill w-100 mb-2">
+                                        <i class="bi bi-check2-circle"></i> Save Evaluation Decision
+                                    </button>
+                                <?php endif; ?>
                                 <a href="applicants.php" class="btn-pill-outline btn-pill-sm w-100 text-center">
                                     Return to Roster
                                 </a>

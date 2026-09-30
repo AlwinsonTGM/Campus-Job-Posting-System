@@ -24,7 +24,7 @@ require_once __DIR__ . '/../header.php';
                     <!-- Header Action Buttons -->
                     <div class="d-flex align-items-center gap-2">
                         <?php if ($unread_count > 0): ?>
-                            <form method="POST" action="notifications.php" class="d-inline">
+                            <form method="POST" action="notifications.php<?= ($filter === 'unread') ? '?filter=unread' : '' ?>" class="d-inline">
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 <input type="hidden" name="action" value="mark_all_read">
                                 <button type="submit" class="btn btn-paper-secondary btn-sm d-inline-flex align-items-center gap-2">

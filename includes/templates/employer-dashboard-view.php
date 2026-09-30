@@ -85,16 +85,24 @@ require_once __DIR__ . '/../header.php';
 
                 <!-- Manage Department Requisitions Table -->
                 <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
-                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
+                    <div class="p-4 border-bottom border-line d-flex flex-wrap justify-content-between align-items-center gap-3 bg-surface">
                         <div>
                             <h3 class="card-paper-title mb-1">
                                 <i class="bi bi-folder-check text-accent me-2"></i> Department Vacancy Requisitions
                             </h3>
-                            <p class="text-muted-custom small mb-0">Overview of student assistantship postings published by your office</p>
+                            <p class="text-muted-custom small mb-0"><?= $is_archived_view ? 'Archived requisitions safely preserved. Only Admins can restore them.' : 'Overview of student assistantship postings published by your office' ?></p>
                         </div>
-                        <a href="create-job.php" class="btn-pill btn-pill-sm">
-                            <i class="bi bi-plus-lg"></i> Post Vacancy
-                        </a>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a href="dashboard.php" class="chip chip-selectable <?= !$is_archived_view ? 'active' : '' ?>">
+                                <i class="bi bi-briefcase text-accent"></i> Active (<?= count($active_dept_jobs) ?>)
+                            </a>
+                            <a href="dashboard.php?tab=archived" class="chip chip-selectable <?= $is_archived_view ? 'active' : '' ?>">
+                                <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_dept_jobs) ?>)
+                            </a>
+                            <a href="create-job.php" class="btn-pill btn-pill-sm ms-2">
+                                <i class="bi bi-plus-lg"></i> Post Vacancy
+                            </a>
+                        </div>
                     </div>
 
                     <?php if (empty($all_dept_jobs)): ?>
@@ -163,7 +171,11 @@ require_once __DIR__ . '/../header.php';
                                                 <?= htmlspecialchars(format_display_date($job['deadline'] ?? 'Open')) ?>
                                             </td>
                                             <td data-label="Status">
-                                                <?= render_status_badge($job['status'] ?? 'Active') ?>
+                                                <?php if (!empty($job['is_archived'])): ?>
+                                                    <?= render_status_badge('archived') ?>
+                                                <?php else: ?>
+                                                    <?= render_status_badge($job['status'] ?? 'Active') ?>
+                                                <?php endif; ?>
                                             </td>
                                             <td class="pe-4" data-label="Actions">
                                                 <?php $job_apps = $job_applicant_counts[(int)$job['id']] ?? 0; ?>
@@ -171,9 +183,34 @@ require_once __DIR__ . '/../header.php';
                                                     <a href="applicants.php?job_id=<?= $job['id'] ?>" class="btn-pill btn-pill-sm table-action-btn <?= ($job_apps > 0) ? '' : 'btn-pill-outline' ?>" title="<?= $job_apps ?> candidate(s) submitted">
                                                         <i class="bi bi-people"></i> Applicants (<?= $job_apps ?>)
                                                     </a>
-                                                    <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm table-action-btn" title="Edit Posting">
-                                                        <i class="bi bi-pencil"></i> Edit
-                                                    </a>
+                                                    <?php if (!$is_archived_view): ?>
+                                                        <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm table-action-btn" title="Edit Posting">
+                                                            <i class="bi bi-pencil"></i> Edit
+                                                        </a>
+                                                        <form method="POST" action="dashboard.php" class="d-inline" onsubmit="return confirm('Archive requisition &quot;<?= htmlspecialchars(addslashes($job['title'])) ?>&quot;? All applicant evaluations will remain intact.');">
+                                                            <?= csrf_field() ?>
+                                                            <input type="hidden" name="action" value="archive_job">
+                                                            <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
+                                                            <button type="submit" class="btn-pill-outline btn-pill-sm text-warning-emphasis table-action-btn" title="Archive Requisition">
+                                                                <i class="bi bi-archive"></i> Archive
+                                                            </button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <?php if (($user['role'] ?? '') === 'admin'): ?>
+                                                            <form method="POST" action="dashboard.php" class="d-inline" onsubmit="return confirm('Restore requisition &quot;<?= htmlspecialchars(addslashes($job['title'])) ?>&quot; back to active status?');">
+                                                                <?= csrf_field() ?>
+                                                                <input type="hidden" name="action" value="restore_job">
+                                                                <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
+                                                                <button type="submit" class="btn-pill btn-pill-sm table-action-btn" style="background-color: var(--accent); color: var(--paper);" title="Restore Requisition">
+                                                                    <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                                </button>
+                                                            </form>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1 small">
+                                                                <i class="bi bi-lock me-1"></i>Archived
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>

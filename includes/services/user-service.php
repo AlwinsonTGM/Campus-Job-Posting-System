@@ -271,12 +271,16 @@ function get_user_base_query(): string {
     ";
 }
 
-function get_all_users(?string $role = null, ?string $keyword = null, ?string $emp_type = null, ?string $ver_status = null): array {
+function get_all_users(?string $role = null, ?string $keyword = null, ?string $emp_type = null, ?string $ver_status = null, ?string $account_status = null): array {
     try {
         $pdo = get_db_connection();
         $sql = get_user_base_query() . " WHERE 1=1";
         $params = [];
 
+        if ($account_status) {
+            $sql .= " AND u.`status` = :acc_status";
+            $params[':acc_status'] = $account_status;
+        }
         if ($role) {
             $sql .= " AND u.`role` = :role";
             $params[':role'] = $role;
@@ -371,6 +375,13 @@ function login_user(string $email, string $password): array {
             return ['success' => false, 'message' => 'Invalid password credentials.'];
         }
 
+        if (strtolower($user['status'] ?? 'active') === 'suspended') {
+            return [
+                'success' => false,
+                'message' => 'Account Suspended: This account has been archived or deactivated by institutional administration. Please contact the Career Services Office.'
+            ];
+        }
+
         if (isset($user['is_email_verified']) && (int)$user['is_email_verified'] === 0 && ($user['role'] ?? '') !== 'admin') {
             return [
                 'success' => false,
@@ -406,6 +417,9 @@ function quick_login(string $role, int|string|null $user_id = null): ?array {
         $row = $stmt->fetch();
         if ($row) {
             $user = hydrate_user($row);
+            if (strtolower($user['status'] ?? 'active') === 'suspended') {
+                return null;
+            }
             $_SESSION['user'] = $user;
             return $user;
         }
@@ -415,6 +429,33 @@ function quick_login(string $role, int|string|null $user_id = null): ?array {
         return null;
     }
 }
+
+function suspend_user(int|string $id): bool {
+    try {
+        $pdo = get_db_connection();
+        $target = get_user_by_id($id);
+        if (!$target || ($target['role'] ?? '') === 'admin') {
+            return false;
+        }
+        $stmt = $pdo->prepare("UPDATE `users` SET `status` = 'suspended', `updated_at` = NOW() WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("suspend_user error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function reactivate_user(int|string $id): bool {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("UPDATE `users` SET `status` = 'active', `updated_at` = NOW() WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("reactivate_user error: " . $e->getMessage());
+        return false;
+    }
+}
+
 function update_user_verification(int|string $id, string $status, string $notes = ''): bool {
     try {
         $pdo = get_db_connection();
@@ -527,9 +568,24 @@ function validate_email_domain_dns($email): array {
         ];
     }
 
+    // Institutional campus domains and test domains whitelist bypass
+    if (
+        $domain === 'kld.edu.ph' ||
+        str_ends_with($domain, '.kld.edu.ph') ||
+        $domain === 'localhost' ||
+        str_ends_with($domain, '.local') ||
+        str_ends_with($domain, '.test')
+    ) {
+        return [
+            'valid' => true,
+            'error' => null,
+            'domain' => $domain
+        ];
+    }
+
     // Verify whether the domain or subdomain has active MX or A/AAAA DNS records
-    $has_mx = checkdnsrr($domain, 'MX');
-    $has_a  = checkdnsrr($domain, 'A') || checkdnsrr($domain, 'AAAA');
+    $has_mx = function_exists('checkdnsrr') ? @checkdnsrr($domain, 'MX') : true;
+    $has_a  = function_exists('checkdnsrr') ? (@checkdnsrr($domain, 'A') || @checkdnsrr($domain, 'AAAA')) : true;
 
     if (!$has_mx && !$has_a) {
         return [
@@ -852,7 +908,7 @@ function dispatch_profile_request_notification(string $user_name): void {
         'profile_request',
         'Profile Correction Request',
         "{$user_name} submitted a profile change request for administrative review.",
-        'admin/users.php?ver_status=all',
+        'admin/users.php#student-requests-section',
         'bi-person-gear',
         'info'
     );
@@ -1145,7 +1201,7 @@ function resubmit_employer_accreditation(int $user_id, array $data, ?string $per
                 'system',
                 "Employer Accreditation Resubmitted: {$display_org}",
                 "Employer '{$display_org}' (Rep: {$display_name}) resubmitted updated accreditation documents for verification.{$note_text}",
-                "admin/users.php?ver_status=pending_approval",
+                "admin/users.php?ver_status=pending_approval#filter-results-container",
                 "bi-patch-check",
                 "warning"
             );

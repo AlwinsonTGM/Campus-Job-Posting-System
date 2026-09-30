@@ -121,14 +121,26 @@ require_once __DIR__ . '/../header.php';
                 </div>
 
                 <!-- Section Subheading -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="h5 fw-bold text-ink mb-1">Configured Job Families &amp; Visual Profiles</h2>
-                        <p class="text-muted-custom small mb-0">Each category is paired with a representative campus picture for student clarity.</p>
+                <div class="mb-4">
+                    <h2 class="h5 fw-bold text-ink mb-1">Configured Job Families &amp; Visual Profiles</h2>
+                    <p class="text-muted-custom small mb-0">Each category is paired with a representative campus picture for student clarity.</p>
+                </div>
+
+                <!-- Taxonomy View Tabs -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom border-line">
+                    <div class="d-flex gap-2">
+                        <a href="categories.php" class="chip chip-selectable <?= ($tab !== 'archived') ? 'active' : '' ?>">
+                            <i class="bi bi-folder2-open text-accent"></i> Active Categories (<?= count($active_categories) ?>)
+                        </a>
+                        <a href="categories.php?tab=archived" class="chip chip-selectable <?= ($tab === 'archived') ? 'active' : '' ?>">
+                            <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_categories) ?>)
+                        </a>
                     </div>
-                    <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle">
-                        <i class="bi bi-check2-circle me-1"></i> <?= count($categories) ?> Active Classifications
-                    </span>
+                    <?php if ($tab === 'archived'): ?>
+                        <div class="small text-muted-custom">
+                            <i class="bi bi-info-circle me-1"></i> Archived categories are safely preserved. Only Admins can restore them.
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Category Cards Grid -->
@@ -224,13 +236,22 @@ require_once __DIR__ . '/../header.php';
                                                     <i class="bi bi-pencil-square"></i>
                                                 </button>
                                                 
-                                                <?php if ($count === 0): ?>
-                                                    <form method="POST" action="categories.php" class="d-inline" onsubmit="return confirm('Delete this category taxonomy permanently?');">
+                                                <?php if ($tab === 'archived'): ?>
+                                                    <form method="POST" action="categories.php" class="d-inline" onsubmit="return confirm('Restore this category to active taxonomy?');">
                                                         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="action" value="restore">
                                                         <input type="hidden" name="id" value="<?= htmlspecialchars($cat['id']) ?>">
-                                                        <button type="submit" class="btn-circle-icon text-danger" style="width: 34px; height: 34px; font-size: 13px;" title="Delete Category">
-                                                            <i class="bi bi-trash"></i>
+                                                        <button type="submit" class="btn-pill btn-pill-sm btn-pill-outline text-success" style="font-size: 11px; padding: 2px 8px;" title="Restore Category">
+                                                            <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                                        </button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <form method="POST" action="categories.php" class="d-inline" onsubmit="return confirm('Archive this category? It will be safely hidden while preserving all existing jobs.');">
+                                                        <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                                        <input type="hidden" name="action" value="archive">
+                                                        <input type="hidden" name="id" value="<?= htmlspecialchars($cat['id']) ?>">
+                                                        <button type="submit" class="btn-circle-icon text-muted" style="width: 34px; height: 34px; font-size: 13px;" title="Archive Category">
+                                                            <i class="bi bi-archive"></i>
                                                         </button>
                                                     </form>
                                                 <?php endif; ?>

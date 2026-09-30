@@ -548,6 +548,14 @@
             triggerEyeAnim(eyeType, eyeDur);
             triggerBodyAnim(bodyType, bodyDur);
 
+            // Pop reaction for static mascot image mode
+            const staticImg = container.querySelector('.hero-robot-static-img');
+            if (staticImg) {
+                staticImg.classList.remove('robot-pop');
+                void staticImg.offsetWidth;
+                staticImg.classList.add('robot-pop');
+            }
+
             // Advance speech bubble dialogue with skipAnim = true to preserve this gesture
             playNextDialogue(true);
         }
@@ -1222,9 +1230,11 @@
             }
         });
 
-        // If Three.js or GLTFLoader is missing, speech bubble still works
-        if (!THREE_AVAILABLE || typeof THREE.GLTFLoader === 'undefined') {
-            console.warn('[HeroRobot] Three.js or GLTFLoader is missing.');
+        // If static image mode, or Three.js / GLTFLoader is missing, speech bubble still works
+        const hasStaticImg = !!container.querySelector('.hero-robot-static-img');
+        if (hasStaticImg || !modelPath || modelPath === 'none' || !THREE_AVAILABLE || typeof THREE.GLTFLoader === 'undefined') {
+            if (loaderEl) loaderEl.remove();
+            console.info('[HeroRobot] Static mascot photo mode active.');
             return;
         }
 

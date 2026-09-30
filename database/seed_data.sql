@@ -4,7 +4,7 @@
 -- Database: campus_job_portal
 -- ============================================================================
 
-USE `campus_job_portal`;
+-- USE `campus_job_portal`;
 
 -- Disable foreign key checks while inserting relational mock data
 SET FOREIGN_KEY_CHECKS = 0;

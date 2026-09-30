@@ -1,0 +1,14 @@
+# ==============================================================================
+# Database Directory Security Hardening
+# Prevent direct browser access to SQL schemas, dumps, and logs
+# ==============================================================================
+
+<FilesMatch "\.(sql|log|bak|json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

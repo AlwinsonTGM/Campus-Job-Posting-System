@@ -137,7 +137,7 @@
                                     <h6 class="mb-0 fw-extrabold text-ink small text-uppercase tracking-wider">Notifications</h6>
                                     <span class="badge bg-cream text-ink border border-line small py-0 px-2" style="font-size: 11px;">Inbox</span>
                                 </div>
-                                <button type="button" class="btn btn-link p-0 text-muted-custom small text-decoration-none" id="navNotificationMarkAllBtn" style="font-size: 12px;">
+                                <button type="button" class="btn btn-link p-0 text-muted-custom small text-decoration-none <?= ($user_unread_notifs_count === 0) ? 'd-none' : '' ?>" id="navNotificationMarkAllBtn" style="font-size: 12px;">
                                     <i class="bi bi-check2-all me-1"></i>Mark all read
                                 </button>
                             </div>

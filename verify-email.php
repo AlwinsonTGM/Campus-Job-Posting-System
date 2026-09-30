@@ -96,6 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             exit;
         }
         $mail_res = send_verification_code_email($pending_email, $pending_name, $code);
+        if (!$mail_res['smtp_configured']) {
+            $_SESSION['pending_verification']['dev_code'] = $code;
+        }
 
         if ($is_ajax) {
             header('Content-Type: application/json');
@@ -105,13 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 'smtp_configured' => $mail_res['smtp_configured'],
                 'message' => $mail_res['smtp_configured']
                     ? 'A fresh 6-digit verification code has been dispatched to your institutional inbox.'
-                    : 'Notice: Outbound SMTP is not configured in .env.'
+                    : 'Notice: Outbound SMTP is not configured in .env. Use the verification passcode shown on screen.'
             ]);
             exit;
         }
 
         if (!$mail_res['smtp_configured']) {
-            set_flash('warning', 'Notice: Outbound SMTP is not configured in .env. Configure MAIL_USERNAME and MAIL_PASSWORD to receive codes.');
+            set_flash('warning', 'Notice: Outbound SMTP is not configured in .env. Enter the verification passcode displayed on screen.');
         } else {
             set_flash('success', 'A fresh 6-digit verification code has been dispatched to your institutional inbox.');
         }

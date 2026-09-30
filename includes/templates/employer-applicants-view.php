@@ -70,6 +70,7 @@ require_once __DIR__ . '/../header.php';
                                     <option value="interview" <?= ($status_filter === 'interview') ? 'selected' : '' ?>>Interview Scheduled</option>
                                     <option value="accepted" <?= ($status_filter === 'accepted') ? 'selected' : '' ?>>Accepted / Hired</option>
                                     <option value="declined" <?= ($status_filter === 'declined') ? 'selected' : '' ?>>Declined / Filled</option>
+                                    <option value="withdrawn" <?= ($status_filter === 'withdrawn') ? 'selected' : '' ?>>Candidate Withdrawn</option>
                                 </select>
                             </div>
 

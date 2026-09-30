@@ -72,18 +72,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: updates.php');
             exit;
         }
-    } elseif ($action === 'delete') {
+    } elseif ($action === 'archive' || $action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
-            delete_career_update($id);
-            set_flash('success', "Dispatch #{$id} was deleted permanently.");
+            archive_career_update($id);
+            set_flash('success', "Dispatch #{$id} has been moved to Archive.");
             header('Location: updates.php');
+            exit;
+        }
+    } elseif ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id > 0) {
+            restore_career_update($id, $user);
+            set_flash('success', "Dispatch #{$id} has been restored to active bulletins.");
+            header('Location: updates.php?tab=archived');
             exit;
         }
     }
 }
 
-$all_updates = get_career_updates();
+$tab = $_GET['tab'] ?? 'active';
+$active_updates = get_career_updates(false, false);
+$archived_updates = get_career_updates(true, true);
+$all_updates = ($tab === 'archived') ? $archived_updates : $active_updates;
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-updates-view.php';
 

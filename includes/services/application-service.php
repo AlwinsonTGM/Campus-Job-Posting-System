@@ -39,6 +39,12 @@ class RequisitionEligibility {
 
     public function badge(): array {
         return match ($this->reason) {
+            'archived' => [
+                'bg'    => 'bg-warning-subtle border-warning text-warning-emphasis',
+                'label' => 'Requisition Archived',
+                'icon'  => 'bi-archive-fill',
+                'desc'  => 'This posting has been archived by the university.'
+            ],
             'closed' => [
                 'bg'    => 'bg-secondary-subtle border-secondary text-secondary',
                 'label' => 'Requisition Closed',
@@ -99,6 +105,15 @@ class ApplicationService {
             );
         }
 
+        // 0. Enforce Requisition Archive Gating
+        if (!empty($job['is_archived'])) {
+            return new RequisitionEligibility(
+                false,
+                'archived',
+                'This requisition has been moved to Archive and is not accepting applications.'
+            );
+        }
+
         // 1. Enforce Requisition Status Gating
         if (strtolower($job['status'] ?? '') !== 'active') {
             return new RequisitionEligibility(
@@ -151,9 +166,9 @@ class ApplicationService {
                 );
             }
 
-            // Duplicate Submission Check
+            // Duplicate Submission Check (ignore withdrawn applications)
             $existing = self::getStudentApplication((int)$job['id'], (int)$user['id']);
-            if ($existing) {
+            if ($existing && strtolower($existing['status'] ?? '') !== 'withdrawn') {
                 return new RequisitionEligibility(
                     false,
                     'already_applied',
@@ -172,12 +187,12 @@ class ApplicationService {
     }
 
     /**
-     * Fast atomic check to determine if a student has applied for a job vacancy.
+     * Fast atomic check to determine if a student has active application for a job vacancy.
      */
     public static function hasStudentApplied(int $jobId, int $studentId): bool {
         try {
             $pdo = get_db_connection();
-            $stmt = $pdo->prepare("SELECT 1 FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id LIMIT 1");
+            $stmt = $pdo->prepare("SELECT 1 FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id AND `status` != 'withdrawn' LIMIT 1");
             $stmt->execute([':job_id' => $jobId, ':student_id' => $studentId]);
             return (bool)$stmt->fetchColumn();
         } catch (Exception $e) {

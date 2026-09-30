@@ -8,14 +8,14 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 $job_id = $_GET['id'] ?? ($_GET['job_id'] ?? null);
 $job = get_job_by_id($job_id);
+$user = get_logged_user();
 
-if (!$job) {
-    set_flash('danger', 'The requested opportunity could not be found or has been closed.');
+if (!$job || (!empty($job['is_archived']) && !in_array($user['role'] ?? '', ['admin', 'employer']))) {
+    set_flash('danger', 'The requested opportunity could not be found or has been archived.');
     header('Location: jobs.php');
     exit;
 }
 
-$user = get_logged_user();
 $eligibility = ApplicationService::checkEligibility($job, $user);
 $already_applied = ($eligibility->reason() === 'already_applied');
 $app_status = $eligibility->applicationStatus() ?? 'pending';

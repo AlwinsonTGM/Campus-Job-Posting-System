@@ -105,6 +105,30 @@ class DatastoreManager {
                     INDEX `idx_resets_expires` (`expires_at`),
                     CONSTRAINT `fk_resets_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+                // Ensure jobs archive columns
+                $jobArchCheck = $pdo->query("SHOW COLUMNS FROM `jobs` LIKE 'is_archived'")->fetch();
+                if (!$jobArchCheck) {
+                    $pdo->exec("ALTER TABLE `jobs` ADD COLUMN `is_archived` TINYINT(1) NOT NULL DEFAULT 0, ADD COLUMN `archived_at` DATETIME NULL, ADD INDEX `idx_jobs_archived` (`is_archived`)");
+                }
+
+                // Ensure categories archive columns
+                $catArchCheck = $pdo->query("SHOW COLUMNS FROM `categories` LIKE 'is_archived'")->fetch();
+                if (!$catArchCheck) {
+                    $pdo->exec("ALTER TABLE `categories` ADD COLUMN `is_archived` TINYINT(1) NOT NULL DEFAULT 0, ADD COLUMN `archived_at` DATETIME NULL, ADD INDEX `idx_categories_archived` (`is_archived`)");
+                }
+
+                // Ensure updates archive columns
+                $updArchCheck = $pdo->query("SHOW COLUMNS FROM `updates` LIKE 'is_archived'")->fetch();
+                if (!$updArchCheck) {
+                    $pdo->exec("ALTER TABLE `updates` ADD COLUMN `is_archived` TINYINT(1) NOT NULL DEFAULT 0, ADD COLUMN `archived_at` DATETIME NULL, ADD INDEX `idx_updates_archived` (`is_archived`)");
+                }
+
+                // Ensure applications status includes 'withdrawn'
+                $appStatusCheck = $pdo->query("SHOW COLUMNS FROM `applications` LIKE 'status'")->fetch();
+                if ($appStatusCheck && strpos($appStatusCheck['Type'] ?? '', 'withdrawn') === false) {
+                    $pdo->exec("ALTER TABLE `applications` MODIFY COLUMN `status` ENUM('pending', 'under_review', 'interview_scheduled', 'accepted', 'declined', 'withdrawn') NOT NULL DEFAULT 'pending'");
+                }
             }
 
             self::$schemaEnsured = true;

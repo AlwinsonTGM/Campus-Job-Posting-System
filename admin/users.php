@@ -77,12 +77,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: users.php');
             exit;
         }
+    } elseif ($action === 'suspend_user') {
+        $suspend_id = (int)($_POST['id'] ?? 0);
+        $target_user = get_user_by_id($suspend_id);
+        if ($target_user && ($target_user['role'] ?? '') === 'admin') {
+            set_flash('danger', 'Unauthorized operation: Administrator accounts cannot be suspended.');
+            header('Location: users.php');
+            exit;
+        }
+        if (suspend_user($suspend_id)) {
+            $u_name = $target_user['name'] ?? 'User';
+            set_flash('warning', "Account '{$u_name}' has been suspended / archived.");
+            header('Location: users.php');
+            exit;
+        }
+    } elseif ($action === 'reactivate_user') {
+        $reactivate_id = (int)($_POST['id'] ?? 0);
+        $target_user = get_user_by_id($reactivate_id);
+        if (reactivate_user($reactivate_id)) {
+            $u_name = $target_user['name'] ?? 'User';
+            set_flash('success', "Account '{$u_name}' has been reactivated successfully!");
+            header('Location: users.php');
+            exit;
+        }
     }
 }
 
 $role_filter = $_GET['role'] ?? null;
 $emp_type_filter = $_GET['emp_type'] ?? null;
 $ver_filter = $_GET['ver_status'] ?? null;
+$status_filter = $_GET['status'] ?? null;
 $search = $_GET['q'] ?? null;
 
 // Count pending verifications & student requests across all roles
@@ -90,6 +114,7 @@ $all_users = get_all_users();
 $pending_employers_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
 $pending_students_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
 $pending_count = $pending_employers_count + $pending_students_count;
+$suspended_users_count = count(array_filter($all_users, fn($u) => ($u['status'] ?? 'active') === 'suspended'));
 
 $all_profile_requests = get_profile_requests();
 $pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
@@ -105,6 +130,10 @@ if ($emp_type_filter) {
 
 if ($ver_filter) {
     $users = array_filter($users, fn($u) => ($u['verification_status'] ?? 'verified') === $ver_filter);
+}
+
+if ($status_filter) {
+    $users = array_filter($users, fn($u) => ($u['status'] ?? 'active') === $status_filter);
 }
 
 if ($search) {

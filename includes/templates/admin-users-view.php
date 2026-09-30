@@ -69,7 +69,7 @@ require_once __DIR__ . '/../header.php';
                                 </span>
                             </div>
                         </div>
-                        <a href="users.php?ver_status=pending_approval" class="btn-pill btn-pill-sm">
+                        <a href="users.php?ver_status=pending_approval#filter-results-container" id="inspectPendingAccountsBtn" class="btn-pill btn-pill-sm">
                             Inspect Pending (<?= $pending_count ?>)
                         </a>
                     </div>
@@ -226,7 +226,7 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-8 col-xl-2 col-lg-3 col-md-3">
+                            <div class="col-6 col-xl-2 col-lg-2 col-md-3">
                                 <label class="form-label" for="ver-select">Accreditation</label>
                                 <select name="ver_status" id="ver-select" class="form-select">
                                     <option value="">All Statuses</option>
@@ -236,7 +236,16 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-4 col-xl-1 col-lg-1 col-md-1 d-flex justify-content-end">
+                            <div class="col-6 col-xl-2 col-lg-2 col-md-3">
+                                <label class="form-label" for="status-select">Account State</label>
+                                <select name="status" id="status-select" class="form-select">
+                                    <option value="">All States</option>
+                                    <option value="active" <?= ($status_filter === 'active') ? 'selected' : '' ?>>Active</option>
+                                    <option value="suspended" <?= ($status_filter === 'suspended') ? 'selected' : '' ?>>Suspended (<?= $suspended_users_count ?>)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-xl-1 col-lg-1 col-md-2 d-flex justify-content-end">
                                 <div>
                                     <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
                                     <a href="users.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
@@ -333,7 +342,9 @@ require_once __DIR__ . '/../header.php';
                                                 </span>
                                             </td>
                                             <td data-label="Status" class="text-nowrap">
-                                                <?php if ($ver_status === 'verified'): ?>
+                                                <?php if (($u['status'] ?? 'active') === 'suspended'): ?>
+                                                    <span class="badge-status--declined"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
+                                                <?php elseif ($ver_status === 'verified'): ?>
                                                     <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Verified</span>
                                                 <?php elseif ($ver_status === 'rejected'): ?>
                                                     <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Rejected</span>
@@ -355,6 +366,28 @@ require_once __DIR__ . '/../header.php';
                                                         <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#adminModal<?= $u['id'] ?>">
                                                             <i class="bi bi-shield-check"></i> Inspect
                                                         </button>
+                                                    <?php endif; ?>
+
+                                                    <?php if ($u['role'] !== 'admin'): ?>
+                                                        <?php if (($u['status'] ?? 'active') === 'suspended'): ?>
+                                                            <form action="users.php" method="POST" class="d-inline" onsubmit="return confirm('Reactivate this account?');">
+                                                                <input type="hidden" name="action" value="reactivate_user">
+                                                                <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                                                <button type="submit" class="btn-pill btn-pill-sm py-1 px-2 text-success border-success" style="font-size: 11.5px;" title="Reactivate Account">
+                                                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php else: ?>
+                                                            <form action="users.php" method="POST" class="d-inline" onsubmit="return confirm('Suspend and archive this user account? The user will be blocked from logging in.');">
+                                                                <input type="hidden" name="action" value="suspend_user">
+                                                                <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                                                <button type="submit" class="btn-pill-outline btn-pill-sm py-1 px-2 text-warning border-warning" style="font-size: 11.5px;" title="Suspend / Archive Account">
+                                                                    <i class="bi bi-archive"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php endif; ?>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -988,6 +1021,34 @@ function copyCodeText(elementId, btnElement) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const inspectPendingBtn = document.getElementById('inspectPendingAccountsBtn');
+    if (inspectPendingBtn) {
+        inspectPendingBtn.addEventListener('click', function(e) {
+            const verSelect = document.getElementById('ver-select');
+            const target = document.getElementById('filter-results-container');
+            if (verSelect && target) {
+                e.preventDefault();
+                if (verSelect.value !== 'pending_approval') {
+                    verSelect.value = 'pending_approval';
+                    verSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', 'users.php?ver_status=pending_approval#filter-results-container');
+                }
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    if (window.location.hash === '#filter-results-container' || window.location.search.includes('ver_status=pending_approval')) {
+        setTimeout(() => {
+            const target = document.getElementById('filter-results-container');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 150);
+    }
+
     document.querySelectorAll('form[action="users.php"][method="POST"]').forEach(function(form) {
         form.addEventListener('submit', function(e) {
             const btn = form.querySelector('button[type="submit"]');

@@ -88,9 +88,16 @@ function reset_demo_data(): bool {
     return $success;
 }
 
-function get_career_updates(): array {
+function get_career_updates(bool $include_archived = false, bool $only_archived = false): array {
     try {
         $pdo = get_db_connection();
+        $where = "WHERE 1=1";
+        if ($only_archived) {
+            $where .= " AND (up.`is_archived` = 1)";
+        } elseif (!$include_archived) {
+            $where .= " AND (up.`is_archived` = 0 OR up.`is_archived` IS NULL)";
+        }
+
         $stmt = $pdo->query("
             SELECT 
                 up.*,
@@ -100,6 +107,7 @@ function get_career_updates(): array {
             FROM `updates` up
             LEFT JOIN `users` u ON u.id = up.author_id
             LEFT JOIN `employer_profiles` ep ON ep.user_id = u.id
+            {$where}
             ORDER BY up.`published_at` DESC, up.`id` DESC
         ");
         $rows = $stmt->fetchAll();
@@ -146,10 +154,11 @@ function get_latest_career_updates(int $limit = 3, int|string|null $exclude_id =
             FROM `updates` up
             LEFT JOIN `users` u ON u.id = up.author_id
             LEFT JOIN `employer_profiles` ep ON ep.user_id = u.id
+            WHERE (up.`is_archived` = 0 OR up.`is_archived` IS NULL)
         ";
         $params = [];
         if ($exclude_id !== null) {
-            $sql .= " WHERE up.`id` != :ex_id";
+            $sql .= " AND up.`id` != :ex_id";
             $params[':ex_id'] = (int)$exclude_id;
         }
         $sql .= " ORDER BY up.`published_at` DESC, up.`id` DESC LIMIT " . (int)$limit;
@@ -270,16 +279,35 @@ function update_career_update(int|string $id, array $data): bool {
     }
 }
 
-function delete_career_update(int|string $id): bool {
+function archive_career_update(int|string $id): bool {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("DELETE FROM `updates` WHERE `id` = :id");
-        $stmt->execute([':id' => (int)$id]);
-        return true;
+        $stmt = $pdo->prepare("UPDATE `updates` SET `is_archived` = 1, `archived_at` = NOW() WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
     } catch (Exception $e) {
-        error_log("delete_career_update error: " . $e->getMessage());
+        error_log("archive_career_update error: " . $e->getMessage());
         return false;
     }
+}
+
+function restore_career_update(int|string $id, ?array $user = null): bool {
+    try {
+        // Enforce: Admin ONLY has restore privileges
+        if ($user !== null && ($user['role'] ?? '') !== 'admin') {
+            return false;
+        }
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("UPDATE `updates` SET `is_archived` = 0, `archived_at` = NULL WHERE `id` = :id");
+        return $stmt->execute([':id' => (int)$id]);
+    } catch (Exception $e) {
+        error_log("restore_career_update error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function delete_career_update(int|string $id): bool {
+    // Non-destructive: professor requirement: archive only
+    return archive_career_update($id);
 }
 
 function get_devblogs(): array {

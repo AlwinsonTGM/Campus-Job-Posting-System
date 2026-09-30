@@ -64,3 +64,22 @@ _Avoid_: Environment, TestMode, SandboxMode
 The pristine seed data stored in `data/seeds/{mode}` that can be re-synchronized to restore the database to an uncontaminated initial state.
 _Avoid_: MockFile, InitialJson, RawSeed
 
+### Archival & Audit Preservation
+
+**Non-Destructive Archival**:
+The domain mechanism ensuring entities (`Job`, `Category`, `Update`) are never permanently purged from the relational datastore; instead, their lifecycle state transitions via `is_archived` and `archived_at` timestamps to preserve candidate histories and audit trails.
+_Avoid_: SoftDelete, TrashCan, Bin
+
+**Candidate Withdrawal**:
+The student-initiated state transition (`withdrawn`) on an application record that halts hiring consideration while retaining submission history and availability logs for departmental audits.
+_Avoid_: CancelApplication, DeleteApplication, DroppedCandidate
+
+**Account Suspension**:
+The administrative action transitioning a user account into `suspended` state, barring authentication and quick-login while maintaining institutional records.
+_Avoid_: BannedUser, DeletedUser, DisabledAccount
+
+**Administrative Restoration**:
+The privileged administrative capability to revive archived requisitions, categories, and bulletins back into active circulation.
+_Avoid_: Unarchive, RecoverItem, Undelete
+
+

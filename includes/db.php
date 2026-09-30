@@ -4,11 +4,27 @@
  * Centralized database access for MySQL / MariaDB in XAMPP
  */
 
-if (!defined('DB_HOST')) define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
-if (!defined('DB_PORT')) define('DB_PORT', getenv('DB_PORT') ?: '3306');
-if (!defined('DB_NAME')) define('DB_NAME', getenv('DB_NAME') ?: 'campus_job_portal');
-if (!defined('DB_USER')) define('DB_USER', getenv('DB_USER') ?: 'root');
-if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
+// Load .env configuration if present
+require_once __DIR__ . '/ai/env.php';
+load_env();
+
+$db_host = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? '127.0.0.1');
+$db_port = getenv('DB_PORT') ?: ($_ENV['DB_PORT'] ?? '3306');
+$db_name = getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? 'campus_job_portal');
+$db_user = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? 'root');
+$db_pass = getenv('DB_PASS');
+if ($db_pass === false && isset($_ENV['DB_PASS'])) {
+    $db_pass = $_ENV['DB_PASS'];
+}
+if ($db_pass === false || $db_pass === null) {
+    $db_pass = '';
+}
+
+if (!defined('DB_HOST')) define('DB_HOST', $db_host);
+if (!defined('DB_PORT')) define('DB_PORT', $db_port);
+if (!defined('DB_NAME')) define('DB_NAME', $db_name);
+if (!defined('DB_USER')) define('DB_USER', $db_user);
+if (!defined('DB_PASS')) define('DB_PASS', $db_pass);
 if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
 
 // Single source of truth for app time: Philippines (KLD campus).

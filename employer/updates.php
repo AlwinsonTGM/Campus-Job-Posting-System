@@ -70,11 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: updates.php');
             exit;
         }
-    } elseif ($action === 'delete') {
+    } elseif ($action === 'archive' || $action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
-            delete_career_update($id);
-            set_flash('success', "Dispatch #{$id} has been removed.");
+            archive_career_update($id);
+            set_flash('success', "Dispatch #{$id} has been moved to Archive.");
             header('Location: updates.php');
             exit;
         }

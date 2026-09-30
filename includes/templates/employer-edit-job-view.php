@@ -284,13 +284,26 @@ require_once __DIR__ . '/../header.php';
                                 <button type="submit" class="btn-pill w-100 mb-2">
                                     <i class="bi bi-check2-circle"></i> SAVE CHANGES
                                 </button>
-                                <a href="dashboard.php" class="btn-pill-outline btn-pill-sm w-100 text-center">
+                                <a href="dashboard.php" class="btn-pill-outline btn-pill-sm w-100 text-center mb-3">
                                     Cancel
                                 </a>
+
+                                <hr class="my-3 border-line">
+                                <div class="text-center">
+                                    <button type="button" class="btn-pill-outline btn-pill-sm w-100 text-warning-emphasis" onclick="if(confirm('Are you sure you want to archive this requisition? All applicant records and evaluations will remain intact.')) { document.getElementById('archive-job-form').submit(); }">
+                                        <i class="bi bi-archive me-1"></i> Archive Vacancy
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                     </div>
+                </form>
+
+                <form id="archive-job-form" method="POST" action="dashboard.php" style="display:none;">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="archive_job">
+                    <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
                 </form>
 
             </div>

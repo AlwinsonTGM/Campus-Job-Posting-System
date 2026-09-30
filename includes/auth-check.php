@@ -190,7 +190,8 @@ class SessionGuard {
         $mailRes = send_verification_code_email($user['email'], $user['name'] ?? 'User', $code);
 
         if (!$mailRes['smtp_configured']) {
-            set_flash('warning', 'Notice: Outbound SMTP is not configured in .env. Please configure MAIL_USERNAME and MAIL_PASSWORD to receive verification emails.');
+            $_SESSION['pending_verification']['dev_code'] = $code;
+            set_flash('warning', 'Notice: Outbound SMTP is not configured in .env. Enter the verification passcode displayed on screen to continue.');
         } else {
             set_flash('info', 'Please verify your institutional email address to continue.');
         }

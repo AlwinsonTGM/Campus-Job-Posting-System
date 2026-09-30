@@ -26,6 +26,21 @@ $total_interviews = count(array_filter($all_apps, function($a) {
     return in_array($st, ['interview_scheduled', 'interview scheduled', 'interview'], true);
 }));
 
+// User population & verification pipeline analytics
+$total_users = count($all_users);
+$total_students = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student'));
+$total_employers = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer'));
+$total_admins = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'admin'));
+
+$pending_students_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
+$pending_employers_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+$total_pending_verifications = $pending_students_count + $pending_employers_count;
+
+$all_profile_requests = get_profile_requests();
+$pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
+$pending_profile_count = count($pending_profile_requests);
+$total_pending_actions = $total_pending_verifications + $pending_profile_count;
+
 // Department aggregations
 $departments = [
     'Management Information Systems (MIS)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 6],

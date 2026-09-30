@@ -6,11 +6,9 @@
 --               Pure Junction (Applications), Zero Redundant Columns
 -- ============================================================================
 
-CREATE DATABASE IF NOT EXISTS `campus_job_portal` 
-CHARACTER SET utf8mb4 
-COLLATE utf8mb4_unicode_ci;
-
-USE `campus_job_portal`;
+-- For local MySQL setups without pre-created databases, uncomment the lines below:
+-- CREATE DATABASE IF NOT EXISTS `campus_job_portal` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE `campus_job_portal`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `notifications`;
@@ -102,9 +100,12 @@ CREATE TABLE IF NOT EXISTS `categories` (
     `hourly_range` VARCHAR(100) NULL,
     `image` VARCHAR(500) NULL,
     `popular_roles` LONGTEXT NULL,
+    `is_archived` TINYINT(1) NOT NULL DEFAULT 0,
+    `archived_at` DATETIME NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_categories_slug` (`slug`)
+    INDEX `idx_categories_slug` (`slug`),
+    INDEX `idx_categories_archived` (`is_archived`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -133,6 +134,8 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     `description` LONGTEXT NULL,
     `responsibilities` LONGTEXT NULL,
     `qualifications` LONGTEXT NULL,
+    `is_archived` TINYINT(1) NOT NULL DEFAULT 0,
+    `archived_at` DATETIME NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_jobs_category_id` (`category_id`),
@@ -141,6 +144,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     INDEX `idx_jobs_deadline` (`deadline`),
     INDEX `idx_jobs_job_type` (`job_type`),
     INDEX `idx_jobs_work_setup` (`work_setup`),
+    INDEX `idx_jobs_archived` (`is_archived`),
     CONSTRAINT `fk_jobs_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT `fk_jobs_employer` FOREIGN KEY (`employer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -156,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `applications` (
     `availability` LONGTEXT NULL,
     `resume_file` VARCHAR(255) NULL,
     `study_load_file` VARCHAR(255) NULL,
-    `status` ENUM('pending', 'under_review', 'interview_scheduled', 'accepted', 'declined') NOT NULL DEFAULT 'pending',
+    `status` ENUM('pending', 'under_review', 'interview_scheduled', 'accepted', 'declined', 'withdrawn') NOT NULL DEFAULT 'pending',
     `interview_date` DATE NULL,
     `interview_time` VARCHAR(50) NULL,
     `interview_venue` VARCHAR(255) NULL,
@@ -206,12 +210,15 @@ CREATE TABLE IF NOT EXISTS `updates` (
     `image` VARCHAR(500) NULL,
     `summary` TEXT NULL,
     `content` LONGTEXT NULL,
+    `is_archived` TINYINT(1) NOT NULL DEFAULT 0,
+    `archived_at` DATETIME NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_updates_slug` (`slug`),
     INDEX `idx_updates_category` (`category`),
     INDEX `idx_updates_published_at` (`published_at`),
     INDEX `idx_updates_author_id` (`author_id`),
+    INDEX `idx_updates_archived` (`is_archived`),
     CONSTRAINT `fk_updates_author` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

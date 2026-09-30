@@ -108,6 +108,13 @@
                 badge.classList.add('d-none');
             }
         });
+        if (markAllBtn) {
+            if (unreadCount > 0) {
+                markAllBtn.classList.remove('d-none');
+            } else {
+                markAllBtn.classList.add('d-none');
+            }
+        }
     }
 
     // Render Dropdown items HTML
@@ -214,6 +221,7 @@
                     // Remove unread indicators in dropdown
                     dropdownList.querySelectorAll('.badge-dot-unread').forEach(dot => dot.remove());
                     dropdownList.querySelectorAll('.bg-cream-tint').forEach(el => el.classList.remove('bg-cream-tint'));
+                    if (markAllBtn) markAllBtn.classList.add('d-none');
                 }
             } catch (err) {
                 console.error('Mark all read error:', err);

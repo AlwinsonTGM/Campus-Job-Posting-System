@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'mark_all_read') {
         mark_all_notifications_as_read($user_id);
         set_flash('success', 'All notifications have been marked as read.');
-        header('Location: notifications.php');
+        $filter_param = isset($_GET['filter']) ? '?filter=' . urlencode($_GET['filter']) : '';
+        header('Location: notifications.php' . $filter_param);
         exit;
     }
 

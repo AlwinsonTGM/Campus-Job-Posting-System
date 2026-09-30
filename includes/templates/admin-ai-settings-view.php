@@ -56,7 +56,7 @@ require_once __DIR__ . '/../header.php';
                             </div>
                             <div>
                                 <h6 class="fw-bold mb-0 text-success-emphasis">NVIDIA NIM AI Gateway Configured &amp; Active</h6>
-                                <small class="text-secondary">Key: <code><?= htmlspecialchars(substr($current_key, 0, 10)) . '...' . htmlspecialchars(substr($current_key, -4)) ?></code> • Primary: <strong><?= htmlspecialchars(get_model_display_name($current_model)) ?></strong> • Fallback: <strong><?= htmlspecialchars(get_model_display_name($current_fallback)) ?></strong></small>
+                                <small class="text-secondary">Key: <code><?= htmlspecialchars($masked_key) ?></code> • Primary: <strong><?= htmlspecialchars(get_model_display_name($current_model)) ?></strong> • Fallback: <strong><?= htmlspecialchars(get_model_display_name($current_fallback)) ?></strong></small>
                             </div>
                         </div>
                         <span class="badge bg-success px-3 py-2 rounded-pill">Status: Online</span>
@@ -144,26 +144,48 @@ require_once __DIR__ . '/../header.php';
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 <input type="hidden" name="action" value="save_settings">
 
-                                <!-- API Key Input with Show/Hide -->
+                                <!-- API Key Input with Protected Write-Only Pattern -->
                                 <div class="mb-3">
-                                    <label for="nvidia_api_key" class="form-label fw-bold text-ink small">
-                                        NVIDIA API Key <span class="text-danger">*</span>
-                                    </label>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label for="nvidia_api_key" class="form-label fw-bold text-ink small mb-0">
+                                            NVIDIA API Key <?php if (!$is_configured): ?><span class="text-danger">*</span><?php endif; ?>
+                                        </label>
+                                        <?php if ($is_configured): ?>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle small py-1 px-2">
+                                                <i class="bi bi-shield-lock-fill me-1"></i>Active &amp; Masked
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <?php if ($is_configured): ?>
+                                        <div class="d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded-3 border">
+                                            <div class="d-flex align-items-center gap-2 small text-secondary">
+                                                <i class="bi bi-key-fill text-success"></i>
+                                                <span class="text-muted">Current:</span>
+                                                <code class="text-dark fw-bold"><?= htmlspecialchars($masked_key) ?></code>
+                                            </div>
+                                            <div class="form-check form-check-inline m-0">
+                                                <input class="form-check-input" type="checkbox" name="clear_api_key" id="clear_api_key" value="1">
+                                                <label class="form-check-label small text-danger fw-semibold" for="clear_api_key">Remove Key</label>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
                                     <div class="input-group">
                                         <input type="password" 
                                                id="nvidia_api_key" 
                                                name="nvidia_api_key" 
                                                class="form-control font-monospace text-dark" 
-                                               placeholder="nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                                               value="<?= htmlspecialchars($current_key) ?>" 
-                                               autocomplete="off" 
+                                               placeholder="<?= $is_configured ? 'Enter new key to replace, or leave blank to keep current' : 'nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' ?>"
+                                               value="" 
+                                               autocomplete="new-password" 
                                                spellcheck="false">
-                                        <button class="btn btn-outline-secondary" type="button" id="toggleKeyBtn" title="Show/Hide Key">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleKeyBtn" title="Show/Hide Input">
                                             <i class="bi bi-eye" id="toggleKeyIcon"></i>
                                         </button>
                                     </div>
-                                    <div class="form-text small text-muted">
-                                        Stored securely in <code>.env</code> with Apache direct-access protection. Never leaked to client-side code.
+                                    <div class="form-text small text-muted mt-1">
+                                        <i class="bi bi-shield-check text-success me-1"></i>Protected write-only mode: Stored in <code>.env</code>. The plain text key is never sent to the browser DOM or Inspect Element.
                                     </div>
                                 </div>
 

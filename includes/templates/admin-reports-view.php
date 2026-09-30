@@ -42,19 +42,65 @@ require_once __DIR__ . '/../header.php';
                     ?>
                 </div>
 
-                <!-- 4 KPI Metrics Row -->
+                <?php if ($total_pending_actions > 0): ?>
+                    <!-- Verification Queue Summary (Institutional Design System) -->
+                    <div class="card-paper p-3 mb-4 no-print d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2 min-w-0">
+                            <div class="icon-circle flex-shrink-0" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 16px; background-color: var(--surface); border: 1px solid var(--line); color: var(--ink);">
+                                <i class="bi bi-shield-exclamation"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="small fw-bold text-ink">
+                                    <?= (int)$total_pending_actions ?> pending verification<?= $total_pending_actions === 1 ? '' : 's' ?> awaiting review
+                                </div>
+                                <div class="text-muted-custom" style="font-size: 11px;">
+                                    <?= (int)$pending_students_count ?> student COR<?= $pending_students_count === 1 ? '' : 's' ?> &bull;
+                                    <?= (int)$pending_employers_count ?> partner permit<?= $pending_employers_count === 1 ? '' : 's' ?> &bull;
+                                    <?= (int)$pending_profile_count ?> profile correction<?= $pending_profile_count === 1 ? '' : 's' ?>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="users.php?ver_status=pending_approval" class="btn-pill btn-sm py-1 px-3 text-nowrap d-inline-flex align-items-center gap-1 text-decoration-none">
+                            Review Queue <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
+                <!-- 5 KPI Metrics Row (Archetype G Institutional Overview) -->
                 <div class="row g-3 mb-5">
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($total_jobs, 'Total Vacancies', 'bi-briefcase-fill'); ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                        <?php 
+                        $user_badge = $total_pending_actions > 0 
+                            ? '<span class="text-muted-custom" style="font-size: 13px; font-weight: 500;">(' . (int)$total_pending_actions . ' pending)</span>'
+                            : null;
+                        $user_subtext = '<strong>' . (int)$total_students . '</strong> Students &bull; <strong>' . (int)$total_employers . '</strong> Partners';
+                        render_metric($total_users, 'Total Users', 'bi-people-fill', $user_subtext, $user_badge, 'users.php');
+                        ?>
                     </div>
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($total_apps, 'Applications Filed', 'bi-send-fill'); ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                        <?php 
+                        $vac_subtext = count($categories) . ' Job Categories';
+                        render_metric($total_jobs, 'Total Vacancies', 'bi-briefcase-fill', $vac_subtext); 
+                        ?>
                     </div>
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($total_interviews, 'Interviews Held', 'bi-calendar-check-fill'); ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                        <?php 
+                        $unique_applicants = count(array_unique(array_column($all_apps, 'student_id')));
+                        $app_subtext = $unique_applicants . ' Unique Applicants';
+                        render_metric($total_apps, 'Applications Filed', 'bi-send-fill', $app_subtext); 
+                        ?>
                     </div>
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($total_hired, 'Officially Hired', 'bi-person-check-fill'); ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                        <?php 
+                        $interview_rate = $total_apps > 0 ? round(($total_interviews / $total_apps) * 100) : 0;
+                        render_metric($total_interviews, 'Interviews Held', 'bi-calendar-check-fill', $interview_rate . '% Interview Rate'); 
+                        ?>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                        <?php 
+                        $placement_rate = $total_apps > 0 ? round(($total_hired / $total_apps) * 100) : 0;
+                        render_metric($total_hired, 'Officially Hired', 'bi-person-check-fill', $placement_rate . '% Placement Yield'); 
+                        ?>
                     </div>
                 </div>
 
@@ -63,11 +109,10 @@ require_once __DIR__ . '/../header.php';
                     <!-- Chart 1: Most In-Demand Categories (Interactive Donut) -->
                     <div class="col-lg-5">
                         <div class="card-paper h-100 reveal-fade-rise d-flex flex-column bar-chart">
-                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-line">
+                            <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-line">
                                 <h3 class="card-paper-title mb-0">
                                     <i class="bi bi-pie-chart-fill text-accent me-2"></i> Most In-Demand Categories
                                 </h3>
-                                <span class="chip"><?= count($categories) ?> Categories</span>
                             </div>
 
                             <div class="flex-grow-1 d-flex flex-column justify-content-center">

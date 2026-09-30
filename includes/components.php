@@ -116,6 +116,12 @@ if (!function_exists('render_status_badge')) {
         if ($raw === 'Suspended' || $normalized === 'suspended') {
             return '<span class="badge-status--declined"><i class="bi bi-slash-circle"></i> Suspended</span>';
         }
+        if ($raw === 'Withdrawn' || $normalized === 'withdrawn') {
+            return '<span class="badge-status--declined" style="background: rgba(100, 116, 139, 0.12); color: #475569; border-color: rgba(100, 116, 139, 0.25);"><i class="bi bi-dash-circle"></i> Withdrawn</span>';
+        }
+        if ($raw === 'Archived' || $normalized === 'archived') {
+            return '<span class="badge-status--declined" style="background: rgba(245, 158, 11, 0.12); color: #b45309; border-color: rgba(245, 158, 11, 0.25);"><i class="bi bi-archive"></i> Archived</span>';
+        }
 
         return '<span class="chip">' . htmlspecialchars($raw) . '</span>';
     }
@@ -123,19 +129,31 @@ if (!function_exists('render_status_badge')) {
 
 if (!function_exists('render_metric')) {
     /**
-     * Renders standard metric KPI card
+     * Renders standard metric KPI card with optional subtext, badge, and interaction link
      */
-    function render_metric($value, $label, $icon = 'bi-bar-chart-fill') {
+    function render_metric($value, $label, $icon = 'bi-bar-chart-fill', $subtext = null, $badge = null, $link = null) {
+        $tag = $link ? 'a' : 'div';
+        $attrs = $link ? ' href="' . htmlspecialchars($link) . '" class="metric text-decoration-none h-100"' : ' class="metric h-100"';
         ?>
-        <div class="metric h-100">
+        <<?= $tag ?><?= $attrs ?>>
             <div class="d-flex flex-column justify-content-center min-w-0 flex-grow-1">
                 <div class="metric-lbl"><?= htmlspecialchars($label) ?></div>
-                <div class="metric-val"><?= htmlspecialchars((string)$value) ?></div>
+                <div class="d-flex align-items-baseline gap-2 flex-wrap">
+                    <div class="metric-val"><?= htmlspecialchars((string)$value) ?></div>
+                    <?php if ($badge): ?>
+                        <div class="metric-badge"><?= $badge ?></div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($subtext): ?>
+                    <div class="metric-sub small text-muted-custom mt-1 text-truncate" style="font-size: 11px;">
+                        <?= $subtext ?>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="icon-circle icon-circle-success flex-shrink-0">
                 <i class="bi <?= htmlspecialchars($icon) ?>"></i>
             </div>
-        </div>
+        </<?= $tag ?>>
         <?php
     }
 }

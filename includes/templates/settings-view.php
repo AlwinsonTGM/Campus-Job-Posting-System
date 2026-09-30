@@ -508,26 +508,6 @@ require_once __DIR__ . '/../header.php';
                             <hr class="border-line my-4">
 
                             <h4 class="card-paper-title fs-6 mb-3">
-                                <i class="bi bi-bell text-accent me-2"></i> Notification Channels
-                            </h4>
-                            <div class="d-flex flex-column gap-3 mb-4">
-                                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-0">
-                                    <input class="form-check-input flex-shrink-0 ms-0 mt-0" type="checkbox" id="emailNotif" checked>
-                                    <label class="form-check-label small text-ink cursor-pointer mb-0" for="emailNotif">
-                                        Email alerts for application status changes
-                                    </label>
-                                </div>
-                                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-0">
-                                    <input class="form-check-input flex-shrink-0 ms-0 mt-0" type="checkbox" id="smsNotif" checked>
-                                    <label class="form-check-label small text-ink cursor-pointer mb-0" for="smsNotif">
-                                        SMS notices for interview appointments
-                                    </label>
-                                </div>
-                            </div>
-
-                            <hr class="border-line my-4">
-
-                            <h4 class="card-paper-title fs-6 mb-3">
                                 <i class="bi bi-palette text-accent me-2"></i> Appearance
                             </h4>
                             <p class="small text-muted-custom mb-3">

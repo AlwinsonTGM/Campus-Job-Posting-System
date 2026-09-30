@@ -34,6 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if (($target_app['status'] ?? '') === 'withdrawn') {
+        set_flash('warning', 'This application was withdrawn by the student candidate and cannot be updated.');
+        header("Location: review-app.php?id={$target_app['id']}");
+        exit;
+    }
+
     $new_status = $_POST['status'] ?? 'under_review';
     $notes = trim($_POST['supervisor_notes'] ?? '');
 
