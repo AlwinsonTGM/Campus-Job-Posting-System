@@ -9,9 +9,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 560px;
-  min-height: 560px;
-  max-height: 580px;
+  height: 580px;
+  min-height: 580px;
+  max-height: 600px;
 }
 
 .hero-robot-canvas-container {
@@ -47,7 +47,7 @@
   filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.12));
   animation: robotMascotFloat 4.5s ease-in-out infinite;
   cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease, max-height 0.4s ease;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -55,6 +55,11 @@
 .hero-robot-static-img:hover {
   transform: scale(1.035) translateY(-4px);
   filter: drop-shadow(0 24px 38px rgba(46, 204, 113, 0.22));
+}
+
+.hero-3d-stage-wrapper.bubble-active .hero-robot-static-img {
+  max-height: 200px;
+  transform: translateY(90px) scale(0.75);
 }
 
 .hero-robot-static-img.robot-pop {
@@ -948,18 +953,18 @@
 
 @media (max-width: 1199.98px) {
   .hero-3d-stage-wrapper {
-    height: 560px;
-    min-height: 560px;
-    max-height: 560px;
+    height: 580px;
+    min-height: 580px;
+    max-height: 580px;
   }
 }
 
 @media (max-width: 991.98px) {
   .hero-3d-stage-wrapper {
     max-width: 440px;
-    height: 480px;
-    min-height: 480px;
-    max-height: 480px;
+    height: 530px;
+    min-height: 530px;
+    max-height: 540px;
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
   }
@@ -986,9 +991,9 @@
 @media (max-width: 575.98px) {
   .hero-3d-stage-wrapper {
     max-width: 100%;
-    height: 420px;
-    min-height: 420px;
-    max-height: 420px;
+    height: 500px;
+    min-height: 500px;
+    max-height: 520px;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
   }

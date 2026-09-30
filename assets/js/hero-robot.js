@@ -542,6 +542,9 @@
         function openSpeechBubble(skipAnim) {
             if (!bubbleContainer) return;
             isBubbleOpen = true;
+            if (heroStageWrapper) {
+                heroStageWrapper.classList.add('bubble-active');
+            }
             bubbleContainer.classList.remove('d-none');
             bubbleContainer.style.display = 'block';
             void bubbleContainer.offsetWidth; // Force layout reflow
@@ -550,6 +553,11 @@
             if (hintPill) {
                 hintPill.classList.add('d-none');
                 hintPill.style.display = 'none';
+            }
+
+            // Ensure render loop runs to animate scaling down smoothly
+            if (isLoaded && isVisible && isTabActive) {
+                startRenderLoop();
             }
 
             if (!skipAnim) {
@@ -564,11 +572,19 @@
         function closeSpeechBubble() {
             if (!bubbleContainer) return;
             isBubbleOpen = false;
+            if (heroStageWrapper) {
+                heroStageWrapper.classList.remove('bubble-active');
+            }
             bubbleContainer.classList.remove('is-open');
 
             if (hintPill) {
                 hintPill.classList.remove('d-none');
                 hintPill.style.display = '';
+            }
+
+            // Ensure render loop runs to animate scaling back up smoothly
+            if (isLoaded && isVisible && isTabActive) {
+                startRenderLoop();
             }
 
             setTimeout(function () {
@@ -1411,6 +1427,7 @@
         const currentEye = { x: 0, z: 0 };
         const basePosition = { x: 0, y: 0, z: 0 };
         let currentBaseY = 0;
+        let currentScale = 1.0;
 
         const eyeMeshes = [];
         const eyeMaterials = [];
@@ -1941,9 +1958,20 @@
                 mouthMesh.scale.set(mouthScale, 1.0, mouthScale);
             }
 
-            // Smooth vertical transition: when speech bubble opens in hero mode, lower robot slightly so head sits below bubble tail; when closed or in fullscreen, center robot perfectly
-            const desiredY = isFullscreenOpen ? 0.0 : (isBubbleOpen ? -0.32 : 0.0);
-            currentBaseY += (desiredY - currentBaseY) * 0.08;
+            // Dynamic scale & vertical placement:
+            // When in fullscreen: full size (1.0), centered (y = 0)
+            // When bubble is open in hero mode: reduce robot size to ~0.58 so it sits completely visible below the speech bubble
+            // When bubble is closed in hero mode: keep full heroic size (1.0), centered in stage
+            const isMobile = window.innerWidth <= 991;
+            const targetScale = isFullscreenOpen ? 1.0 : (isBubbleOpen ? (isMobile ? 0.52 : 0.58) : 1.0);
+            const desiredY = isFullscreenOpen ? 0.0 : (isBubbleOpen ? (isMobile ? -0.92 : -0.80) : 0.0);
+
+            const lerpSpeed = 0.09;
+            currentScale += (targetScale - currentScale) * lerpSpeed;
+            currentBaseY += (desiredY - currentBaseY) * lerpSpeed;
+
+            // Apply dynamic scale
+            robotPivot.scale.set(currentScale, currentScale, currentScale);
 
             // Apply transforms to robot pivot
             robotPivot.rotation.x = currentRotation.x + animRotX + talkRotX;
@@ -1951,8 +1979,8 @@
             robotPivot.rotation.z = -currentRotation.y * 0.15 + idleTiltZ + animRotZ + talkRotZ;
 
             robotPivot.position.x = 0;
-            robotPivot.position.y = currentBaseY + idleBob + animPosY + talkPosY;
-            robotPivot.position.z = basePosition.z + animPosZ;
+            robotPivot.position.y = currentBaseY + (idleBob + animPosY) * currentScale + talkPosY;
+            robotPivot.position.z = basePosition.z + animPosZ * currentScale;
 
             renderer.render(scene, camera);
         }
