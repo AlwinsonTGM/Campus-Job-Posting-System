@@ -68,6 +68,7 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <!-- Custom Theme & Paper Sheet CSS -->
     <link rel="stylesheet" href="<?= $base_url ?>assets/css/style.css?v=<?= file_exists(__DIR__ . '/../assets/css/style.css') ? filemtime(__DIR__ . '/../assets/css/style.css') : '1.0' ?>">
     <link rel="stylesheet" href="<?= $base_url ?>assets/css/custom.css?v=<?= file_exists(__DIR__ . '/../assets/css/custom.css') ? filemtime(__DIR__ . '/../assets/css/custom.css') : '1.0' ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/features/chatbot.css?v=<?= file_exists(__DIR__ . '/../assets/css/features/chatbot.css') ? filemtime(__DIR__ . '/../assets/css/features/chatbot.css') : '2.0' ?>">
 </head>
 <body>
 

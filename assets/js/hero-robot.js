@@ -72,7 +72,7 @@
         const fsRateIcon = document.getElementById('fs-rate-icon');
         const heroStageWrapper = document.querySelector('.hero-3d-stage-wrapper');
         const bubbleCloseBtn = document.getElementById('speech-bubble-close-btn');
-        const clickCueBtn = document.getElementById('hero-robot-click-cue');
+        const hintPill = document.getElementById('hero-robot-hint-pill');
         let isBubbleOpen = false;
 
         const chatHistory = [];
@@ -542,10 +542,22 @@
         function openSpeechBubble(skipAnim) {
             if (!bubbleContainer) return;
             isBubbleOpen = true;
+            bubbleContainer.classList.remove('d-none');
+            bubbleContainer.style.display = 'block';
+            void bubbleContainer.offsetWidth; // Force layout reflow
             bubbleContainer.classList.add('is-open');
-            if (clickCueBtn) clickCueBtn.classList.add('is-hidden');
+
+            if (hintPill) {
+                hintPill.classList.add('d-none');
+                hintPill.style.display = 'none';
+            }
+
             if (!skipAnim) {
                 onRobotClicked();
+            } else {
+                if (!currentDialogueFullText) {
+                    playNextDialogue(true);
+                }
             }
         }
 
@@ -553,7 +565,18 @@
             if (!bubbleContainer) return;
             isBubbleOpen = false;
             bubbleContainer.classList.remove('is-open');
-            if (clickCueBtn) clickCueBtn.classList.remove('is-hidden');
+
+            if (hintPill) {
+                hintPill.classList.remove('d-none');
+                hintPill.style.display = '';
+            }
+
+            setTimeout(function () {
+                if (!isBubbleOpen && bubbleContainer) {
+                    bubbleContainer.classList.add('d-none');
+                    bubbleContainer.style.display = 'none';
+                }
+            }, 320);
         }
 
         // Robot Interactive Click Reaction (cycles through expressive eye + body gestures)
@@ -1223,10 +1246,16 @@
             });
         });
 
-        // Initial welcome message in speech bubble immediately
-        setMode('faq', true);
+        // Initialize mode to FAQ silently without triggering typewriter before user clicks
+        setMode('faq', false);
         initAIStatus();
         appendFullscreenMessage('assistant', "Hey there! Looking for a campus assistantship or flexible internship? I'm your Campus AI companion! Ask me anything about student jobs, shift scheduling, or interview tips.", 'Campus AI', 'faq');
+
+        // Ensure bubble container starts 100% hidden in Form 1
+        if (bubbleContainer) {
+            bubbleContainer.classList.add('d-none');
+            bubbleContainer.style.display = 'none';
+        }
 
         // Click / Tap Handler on 3D Container (drag detection vs click, left-click only)
         let pointerDownTime = 0;
@@ -1258,20 +1287,35 @@
             }
         });
 
-        // Bubble Close Button & Click Cue Handlers
+        // Bubble Close (Dismiss) Button Handler - 100% reliable event isolation
         if (bubbleCloseBtn) {
-            bubbleCloseBtn.addEventListener('click', function (e) {
+            const handleBubbleClose = function (e) {
                 e.preventDefault();
                 e.stopPropagation();
+                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
                 closeSpeechBubble();
+            };
+            bubbleCloseBtn.addEventListener('click', handleBubbleClose);
+            bubbleCloseBtn.addEventListener('pointerdown', function (e) {
+                e.stopPropagation();
+            });
+            bubbleCloseBtn.addEventListener('pointerup', function (e) {
+                e.stopPropagation();
             });
         }
 
-        if (clickCueBtn) {
-            clickCueBtn.addEventListener('click', function (e) {
+        // Hint Pill click / keyboard handler
+        if (hintPill) {
+            const handleHintAction = function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 openSpeechBubble(false);
+            };
+            hintPill.addEventListener('click', handleHintAction);
+            hintPill.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleHintAction(e);
+                }
             });
         }
 
@@ -1365,7 +1409,8 @@
         const currentRotation = { x: 0, y: 0 };
         const targetEye = { x: 0, z: 0 };
         const currentEye = { x: 0, z: 0 };
-        const basePosition = { x: 0.26, y: 0.38, z: 0 };
+        const basePosition = { x: 0, y: 0, z: 0 };
+        let currentBaseY = 0;
 
         const eyeMeshes = [];
         const eyeMaterials = [];
@@ -1629,23 +1674,26 @@
             // Dynamic camera distance so the 3D robot is never clipped or sliced off
             const vFovRad = (camera.fov * Math.PI) / 180;
             const tanHalfFov = Math.tan(vFovRad / 2);
-            const reqH = 2.62;
-            const reqW = 2.30;
+            const reqH = 2.75;
+            const reqW = 2.45;
             const distFromH = reqH / (2 * tanHalfFov);
             const distFromW = reqW / (2 * tanHalfFov * camera.aspect);
 
             if (isFullscreenOpen) {
-                // In fullscreen modal: generous 32% margin so head, antenna, body, and feet have beautiful margins
-                const idealZ = Math.max(distFromH, distFromW) * 1.32;
-                camera.position.z = Math.max(idealZ, 6.4);
-                camera.position.y = 0.08;
+                // In fullscreen modal: generous margins so head, antenna, body, and feet are completely in view
+                const idealZ = Math.max(distFromH, distFromW) * 1.30;
+                camera.position.z = Math.max(idealZ, 6.2);
+                camera.position.y = 0;
+                camera.position.x = 0;
             } else {
                 // In hero stage: prominent, well-framed full-stage view
-                const idealZ = Math.max(distFromH, distFromW) * 1.18;
-                camera.position.z = Math.max(idealZ, 5.6);
-                camera.position.y = 0.04;
+                const idealZ = Math.max(distFromH, distFromW) * 1.15;
+                camera.position.z = Math.max(idealZ, 5.2);
+                camera.position.y = 0;
+                camera.position.x = 0;
             }
 
+            camera.lookAt(0, 0, 0);
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
             if (renderer && scene && camera) {
@@ -1893,12 +1941,17 @@
                 mouthMesh.scale.set(mouthScale, 1.0, mouthScale);
             }
 
+            // Smooth vertical transition: when speech bubble opens in hero mode, lower robot slightly so head sits below bubble tail; when closed or in fullscreen, center robot perfectly
+            const desiredY = isFullscreenOpen ? 0.0 : (isBubbleOpen ? -0.32 : 0.0);
+            currentBaseY += (desiredY - currentBaseY) * 0.08;
+
             // Apply transforms to robot pivot
             robotPivot.rotation.x = currentRotation.x + animRotX + talkRotX;
             robotPivot.rotation.y = currentRotation.y + idleSwayX + animRotY;
             robotPivot.rotation.z = -currentRotation.y * 0.15 + idleTiltZ + animRotZ + talkRotZ;
 
-            robotPivot.position.y = basePosition.y + idleBob + animPosY + talkPosY;
+            robotPivot.position.x = 0;
+            robotPivot.position.y = currentBaseY + idleBob + animPosY + talkPosY;
             robotPivot.position.z = basePosition.z + animPosZ;
 
             renderer.render(scene, camera);
