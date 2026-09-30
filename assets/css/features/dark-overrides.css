@@ -715,6 +715,25 @@
 [data-theme="dark"] .hero-robot-canvas-container {
   background: radial-gradient(circle at 50% 50%, rgba(52, 216, 101, 0.12) 0%, rgba(52, 216, 101, 0.04) 50%, transparent 72%);
 }
+[data-theme="dark"] .hero-robot-click-cue {
+  background: rgba(24, 24, 27, 0.94);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #a7f3d0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.55);
+}
+[data-theme="dark"] .hero-robot-click-cue:hover {
+  background: #18181b;
+  border-color: #34d399;
+}
+[data-theme="dark"] .speech-bubble-close-btn {
+  background: rgba(39, 39, 42, 0.85);
+  color: #a1a1aa;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .speech-bubble-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
 [data-theme="dark"] .hero-robot-loader {
   background: rgba(26, 26, 30, 0.88);
   border-color: var(--line);

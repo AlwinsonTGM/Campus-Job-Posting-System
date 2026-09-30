@@ -71,6 +71,9 @@
         const fsRateCount = document.getElementById('fs-rate-count');
         const fsRateIcon = document.getElementById('fs-rate-icon');
         const heroStageWrapper = document.querySelector('.hero-3d-stage-wrapper');
+        const bubbleCloseBtn = document.getElementById('speech-bubble-close-btn');
+        const clickCueBtn = document.getElementById('hero-robot-click-cue');
+        let isBubbleOpen = false;
 
         const chatHistory = [];
         let isFullscreenOpen = false;
@@ -534,6 +537,23 @@
 
             // Type text into bubble
             typeDialogue(item.text);
+        }
+
+        function openSpeechBubble(skipAnim) {
+            if (!bubbleContainer) return;
+            isBubbleOpen = true;
+            bubbleContainer.classList.add('is-open');
+            if (clickCueBtn) clickCueBtn.classList.add('is-hidden');
+            if (!skipAnim) {
+                onRobotClicked();
+            }
+        }
+
+        function closeSpeechBubble() {
+            if (!bubbleContainer) return;
+            isBubbleOpen = false;
+            bubbleContainer.classList.remove('is-open');
+            if (clickCueBtn) clickCueBtn.classList.remove('is-hidden');
         }
 
         // Robot Interactive Click Reaction (cycles through expressive eye + body gestures)
@@ -1064,6 +1084,7 @@
         function openFullscreen() {
             if (isFullscreenOpen || !fsModal) return;
             isFullscreenOpen = true;
+            closeSpeechBubble();
 
             // 1. Reparent canvas container into fullscreen slot (if not already inside)
             if (container && fsSlot && container.parentNode !== fsSlot) {
@@ -1225,8 +1246,40 @@
             const dx = Math.abs(e.clientX - pointerDownX);
             const dy = Math.abs(e.clientY - pointerDownY);
             if (dt < 420 && dx < 14 && dy < 14) {
-                // Animate robot with expressive eye & body animations (NO jumping bounce!)
-                onRobotClicked();
+                if (isFullscreenOpen) {
+                    onRobotClicked();
+                } else {
+                    if (!isBubbleOpen) {
+                        openSpeechBubble(false);
+                    } else {
+                        onRobotClicked();
+                    }
+                }
+            }
+        });
+
+        // Bubble Close Button & Click Cue Handlers
+        if (bubbleCloseBtn) {
+            bubbleCloseBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeSpeechBubble();
+            });
+        }
+
+        if (clickCueBtn) {
+            clickCueBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openSpeechBubble(false);
+            });
+        }
+
+        // Dismiss bubble if clicking outside hero wrapper
+        document.addEventListener('pointerdown', function (e) {
+            if (!isBubbleOpen || isFullscreenOpen || !heroStageWrapper) return;
+            if (!heroStageWrapper.contains(e.target)) {
+                closeSpeechBubble();
             }
         });
 
@@ -1567,26 +1620,32 @@
         // Responsive Resize Handler
         function handleResize() {
             if (!container || !renderer || !camera) return;
-            const width = container.clientWidth || (isFullscreenOpen ? 420 : 0);
-            const height = container.clientHeight || (isFullscreenOpen ? 480 : 0);
+            const width = container.clientWidth || (isFullscreenOpen ? 460 : 420);
+            const height = container.clientHeight || (isFullscreenOpen ? 580 : 560);
             if (width === 0 || height === 0) return;
 
             camera.aspect = width / height;
+
+            // Dynamic camera distance so the 3D robot is never clipped or sliced off
+            const vFovRad = (camera.fov * Math.PI) / 180;
+            const tanHalfFov = Math.tan(vFovRad / 2);
+            const reqH = 2.62;
+            const reqW = 2.30;
+            const distFromH = reqH / (2 * tanHalfFov);
+            const distFromW = reqW / (2 * tanHalfFov * camera.aspect);
+
             if (isFullscreenOpen) {
-                if (width < 600) {
-                    camera.position.z = 5.2;
-                } else {
-                    camera.position.z = 4.7;
-                }
+                // In fullscreen modal: generous 32% margin so head, antenna, body, and feet have beautiful margins
+                const idealZ = Math.max(distFromH, distFromW) * 1.32;
+                camera.position.z = Math.max(idealZ, 6.4);
+                camera.position.y = 0.08;
             } else {
-                if (width < 450) {
-                    camera.position.z = 6.0;
-                } else if (width < 768) {
-                    camera.position.z = 5.8;
-                } else {
-                    camera.position.z = 5.6;
-                }
+                // In hero stage: prominent, well-framed full-stage view
+                const idealZ = Math.max(distFromH, distFromW) * 1.18;
+                camera.position.z = Math.max(idealZ, 5.6);
+                camera.position.y = 0.04;
             }
+
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
             if (renderer && scene && camera) {

@@ -71,6 +71,10 @@ require_once __DIR__ . '/../header.php';
                                 <!-- Interactive Robot Message / Speech Bubble -->
                                 <div id="hero-robot-speech-bubble" class="hero-robot-speech-bubble" aria-live="polite">
                                     <div class="speech-bubble-card">
+                                        <!-- Dismiss button back to full robot stage -->
+                                        <button type="button" id="speech-bubble-close-btn" class="speech-bubble-close-btn" title="Dismiss chat bubble" aria-label="Dismiss chat bubble">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
                                         <!-- Spoken Text Content & Thinking Indicator -->
                                         <div class="speech-bubble-body">
                                             <p id="speech-bubble-text" class="speech-bubble-text"></p>
@@ -129,7 +133,14 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 </div>
 
-                                <!-- Mascot Assistant Container (Adaptive: 3D on Localhost, Photo on Hosted) -->
+                                <!-- Floating Interactive Click Cue Badge -->
+                                <button type="button" id="hero-robot-click-cue" class="hero-robot-click-cue" title="Click robot to chat and explore!">
+                                    <span class="cue-ping"></span>
+                                    <i class="bi bi-chat-dots-fill text-accent"></i>
+                                    <span>Chat with Campus AI &bull; Click me!</span>
+                                </button>
+
+                                <!-- Mascot Assistant Container (Consumes full stage) -->
                                 <?php render_hero_robot_stage($base_url, false); ?>
                             </div>
                         </div>
