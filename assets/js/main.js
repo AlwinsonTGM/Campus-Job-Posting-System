@@ -918,6 +918,26 @@ document.addEventListener('DOMContentLoaded', function () {
   handleFaqHash();
   window.addEventListener('hashchange', handleFaqHash);
 
+  // FAQ Accordion: Ensure at least one question remains open when active panel is clicked
+  const faqAccordionEl = document.getElementById('faqAccordion');
+  if (faqAccordionEl) {
+    let isFaqOpening = false;
+    faqAccordionEl.addEventListener('show.bs.collapse', function () {
+      isFaqOpening = true;
+    });
+    faqAccordionEl.addEventListener('shown.bs.collapse', function () {
+      isFaqOpening = false;
+    });
+    faqAccordionEl.addEventListener('hide.bs.collapse', function (e) {
+      if (!isFaqOpening) {
+        const shownPanels = faqAccordionEl.querySelectorAll('.accordion-collapse.show');
+        if (shownPanels.length <= 1) {
+          e.preventDefault();
+        }
+      }
+    });
+  }
+
   // ------------------------------------------------------------------------
   // 12. DEVBLOG & SPRINT CHRONICLES (3D Stage Coverflow & Reader Engine)
   // ------------------------------------------------------------------------
