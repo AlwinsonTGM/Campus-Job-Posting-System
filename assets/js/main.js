@@ -650,6 +650,19 @@ document.addEventListener('DOMContentLoaded', function () {
               currentCountEl.innerHTML = newCountEl.innerHTML;
             }
 
+            // Sync Directory Filter Badges and Reset button state
+            const newDirBadges = doc.getElementById('directoryFilterBadges');
+            const currentDirBadges = document.getElementById('directoryFilterBadges');
+            if (newDirBadges && currentDirBadges) {
+              currentDirBadges.innerHTML = newDirBadges.innerHTML;
+            }
+
+            const newResetWrap = doc.getElementById('filterResetBtnWrap');
+            const currentResetWrap = document.getElementById('filterResetBtnWrap');
+            if (newResetWrap && currentResetWrap) {
+              currentResetWrap.innerHTML = newResetWrap.innerHTML;
+            }
+
             // Re-initialize Bootstrap tooltips in new content
             const tooltips = [].slice.call(currentTargetEl.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltips.forEach(function (el) {
@@ -712,14 +725,31 @@ document.addEventListener('DOMContentLoaded', function () {
           if (newForm) {
             form.querySelectorAll('select').forEach(function (sel) {
               const matchingNew = newForm.querySelector(`select[name="${sel.name}"]`);
-              if (matchingNew && sel.value !== matchingNew.value) {
-                sel.value = matchingNew.value;
+              if (matchingNew) {
+                if (sel.value !== matchingNew.value) {
+                  sel.value = matchingNew.value;
+                }
+                if (matchingNew.classList.contains('filter-applied')) {
+                  sel.classList.add('filter-applied');
+                } else {
+                  sel.classList.remove('filter-applied');
+                }
               }
             });
             form.querySelectorAll('input[type="hidden"]').forEach(function (hid) {
               const matchingNew = newForm.querySelector(`input[type="hidden"][name="${hid.name}"]`);
               if (matchingNew && hid.value !== matchingNew.value) {
                 hid.value = matchingNew.value;
+              }
+            });
+            form.querySelectorAll('input[type="text"], input[type="search"]').forEach(function (inp) {
+              const matchingNew = newForm.querySelector(`input[name="${inp.name}"]`);
+              if (matchingNew) {
+                if (matchingNew.classList.contains('filter-applied')) {
+                  inp.classList.add('filter-applied');
+                } else {
+                  inp.classList.remove('filter-applied');
+                }
               }
             });
           }
@@ -1157,7 +1187,19 @@ document.addEventListener('DOMContentLoaded', function () {
       const modalNextBtn = document.getElementById('devblog-modal-next-btn');
 
       if (badgeEl) {
-        badgeEl.innerHTML = '<i class="bi bi-flag-fill text-accent me-1"></i>' + (blog.sprint_badge || ('DAY ' + (blog.sprint_number || '01')));
+        const sprintNum = blog.sprint_number || (blog.id ? blog.id.replace(/\D/g, '') : '01');
+        const dayStr = 'DAY ' + String(sprintNum).padStart(2, '0');
+        badgeEl.innerHTML = '<i class="bi bi-flag-fill text-accent me-1"></i>' + dayStr;
+      }
+      const topicEl = document.getElementById('devblog-modal-topic');
+      if (topicEl) {
+        let topicText = '';
+        if (blog.sprint_badge) {
+          const parts = blog.sprint_badge.split('·');
+          topicText = parts.length > 1 ? parts.slice(1).join('·').trim() : blog.sprint_badge.trim();
+        }
+        topicEl.textContent = topicText;
+        topicEl.title = topicText;
       }
       if (readtimeEl) {
         readtimeEl.innerHTML = '<i class="bi bi-clock-history me-1 text-accent"></i>' + (blog.read_time || '5 min read');

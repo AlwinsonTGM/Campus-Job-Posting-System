@@ -351,21 +351,22 @@ require_once __DIR__ . '/../header.php';
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                 <div class="modal-content paper-modal-content border-0 shadow-lg">
                     <div class="modal-header border-bottom border-line pb-3 bg-surface">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-ink text-white px-2 py-1 small fw-bold" id="devblog-modal-sprint-badge">
-                                <i class="bi bi-flag-fill text-accent me-1"></i>DAY 11 · MODULAR CSS &amp; 20H POLICY SAFEGUARDS
+                        <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0 me-3">
+                            <span class="badge bg-ink text-white px-2.5 py-1 small fw-bold text-nowrap flex-shrink-0" id="devblog-modal-sprint-badge">
+                                <i class="bi bi-flag-fill text-accent me-1"></i>DAY 25
                             </span>
-                            <span class="badge bg-cream text-muted-custom border border-line small" id="devblog-modal-readtime">
+                            <span class="badge bg-cream text-muted-custom border border-line small text-nowrap flex-shrink-0" id="devblog-modal-readtime">
                                 <i class="bi bi-clock-history me-1 text-accent"></i>5 min read
                             </span>
+                            <span class="small text-muted-custom fw-bold text-uppercase text-truncate d-none d-md-inline-block" id="devblog-modal-topic" style="font-size: 11px; letter-spacing: 0.04em;"></span>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close flex-shrink-0" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     <div class="modal-body p-4 bg-white" id="devblog-modal-body">
                         <!-- Cover Banner -->
                         <div class="devblog-modal-banner-wrap mb-4">
-                            <img src="" id="devblog-modal-banner" alt="Log Cover" class="w-100 rounded-3 object-fit-cover" style="max-height: 280px;">
+                            <img src="" id="devblog-modal-banner" alt="Log Cover" class="w-100 rounded-3 object-fit-cover" style="max-height: 310px;">
                         </div>
 
                         <!-- Title -->
