@@ -1,0 +1,28 @@
+# ==============================================================================
+# QA Artifact Hygiene
+#
+# The QA harness writes a lot of transient output. Only the reports and the
+# regression specs are meant to be kept in version control; everything here is
+# regenerated on each run.
+# ==============================================================================
+
+# Screenshots, HTML captures, per-run JSON results
+artifacts/
+
+# PHP session files (contain live session ids + CSRF tokens)
+sessions/
+
+# PHP upload staging
+uploads-tmp/
+
+# Database dumps taken before a run (large, and contain real data)
+backups/
+
+# --- Keep the real credentials OUT of the repo --------------------------------
+# env-backup/.env.qa-backup contains live SMTP credentials and MUST NOT be
+# committed. The whole directory is ignored rather than just the file, so a
+# mistake in the filename cannot leak it.
+env-backup/
+
+# One-off diagnostic scripts kept only for provenance
+evidence/

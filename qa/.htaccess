@@ -1,0 +1,23 @@
+# ==============================================================================
+# QA Harness Directory - Deny direct web access
+#
+# This directory holds QA-only material that must never be web-reachable:
+#   - env-backup/.env.qa-backup : contains real SMTP credentials
+#   - sessions/                 : raw PHP session files (identity + CSRF tokens)
+#   - backups/*.sql             : full database dumps
+#   - serve-qa.cmd, *.ps1, *.mjs
+#
+# Apache honours this for the whole subtree, matching the app's existing
+# lockdown pattern in data/.htaccess and database/.htaccess.
+# NOTE: PHP's built-in server ignores .htaccess - QA runs on :8099 are not
+# protected by this file. Do not serve this directory with anything but Apache.
+# ==============================================================================
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>
