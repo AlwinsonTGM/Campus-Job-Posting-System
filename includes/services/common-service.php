@@ -226,9 +226,8 @@ function calculate_age(?string $birthdate): ?int {
 function get_job_types(): array {
     return [
         'Student Assistant' => 'Student Assistant (On-Campus SA)',
-        'Part-Time Job' => 'Part-Time Job',
+        'Part-Time' => 'Part-Time Job',
         'Internship / OJT' => 'Internship / OJT (Academic Practicum)',
-        'Peer Tutor' => 'Peer Tutoring & Academic Coach',
         'Project-Based' => 'Project-Based / Short-Term Gig'
     ];
 }

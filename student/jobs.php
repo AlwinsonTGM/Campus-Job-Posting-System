@@ -20,8 +20,16 @@ $employer_type = query_string('employer_type');
 // Handle aliases for quick filters
 $is_lab_assistant_active = (strcasecmp($category, 'Science & Computer Lab Assistant') === 0 || strcasecmp($job_type, 'Lab Assistant') === 0);
 $is_library_aide_active = (strcasecmp($category, 'Library Services') === 0 || strcasecmp($job_type, 'Library Aide') === 0 || strcasecmp($job_type, 'Library') === 0);
+$is_peer_tutor_active = (strcasecmp($category, 'Peer Tutor') === 0 || strcasecmp($job_type, 'Peer Tutor') === 0);
 
-if (strcasecmp($job_type, 'Lab Assistant') === 0) {
+if (strcasecmp($job_type, 'Part-Time Job') === 0) {
+    $job_type = 'Part-Time';
+} elseif (strcasecmp($job_type, 'Peer Tutor') === 0) {
+    if (empty($category)) {
+        $category = 'Peer Tutor';
+    }
+    $job_type = '';
+} elseif (strcasecmp($job_type, 'Lab Assistant') === 0) {
     if (empty($category)) {
         $category = 'Science & Computer Lab Assistant';
     }

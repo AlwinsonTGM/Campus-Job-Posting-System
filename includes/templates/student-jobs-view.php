@@ -277,13 +277,13 @@ require_once __DIR__ . '/../header.php';
                             <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Student Assistant">
                                 <i class="bi bi-mortarboard"></i> Student Assistant
                             </a>
-                            <a href="jobs.php?job_type=Part-Time+Job" class="chip chip-selectable <?= ($job_type === 'Part-Time Job') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Part-Time Job">
+                            <a href="jobs.php?job_type=Part-Time" class="chip chip-selectable <?= ($job_type === 'Part-Time') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Part-Time">
                                 <i class="bi bi-clock"></i> Part-Time
                             </a>
                             <a href="jobs.php?job_type=<?= urlencode('Internship / OJT') ?>" class="chip chip-selectable <?= ($job_type === 'Internship / OJT') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Internship / OJT">
                                 <i class="bi bi-briefcase"></i> Internship / OJT
                             </a>
-                            <a href="jobs.php?job_type=Peer+Tutor" class="chip chip-selectable <?= ($job_type === 'Peer Tutor') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Peer Tutor">
+                            <a href="jobs.php?category=Peer+Tutor" class="chip chip-selectable <?= $is_peer_tutor_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Peer Tutor">
                                 <i class="bi bi-person-video3"></i> Peer Tutor
                             </a>
                             <a href="jobs.php?category=<?= urlencode('Science & Computer Lab Assistant') ?>" class="chip chip-selectable <?= $is_lab_assistant_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Science & Computer Lab Assistant">
