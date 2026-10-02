@@ -24,9 +24,9 @@ const FATAL = /(Fatal error|Uncaught (TypeError|Error))/i;
 const { browser, page } = await launch();
 try {
   // =====================================================================
-  // BUG-01 — student registration must not crash with a TypeError
+  // BUG-01 — student registration must complete end to end (FIXED)
   // =====================================================================
-  console.log('\n--- BUG-01: registration must not fatal ---');
+  console.log('\n--- BUG-01: registration must complete end to end ---');
   {
     let postBody = '';
     const onResp = async (r) => {
@@ -37,7 +37,8 @@ try {
     page.on('response', onResp);
 
     const stamp = Date.now();
-    await completeStudentRegistration(page, { email: `qa_reg_${stamp}@gmail.com`, stamp });
+    const email = `qa_reg_${stamp}@gmail.com`;
+    await completeStudentRegistration(page, { email, stamp });
     await sleep(600);
     page.off('response', onResp);
 
@@ -46,6 +47,17 @@ try {
       fatal ? (postBody.match(/Uncaught \w+: [^<\n]{0,160}/) || [''])[0] : '');
     res.check('BUG-01: registration reaches verify-email.php', /verify-email\.php/.test(page.url()),
       `url=${page.url()}`);
+
+    // The account and its student profile must actually persist - a form that
+    // "succeeds" without writing would be worse than the original crash.
+    const row = qa(`SELECT id FROM campus_job_portal_e2e.users WHERE email='${email}'`);
+    res.check('BUG-01: the new account is persisted', row !== '', 'no users row');
+    if (row !== '') {
+      const profile = qa(
+        `SELECT IFNULL(registration_proof,'') FROM campus_job_portal_e2e.student_profiles WHERE user_id=${row}`);
+      res.check('BUG-01: the student profile persists with its COR path', profile !== '',
+        'no student_profiles row, or an empty registration_proof');
+    }
   }
 
   // =====================================================================

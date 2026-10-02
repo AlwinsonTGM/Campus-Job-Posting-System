@@ -13,6 +13,14 @@ require_once __DIR__ . '/PHPMailer/SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 
 function is_smtp_configured(): bool {
+    // A QA/test server must be treated as having no mail transport, whatever
+    // .env says. This is what makes the app render OTP codes on screen instead
+    // of dispatching them, and it is the single switch every caller reads, so
+    // gating it here keeps the whole "no mail" behaviour consistent.
+    if (function_exists('registration_mail_allowed') && !registration_mail_allowed()) {
+        return false;
+    }
+
     load_env();
     $smtp_user = trim((string)getenv('MAIL_USERNAME'));
     $smtp_pass = trim((string)getenv('MAIL_PASSWORD'));
@@ -20,6 +28,13 @@ function is_smtp_configured(): bool {
 }
 
 function send_campus_email(string $recipient_email, string $recipient_name, string $subject, string $html_body): bool {
+    // Hard stop: never open an SMTP connection on a QA/test server, even if a
+    // caller bypassed is_smtp_configured().
+    if (function_exists('registration_mail_allowed') && !registration_mail_allowed()) {
+        error_log("Campus Mailer: dispatch suppressed (QA_MAIL_DISABLED) for {$recipient_email}");
+        return false;
+    }
+
     if (!filter_var($recipient_email, FILTER_VALIDATE_EMAIL)) {
         return false;
     }

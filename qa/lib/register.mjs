@@ -32,6 +32,13 @@ export const SEL = {
   stepError: '#step-error-alert',
   stepErrorText: '#step-error-message',
   proof: '#reg-student-proof',
+
+  // The in-page verification notice that carries the on-screen OTP.
+  // MUST exclude the flash toast: it also matches `.alert-paper--warning` (it
+  // carries `alert-paper--floating`), appears FIRST in the DOM, and contains no
+  // code - selecting it yields a false "no on-screen OTP" result.
+  otpNotice: '.alert-paper--warning:not(.alert-paper--floating)',
+  otpCode: '.alert-paper--warning:not(.alert-paper--floating) code.fs-6',
 };
 
 const PNG_1x1 = Buffer.from(

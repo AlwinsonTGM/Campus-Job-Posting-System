@@ -33,13 +33,14 @@ directly (`qa/lib/harness.mjs`) — same browser, same selectors, no runner.
 regression check in `qa/specs-regression/confirmed-bugs.mjs`.
 
 > ### Fix status
-> **BUG-04 and BUG-05 are FIXED and independently verified** — 12/12 and 6/6
-> checks, plus a 9/9 non-regression sweep, and both now pass in the pinned
-> regression gate. The remaining 8 bugs are untouched.
+> **BUG-01, BUG-04, and BUG-05 are FIXED and independently verified** — 10/10,
+> 12/12, and 6/6 checks, plus the 13/13 containment suite and 9/9 non-regression
+> sweep; all three now pass in the pinned regression gate. The remaining 7 bugs
+> are tracked below.
 
 | # | Severity | Bug | Route | Auth needed | Status |
 |---|---|---|---|---|---|
-| [BUG-01](#bug-01--critical--student-registration-crashes-with-an-uncaught-typeerror) | **CRITICAL** | Student registration crashes — feature entirely dead | `POST /register.php:145` | none | open |
+| [BUG-01](#bug-01--critical--student-registration-crashes-with-an-uncaught-typeerror--fixed) | **CRITICAL** | Student registration crashes — feature entirely dead | `POST /register.php:145` | none | **FIXED** |
 | [BUG-04](#bug-04--critical--unauthenticated-get-wipes-the-entire-dataset--fixed) | **CRITICAL** | Unauthenticated GET wipes the whole dataset | `/data-toggle.php` | **none** | **FIXED** |
 | [BUG-05](#bug-05--critical--employer-dashboard-and-job-editor-fatal-error-mid-render--fixed) | **CRITICAL** | Employer dashboard + job editor fatal mid-render | `/employer/dashboard.php`, `/employer/edit-job.php` | employer | **FIXED** |
 | [BUG-03](#bug-03--high--array-query-parameters-crash-7-routes-with-uncaught-typeerror) | **HIGH** | Array query params crash 7 routes, leak server paths | 7 routes (3 need no auth) | mixed | open |
@@ -50,16 +51,36 @@ regression check in `qa/specs-regression/confirmed-bugs.mjs`.
 | [BUG-09](#bug-09--low--about-usphp-requests-a-devblog-image-that-does-not-exist) | LOW | Broken devblog image | `/about-us.php` | none | open |
 | [BUG-10](#bug-10--low--faq-accordion-can-be-closed-to-a-state-where-nothing-is-open) | LOW | FAQ accordion closes to an empty state | `/faqs.php` | none | open |
 
-**Remaining fix order:** BUG-01 → BUG-03 → the rest. BUG-01 breaks new student
-registration outright; BUG-03 leaks server paths on three unauthenticated routes.
+**Remaining fix order:** BUG-03 → the rest. BUG-03 leaks server paths on three
+unauthenticated routes.
 
 ---
 
-### BUG-01 — CRITICAL — Student registration crashes with an uncaught `TypeError`
+### BUG-01 — CRITICAL — Student registration crashes with an uncaught `TypeError` ✅ FIXED
 
 **Route:** `POST /register.php` (call site line 145) → `includes/services/user-service.php:736`
 **Role:** public / student
-**Status:** CONFIRMED
+**Status:** CONFIRMED, then **FIXED and verified**
+
+> **Fix applied.**
+> 1. Parameter type hints in `register_user()` corrected from `?array $permit_file`
+>    and `?array $proof_file` to `?string $permit_file = null, ?string $proof_file = null`.
+>    The callers pass relative stored file paths from `AttachmentStore`, and the
+>    persistence functions (`insert_student_profile`, `insert_employer_profile`) expect
+>    `?string`.
+> 2. Error handling broadened to `catch (Throwable $e)` so any future type or
+>    runtime errors inside the registration transaction trigger a clean rollback
+>    rather than escaping as unhandled 500-fatal crashes.
+> 3. QA mail gate added (`registration_mail_allowed()` in `includes/auth-check.php`
+>    and `includes/mailer.php`) so QA/test environments setting `QA_MAIL_DISABLED=1`
+>    safely route OTP codes to on-screen presentation without dispatching outbound
+>    emails.
+>
+> **Verification** — `qa/verification/verify-bug01-fix.mjs` (10/10), `qa/teams/00-containment.mjs`
+> (13/13), and `qa/specs-regression/confirmed-bugs.mjs` (4/4 for BUG-01): student registration
+> wizard completes cleanly, redirects 302 without PHP fatal, persists both the `users`
+> row and `student_profiles` row with COR path, displays on-screen OTP without sending mail,
+> successfully verifies OTP to the student dashboard, and handles duplicates cleanly.
 
 **Impact.** No new student account can be created, at all, through the UI. The
 crash occurs on every submission that reaches persistence. Because the failure

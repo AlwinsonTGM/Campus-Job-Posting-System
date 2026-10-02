@@ -57,7 +57,9 @@ try {
     throw new Error('cannot continue without reaching the OTP screen');
   }
 
-  const warning = page.locator('.alert-paper--warning').first();
+  // NOTE: the flash toast also matches `.alert-paper--warning` and comes first
+  // in the DOM, so it must be excluded - see SEL.otpNotice in lib/register.mjs.
+  const warning = page.locator('.alert-paper--warning:not(.alert-paper--floating)').first();
   res.check('SMTP-unconfigured notice shown', await warning.isVisible().catch(() => false));
 
   const codeEl = warning.locator('code.fs-6').first();
@@ -86,9 +88,10 @@ try {
   res.check('6 OTP input pods present', podCount === 6, `count=${podCount}`);
 
   for (let i = 0; i < Math.min(6, podCount); i++) await pods.nth(i).fill(code[i]);
-  await page.locator('#btn-submit-otp').first().click();
-
-  await page.waitForURL(/student\/dashboard\.php/, { timeout: 30000 }).catch(() => {});
+    await Promise.all([
+    page.waitForURL(/student\/dashboard\.php/, { timeout: 30000 }).catch(() => {}),
+    page.locator('#btn-submit-otp').first().click({ noWaitAfter: true }).catch(() => {}),
+  ]);
   const reached = /student\/dashboard\.php/.test(page.url());
   res.check('OTP verification lands on student dashboard', reached, `url=${page.url()}`);
 

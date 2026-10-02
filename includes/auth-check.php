@@ -8,6 +8,25 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/data-helper.php';
 
+/**
+ * Whether registration may dispatch a real verification email.
+ *
+ * A QA/test server must never send mail: the harness creates throwaway accounts
+ * on every run, and those would become real deliveries. Blanking MAIL_USERNAME
+ * in a launcher is NOT reliable - load_env() calls putenv() for every key in
+ * .env, and an emptied variable reads back as false, so real credentials
+ * reappear as soon as .env contains them.
+ *
+ * Declared here (not in user-service.php) because SessionGuard calls it and
+ * this file must not depend on load order. Set QA_MAIL_DISABLED=1 on any such
+ * server; qa/serve-qa.cmd does. When the gate is closed the app takes the
+ * ordinary "SMTP not configured" path: the code is stored in the session and
+ * rendered on screen, so the full OTP journey stays testable without email.
+ */
+function registration_mail_allowed(): bool {
+    return trim((string)getenv('QA_MAIL_DISABLED')) !== '1';
+}
+
 class SessionGuard {
     /** @var callable|null Test interceptor: fn(string $url, int $statusCode, string $reason): void */
     private static $redirectHandler = null;
@@ -187,7 +206,14 @@ class SessionGuard {
         unset($_SESSION['user']);
 
         $code = create_email_verification_code((int)$user['id']);
-        $mailRes = send_verification_code_email($user['email'], $user['name'] ?? 'User', $code);
+
+        // On a QA/test server, never dispatch real mail: throwaway accounts are
+        // created on every run. Closing the gate here makes the flow behave
+        // exactly like an unconfigured SMTP host, so the code is shown on screen
+        // and the OTP journey stays fully testable. See registration_mail_allowed().
+        $mailRes = registration_mail_allowed()
+            ? send_verification_code_email($user['email'], $user['name'] ?? 'User', $code)
+            : ['success' => false, 'smtp_configured' => false, 'message' => 'Mail dispatch disabled on this QA server.'];
 
         if (!$mailRes['smtp_configured']) {
             $_SESSION['pending_verification']['dev_code'] = $code;

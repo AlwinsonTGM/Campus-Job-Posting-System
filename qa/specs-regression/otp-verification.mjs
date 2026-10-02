@@ -30,16 +30,17 @@ try {
     `url=${page.url()} serverError=${reg.stepErrorAfterSubmit || '(none)'}`);
   if (!onOtp) throw new Error('cannot reach OTP screen; see BUG-01');
 
-  const codeEl = page.locator('.alert-paper--warning code.fs-6').first();
+  const codeEl = page.locator('.alert-paper--warning:not(.alert-paper--floating) code.fs-6').first();
   const code = (await codeEl.isVisible().catch(() => false)) ? (await codeEl.innerText()).trim() : '';
   res.check('OTP is rendered on screen (proves no email was needed)', /^\d{6}$/.test(code), `code=${code}`);
 
   const pods = page.locator('.otp-digit-pod');
   res.check('6 OTP pods present', (await pods.count()) === 6);
   for (let i = 0; i < 6; i++) await pods.nth(i).fill(code[i]);
-  await page.locator('#btn-submit-otp').click();
-
-  await page.waitForURL(/student\/dashboard\.php/, { timeout: 20000 }).catch(() => {});
+    await Promise.all([
+    page.waitForURL(/student\/dashboard\.php/, { timeout: 25000 }).catch(() => {}),
+    page.locator('#btn-submit-otp').click({ noWaitAfter: true }).catch(() => {}),
+  ]);
   res.check('verification graduates the account to the dashboard',
     /student\/dashboard\.php/.test(page.url()), `url=${page.url()}`);
 

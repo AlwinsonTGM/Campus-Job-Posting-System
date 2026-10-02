@@ -733,7 +733,18 @@ function insert_employer_profile(PDO $pdo, int $user_id, array $data, string $or
     ]);
 }
 
-function register_user(array $data, ?array $permit_file = null, ?array $proof_file = null): array {
+/**
+ * Register a student or employer account.
+ *
+ * $permit_file / $proof_file are STORED RELATIVE PATHS (as returned by
+ * AttachmentStore::storePermit() / ::storeProof()->path()), or null when no
+ * document was supplied - not upload arrays. The callers in register.php pass
+ * paths, and they flow straight into insert_student_profile(?string) /
+ * insert_employer_profile(?string), so the parameter type must be ?string.
+ * Declaring them as ?array threw a TypeError at the call site, which killed
+ * every registration.
+ */
+function register_user(array $data, ?string $permit_file = null, ?string $proof_file = null): array {
     try {
         $pdo = get_db_connection();
         $email = strtolower(trim($data['email'] ?? ''));
@@ -794,7 +805,10 @@ function register_user(array $data, ?array $permit_file = null, ?array $proof_fi
         }
 
         return ['success' => true, 'user' => $new_user];
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
+        // Throwable, not Exception: a TypeError/ArgumentCountError is an Error,
+        // so `catch (Exception $e)` let it escape as a raw fatal error page
+        // instead of a clean message.
         if (isset($pdo) && $pdo->inTransaction()) {
             $pdo->rollBack();
         }

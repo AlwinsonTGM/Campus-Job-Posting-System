@@ -76,6 +76,14 @@ export async function launch() {
     // it before, but this harness talks to Playwright directly.
     baseURL: QA_BASE,
     viewport: { width: 1440, height: 900 },
+
+    // The app animates cards in with `.reveal-fade-rise` (opacity + 24px
+    // transform over 0.6s). Playwright refuses to click an element that is
+    // still moving, so clicks on animated controls can time out even though
+    // the element is present and unobstructed. The stylesheet already honours
+    // prefers-reduced-motion by disabling those transitions, so asking for
+    // reduced motion is the app's own supported path - not a test hack.
+    reducedMotion: 'reduce',
   });
   const page = await context.newPage();
   return { browser, context, page };
