@@ -68,7 +68,7 @@ if (isset($_POST['withdraw_others'])) {
 }
 
 $my_apps = get_applications($user['id'] ?? 0);
-$filter_status = trim($_GET['status'] ?? '');
+$filter_status = query_string('status');
 
 if (!empty($filter_status)) {
     $my_apps = array_filter($my_apps, function($a) use ($filter_status) {

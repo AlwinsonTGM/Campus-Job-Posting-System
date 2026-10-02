@@ -9,10 +9,10 @@ require_once __DIR__ . '/includes/auth-check.php';
 require_auth();
 $current_user = get_logged_user();
 
-$app_id = $_GET['app_id'] ?? ($_GET['id'] ?? null);
-$user_id = $_GET['user_id'] ?? null;
-$file_param = $_GET['file'] ?? null;
-$force_html = isset($_GET['render_html']) && $_GET['render_html'] === '1';
+$app_id = query_int('app_id') ?? query_int('id');
+$user_id = query_int('user_id');
+$file_param = query_string('file', '');
+$force_html = query_string('render_html') === '1';
 
 $app = null;
 $target_student = null;

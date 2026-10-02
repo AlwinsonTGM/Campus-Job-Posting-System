@@ -401,3 +401,35 @@ function save_json_file(string $filename, array $data): bool {
     }
     return false;
 }
+
+// ============================================================================
+// QUERY PARAMETER EXTRACTION HELPERS (BUG-03 REMEDIATION)
+// ============================================================================
+
+/**
+ * Safely extract a trimmed string query parameter from $_GET.
+ * Array query params (?param[]=val), non-scalar types, or missing keys
+ * safely return the specified default string, preventing uncaught TypeErrors.
+ */
+function query_string(string $key, string $default = ''): string {
+    $v = $_GET[$key] ?? null;
+    return is_string($v) ? trim($v) : $default;
+}
+
+/**
+ * Safely extract an integer query parameter from $_GET.
+ * Returns the integer, or the default (null by default) if the value is missing,
+ * an array, non-numeric, or <= 0.
+ */
+function query_int(string $key, ?int $default = null): ?int {
+    $v = $_GET[$key] ?? null;
+    if (is_int($v)) {
+        return $v > 0 ? $v : $default;
+    }
+    if (is_string($v) && $v !== '' && is_numeric($v)) {
+        $iv = (int)$v;
+        return $iv > 0 ? $iv : $default;
+    }
+    return $default;
+}
+

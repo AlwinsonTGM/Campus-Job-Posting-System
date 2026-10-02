@@ -123,8 +123,8 @@ function get_jobs(string|array|null $category = null, ?string $keyword = null, ?
     }
 }
 
-function get_job_by_id(int|string|null $id): ?array {
-    if ($id === null || $id === '' || (int)$id <= 0) { return null; }
+function get_job_by_id(mixed $id): ?array {
+    if (!is_scalar($id) || $id === null || $id === '' || (int)$id <= 0) { return null; }
     try {
         $pdo = get_db_connection();
         $stmt = $pdo->prepare("
@@ -421,8 +421,8 @@ function get_applications(int|string|null $student_id = null, int|string|null $j
     }
 }
 
-function get_application_by_id(int|string|null $id): ?array {
-    if ($id === null || $id === '' || (int)$id <= 0) { return null; }
+function get_application_by_id(mixed $id): ?array {
+    if (!is_scalar($id) || $id === null || $id === '' || (int)$id <= 0) { return null; }
     try {
         $pdo = get_db_connection();
         $stmt = $pdo->prepare("

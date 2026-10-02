@@ -33,17 +33,17 @@ directly (`qa/lib/harness.mjs`) — same browser, same selectors, no runner.
 regression check in `qa/specs-regression/confirmed-bugs.mjs`.
 
 > ### Fix status
-> **BUG-01, BUG-04, and BUG-05 are FIXED and independently verified** — 10/10,
-> 12/12, and 6/6 checks, plus the 13/13 containment suite and 9/9 non-regression
-> sweep; all three now pass in the pinned regression gate. The remaining 7 bugs
-> are tracked below.
+> **BUG-01, BUG-03, BUG-04, and BUG-05 are FIXED and independently verified** — 10/10,
+> 13/13 sweep (0/13 crashing), 12/12, and 6/6 checks, plus the 13/13 containment suite
+> and 9/9 non-regression sweep; all four now pass in the pinned regression gate.
+> The remaining 6 bugs are tracked below.
 
 | # | Severity | Bug | Route | Auth needed | Status |
 |---|---|---|---|---|---|
 | [BUG-01](#bug-01--critical--student-registration-crashes-with-an-uncaught-typeerror--fixed) | **CRITICAL** | Student registration crashes — feature entirely dead | `POST /register.php:145` | none | **FIXED** |
 | [BUG-04](#bug-04--critical--unauthenticated-get-wipes-the-entire-dataset--fixed) | **CRITICAL** | Unauthenticated GET wipes the whole dataset | `/data-toggle.php` | **none** | **FIXED** |
 | [BUG-05](#bug-05--critical--employer-dashboard-and-job-editor-fatal-error-mid-render--fixed) | **CRITICAL** | Employer dashboard + job editor fatal mid-render | `/employer/dashboard.php`, `/employer/edit-job.php` | employer | **FIXED** |
-| [BUG-03](#bug-03--high--array-query-parameters-crash-7-routes-with-uncaught-typeerror) | **HIGH** | Array query params crash 7 routes, leak server paths | 7 routes (3 need no auth) | mixed | open |
+| [BUG-03](#bug-03--high--array-query-parameters-crash-7-routes-with-uncaught-typeerror--fixed) | **HIGH** | Array query params crash 7 routes, leak server paths | 7 routes (3 need no auth) | mixed | **FIXED** |
 | [BUG-02](#bug-02--low--failed-registrations-leave-orphaned-files-on-disk) | LOW | Failed registrations orphan files on disk | `POST /register.php` | none | open |
 | [BUG-06](#bug-06--medium--seed-data-violates-its-own-status-enum-producing-blank-and-misleading-states) | MEDIUM | Seed data violates its own `status` ENUM | `/student/my-applications.php` | student | open |
 | [BUG-07](#bug-07--medium--listing-filters-advertise-values-that-match-no-vacancy) | MEDIUM | Listing filters match no vacancy | `/student/jobs.php` | none | open |
@@ -51,8 +51,7 @@ regression check in `qa/specs-regression/confirmed-bugs.mjs`.
 | [BUG-09](#bug-09--low--about-usphp-requests-a-devblog-image-that-does-not-exist) | LOW | Broken devblog image | `/about-us.php` | none | open |
 | [BUG-10](#bug-10--low--faq-accordion-can-be-closed-to-a-state-where-nothing-is-open) | LOW | FAQ accordion closes to an empty state | `/faqs.php` | none | open |
 
-**Remaining fix order:** BUG-03 → the rest. BUG-03 leaks server paths on three
-unauthenticated routes.
+**Remaining fix order:** BUG-08 → BUG-06 → BUG-07 → BUG-02 → BUG-09 → BUG-10.
 
 ---
 
@@ -187,7 +186,7 @@ or delete the stored file in a rollback path when registration fails.
 
 ---
 
-### BUG-03 — HIGH — Array query parameters crash 7 routes with uncaught `TypeError`
+### BUG-03 — HIGH — Array query parameters crash 7 routes with uncaught `TypeError` ✅ FIXED
 
 **Routes (7 of 13 probed):**
 | Route | Auth needed | Failing call |
@@ -200,7 +199,22 @@ or delete the stored file in a rollback path when registration fails.
 | `/employer/edit-job.php?id[]=1` | employer | `get_job_by_id(): Argument #1` |
 | `/employer/review-app.php?id[]=1` | employer | `get_application_by_id(): Argument #1` |
 
-**Status:** CONFIRMED
+**Status:** CONFIRMED, then **FIXED and verified**
+
+> **Fix applied.**
+> 1. Centralized safe input extraction functions `query_string()` and `query_int()`
+>    added to `includes/services/common-service.php`. Non-scalar or array query params
+>    are safely coerced to default strings or null/fallback integers without throwing TypeErrors.
+> 2. Hardened service layer functions (`get_job_by_id`, `get_application_by_id`,
+>    `get_career_update_by_id`, `get_user_by_id`, and `can_view_student_resume`) to accept
+>    `mixed $id` / `mixed $student_user_id` with `is_scalar()` guards, safely returning
+>    `null` or `false` on unexpected structures (defence-in-depth).
+> 3. Updated all affected routes to use `query_string()` and `query_int()`.
+>
+> **Verification** — `qa/teams/02-bug03-sweep.mjs` (0/13 routes crash, 13/13 clean)
+> and `qa/specs-regression/confirmed-bugs.mjs` (5/5 PASS for BUG-03). All probed
+> routes now handle array query parameters gracefully with clean HTTP 200 or 302 redirects
+> and zero path disclosures.
 
 **Impact.** Two things at once:
 1. **Unhandled 500-class failure.** `HTTP 200` carrying a raw PHP fatal, so the

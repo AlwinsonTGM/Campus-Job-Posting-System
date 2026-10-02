@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../includes/data-helper.php';
 require_once __DIR__ . '/../includes/auth-check.php';
 
-$job_id = $_GET['id'] ?? ($_GET['job_id'] ?? null);
+$job_id = query_int('id') ?? query_int('job_id');
 $job = get_job_by_id($job_id);
 $user = get_logged_user();
 

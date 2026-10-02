@@ -118,8 +118,8 @@ function get_career_updates(bool $include_archived = false, bool $only_archived 
     }
 }
 
-function get_career_update_by_id(int|string|null $id): ?array {
-    if ($id === null || $id === '' || (int)$id <= 0) { return null; }
+function get_career_update_by_id(mixed $id): ?array {
+    if (!is_scalar($id) || $id === null || $id === '' || (int)$id <= 0) { return null; }
     try {
         $pdo = get_db_connection();
         $stmt = $pdo->prepare("

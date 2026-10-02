@@ -8,7 +8,7 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 require_auth(['employer', 'admin']);
 $user = get_logged_user();
-$job_id = $_GET['id'] ?? null;
+$job_id = query_int('id');
 $job = get_job_by_id($job_id);
 
 if (!$job) {

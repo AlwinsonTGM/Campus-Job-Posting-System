@@ -160,7 +160,7 @@ function can_review_application(array|int|string $app_or_id, ?array $user = null
     return $job && can_manage_job($job, $user);
 }
 
-function can_view_student_resume(mixed $app = null, int|string|null $student_user_id = null, ?array $user = null): bool {
+function can_view_student_resume(mixed $app = null, mixed $student_user_id = null, ?array $user = null): bool {
     if ($user === null) {
         $user = get_logged_user();
     }
@@ -169,6 +169,10 @@ function can_view_student_resume(mixed $app = null, int|string|null $student_use
     }
     if (($user['role'] ?? '') === 'admin') {
         return true;
+    }
+
+    if ($student_user_id !== null && (!is_scalar($student_user_id) || (int)$student_user_id <= 0)) {
+        return false;
     }
 
     if (($user['role'] ?? '') === 'student') {
@@ -316,8 +320,8 @@ function get_all_users(?string $role = null, ?string $keyword = null, ?string $e
     }
 }
 
-function get_user_by_id(int|string|null $id): ?array {
-    if ($id === null || $id === '' || (int)$id <= 0) {
+function get_user_by_id(mixed $id): ?array {
+    if (!is_scalar($id) || $id === null || $id === '' || (int)$id <= 0) {
         return null;
     }
     try {

@@ -9,13 +9,13 @@ require_once __DIR__ . '/../includes/auth-check.php';
 $page_title = 'Browse Campus Vacancies & Assistantships';
 
 // GET Parameter Contract
-$keyword = trim($_GET['keyword'] ?? $_GET['kw'] ?? $_GET['q'] ?? '');
-$category = trim($_GET['category'] ?? $_GET['cat'] ?? '');
-$department = trim($_GET['department'] ?? $_GET['dept'] ?? '');
-$job_type = trim($_GET['job_type'] ?? '');
-$work_setup = trim($_GET['work_setup'] ?? '');
-$pay_type = trim($_GET['pay_type'] ?? '');
-$employer_type = trim($_GET['employer_type'] ?? '');
+$keyword = query_string('keyword', query_string('kw', query_string('q', '')));
+$category = query_string('category', query_string('cat', ''));
+$department = query_string('department', query_string('dept', ''));
+$job_type = query_string('job_type');
+$work_setup = query_string('work_setup');
+$pay_type = query_string('pay_type');
+$employer_type = query_string('employer_type');
 
 // Handle aliases for quick filters
 $is_lab_assistant_active = (strcasecmp($category, 'Science & Computer Lab Assistant') === 0 || strcasecmp($job_type, 'Lab Assistant') === 0);

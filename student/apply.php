@@ -8,13 +8,13 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 // Ensure student auth - employers and admins cannot apply.
 // Guests go to the plain login form (never a demo auto-login), then return here.
-$return_to = 'student/apply.php?id=' . urlencode((string)($_GET['id'] ?? ($_GET['job_id'] ?? '')));
+$job_id = query_int('id') ?? query_int('job_id');
+$return_to = 'student/apply.php?id=' . urlencode((string)($job_id ?? ''));
 $user = SessionGuard::protect(
     ['student'],
     $return_to,
     'Please sign in with your student account to submit an application.'
 );
-$job_id = $_GET['id'] ?? ($_GET['job_id'] ?? null);
 $job = get_job_by_id($job_id);
 
 if (!$job) {

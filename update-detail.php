@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/data-helper.php';
 require_once __DIR__ . '/includes/auth-check.php';
 
-$article_id = $_GET['id'] ?? null;
+$article_id = query_int('id');
 $article = null;
 
 if ($article_id !== null) {

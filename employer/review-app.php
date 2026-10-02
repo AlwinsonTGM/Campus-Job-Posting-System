@@ -9,7 +9,7 @@ require_once __DIR__ . '/../includes/auth-check.php';
 require_auth(['employer', 'admin']);
 $user = get_logged_user();
 
-$app_id = $_GET['id'] ?? null;
+$app_id = query_int('id');
 $target_app = $app_id ? get_application_by_id($app_id) : null;
 
 if (!$target_app) {

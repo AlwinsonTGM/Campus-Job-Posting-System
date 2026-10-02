@@ -74,9 +74,9 @@ try {
   }
 
   // =====================================================================
-  // BUG-03 — array query params must not fatal (systemic)
+  // BUG-03 — array query params must not fatal (systemic) (FIXED)
   // =====================================================================
-  console.log('\n--- BUG-03: array params handled on every route ---');
+  console.log('\n--- BUG-03: array params handled on every route (FIXED) ---');
   {
     const routes = [
       '/student/job-details.php?id[]=1',
