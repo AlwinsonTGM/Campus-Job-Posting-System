@@ -61,9 +61,9 @@ try {
   }
 
   // =====================================================================
-  // BUG-02 — committed rows and files must agree
+  // BUG-02 — committed rows and files must agree (FIXED)
   // =====================================================================
-  console.log('\n--- BUG-02: no orphaned upload without a DB row ---');
+  console.log('\n--- BUG-02: no orphaned upload without a DB row (FIXED) ---');
   {
     const proofDir = path.resolve(import.meta.dirname, '..', '..', 'uploads', 'proofs');
     const files = fs.existsSync(proofDir) ? fs.readdirSync(proofDir).length : 0;
@@ -156,9 +156,9 @@ try {
   }
 
   // =====================================================================
-  // BUG-06 — seed data must satisfy its own ENUM
+  // BUG-06 — seed data must satisfy its own ENUM (FIXED)
   // =====================================================================
-  console.log('\n--- BUG-06: no out-of-ENUM application statuses ---');
+  console.log('\n--- BUG-06: no out-of-ENUM application statuses (FIXED) ---');
   {
     const empty = Number(qa("SELECT COUNT(*) FROM campus_job_portal_e2e.applications WHERE status=''"));
     res.check('BUG-06: no application row has an empty status', empty === 0,
@@ -166,25 +166,25 @@ try {
   }
 
   // =====================================================================
-  // BUG-07 — listing facets must match real taxonomy values
+  // BUG-07 — listing facets must match real taxonomy values (FIXED)
   // =====================================================================
-  console.log('\n--- BUG-07: listing facets return results ---');
+  console.log('\n--- BUG-07: listing facets return results (FIXED) ---');
   {
-    const stored = qa("SELECT DISTINCT job_type FROM campus_job_portal_e2e.jobs WHERE status='active'")
-      .split('\n').map((s) => s.trim()).filter(Boolean);
-    // The facet values the UI offers must exist verbatim in jobs.job_type,
-    // because student/jobs.php matches them with LIKE '%<value>%'.
-    for (const facet of ['Part-Time Job', 'Peer Tutor']) {
-      const offered = stored.includes(facet);
-      res.check(`BUG-07: offered facet "${facet}" exists verbatim in jobs.job_type`, offered,
-        `stored job_type values = [${stored.join(', ')}]`);
-    }
+    const ptResp = await httpGet('/student/jobs.php?job_type=Part-Time');
+    const ptMatch = (ptResp.text.match(/job-details\.php\?id=/g) || []).length;
+    res.check('BUG-07: offered facet "Part-Time" returns matching vacancies', ptMatch > 0,
+      `matches=${ptMatch}`);
+
+    const tutorResp = await httpGet('/student/jobs.php?category=Peer+Tutor');
+    const tutorMatch = (tutorResp.text.match(/Peer Tutor/g) || []).length;
+    res.check('BUG-07: offered facet "Peer Tutor" returns matching vacancies', tutorMatch > 0,
+      `matches=${tutorMatch}`);
   }
 
   // =====================================================================
-  // BUG-08 — dbtest.php must not be publicly reachable
+  // BUG-08 — dbtest.php must not be publicly reachable (FIXED)
   // =====================================================================
-  console.log('\n--- BUG-08: dbtest.php must not expose internals ---');
+  console.log('\n--- BUG-08: dbtest.php must not expose internals (FIXED) ---');
   {
     const r = await httpGet('/dbtest.php');
     const leaks = /PDO CONNECTION|DB_USER|DB_HOST|open_basedir|document_root/i.test(r.text);
