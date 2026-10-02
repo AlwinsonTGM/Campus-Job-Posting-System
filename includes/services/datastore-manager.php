@@ -39,6 +39,33 @@ class DatastoreManager {
     }
 
     /**
+     * Whether the dataset switcher may be operated at all in this environment.
+     *
+     * The switcher is a demonstration/testing affordance: `real` mode replaces
+     * the dataset with the clean-slate fixtures, so it must never be reachable
+     * on a deployed instance. This is the single source of truth used by both
+     * the controller (to authorise) and the views (to decide whether to render
+     * the controls at all).
+     *
+     * Set APP_ENV=production (or prod) in .env to remove the capability.
+     */
+    public static function isToggleAvailable(): bool {
+        $appEnv = strtolower(trim((string)(getenv('APP_ENV') ?: '')));
+        if (in_array($appEnv, ['production', 'prod'], true)) {
+            return false;
+        }
+
+        // Escape hatch so the QA suite can exercise the disabled state without
+        // touching .env (define('DATASET_SWITCHER_DISABLED', true) in a test
+        // bootstrap, or pass APP_ENV=production to the server process).
+        if (defined('DATASET_SWITCHER_DISABLED') && DATASET_SWITCHER_DISABLED) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Ensure database tables and dynamic columns exist without executing DDL on every query.
      * Guarded by a static in-process memo flag so it only runs once per request when invoked.
      */
@@ -174,7 +201,11 @@ class DatastoreManager {
             'last_switched_at' => date('Y-m-d H:i:s'),
             'switched_by'      => $switchedBy
         ];
-        file_put_contents($dataDir . '/system_mode.json', json_encode($modeData, JSON_PRETTY_PRINT));
+        $modeFile = $dataDir . '/system_mode.json';
+        file_put_contents($modeFile, json_encode($modeData, JSON_PRETTY_PRINT));
+        // Owner-only: this file sits inside the web root and the mode label is
+        // not public information. Apache already denies it via data/.htaccess.
+        @chmod($modeFile, 0600);
 
         // 4. Handle session lifecycle
         if ($purgeSession) {

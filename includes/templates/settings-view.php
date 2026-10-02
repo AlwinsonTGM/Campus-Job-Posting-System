@@ -432,6 +432,7 @@ require_once __DIR__ . '/../header.php';
                                     </span>
                                 </div>
 
+                                <?php if (class_exists('DatastoreManager') && DatastoreManager::isToggleAvailable()): ?>
                                 <form action="<?= $base_url ?>data-toggle.php" method="POST" class="m-0">
                                     <input type="hidden" name="action" value="switch_mode">
                                     <input type="hidden" name="mode" value="<?= $is_real_mode ? 'demo' : 'real' ?>">
@@ -441,6 +442,7 @@ require_once __DIR__ . '/../header.php';
                                         <?= $is_real_mode ? 'Switch to Demo Data' : 'Switch to Real Mode' ?>
                                     </button>
                                 </form>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                     </div>

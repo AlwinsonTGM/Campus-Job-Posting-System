@@ -80,9 +80,17 @@ if (!defined('SITE_NAME')) {
 </footer>
 
 <?php
+// The dataset switcher is a demo/testing affordance. It is only rendered when
+// the capability is actually available (see DatastoreManager::isToggleAvailable)
+// AND the viewer is an administrator - the controller enforces both, this just
+// avoids offering a control that would be refused.
 $current_data_mode = function_exists('get_system_data_mode') ? get_system_data_mode() : 'demo';
 $is_real_mode = ($current_data_mode === 'real');
+$can_switch_dataset = class_exists('DatastoreManager')
+    && DatastoreManager::isToggleAvailable()
+    && (($_SESSION['user']['role'] ?? '') === 'admin');
 ?>
+<?php if ($can_switch_dataset): ?>
 <!-- System Dataset Switcher Modal -->
 <div class="modal fade" id="dataModeModal" tabindex="-1" aria-labelledby="dataModeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -131,6 +139,7 @@ $is_real_mode = ($current_data_mode === 'real');
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- Shared Floating Spotlight Search Modal -->
 <?php require_once __DIR__ . '/search-modal.php'; ?>
