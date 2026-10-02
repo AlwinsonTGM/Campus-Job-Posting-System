@@ -188,7 +188,7 @@ require_once __DIR__ . '/../header.php';
                                                             <i class="bi bi-pencil"></i> Edit
                                                         </a>
                                                         <form method="POST" action="dashboard.php" class="d-inline" onsubmit="return confirm('Archive requisition &quot;<?= htmlspecialchars(addslashes($job['title'])) ?>&quot;? All applicant evaluations will remain intact.');">
-                                                            <?= csrf_field() ?>
+                                                            <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                                             <input type="hidden" name="action" value="archive_job">
                                                             <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
                                                             <button type="submit" class="btn-pill-outline btn-pill-sm text-warning-emphasis table-action-btn" title="Archive Requisition">
@@ -198,7 +198,7 @@ require_once __DIR__ . '/../header.php';
                                                     <?php else: ?>
                                                         <?php if (($user['role'] ?? '') === 'admin'): ?>
                                                             <form method="POST" action="dashboard.php" class="d-inline" onsubmit="return confirm('Restore requisition &quot;<?= htmlspecialchars(addslashes($job['title'])) ?>&quot; back to active status?');">
-                                                                <?= csrf_field() ?>
+                                                                <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                                                 <input type="hidden" name="action" value="restore_job">
                                                                 <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
                                                                 <button type="submit" class="btn-pill btn-pill-sm table-action-btn" style="background-color: var(--accent); color: var(--paper);" title="Restore Requisition">

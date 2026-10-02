@@ -301,7 +301,7 @@ require_once __DIR__ . '/../header.php';
                 </form>
 
                 <form id="archive-job-form" method="POST" action="dashboard.php" style="display:none;">
-                    <?= csrf_field() ?>
+                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                     <input type="hidden" name="action" value="archive_job">
                     <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
                 </form>
