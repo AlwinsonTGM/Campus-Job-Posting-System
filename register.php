@@ -175,9 +175,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } else {
                 $error = $res['message'];
+                // Clean up orphaned upload if registration persistence fails (BUG-02)
+                if (!empty($proof_file_path)) {
+                    AttachmentStore::delete($proof_file_path);
+                }
+                if (!empty($permit_file_path)) {
+                    AttachmentStore::delete($permit_file_path);
+                }
                 if (stripos($error, 'email') !== false) {
                     $initial_step = 1;
                 }
+            }
+        } else {
+            // Clean up any uploaded file if validation failed before register_user
+            if (!empty($proof_file_path)) {
+                AttachmentStore::delete($proof_file_path);
+            }
+            if (!empty($permit_file_path)) {
+                AttachmentStore::delete($permit_file_path);
             }
         }
     }

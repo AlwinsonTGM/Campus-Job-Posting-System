@@ -260,6 +260,18 @@ class AttachmentStore {
     }
 
     /**
+     * Delete an uploaded attachment by its relative path (e.g. 'uploads/proofs/proof_...').
+     */
+    public static function delete(?string $relativePath): bool {
+        if (!$relativePath) {
+            return false;
+        }
+        $rootDir = dirname(__DIR__, 2);
+        $fullPath = $rootDir . '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
+        return self::getAdapter()->delete($fullPath);
+    }
+
+    /**
      * Resilient MIME type detection using ext-fileinfo, mime_content_type, or binary magic byte inspection.
      */
     public static function detectMimeType(string $filePath, string $fallback = ''): string {
