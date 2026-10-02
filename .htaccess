@@ -6,7 +6,7 @@
 Options -Indexes
 
 # Protect sensitive environment and configuration files
-<FilesMatch "^\.env.*|\.git.*|composer\.(json|lock)|package(-lock)?\.json|tsconfig\.json">
+<FilesMatch "^(dbtest\.php|\.env.*|\.git.*|composer\.(json|lock)|package(-lock)?\.json|tsconfig\.json)">
     Require all denied
 </FilesMatch>
 
