@@ -159,9 +159,8 @@ def main():
 
     total_files = len(job_files) + len(reviewer_files)
     print(f"\n[3/4] Preparing remote structure (/htdocs and /htdocs/reviewer)...")
-    created_dirs = set(['/htdocs', '/htdocs/reviewer'])
-    ensure_remote_dir(ftp_holder['ftp'], '/htdocs/reviewer', created_dirs)
-    current_dir_holder = {'dir': '/htdocs/reviewer'}
+    created_dirs = set()
+    current_dir_holder = {'dir': None}
 
     print(f"\n[4/4] Starting deployment ({total_files} total files)...")
     start_time = time.time()

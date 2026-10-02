@@ -196,39 +196,74 @@ require_once __DIR__ . '/../header.php';
                 <?php endif; ?>
 
                 <!-- Filter & Search Bar -->
-                <div class="card-paper p-4 mb-4">
+                <?php
+                $active_filters_count = (!empty($search) ? 1 : 0) + (!empty($role_filter) ? 1 : 0) + (!empty($emp_type_filter) ? 1 : 0) + (!empty($ver_filter) ? 1 : 0) + (!empty($status_filter) ? 1 : 0);
+                $has_active_filters = $active_filters_count > 0;
+                ?>
+                <div class="card-paper p-3 p-md-4 mb-4">
                     <form action="users.php" method="GET" class="form-paper auto-filter-form">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-12 col-xl-4 col-lg-3 col-md-12">
-                                <label class="form-label" for="search-user">Search User Directory</label>
+                        <!-- Filter Header Toolbar -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom border-line" id="directoryFilterBadges">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-ink small text-uppercase d-inline-flex align-items-center gap-1" style="font-size: 11px; letter-spacing: 0.08em;">
+                                    <i class="bi bi-funnel-fill text-accent"></i> Directory Filters
+                                </span>
+                                <?php if ($has_active_filters): ?>
+                                    <span class="badge bg-accent-soft text-ink border border-line rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 11px;">
+                                        <?= $active_filters_count ?> active filter<?= $active_filters_count > 1 ? 's' : '' ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ($has_active_filters): ?>
+                                <a href="users.php" class="small text-muted-custom text-decoration-none d-inline-flex align-items-center gap-1 hover-ink fw-semibold" style="font-size: 11.5px;">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Clear all filters
+                                </a>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Row 1: Primary Search & Role -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-lg-8">
+                                <label class="form-label" for="search-user">
+                                    <i class="bi bi-search text-muted-custom me-1"></i>Search User Directory
+                                </label>
                                 <div class="search-input-wrap">
                                     <i class="bi bi-search text-muted-custom"></i>
-                                    <input type="text" name="q" id="search-user" class="form-control" placeholder="Search name, email, MOA, ID..." value="<?= htmlspecialchars($search ?? '') ?>">
+                                    <input type="text" name="q" id="search-user" class="form-control <?= !empty($search) ? 'filter-applied' : '' ?>" placeholder="Search name, email, MOA, student ID, department..." value="<?= htmlspecialchars($search ?? '') ?>">
                                 </div>
                             </div>
 
-                            <div class="col-6 col-xl-2 col-lg-2 col-md-4">
-                                <label class="form-label" for="role-select">Role</label>
-                                <select name="role" id="role-select" class="form-select">
+                            <div class="col-12 col-lg-4">
+                                <label class="form-label" for="role-select">
+                                    <i class="bi bi-people text-muted-custom me-1"></i>Role
+                                </label>
+                                <select name="role" id="role-select" class="form-select <?= !empty($role_filter) ? 'filter-applied' : '' ?>">
                                     <option value="">All Roles</option>
                                     <option value="student" <?= ($role_filter === 'student') ? 'selected' : '' ?>>Students</option>
                                     <option value="employer" <?= ($role_filter === 'employer') ? 'selected' : '' ?>>Employers / Offices</option>
                                     <option value="admin" <?= ($role_filter === 'admin') ? 'selected' : '' ?>>Administrators</option>
                                 </select>
                             </div>
+                        </div>
 
-                            <div class="col-6 col-xl-3 col-lg-3 col-md-4">
-                                <label class="form-label" for="emp-select">Employer Type</label>
-                                <select name="emp_type" id="emp-select" class="form-select">
+                        <!-- Row 2: Secondary Attributes & Reset Action -->
+                        <div class="row g-3 align-items-end">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="form-label" for="emp-select">
+                                    <i class="bi bi-building text-muted-custom me-1"></i>Employer Type
+                                </label>
+                                <select name="emp_type" id="emp-select" class="form-select <?= !empty($emp_type_filter) ? 'filter-applied' : '' ?>">
                                     <option value="">All Types</option>
                                     <option value="university_office" <?= ($emp_type_filter === 'university_office') ? 'selected' : '' ?>>University Offices</option>
                                     <option value="approved_partner" <?= ($emp_type_filter === 'approved_partner') ? 'selected' : '' ?>>Approved Partners</option>
                                 </select>
                             </div>
 
-                            <div class="col-6 col-xl-2 col-lg-2 col-md-3">
-                                <label class="form-label" for="ver-select">Accreditation</label>
-                                <select name="ver_status" id="ver-select" class="form-select">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="form-label" for="ver-select">
+                                    <i class="bi bi-patch-check text-muted-custom me-1"></i>Accreditation
+                                </label>
+                                <select name="ver_status" id="ver-select" class="form-select <?= !empty($ver_filter) ? 'filter-applied' : '' ?>">
                                     <option value="">All Statuses</option>
                                     <option value="pending_approval" <?= ($ver_filter === 'pending_approval') ? 'selected' : '' ?>>Pending Review</option>
                                     <option value="verified" <?= ($ver_filter === 'verified') ? 'selected' : '' ?>>Verified</option>
@@ -236,22 +271,23 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-6 col-xl-2 col-lg-2 col-md-3">
-                                <label class="form-label" for="status-select">Account State</label>
-                                <select name="status" id="status-select" class="form-select">
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <label class="form-label" for="status-select">
+                                    <i class="bi bi-shield-check text-muted-custom me-1"></i>Account State
+                                </label>
+                                <select name="status" id="status-select" class="form-select <?= !empty($status_filter) ? 'filter-applied' : '' ?>">
                                     <option value="">All States</option>
                                     <option value="active" <?= ($status_filter === 'active') ? 'selected' : '' ?>>Active</option>
                                     <option value="suspended" <?= ($status_filter === 'suspended') ? 'selected' : '' ?>>Suspended (<?= $suspended_users_count ?>)</option>
                                 </select>
                             </div>
 
-                            <div class="col-12 col-xl-1 col-lg-1 col-md-2 d-flex justify-content-end">
-                                <div>
-                                    <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
-                                    <a href="users.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </a>
-                                </div>
+                            <div class="col-12 col-sm-6 col-lg-3" id="filterResetBtnWrap">
+                                <label class="form-label d-none d-sm-block text-muted-custom" style="opacity: 0.7;">Quick Action</label>
+                                <a href="users.php" class="btn-filter-reset-wide <?= $has_active_filters ? 'btn-filter-reset-active' : '' ?>" title="Reset all filters" aria-label="Reset all filters">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                    <span>Reset Filters</span>
+                                </a>
                             </div>
                         </div>
                     </form>

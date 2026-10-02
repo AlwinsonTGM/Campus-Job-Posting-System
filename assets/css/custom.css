@@ -3154,6 +3154,57 @@ section.py-5.py-lg-6 {
   transform: scale(1.04);
 }
 
+.btn-filter-reset-wide {
+  height: 48px !important;
+  min-height: 48px !important;
+  width: 100% !important;
+  border-radius: var(--radius-input) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem;
+  padding: 0 1rem !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  border: 1.5px solid var(--line) !important;
+  background-color: var(--surface) !important;
+  color: var(--muted) !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+
+.btn-filter-reset-wide:hover {
+  background-color: var(--ink) !important;
+  color: var(--white) !important;
+  border-color: var(--ink) !important;
+  transform: translateY(-1px);
+}
+
+.btn-filter-reset-wide.btn-filter-reset-active {
+  background-color: var(--accent-soft) !important;
+  color: var(--ink) !important;
+  border-color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+
+.btn-filter-reset-wide.btn-filter-reset-active:hover {
+  background-color: var(--ink) !important;
+  color: var(--white) !important;
+  border-color: var(--ink) !important;
+}
+
+.form-select.filter-applied,
+.form-control.filter-applied {
+  border-color: var(--accent) !important;
+  background-color: rgba(46, 204, 94, 0.05) !important;
+}
+
+.hover-ink:hover {
+  color: var(--ink) !important;
+}
+
 .form-paper .form-label {
   font-size: 11px;
   font-weight: 700;
@@ -5704,7 +5755,7 @@ body.modal-open {
 
 .donut-center-callout {
   position: absolute;
-  top: calc(50% - 18px);
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;

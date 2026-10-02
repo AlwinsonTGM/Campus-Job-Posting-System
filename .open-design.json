@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "designSystem": {
+    "slug": "warm-editorial",
+    "path": "design-systems/warm-editorial"
+  },
+  "skill": {
+    "slug": "web-prototype-taste-editorial",
+    "path": "skills/web-prototype-taste-editorial",
+    "kind": "skill",
+    "mode": "prototype"
+  },
+  "boundAt": "2026-10-02T08:24:00Z"
+}

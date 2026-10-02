@@ -876,7 +876,7 @@
                 history: historyPayload
             };
 
-            fetch('api/robot-chat.php', {
+            fetch('api/ai-companion.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

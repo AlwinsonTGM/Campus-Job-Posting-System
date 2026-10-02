@@ -36,7 +36,7 @@ require_once __DIR__ . '/../header.php';
                     render_page_head(
                         '',
                         'Campus Employment Analytics',
-                        'Real-time overview of student job vacancies, application volumes, hiring ratios, and departmental budget compliance.',
+                        'Real-time overview of student job vacancies, application volumes, candidate pipeline status, and hiring placement ratios.',
                         $actions
                     );
                     ?>
@@ -66,62 +66,142 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- 5 KPI Metrics Row (Archetype G Institutional Overview) -->
-                <div class="row g-3 mb-5">
+                <!-- Executive Institutional Scorecard (Open Design Balanced Metric Ribbon) -->
+                <div class="row g-3 mb-4">
+                    <!-- 1. Total Users -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <?php 
-                        $user_badge = $total_pending_actions > 0 
-                            ? '<span class="text-muted-custom" style="font-size: 13px; font-weight: 500;">(' . (int)$total_pending_actions . ' pending)</span>'
-                            : null;
-                        $user_subtext = '<strong>' . (int)$total_students . '</strong> Students &bull; <strong>' . (int)$total_employers . '</strong> Partners';
-                        render_metric($total_users, 'Total Users', 'bi-people-fill', $user_subtext, $user_badge, 'users.php');
-                        ?>
+                        <div class="metric h-100 reveal-fade-rise">
+                            <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="metric-lbl">Total Users</span>
+                                    <i class="bi bi-people-fill text-muted-custom fs-6"></i>
+                                </div>
+                                <div class="my-1">
+                                    <span class="metric-val"><?= (int)$total_users ?></span>
+                                </div>
+                                <div class="metric-sub small text-muted-custom mt-auto">
+                                    <span class="fw-semibold text-ink"><?= (int)$total_students ?></span> Students &bull; <span class="fw-semibold text-ink"><?= (int)$total_employers ?></span> Partners
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- 2. Total Vacancies -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <?php 
-                        $vac_subtext = count($categories) . ' Job Categories';
-                        render_metric($total_jobs, 'Total Vacancies', 'bi-briefcase-fill', $vac_subtext); 
-                        ?>
+                        <div class="metric h-100 reveal-fade-rise">
+                            <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="metric-lbl">Total Vacancies</span>
+                                    <i class="bi bi-briefcase-fill text-muted-custom fs-6"></i>
+                                </div>
+                                <div class="my-1">
+                                    <span class="metric-val"><?= (int)$total_jobs ?></span>
+                                </div>
+                                <div class="metric-sub small text-muted-custom mt-auto">
+                                    <span class="fw-semibold text-ink"><?= count($categories) ?></span> Job Categories
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- 3. Applications Filed -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <?php 
-                        $unique_applicants = count(array_unique(array_column($all_apps, 'student_id')));
-                        $app_subtext = $unique_applicants . ' Unique Applicants';
-                        render_metric($total_apps, 'Applications Filed', 'bi-send-fill', $app_subtext); 
-                        ?>
+                        <div class="metric h-100 reveal-fade-rise">
+                            <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="metric-lbl">Applications Filed</span>
+                                    <i class="bi bi-send-fill text-muted-custom fs-6"></i>
+                                </div>
+                                <div class="my-1">
+                                    <span class="metric-val"><?= (int)$total_apps ?></span>
+                                </div>
+                                <div class="metric-sub small text-muted-custom mt-auto">
+                                    <?php $unique_applicants = count(array_unique(array_column($all_apps, 'student_id'))); ?>
+                                    <span class="fw-semibold text-ink"><?= $unique_applicants ?></span> Unique Applicants
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- 4. Interviews Held -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <?php 
-                        $interview_rate = $total_apps > 0 ? round(($total_interviews / $total_apps) * 100) : 0;
-                        render_metric($total_interviews, 'Interviews Held', 'bi-calendar-check-fill', $interview_rate . '% Interview Rate'); 
-                        ?>
+                        <div class="metric h-100 reveal-fade-rise">
+                            <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="metric-lbl">Interviews Scheduled</span>
+                                    <i class="bi bi-calendar-check-fill text-muted-custom fs-6"></i>
+                                </div>
+                                <div class="my-1">
+                                    <span class="metric-val"><?= (int)$total_interviews ?></span>
+                                </div>
+                                <div class="metric-sub small text-muted-custom mt-auto">
+                                    <?php $interview_rate = $total_apps > 0 ? round(($total_interviews / $total_apps) * 100) : 0; ?>
+                                    <span class="fw-semibold text-ink"><?= $interview_rate ?>%</span> Candidate Interview Rate
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- 5. Officially Hired -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <?php 
-                        $placement_rate = $total_apps > 0 ? round(($total_hired / $total_apps) * 100) : 0;
-                        render_metric($total_hired, 'Officially Hired', 'bi-person-check-fill', $placement_rate . '% Placement Yield'); 
-                        ?>
+                        <div class="metric h-100 reveal-fade-rise">
+                            <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="metric-lbl">Officially Hired</span>
+                                    <i class="bi bi-person-check-fill text-muted-custom fs-6"></i>
+                                </div>
+                                <div class="my-1">
+                                    <span class="metric-val"><?= (int)$total_hired ?></span>
+                                </div>
+                                <div class="metric-sub small text-muted-custom mt-auto">
+                                    <?php $placement_rate = $total_apps > 0 ? round(($total_hired / $total_apps) * 100) : 0; ?>
+                                    <span class="fw-semibold text-ink"><?= $placement_rate ?>%</span> Placement Success Rate
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2-Tier Visual Analytics Grid (Fixed Height, Responsive Chart.js Suite) -->
-                <div class="row g-4 mb-4">
-                    <!-- Chart 1: Most In-Demand Categories (Interactive Donut) -->
+                <!-- 2-Tier Visual Analytics Grid (Editorial Warm Layout) -->
+                <div class="row g-4 mb-5">
+                    <!-- Chart 1: In-Demand Categories (Interactive Donut with Editorial Legend) -->
                     <div class="col-lg-5">
-                        <div class="card-paper h-100 reveal-fade-rise d-flex flex-column bar-chart">
-                            <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-line">
+                        <div class="card-paper h-100 reveal-fade-rise d-flex flex-column">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-line flex-wrap gap-2">
                                 <h3 class="card-paper-title mb-0">
-                                    <i class="bi bi-pie-chart-fill text-accent me-2"></i> Most In-Demand Categories
+                                    <i class="bi bi-pie-chart-fill text-accent me-2"></i> In-Demand Categories
                                 </h3>
+                                <span class="small text-muted-custom font-mono"><?= (int)$total_jobs ?> Openings</span>
                             </div>
 
-                            <div class="flex-grow-1 d-flex flex-column justify-content-center">
-                                <div class="chart-canvas-wrapper">
-                                    <div class="donut-center-callout">
-                                        <span class="donut-number"><?= (int)$total_jobs ?></span>
-                                        <span class="donut-label">Total Openings</span>
-                                    </div>
-                                    <canvas id="categoryDonutChart" aria-label="Most in-demand categories chart" role="img"></canvas>
+                            <div class="chart-canvas-wrapper position-relative my-2" style="height: 200px;">
+                                <div class="donut-center-callout" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                    <span class="donut-number"><?= (int)$total_jobs ?></span>
+                                    <span class="donut-label">Openings</span>
+                                </div>
+                                <canvas id="categoryDonutChart" aria-label="Most in-demand categories chart" role="img"></canvas>
+                            </div>
+
+                            <!-- Editorial Category Legend List -->
+                            <div class="mt-3 pt-3 border-top border-line flex-grow-1">
+                                <div class="d-flex flex-column gap-2">
+                                    <?php 
+                                     $palette_dots = ['#16A34A', '#0F766E', '#2563EB', '#D97706', '#7C3AED', '#DB2777', '#475569', '#0284C7'];
+                                     foreach (array_slice($category_data ?? [], 0, 5) as $idx => $cat): 
+                                         $dotColor = $palette_dots[$idx % count($palette_dots)];
+                                     ?>
+                                        <div class="d-flex align-items-center justify-content-between small">
+                                            <div class="d-flex align-items-center gap-2 min-w-0">
+                                                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: <?= $dotColor ?>; flex-shrink: 0;"></span>
+                                                <span class="text-ink fw-medium text-truncate" title="<?= htmlspecialchars($cat['name']) ?>"><?= htmlspecialchars($cat['name']) ?></span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-2 font-mono">
+                                                <span class="text-muted-custom" style="font-size: 12px;"><?= $cat['count'] ?> pos.</span>
+                                                <span class="text-muted-custom opacity-50">&bull;</span>
+                                                <span class="fw-semibold text-ink" style="font-size: 12px;"><?= $cat['pct'] ?>%</span>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
                         </div>
@@ -129,13 +209,16 @@ require_once __DIR__ . '/../header.php';
 
                     <!-- Chart 2: Applications Per Department (Horizontal Bar) -->
                     <div class="col-lg-7">
-                        <div class="card-paper h-100 reveal-fade-rise d-flex flex-column bar-chart">
+                        <div class="card-paper h-100 reveal-fade-rise d-flex flex-column">
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-line flex-wrap gap-2">
-                                <h3 class="card-paper-title mb-0">
-                                    <i class="bi bi-bar-chart-fill text-accent me-2"></i> Applications Per Department
-                                </h3>
+                                <div>
+                                    <h3 class="card-paper-title mb-0">
+                                        <i class="bi bi-bar-chart-fill text-accent me-2"></i> Applications Per Department
+                                    </h3>
+                                    <p class="text-muted-custom small mb-0 mt-0.5">Distribution of candidate interest across campus offices</p>
+                                </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="chip"><?= (int)$total_apps ?> Submissions</span>
+                                    <span class="small text-muted-custom font-mono me-1"><?= (int)$total_apps ?> Submissions</span>
                                     <div class="btn-group btn-group-sm no-print" role="group" aria-label="Department view filter">
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 active" id="btnDeptTop6" onclick="setDeptChartFilter('top6')">Top 6</button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" id="btnDeptAll" onclick="setDeptChartFilter('all')">All (<?= count($departments) ?>)</button>
@@ -144,167 +227,13 @@ require_once __DIR__ . '/../header.php';
                             </div>
 
                             <div class="flex-grow-1 d-flex flex-column justify-content-center">
-                                <div class="chart-canvas-wrapper">
+                                <div class="chart-canvas-wrapper" style="height: 330px;">
                                     <canvas id="departmentBarChart" aria-label="Applications per department chart" role="img"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Row 2: Department Headcount & Quota Analytics (Panoramic Grouped Bar) -->
-                <div class="row g-4 mb-4">
-                    <div class="col-12">
-                        <div class="card-paper reveal-fade-rise">
-                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-line flex-wrap gap-2">
-                                <div>
-                                    <h3 class="card-paper-title mb-1">
-                                        <i class="bi bi-building-check text-accent me-2"></i> Department Hiring Quotas vs. Actual Hired
-                                    </h3>
-                                    <p class="text-muted-custom small mb-0">Requisition quotas compared against official hiring conversions</p>
-                                </div>
-                                <div class="funnel-badge-pill">
-                                    <i class="bi bi-funnel-fill text-accent"></i>
-                                    <span><?= (int)($quota_narrative['funnel']['applied'] ?? 0) ?> Applied</span>
-                                    <span class="sep">&bull;</span>
-                                    <span class="text-accent fw-bold"><?= (int)($quota_narrative['funnel']['interview_rate'] ?? 0) ?>% Interviewed</span>
-                                    <span class="sep">&bull;</span>
-                                    <span class="text-primary fw-bold"><?= (int)($quota_narrative['funnel']['hire_rate'] ?? 0) ?>% Hired</span>
-                                </div>
-                            </div>
-
-                            <div class="chart-canvas-wrapper chart-canvas-wrapper--panoramic mb-2">
-                                <canvas id="departmentQuotaChart" aria-label="Department hiring quotas vs filled chart" role="img"></canvas>
-                            </div>
-
-                            <!-- Phase 3-B: Compact Flagged Departments Advisory Drawer -->
-                            <?php if (empty($flagged_departments)): ?>
-                                <div class="p-3 bg-cream rounded-3 border border-line d-flex align-items-center gap-2 small text-ink mt-3 no-print">
-                                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                                    <span><strong>All departments in compliance:</strong> All academic and administrative units track within assigned quota targets with healthy applicant conversion.</span>
-                                </div>
-                            <?php else: ?>
-                                <div class="mt-3 pt-3 border-top border-line no-print">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-1">
-                                        <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-exclamation-triangle-fill text-warning"></i> Flagged Department Advisories (<?= count($flagged_departments) ?> Units)
-                                        </span>
-                                        <span class="small text-muted-custom" style="font-size: 11px;">
-                                            <i class="bi bi-info-circle me-1"></i> Advisory insights only — all quotas and postings stay with the administrator.
-                                        </span>
-                                    </div>
-                                    <div class="row g-2">
-                                        <?php foreach ($flagged_departments as $f): ?>
-                                            <div class="col-md-6 col-xl-4">
-                                                <div class="p-2.5 bg-cream rounded-3 border border-line h-100 small">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <strong class="text-ink text-truncate me-1" title="<?= htmlspecialchars($f['dept']) ?>"><?= htmlspecialchars($f['dept']) ?></strong>
-                                                        <span class="badge <?= $f['fill_pct'] > 100 ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle' ?>"><?= (int)$f['fill_pct'] ?>% filled</span>
-                                                    </div>
-                                                    <?php foreach (($f['flags'] ?? []) as $flag): ?>
-                                                        <div class="text-muted-custom d-flex align-items-start gap-1" style="font-size: 11px; line-height: 1.35;">
-                                                            <i class="bi bi-dot text-warning flex-shrink-0 fs-6" style="margin-top: -3px;"></i>
-                                                            <span><?= htmlspecialchars($flag) ?></span>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Department Hiring Quotas vs Filled Positions Table -->
-                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
-                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface flex-wrap gap-2">
-                        <div>
-                            <h3 class="card-paper-title mb-1">
-                                <i class="bi bi-table text-accent me-2"></i> Department Hiring Quotas vs Filled Positions
-                            </h3>
-                            <p class="text-muted-custom small mb-0">Institutional compliance, vacancy quotas, and hiring ratios</p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="small text-muted-custom">Term: 1st Sem 2026–2027</span>
-                            <button class="btn-pill-outline btn-sm py-1 px-3 d-inline-flex align-items-center gap-1 no-print" type="button" data-bs-toggle="collapse" data-bs-target="#auditTableCollapse" aria-expanded="true" aria-controls="auditTableCollapse" id="auditTableToggleBtn">
-                                <i class="bi bi-chevron-up" id="auditTableToggleIcon"></i> <span id="auditTableToggleText">Collapse Table</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="collapse show" id="auditTableCollapse">
-                        <div class="table-responsive">
-                            <table class="table-paper table-paper-responsive mb-0">
-                                <thead>
-                                <tr>
-                                    <th class="ps-4">Department / Campus Office</th>
-                                    <th>Active Postings</th>
-                                    <th>Total Applicants</th>
-                                    <th>Hiring Quota</th>
-                                    <th>Filled Positions</th>
-                                    <th>Placement Ratio</th>
-                                    <th class="text-end pe-4">Compliance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($departments)): ?>
-                                    <tr>
-                                        <td colspan="7" class="text-center py-4 text-muted-custom small">
-                                            <i class="bi bi-inbox me-1"></i> No departmental quota records available for this reporting period.
-                                        </td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($departments as $dept_name => $stats): 
-                                        $ratio = $stats['apps'] > 0 ? round(($stats['hired'] / $stats['apps']) * 100) : 0;
-                                        $quota = $stats['quota'] ?? 6;
-                                        $filled = $stats['hired'];
-                                        $quota_pct = round(($filled / max(1, $quota)) * 100);
-                                    ?>
-                                        <tr>
-                                            <td class="ps-4" data-label="Department">
-                                                <strong class="text-ink"><?= htmlspecialchars($dept_name) ?></strong>
-                                            </td>
-                                            <td data-label="Active Postings">
-                                                <span class="chip"><?= $stats['jobs'] ?> Openings</span>
-                                            </td>
-                                            <td data-label="Total Applicants">
-                                                <span class="fw-semibold text-ink"><?= $stats['apps'] ?> candidates</span>
-                                            </td>
-                                            <td data-label="Hiring Quota">
-                                                <span class="text-muted-custom"><?= $quota ?> slots</span>
-                                            </td>
-                                            <td data-label="Filled Positions">
-                                                <span class="chip"><?= $filled ?> / <?= $quota ?></span>
-                                            </td>
-                                            <td data-label="Placement Ratio">
-                                                <div class="d-flex align-items-center gap-2" style="min-width: 120px;">
-                                                    <div class="progress-paper flex-grow-1">
-                                                        <div class="progress-paper-bar" style="width: <?= min(100, $quota_pct) ?>%;"></div>
-                                                    </div>
-                                                    <span class="small text-muted-custom"><?= $quota_pct ?>%</span>
-                                                </div>
-                                            </td>
-                                            <td class="text-end pe-4" data-label="Compliance">
-                                                <?php if ($filled > $quota): ?>
-                                                    <span class="cell-flag cell-flag--bad"><span class="cell-dot"></span>Quota exceeded</span>
-                                                <?php elseif ($filled >= $quota): ?>
-                                                    <span class="cell-flag cell-flag--ok"><span class="cell-dot"></span>100% filled</span>
-                                                <?php elseif ($filled > 0): ?>
-                                                    <span class="cell-flag cell-flag--warn"><span class="cell-dot"></span>In progress</span>
-                                                <?php else: ?>
-                                                    <span class="cell-flag cell-flag--idle"><span class="cell-dot"></span>Open quota</span>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
                 <!-- Printable Signatures & Legal Note (Visible ONLY when printing) -->
                 <div class="d-none d-print-block mt-4 pt-2 border-top border-line" style="page-break-inside: avoid; break-inside: avoid;">
@@ -355,14 +284,8 @@ function triggerPrintReport() {
     const deptAppAllLabels = <?= json_encode($dept_app_all_labels ?? []) ?>;
     const deptAppAllCounts = <?= json_encode($dept_app_all_counts ?? []) ?>;
 
-    const deptQuotaLabels = <?= json_encode($dept_quota_labels ?? []) ?>;
-    const deptQuotaTargets = <?= json_encode($dept_quota_targets ?? []) ?>;
-    const deptQuotaHired = <?= json_encode($dept_quota_hired ?? []) ?>;
-    const deptQuotaFillPcts = <?= json_encode($dept_quota_fill_pcts ?? []) ?>;
-
     let catChart = null;
     let deptBarChart = null;
-    let quotaChart = null;
 
     function getThemeTokens() {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -374,16 +297,11 @@ function triggerPrintReport() {
             surfaceColor: isDark ? '#1e293b' : '#ffffff',
             tooltipBg: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(15, 23, 42, 0.92)',
             palette: [
-                '#2ECC5E', '#f59e0b', '#3b82f6', '#8b5cf6', 
-                '#ec4899', '#06b6d4', '#10b981', '#f97316', 
-                '#6366f1', '#14b8a6'
+                '#16A34A', '#0F766E', '#2563EB', '#D97706', 
+                '#7C3AED', '#DB2777', '#475569', '#0284C7'
             ],
-            quotaTargetBg: isDark ? 'rgba(245, 158, 11, 0.35)' : 'rgba(245, 158, 11, 0.55)',
-            quotaTargetBorder: '#f59e0b',
-            quotaHiredBg: isDark ? 'rgba(46, 204, 94, 0.85)' : 'rgba(46, 204, 94, 0.95)',
-            quotaHiredBorder: '#2ECC5E',
-            deptBarBg: isDark ? 'rgba(59, 130, 246, 0.8)' : 'rgba(59, 130, 246, 0.88)',
-            deptBarBorder: '#3b82f6'
+            deptBarBg: isDark ? 'rgba(52, 216, 101, 0.8)' : 'rgba(22, 163, 74, 0.85)',
+            deptBarBorder: isDark ? '#34D865' : '#16A34A'
         };
     }
 
@@ -391,7 +309,7 @@ function triggerPrintReport() {
         if (!window.Chart) return;
         const tokens = getThemeTokens();
 
-        // 1. Categories Donut Chart
+        // 1. Categories Donut Chart (Editorial clean ring, legend handled by HTML list)
         const catCanvas = document.getElementById('categoryDonutChart');
         if (catCanvas) {
             catChart = new Chart(catCanvas, {
@@ -409,19 +327,10 @@ function triggerPrintReport() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '72%',
+                    cutout: '74%',
                     animation: { duration: 800, easing: 'easeOutQuart' },
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: tokens.textColor,
-                                boxWidth: 10,
-                                boxHeight: 10,
-                                padding: 10,
-                                font: { family: "'Inter', sans-serif", size: 11, weight: '500' }
-                            }
-                        },
+                        legend: { display: false },
                         tooltip: {
                             backgroundColor: tokens.tooltipBg,
                             titleColor: '#ffffff',
@@ -455,7 +364,7 @@ function triggerPrintReport() {
                         borderColor: tokens.deptBarBorder,
                         borderWidth: 1.5,
                         borderRadius: 6,
-                        maxBarThickness: 22
+                        maxBarThickness: 20
                     }]
                 },
                 options: {
@@ -485,91 +394,12 @@ function triggerPrintReport() {
                             grid: { display: false },
                             ticks: { 
                                 color: tokens.textColor, 
-                                font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
+                                font: { family: "'Inter', sans-serif", size: 12, weight: '500' },
                                 callback: function (value) {
                                     const label = this.getLabelForValue(value) || '';
-                                    return label.length > 24 ? label.slice(0, 22) + '…' : label;
+                                    return label.length > 28 ? label.slice(0, 26) + '…' : label;
                                 }
                             }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 3. Department Quota vs Hired Grouped Bar Chart
-        const quotaCanvas = document.getElementById('departmentQuotaChart');
-        if (quotaCanvas) {
-            quotaChart = new Chart(quotaCanvas, {
-                type: 'bar',
-                data: {
-                    labels: deptQuotaLabels,
-                    datasets: [
-                        {
-                            label: 'Assigned Hiring Quota',
-                            data: deptQuotaTargets,
-                            backgroundColor: tokens.quotaTargetBg,
-                            borderColor: tokens.quotaTargetBorder,
-                            borderWidth: 1.5,
-                            borderRadius: 5,
-                            maxBarThickness: 28
-                        },
-                        {
-                            label: 'Officially Hired / Placed',
-                            data: deptQuotaHired,
-                            backgroundColor: tokens.quotaHiredBg,
-                            borderColor: tokens.quotaHiredBorder,
-                            borderWidth: 1.5,
-                            borderRadius: 5,
-                            maxBarThickness: 28
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 900, easing: 'easeOutQuart' },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            align: 'end',
-                            labels: {
-                                color: tokens.textColor,
-                                boxWidth: 12,
-                                boxHeight: 12,
-                                padding: 12,
-                                font: { family: "'Inter', sans-serif", size: 12, weight: '600' }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: tokens.tooltipBg,
-                            padding: 10,
-                            cornerRadius: 8,
-                            callbacks: {
-                                afterBody: function (tooltipItems) {
-                                    if (!tooltipItems.length) return '';
-                                    const idx = tooltipItems[0].dataIndex;
-                                    const pct = deptQuotaFillPcts[idx] || 0;
-                                    return `Quota Fulfillment: ${pct}%`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { 
-                                color: tokens.textColor, 
-                                font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
-                                callback: function (value) {
-                                    const label = this.getLabelForValue(value) || '';
-                                    return label.length > 20 ? label.slice(0, 18) + '…' : label;
-                                }
-                            }
-                        },
-                        y: {
-                            grid: { color: tokens.lineColor },
-                            ticks: { color: tokens.mutedColor, precision: 0, font: { family: "'Inter', sans-serif", size: 11 } }
                         }
                     }
                 }
@@ -610,20 +440,11 @@ function triggerPrintReport() {
 
         if (deptBarChart) {
             deptBarChart.data.datasets[0].backgroundColor = tokens.deptBarBg;
+            deptBarChart.data.datasets[0].borderColor = tokens.deptBarBorder;
             deptBarChart.options.scales.x.ticks.color = tokens.mutedColor;
             deptBarChart.options.scales.x.grid.color = tokens.lineColor;
             deptBarChart.options.scales.y.ticks.color = tokens.textColor;
             deptBarChart.update('none');
-        }
-
-        if (quotaChart) {
-            quotaChart.data.datasets[0].backgroundColor = tokens.quotaTargetBg;
-            quotaChart.data.datasets[1].backgroundColor = tokens.quotaHiredBg;
-            quotaChart.options.plugins.legend.labels.color = tokens.textColor;
-            quotaChart.options.scales.x.ticks.color = tokens.textColor;
-            quotaChart.options.scales.y.ticks.color = tokens.mutedColor;
-            quotaChart.options.scales.y.grid.color = tokens.lineColor;
-            quotaChart.update('none');
         }
     }
 
@@ -638,28 +459,8 @@ function triggerPrintReport() {
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-bs-theme'] });
 
-    // Collapsible Audit Table indicator sync
-    const tableCollapse = document.getElementById('auditTableCollapse');
-    const toggleIcon = document.getElementById('auditTableToggleIcon');
-    const toggleText = document.getElementById('auditTableToggleText');
-
-    if (tableCollapse) {
-        tableCollapse.addEventListener('show.bs.collapse', function () {
-            if (toggleIcon) toggleIcon.className = 'bi bi-chevron-up';
-            if (toggleText) toggleText.textContent = 'Collapse Table';
-        });
-        tableCollapse.addEventListener('hide.bs.collapse', function () {
-            if (toggleIcon) toggleIcon.className = 'bi bi-chevron-down';
-            if (toggleText) toggleText.textContent = 'Expand Table';
-        });
-    }
-
     // Print event listeners
     window.addEventListener('beforeprint', function () {
-        if (tableCollapse && typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
-            const inst = bootstrap.Collapse.getInstance(tableCollapse);
-            if (inst) inst.show();
-        }
         updateChartThemes();
     });
 

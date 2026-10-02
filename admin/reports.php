@@ -41,51 +41,73 @@ $pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['s
 $pending_profile_count = count($pending_profile_requests);
 $total_pending_actions = $total_pending_verifications + $pending_profile_count;
 
-// Department aggregations
+// Department aggregations (real activity from jobs & applications)
 $departments = [
-    'Management Information Systems (MIS)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 6],
-    'Office of the University Registrar' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 8],
-    'KLD University Library' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 5],
-    'Institute of Computing and Digital Innovation (ICDI)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 10],
-    'Institute of Nursing & Health Sciences' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4],
-    'Institute of Engineering' => ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 6],
+    'Management Information Systems (MIS)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Office of the University Registrar' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'KLD University Library' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Institute of Computing and Digital Innovation (ICDI)' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Institute of Nursing & Health Sciences' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
+    'Institute of Engineering' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
 ];
 
 foreach ($all_jobs as $j) {
-    $dept_name = $j['department'] ?? 'General';
+    $dept_name = trim($j['department'] ?? 'General');
+    if ($dept_name === '') $dept_name = 'General';
     if (!isset($departments[$dept_name])) {
-        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4];
+        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0];
     }
     $departments[$dept_name]['jobs']++;
 }
 
+// Application status breakdown and departmental application count
+$status_counts = [
+    'pending'             => 0,
+    'under_review'        => 0,
+    'interview_scheduled' => 0,
+    'accepted'            => 0,
+    'declined'            => 0,
+];
+
 foreach ($all_apps as $a) {
-    $dept_name = $a['department'] ?? 'General';
+    $dept_name = trim($a['department'] ?? 'General');
+    if ($dept_name === '') $dept_name = 'General';
     if (!isset($departments[$dept_name])) {
-        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0, 'quota' => 4];
+        $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0];
     }
     $departments[$dept_name]['apps']++;
-    $st = strtolower($a['status'] ?? '');
+    $st = strtolower($a['status'] ?? 'pending');
     if (in_array($st, ['accepted', 'accepted / hired', 'hired'], true)) {
         $departments[$dept_name]['hired']++;
+        $status_counts['accepted']++;
+    } elseif (in_array($st, ['interview_scheduled', 'interview scheduled', 'interview'], true)) {
+        $status_counts['interview_scheduled']++;
+    } elseif (in_array($st, ['under_review', 'under review', 'reviewed', 'shortlisted'], true)) {
+        $status_counts['under_review']++;
+    } elseif (in_array($st, ['declined', 'rejected'], true)) {
+        $status_counts['declined']++;
+    } else {
+        $status_counts['pending']++;
     }
 }
 
-// Department quota narrative analytics (read-only explainer over existing rollups).
-$quota_narrative = get_quota_narrative($departments, $total_jobs, $total_apps, $total_hired, $total_interviews);
-
-// 1. Categories Chart Data
-$category_chart_labels = [];
-$category_chart_counts = [];
-$category_chart_pcts = [];
+// 1. Categories Chart Data (sorted descending by active job demand)
+$category_data = [];
 foreach ($categories as $c) {
     $cat_name = $c['name'];
     $cat_job_count = count(array_filter($all_jobs, fn($j) => ($j['category'] ?? '') === $cat_name));
     $pct = $total_jobs > 0 ? round(($cat_job_count / $total_jobs) * 100) : 0;
-    $category_chart_labels[] = $cat_name;
-    $category_chart_counts[] = $cat_job_count;
-    $category_chart_pcts[] = $pct;
+    $category_data[] = [
+        'name'  => $cat_name,
+        'count' => $cat_job_count,
+        'pct'   => $pct,
+    ];
 }
+usort($category_data, fn($a, $b) => $b['count'] <=> $a['count']);
+
+$category_chart_labels = array_column($category_data, 'name');
+$category_chart_counts = array_column($category_data, 'count');
+$category_chart_pcts   = array_column($category_data, 'pct');
 
 // 2. Department Applications Data (sorted descending by application volume)
 $dept_sorted_by_apps = $departments;
@@ -106,27 +128,6 @@ foreach ($dept_sorted_by_apps as $d_name => $stats) {
 $dept_app_top_labels = array_slice($dept_app_all_labels, 0, 6);
 $dept_app_top_counts = array_slice($dept_app_all_counts, 0, 6);
 $dept_app_top_pcts = array_slice($dept_app_all_pcts, 0, 6);
-
-// 3. Department Quota vs Hired Data
-$dept_quota_labels = [];
-$dept_quota_targets = [];
-$dept_quota_hired = [];
-$dept_quota_fill_pcts = [];
-foreach ($departments as $dept_name => $stats) {
-    $q = (int)($stats['quota'] ?? 4);
-    $h = (int)($stats['hired'] ?? 0);
-    $fill_pct = round(($h / max(1, $q)) * 100);
-    $dept_quota_labels[] = $dept_name;
-    $dept_quota_targets[] = $q;
-    $dept_quota_hired[] = $h;
-    $dept_quota_fill_pcts[] = $fill_pct;
-}
-
-// 4. Filtered Flagged Departments for Advisory Drawer
-$quota_notes = $quota_narrative['notes'] ?? [];
-$flagged_departments = array_values(array_filter($quota_notes, function($n) {
-    return !empty($n['flags']);
-}));
 
 // Load Chart.js offline vendor asset
 $extra_js = ['assets/vendor/chart.js/chart.umd.min.js'];
