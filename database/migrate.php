@@ -142,11 +142,11 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             INSERT INTO `student_profiles` (
                 `user_id`, `student_id`, `department`, `course`, `year_level`, 
                 `sex`, `birthdate`, `age`, `availability`, `verification_status`, 
-                `rejection_reason`, `registration_proof`, `created_at`
+                `rejection_reason`, `registration_proof`, `resume_file`, `created_at`
             ) VALUES (
                 :user_id, :student_id, :department, :course, :year_level,
                 :sex, :birthdate, :age, :availability, :verification_status,
-                :rejection_reason, :registration_proof, :created_at
+                :rejection_reason, :registration_proof, :resume_file, :created_at
             )
             ON DUPLICATE KEY UPDATE
                 `student_id` = VALUES(`student_id`),
@@ -159,7 +159,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 `availability` = VALUES(`availability`),
                 `verification_status` = VALUES(`verification_status`),
                 `rejection_reason` = VALUES(`rejection_reason`),
-                `registration_proof` = VALUES(`registration_proof`)
+                `registration_proof` = VALUES(`registration_proof`),
+                `resume_file` = VALUES(`resume_file`)
         ");
 
         $stmt_employer = $pdo->prepare("
@@ -190,10 +191,15 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $created_at = $u['created_at'] ?? date('Y-m-d H:i:s');
             if (strlen($created_at) === 10) $created_at .= ' 00:00:00';
 
+            $raw_pass = $u['password'] ?? 'Password123!';
+            $pwd_to_save = (str_starts_with($raw_pass, '$2y$') || str_starts_with($raw_pass, '$2a$') || str_starts_with($raw_pass, '$argon2'))
+                ? $raw_pass
+                : password_hash($raw_pass, PASSWORD_DEFAULT);
+
             $stmt_user->execute([
                 ':id'         => $u['id'],
                 ':email'      => strtolower(trim($u['email'])),
-                ':password'   => $u['password'] ?? 'Password123!',
+                ':password'   => $pwd_to_save,
                 ':role'       => $u['role'] ?? 'student',
                 ':name'       => $u['name'] ?? '',
                 ':phone'      => $u['phone'] ?? null,
@@ -218,6 +224,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                     ':verification_status' => $u['verification_status'] ?? 'verified',
                     ':rejection_reason'    => $u['rejection_reason'] ?? null,
                     ':registration_proof'  => $u['proof_file'] ?? ($u['registration_proof'] ?? null),
+                    ':resume_file'         => !empty($u['resume']) ? basename($u['resume']) : (!empty($u['resume_file']) ? basename($u['resume_file']) : null),
                     ':created_at'          => $created_at
                 ]);
                 $count_students++;

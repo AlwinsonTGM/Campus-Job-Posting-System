@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `student_profiles` (
     `verification_status` ENUM('verified', 'pending_approval', 'rejected') NOT NULL DEFAULT 'pending_approval',
     `rejection_reason` TEXT NULL,
     `registration_proof` VARCHAR(255) NULL,
+    `resume_file` VARCHAR(255) NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_students_department` (`department`),

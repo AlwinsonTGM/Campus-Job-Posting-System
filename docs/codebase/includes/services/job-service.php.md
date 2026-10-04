@@ -66,7 +66,8 @@ flowchart TD
     LockRow --> CheckCapacity{"slots_filled < slots_total?"}
     CheckCapacity -- "NO (Already Full)" --> RejectHire(["Return false: Slot limit reached"])
     CheckCapacity -- "YES (Slots Free)" --> IncrementSlot["Increment slots_filled += 1<br/>If slots_filled >= slots_total -> SET status = 'closed'"]
-    IncrementSlot --> CommitHire(["Commit Transaction"])
+    IncrementSlot --> AutoWithdrawCall["auto_withdraw_other_applications()<br/>Cascade withdraw other active apps with audit notes"]
+    AutoWithdrawCall --> CommitHire(["Commit Transaction & Dispatch Dual Notifications"])
 
     %% Semantic styling
     classDef step fill:#EFF6FF,stroke:#2563EB,stroke-width:1px,color:#1E40AF;
@@ -74,7 +75,7 @@ flowchart TD
     classDef done fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#166534;
     classDef reject fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#991B1B;
 
-    class SearchReq,Q_Base,ParamCat,ParamKey,ParamDept,Q_Exec,Hydrate,HireEvent,SyncCall,LockRow,IncrementSlot step;
+    class SearchReq,Q_Base,ParamCat,ParamKey,ParamDept,Q_Exec,Hydrate,HireEvent,SyncCall,LockRow,IncrementSlot,AutoWithdrawCall step;
     class Q_Cat,Q_Key,Q_Dept,CheckCapacity check;
     class ReturnJobs,CommitHire done;
     class RejectHire reject;
@@ -163,6 +164,12 @@ function sync_job_slot_capacity(PDO $pdo, int $job_id, string $old_status, strin
 * Invokes `sync_job_slot_capacity()` inside a transaction.
 * If interview is scheduled, stores interview details and triggers notification.
 
+#### `auto_withdraw_other_applications(int $accepted_app_id, int $student_id, int $accepted_job_id, string $accepted_job_title, string $accepted_dept): int` (Lines 653–765)
+* When a student candidate is accepted for an appointment, automatically queries all other active applications (`status IN ('pending', 'under_review', 'interview_scheduled')`).
+* Transitions each competing application to `'withdrawn'` with an audit note: `"Auto-withdrawn: Candidate accepted position for '...' (...) | Prior note: ..."`.
+* Dispatches targeted notifications to the employers/supervisors of the other vacancies informing them that the candidate accepted an appointment elsewhere.
+* Dispatches a summary notification to the student confirming how many concurrent applications were automatically withdrawn in accordance with the campus single-appointment policy.
+
 #### `delete_application(int|string $id): bool` (Lines 720–740)
 * Allows application removal / student self-service withdrawal.
 
@@ -174,6 +181,9 @@ function sync_job_slot_capacity(PDO $pdo, int $job_id, string $old_status, strin
 > 
 > **Q: How does `job-service.php` prevent over-hiring when multiple supervisors evaluate candidates at the same time?**
 > * **Answer:** *"In `sync_job_slot_capacity()` (Line 515), we use **pessimistic row locking** via `SELECT ... FOR UPDATE`. When an applicant is accepted, MySQL locks that specific requisition row until the transaction finishes. It checks `slots_filled >= slots_total`. If another supervisor accepted a candidate a split-second earlier and filled the last slot, the query safely rejects the second acceptance, preventing over-hiring."*
+> 
+> **Q: What prevents a student from holding multiple simultaneous assistant appointments?**
+> * **Answer:** *"When an application transitions to `'accepted'`, `update_application_status()` immediately triggers `auto_withdraw_other_applications()`. This automatically updates all other active or pending applications for that student to `'withdrawn'` with audit notes and alerts affected department heads in real time, preventing concurrent appointments."*
 > 
 > **Q: How does the system automatically re-open a job if a hired student cancels or declines?**
 > * **Answer:** *"In Lines 540–550, if an application transitions away from `'accepted'`, `sync_job_slot_capacity()` automatically decrements `slots_filled`. If the job was closed because it was previously full, it dynamically switches the requisition status back to `'active'` so other students can apply."*

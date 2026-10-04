@@ -42,19 +42,30 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title) ?> | <?= htmlspecialchars(SITE_NAME) ?></title>
 
-    <!-- Anti-FOUC: Apply saved theme before CSS paint to prevent white flash -->
+    <!-- Favicon: D4 Antenna Helper (light default, synced to dark pairing before paint) -->
+    <link id="brandFavicon32" rel="icon" type="image/png" sizes="32x32" href="<?= $base_url ?>assets/img/favicon-32.png?v=d4">
+    <link id="brandFavicon16" rel="icon" type="image/png" sizes="16x16" href="<?= $base_url ?>assets/img/favicon-16.png?v=d4">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= $base_url ?>assets/img/apple-touch-180.png?v=d4">
+
+    <!-- Anti-FOUC & Favicon Sync: Apply saved theme & favicon before CSS paint to prevent white flash / icon desync on refresh -->
     <script>
     (function(){
-      var t = localStorage.getItem('campus_hire_theme');
-      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t);
-      document.documentElement.setAttribute('data-bs-theme', t);
+      try {
+        var t = localStorage.getItem('campus_hire_theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+        if (t === 'dark') {
+          var f32 = document.getElementById('brandFavicon32');
+          var f16 = document.getElementById('brandFavicon16');
+          if (f32) f32.href = '<?= $base_url ?>assets/img/logo-d4-dark-32.png?v=d4';
+          if (f16) f16.href = '<?= $base_url ?>assets/img/logo-d4-dark-32.png?v=d4';
+        }
+      } catch(e) {}
     })();
     </script>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="<?= $base_url ?>assets/img/favicon.svg">
-    <link rel="apple-touch-icon" href="<?= $base_url ?>assets/img/favicon.svg">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F1EBDC">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101418">
     
     <!-- Bootstrap 5 CSS (Local Offline Vendor) -->
     <link rel="stylesheet" href="<?= $base_url ?>assets/vendor/bootstrap/bootstrap.min.css">

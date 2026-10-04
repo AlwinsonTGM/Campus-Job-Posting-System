@@ -169,6 +169,24 @@ require_once __DIR__ . '/../header.php';
                                                         &bull; <span><?= htmlspecialchars($app['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($app['age'] ?? 20)) ?> yrs</span>
                                                     <?php endif; ?>
                                                 </div>
+                                                <?php 
+                                                    $pSummary = $app['placement_summary'] ?? ApplicationService::getStudentPlacementSummary((int)($app['student_id'] ?? 0), (int)($app['job_id'] ?? 0));
+                                                ?>
+                                                <?php if (!empty($pSummary['is_employed'])): 
+                                                    $curJob = $pSummary['active_placement'];
+                                                ?>
+                                                    <div class="mt-1">
+                                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1" style="font-size: 10.5px;" title="Currently hired at <?= htmlspecialchars($curJob['department'] ?? 'another office') ?>">
+                                                            <i class="bi bi-briefcase-fill"></i> Employed (<?= htmlspecialchars($curJob['department'] ?? 'Campus') ?>)
+                                                        </span>
+                                                    </div>
+                                                <?php elseif (!empty($pSummary['other_total_count'])): ?>
+                                                    <div class="mt-1">
+                                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle d-inline-flex align-items-center gap-1" style="font-size: 10px;" title="Applicant has other concurrent job submissions">
+                                                            <i class="bi bi-layers"></i> <?= (int)$pSummary['other_total_count'] ?> other app<?= $pSummary['other_total_count'] > 1 ? 's' : '' ?>
+                                                        </span>
+                                                    </div>
+                                                <?php endif; ?>
                                             </td>
                                             <td data-label="Target Vacancy">
                                                 <span class="fw-semibold text-ink"><?= htmlspecialchars($app['job_title']) ?></span>

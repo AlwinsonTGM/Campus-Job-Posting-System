@@ -59,7 +59,7 @@ require_once __DIR__ . '/../header.php';
                                     </span>
                                 </div>
                             </div>
-                            <a href="settings.php" class="btn-pill-outline btn-pill-sm text-nowrap">
+                            <a href="../settings.php" class="btn-pill-outline btn-pill-sm text-nowrap">
                                 <i class="bi bi-file-earmark-arrow-up me-1"></i> Resubmit Credentials
                             </a>
                         </div>

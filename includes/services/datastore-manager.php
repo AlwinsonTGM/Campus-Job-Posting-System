@@ -156,6 +156,12 @@ class DatastoreManager {
                 if ($appStatusCheck && strpos($appStatusCheck['Type'] ?? '', 'withdrawn') === false) {
                     $pdo->exec("ALTER TABLE `applications` MODIFY COLUMN `status` ENUM('pending', 'under_review', 'interview_scheduled', 'accepted', 'declined', 'withdrawn') NOT NULL DEFAULT 'pending'");
                 }
+
+                // Ensure student_profiles has resume_file column
+                $resumeColCheck = $pdo->query("SHOW COLUMNS FROM `student_profiles` LIKE 'resume_file'")->fetch();
+                if (!$resumeColCheck) {
+                    $pdo->exec("ALTER TABLE `student_profiles` ADD COLUMN `resume_file` VARCHAR(255) NULL AFTER `registration_proof`");
+                }
             }
 
             self::$schemaEnsured = true;

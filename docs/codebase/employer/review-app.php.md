@@ -51,7 +51,9 @@ flowchart TD
     
     CheckMethod -- "POST (Status Decision)" --> CheckCSRF{"verify_csrf_token()"}
     CheckCSRF -- "Invalid" --> CSRFError["set_flash('danger') & Refresh"]
-    CheckCSRF -- "Valid" --> CheckStatus{"new_status === 'interview_scheduled'?"}
+    CheckCSRF -- "Valid" --> CheckWithdrawn{"target_app.status === 'withdrawn'?"}
+    CheckWithdrawn -- "Yes" --> WithdrawnError["set_flash('warning', 'Application has been withdrawn') & Redirect"]
+    CheckWithdrawn -- "No" --> CheckStatus{"new_status === 'interview_scheduled'?"}
     
     CheckStatus -- "Yes" --> PackageInterview["Build $interview_data (date, time, venue)"]
     CheckStatus -- "No" --> ExecUpdate["Call update_application_status(app_id, new_status, notes, interview_data)"]
@@ -60,8 +62,9 @@ flowchart TD
     ExecUpdate --> RefreshDrawer(["set_flash() & Redirect to review-app.php?id=38"])
     
     CheckMethod -- "GET (Display Candidate)" --> CalcScheduleFit["Call get_schedule_summary($target_app, $job)<br/>(Compare 18-slot matrix vs job shifts)"]
-    CalcScheduleFit --> DelegateView["Require includes/templates/employer-review-app-view.php"]
-    DelegateView --> StreamOutput(["Render Candidate Dossier, Availability Heatmap & Decision Drawer"])
+    CalcScheduleFit --> CalcPlacement["Call ApplicationService::getStudentPlacementSummary($student_id, $job_id)"]
+    CalcPlacement --> DelegateView["Require includes/templates/employer-review-app-view.php"]
+    DelegateView --> StreamOutput(["Render Candidate Dossier, Placement Pipeline, Heatmap & Decision Drawer"])
     
     classDef gate fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e;
     classDef success fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534;
@@ -151,24 +154,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ---
 
-### Lines 59–67: Schedule Compatibility Heatmap & View Handover
+### Lines 59–75: Schedule Compatibility Heatmap, Placement Pipeline & View Handover
 ```php
 $page_title = 'Evaluate: ' . $target_app['student_name'];
 
 // Candidate shift availability summary
 $schedule_summary = get_schedule_summary($target_app, $job);
 
+// Candidate campus employment & application pipeline summary
+$placement_summary = ApplicationService::getStudentPlacementSummary(
+    (int)($target_app['student_id'] ?? 0),
+    (int)($target_app['job_id'] ?? 0)
+);
+
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-review-app-view.php';
 ```
-- **`get_schedule_summary($target_app, $job)`**: Sourced from `includes/services/system-checks.php`, this algorithm cross-references the student's 18-slot availability array against the requisition's required shifts. It produces matching counts, percentage fit scores, and conflict warnings for the visual heatmap.
-- Invokes `employer-review-app-view.php`.
+- **`get_schedule_summary($target_app, $job)`**: Cross-references candidate free blocks with required shift hours.
+- **`ApplicationService::getStudentPlacementSummary()`**: Armors supervisors with immediate intelligence: warns if the applicant is already hired in another office, and reports counts of other active/pending applications across campus.
+- **Withdrawal Immutability**: If `status === 'withdrawn'`, blocks state updates and locks the decision stepper to prevent tampering with historical audit trails.
 
 ---
 
 ## 🛡️ Defense Talking Points & Security Disclosures
 
 > [!tip] 🎓 Panelist Q&A Defense Sheet
+> 
+> **Q: How does the evaluation drawer prevent a supervisor from making decisions on a withdrawn application?**
+> **A:** *"Lines 37-41 check `if (($target_app['status'] ?? '') === 'withdrawn')` and intercept any POST attempt with a warning flash: 'This application has been withdrawn and cannot be updated'. The drawer template locks the decision stepper and renders a permanent withdrawal status notice, preserving the candidate's withdrawal decision."*
+> 
+> **Q: How does `review-app.php` help supervisors avoid offering positions to already-employed students?**
+> **A:** *"Lines 70-74 call `ApplicationService::getStudentPlacementSummary()`. If the candidate has already accepted a position in another campus office, a prominent alert badge is displayed alongside details of the appointment, giving the supervisor full visibility before extending an offer."*
 > 
 > **Q: How does the evaluation drawer prevent a supervisor from accepting a candidate when the job quota is already filled?**
 > **A:** Inside `update_application_status()` in `application-service.php`, when transitioning an application to `'accepted'`, the service calls `sync_job_slot_capacity()`. This method executes a transactional database lock (`SELECT slots_total, slots_filled FROM jobs WHERE id = ? FOR UPDATE`). If `slots_filled >= slots_total`, the acceptance transition is rejected, and an exception is returned to prevent over-hiring.

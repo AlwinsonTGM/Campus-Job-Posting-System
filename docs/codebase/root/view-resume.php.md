@@ -145,13 +145,16 @@ if ($app_id) {
     }
 
     $target_student = get_user_by_id($user_id);
-    // ...
+    if ($target_student) {
+        $resume_filename = !empty($target_student['resume_file']) ? basename($target_student['resume_file']) : (($target_student['name'] ?? 'Student') . '_Resume.pdf');
+    }
 ```
 - Blocks horizontal privilege escalation between peer students (e.g. Student A attempting to inspect Student B's profile credentials).
+- Automatically resolves the student's stored profile resume (`$target_student['resume_file']`) when present.
 
 ---
 
-### Lines 57–69: Branch 3 — Self-Inspection & Path Traversal Neutralization
+### Lines 57–72: Branch 3 — Self-Inspection & Path Traversal Neutralization
 ```php
 } else {
     $target_student = $current_user;
@@ -164,10 +167,14 @@ if ($app_id) {
         }
 
         $resume_filename = $requested_file;
+    } elseif (!empty($current_user['resume_file'])) {
+        // Direct stream of student's saved profile resume
+        $resume_filename = basename($current_user['resume_file']);
     }
 }
 ```
 - **Path Traversal Defense (`basename($file_param)`)**: Strips any directory traversal strings (e.g., `../../`, `..\..\Windows\win.ini`), forcing resolution to a flat file name inside the upload directory.
+- **Direct Profile CV Inspection**: If no file parameter is passed, automatically streams the student's active profile resume (`$current_user['resume_file']`).
 - Verifies document ownership via `can_access_resume_file()`.
 
 ---

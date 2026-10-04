@@ -225,6 +225,12 @@ function can_access_resume_file(?array $user, string $filename): bool {
             if ($requested_file === $profile_name) {
                 return true;
             }
+            if (!empty($user['resume_file']) && $requested_file === basename($user['resume_file'])) {
+                return true;
+            }
+            if (!empty($user['resume']) && $requested_file === basename($user['resume'])) {
+                return true;
+            }
             $chk = $pdo->prepare("SELECT `id` FROM `applications` WHERE `student_id` = :sid AND `resume_file` = :rfile LIMIT 1");
             $chk->execute([':sid' => $user_id, ':rfile' => $requested_file]);
             return (bool)$chk->fetch();
@@ -261,6 +267,7 @@ function get_user_base_query(): string {
             sp.`age`,
             sp.`availability`,
             sp.`registration_proof`,
+            sp.`resume_file`,
             COALESCE(sp.`verification_status`, ep.`verification_status`, 'verified') AS `verification_status`,
             COALESCE(sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
             ep.`employer_type`,
@@ -1261,12 +1268,22 @@ function update_user_profile(int $user_id, string $role, array $data): bool {
         $stmt_u = $pdo->prepare("UPDATE `users` SET " . implode(', ', $user_updates) . ", `updated_at` = NOW() WHERE `id` = :id");
         $stmt_u->execute($user_params);
 
-        if ($role === 'student' && isset($data['availability'])) {
-            $stmt_sp = $pdo->prepare("UPDATE `student_profiles` SET `availability` = :avail, `updated_at` = NOW() WHERE `user_id` = :id");
-            $stmt_sp->execute([
-                ':avail' => json_encode($data['availability']),
-                ':id'    => $user_id
-            ]);
+        if ($role === 'student') {
+            $sp_updates = [];
+            $sp_params = [':id' => $user_id];
+            if (isset($data['availability'])) {
+                $sp_updates[] = "`availability` = :avail";
+                $sp_params[':avail'] = json_encode($data['availability']);
+            }
+            if (array_key_exists('resume_file', $data)) {
+                $sp_updates[] = "`resume_file` = :resume_file";
+                $sp_params[':resume_file'] = $data['resume_file'] !== null ? htmlspecialchars(basename($data['resume_file'])) : null;
+            }
+            if (!empty($sp_updates)) {
+                $sp_updates[] = "`updated_at` = NOW()";
+                $stmt_sp = $pdo->prepare("UPDATE `student_profiles` SET " . implode(', ', $sp_updates) . " WHERE `user_id` = :id");
+                $stmt_sp->execute($sp_params);
+            }
         } elseif ($role === 'employer') {
             $ep_updates = [];
             $ep_params = [':id' => $user_id];

@@ -174,7 +174,7 @@ require_once __DIR__ . '/../header.php';
                 <div class="row g-4 mb-5">
                     <!-- Left 7-col: Personal Profile & Availability -->
                     <div class="col-lg-7">
-                        <div class="card-paper p-4 p-md-4 <?= (($user['role'] ?? '') === 'admin') ? '' : 'h-100' ?> reveal-fade-rise">
+                        <div class="card-paper p-4 p-md-4 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
                                 <h3 class="card-paper-title fs-5 mb-0">
                                     <i class="bi bi-person-circle text-accent me-2"></i> Profile &amp; Preferences
@@ -189,7 +189,7 @@ require_once __DIR__ . '/../header.php';
                                 <span class="badge rounded-pill d-inline-flex align-items-center gap-1 <?= $role_badge_class ?>"><?= ucfirst($user['role'] ?? 'student') ?></span>
                             </div>
 
-                            <form action="settings.php" method="POST" class="form-paper">
+                            <form action="settings.php" method="POST" enctype="multipart/form-data" class="form-paper">
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 <input type="hidden" name="action" value="profile">
 
@@ -400,6 +400,13 @@ require_once __DIR__ . '/../header.php';
                                     </button>
                                 </div>
                             </form>
+
+                            <?php if (($user['role'] ?? '') === 'student'): ?>
+                                <form id="removeResumeForm" action="settings.php" method="POST" style="display: none;">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <input type="hidden" name="action" value="remove_resume">
+                                </form>
+                            <?php endif; ?>
                         </div>
 
                         <?php if (($user['role'] ?? '') === 'admin'): ?>
@@ -447,12 +454,71 @@ require_once __DIR__ . '/../header.php';
                         <?php endif; ?>
                     </div>
 
-                    <!-- Right 5-col: Password & Notification Settings -->
-                    <div class="col-lg-5">
-                        <div class="card-paper p-4 p-md-4 h-100 reveal-fade-rise">
+                    <!-- Right 5-col: Resume, Password & System Preferences -->
+                    <div class="col-lg-5 d-flex flex-column gap-4">
+
+                        <?php if (($user['role'] ?? '') === 'student'): ?>
+                            <!-- Stored Profile Resume / CV Card -->
+                            <div class="card-paper p-4 reveal-fade-rise">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-line flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-file-earmark-person-fill text-accent fs-5"></i>
+                                        <h3 class="card-paper-title fs-5 mb-0">Stored Profile Resume</h3>
+                                    </div>
+                                    <?php if (!empty($user['resume_file'])): ?>
+                                        <a href="view-resume.php?file=<?= urlencode(basename($user['resume_file'])) ?>" target="_blank" class="btn-pill-outline btn-pill-sm">
+                                            <i class="bi bi-eye"></i> View Current
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                                <p class="small text-muted-custom mb-3" style="font-size: 11.5px;">
+                                    Save your primary resume here so it automatically links when you apply for campus jobs. You won't have to re-upload your document for every job application.
+                                </p>
+
+                                <?php if (!empty($user['resume_file'])): ?>
+                                    <div class="p-2 px-3 bg-white rounded-3 border border-line mb-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
+                                                <div>
+                                                    <strong class="text-ink small d-block"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
+                                                    <span class="small text-success" style="font-size: 11px;"><i class="bi bi-check-circle-fill me-1"></i>Active profile resume on file</span>
+                                                </div>
+                                            </div>
+                                            <button type="submit" form="removeResumeForm" class="btn btn-sm btn-link text-danger text-decoration-none p-0 small" onclick="return confirm('Are you sure you want to remove your stored profile resume?');">
+                                                <i class="bi bi-trash3 me-1"></i>Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="p-2 px-3 bg-white rounded-3 border border-line mb-3">
+                                        <span class="small text-muted-custom d-flex align-items-center gap-2" style="font-size: 11.5px;">
+                                            <i class="bi bi-info-circle text-accent"></i> No resume currently saved. Upload a file below to set your default.
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <form action="settings.php" method="POST" enctype="multipart/form-data" class="m-0">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <input type="hidden" name="action" value="upload_resume">
+                                    <label class="form-label small fw-semibold text-ink mb-1" for="resume_file">
+                                        <?= !empty($user['resume_file']) ? 'Replace Stored Resume (PDF / DOCX, Max 5MB)' : 'Upload Profile Resume (PDF / DOCX, Max 5MB)' ?>
+                                    </label>
+                                    <div class="d-flex flex-column gap-2">
+                                        <input type="file" name="resume_file" id="resume_file" class="form-control form-control-sm bg-white" accept=".pdf,.doc,.docx" required>
+                                        <button type="submit" class="btn-pill-outline btn-pill-sm w-100 py-2">
+                                            <i class="bi bi-cloud-arrow-up-fill me-1"></i> <?= !empty($user['resume_file']) ? 'Replace &amp; Save Resume' : 'Save Default Resume' ?>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Security & Password Card -->
+                        <div class="card-paper p-4 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
                                 <h3 class="card-paper-title fs-5 mb-0">
-                                    <i class="bi bi-shield-lock text-accent me-2"></i> Security & Password
+                                    <i class="bi bi-shield-lock text-accent me-2"></i> Security &amp; Password
                                 </h3>
                             </div>
 
@@ -502,17 +568,20 @@ require_once __DIR__ . '/../header.php';
                                     <div id="confirm-feedback" class="mt-1"></div>
                                 </div>
 
-                                <button type="submit" class="btn-pill-outline w-100 mb-4">
+                                <button type="submit" class="btn-pill-outline w-100">
                                     <i class="bi bi-shield-check"></i> Update Password
                                 </button>
                             </form>
+                        </div>
 
-                            <hr class="border-line my-4">
-
-                            <h4 class="card-paper-title fs-6 mb-3">
-                                <i class="bi bi-palette text-accent me-2"></i> Appearance
-                            </h4>
-                            <p class="small text-muted-custom mb-3">
+                        <!-- System Appearance & Compliance Card -->
+                        <div class="card-paper p-4 reveal-fade-rise">
+                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-line">
+                                <h4 class="card-paper-title fs-6 mb-0">
+                                    <i class="bi bi-palette text-accent me-2"></i> Appearance &amp; Device
+                                </h4>
+                            </div>
+                            <p class="small text-muted-custom mb-3" style="font-size: 11.5px;">
                                 Choose how Campus Hire looks on this device. Your choice is saved in this browser.
                             </p>
                             <div class="d-flex flex-column gap-3 mb-4">
@@ -532,8 +601,8 @@ require_once __DIR__ . '/../header.php';
                                 <i class="bi bi-shield-check text-accent me-1"></i>
                                 Account data is strictly governed under the <strong>Data Privacy Act of 2012 (RA 10173)</strong>.
                             </div>
-
                         </div>
+
                     </div>
                 </div>
 

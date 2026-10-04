@@ -67,6 +67,7 @@ erDiagram
         longtext availability
         enum verification_status
         varchar registration_proof
+        varchar resume_file
     }
     
     employer_profiles {
@@ -111,7 +112,7 @@ erDiagram
         longtext cover_letter
         longtext availability
         varchar resume_file
-        enum status "pending, under_review, interview_scheduled, accepted, declined"
+        enum status "pending, under_review, interview_scheduled, accepted, declined, withdrawn"
         date interview_date
         datetime applied_at
     }
@@ -129,7 +130,7 @@ erDiagram
 
 ### 2. `student_profiles` (Student Subtype Table)
 - **Primary / Foreign Key**: `user_id` INT PRIMARY KEY referencing `users(id)` with `ON DELETE CASCADE`.
-- **Class Table Inheritance**: Prevents NULL bloat in the main `users` table by isolating student-specific fields (`student_id`, `department`, `course`, `year_level`, `sex`, `birthdate`, `age`, `availability`, `verification_status`, `registration_proof`).
+- **Class Table Inheritance**: Prevents NULL bloat in the main `users` table by isolating student-specific fields (`student_id`, `department`, `course`, `year_level`, `sex`, `birthdate`, `age`, `availability`, `verification_status`, `registration_proof`, `resume_file`).
 - **Academic Uniqueness**: `student_id` VARCHAR(50) NOT NULL UNIQUE.
 
 ### 3. `employer_profiles` (Employer Subtype Table)

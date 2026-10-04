@@ -46,13 +46,15 @@ flowchart TD
     
     CheckCSRF -- "Valid" --> DispatchAction{"Evaluate $_POST['action']"}
     
-    DispatchAction -- "profile" --> HandleProfile["Validate phone & availability<br/>Call update_user_profile()<br/>Refresh $_SESSION['user']"]
+    DispatchAction -- "profile" --> HandleProfile["Validate phone, availability & optional resume<br/>Call update_user_profile()<br/>Refresh $_SESSION['user']"]
+    DispatchAction -- "upload_resume" --> HandleUploadResume["Verify role === 'student'<br/>AttachmentStore::storeResume($_FILES['resume_file'])<br/>UPDATE student_profiles SET resume_file"]
+    DispatchAction -- "remove_resume" --> HandleRemoveResume["Verify role === 'student'<br/>UPDATE student_profiles SET resume_file = NULL"]
     DispatchAction -- "request_employer_profile_change" --> HandleEmployer["Verify role === 'employer'<br/>Upload permit via AttachmentStore::storePermit()<br/>Call resubmit_employer_accreditation()"]
     DispatchAction -- "request_profile_change" --> HandleStudentReq["Upload proof via AttachmentStore::storeProof()<br/>Call create_profile_request()<br/>Submit for Registrar Review"]
     DispatchAction -- "dismiss_notice" --> HandleDismiss["Call dismiss_profile_request_notice()"]
     DispatchAction -- "password" --> HandlePassword["Verify current password with password_verify()<br/>Check length >= 8 & confirmation match<br/>Hash with password_hash(PASSWORD_DEFAULT)<br/>Call update_user_password()"]
     
-    HandleProfile & HandleEmployer & HandleStudentReq & HandleDismiss & HandlePassword --> RedirectSuccess(["set_flash('success') & Redirect"])
+    HandleProfile & HandleUploadResume & HandleRemoveResume & HandleEmployer & HandleStudentReq & HandleDismiss & HandlePassword --> RedirectSuccess(["set_flash('success') & Redirect"])
     
     CheckMethod -- "GET" --> PreloadData["Preload View State:<br/>- get_pending_profile_request()<br/>- get_recent_profile_request_notice()<br/>- get_kld_institutes_and_courses()<br/>- get_year_levels()<br/>- get_sex_options()"]
     
@@ -129,6 +131,43 @@ if ($action === 'profile') {
 - **Phone Validation**: Strips formatting symbols to inspect digit counts (`strlen($digits_only)` between 7 and 15) and rejects alphabetical characters.
 - **Availability Enforcement**: For students, rejects empty submissions to ensure candidate search algorithms always have scheduling data.
 - **Session Re-hydration**: Calls `get_user_by_id`, strips the password hash with `unset($fresh['password'])`, and immediately updates `$_SESSION['user']` so changes take effect across all navigation components without requiring re-login.
+- **Profile Resume Storage**: If a student attaches a file under `$_FILES['resume_file']`, validates and stores it via `AttachmentStore::storeResume()`, updating `student_profiles.resume_file`.
+
+---
+
+### Actions `upload_resume` & `remove_resume` — Student Master CV Management
+```php
+} elseif ($action === 'upload_resume') {
+    if (($user['role'] ?? '') !== 'student') {
+        $error = 'Unauthorized operation: Resume storage is only available for student accounts.';
+    } elseif (!isset($_FILES['resume_file']) || $_FILES['resume_file']['error'] === UPLOAD_ERR_NO_FILE) {
+        $error = 'Please select a valid PDF, DOC, or DOCX resume file to upload (Max 5MB).';
+    } else {
+        $resumeRes = AttachmentStore::storeResume($_FILES['resume_file']);
+        if (!$resumeRes->isOk()) {
+            $error = $resumeRes->errorMessage();
+        } else {
+            update_user_profile((int)$user['id'], 'student', ['resume_file' => $resumeRes->filename()]);
+            // Refresh session user...
+            set_flash('success', 'Your student profile resume has been saved successfully.');
+            header('Location: settings.php');
+            exit;
+        }
+    }
+} elseif ($action === 'remove_resume') {
+    if (($user['role'] ?? '') !== 'student') {
+        $error = 'Unauthorized operation: Resume storage is only available for student accounts.';
+    } else {
+        update_user_profile((int)$user['id'], 'student', ['resume_file' => null]);
+        // Refresh session user...
+        set_flash('success', 'Your stored profile resume has been removed.');
+        header('Location: settings.php');
+        exit;
+    }
+}
+```
+* **Persistent Student CV**: Allows students to maintain a single canonical resume file stored in their profile that auto-links across applications in `student/apply.php`.
+* **Zero Orphan Files on Removal**: `remove_resume` sets `student_profiles.resume_file = NULL` and refreshes the session cache.
 
 ---
 

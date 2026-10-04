@@ -177,6 +177,18 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 <?php endif; ?>
 
+                                <?php if (in_array(strtolower($app['status']), ['withdrawn'])): ?>
+                                    <div class="card-paper p-3 mb-3 border border-secondary-subtle bg-light">
+                                        <div class="d-flex align-items-center gap-2 fw-bold text-secondary mb-1">
+                                            <i class="bi bi-dash-circle-fill fs-5"></i>
+                                            <span>Application Status: Withdrawn</span>
+                                        </div>
+                                        <p class="small text-muted-custom mb-0">
+                                            <?= !empty($app['supervisor_notes']) ? htmlspecialchars($app['supervisor_notes']) : 'This application has been withdrawn.' ?>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
                                 <!-- Availability & Attached Documents -->
                                 <div class="row g-3 small text-muted-custom mb-3 pt-2">
                                     <div class="col-md-7">

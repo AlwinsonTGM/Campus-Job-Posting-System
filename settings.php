@@ -36,20 +36,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'office_location' => trim($_POST['office_location'] ?? '')
                 ];
 
-                if (update_user_profile((int)$user['id'], $user_role, $profile_data)) {
-                    // Refresh session user
+                // Handle student profile resume upload if attached
+                if ($user_role === 'student' && isset($_FILES['resume_file']) && $_FILES['resume_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+                    $resumeRes = AttachmentStore::storeResume($_FILES['resume_file']);
+                    if (!$resumeRes->isOk()) {
+                        $error = $resumeRes->errorMessage();
+                    } else {
+                        $profile_data['resume_file'] = $resumeRes->filename();
+                    }
+                }
+
+                if (!$error) {
+                    if (update_user_profile((int)$user['id'], $user_role, $profile_data)) {
+                        // Refresh session user
+                        $fresh = get_user_by_id((int)$user['id']);
+                        if ($fresh) {
+                            unset($fresh['password']);
+                            $_SESSION['user'] = $fresh;
+                        }
+
+                        set_flash('success', 'Profile and operational settings have been updated successfully.');
+                        header('Location: settings.php');
+                        exit;
+                    }
+
+                    $error = 'Failed to update profile settings. Please try again.';
+                }
+            }
+        } elseif ($action === 'upload_resume') {
+            if (($user['role'] ?? '') !== 'student') {
+                $error = 'Unauthorized operation: Resume storage is only available for student accounts.';
+            } elseif (!isset($_FILES['resume_file']) || $_FILES['resume_file']['error'] === UPLOAD_ERR_NO_FILE) {
+                $error = 'Please select a valid PDF, DOC, or DOCX resume file to upload (Max 5MB).';
+            } else {
+                $resumeRes = AttachmentStore::storeResume($_FILES['resume_file']);
+                if (!$resumeRes->isOk()) {
+                    $error = $resumeRes->errorMessage();
+                } else {
+                    update_user_profile((int)$user['id'], 'student', ['resume_file' => $resumeRes->filename()]);
                     $fresh = get_user_by_id((int)$user['id']);
                     if ($fresh) {
                         unset($fresh['password']);
                         $_SESSION['user'] = $fresh;
                     }
-
-                    set_flash('success', 'Profile and operational settings have been updated successfully.');
+                    set_flash('success', 'Your student profile resume has been saved successfully.');
                     header('Location: settings.php');
                     exit;
                 }
-
-                $error = 'Failed to update profile settings. Please try again.';
+            }
+        } elseif ($action === 'remove_resume') {
+            if (($user['role'] ?? '') !== 'student') {
+                $error = 'Unauthorized operation: Resume storage is only available for student accounts.';
+            } else {
+                update_user_profile((int)$user['id'], 'student', ['resume_file' => null]);
+                $fresh = get_user_by_id((int)$user['id']);
+                if ($fresh) {
+                    unset($fresh['password']);
+                    $_SESSION['user'] = $fresh;
+                }
+                set_flash('success', 'Your stored profile resume has been removed.');
+                header('Location: settings.php');
+                exit;
             }
         } elseif ($action === 'request_employer_profile_change') {
             if (($user['role'] ?? '') !== 'employer') {

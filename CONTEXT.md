@@ -50,6 +50,10 @@ _Avoid_: UploadFolder, FileType, AttachmentBucket
 The domain result of an attachment upload operation reporting success status, relative web path, filename, and specific error diagnostics.
 _Avoid_: UploadResponse, FileOutput, SaveStatus
 
+**Candidate Profile Resume**:
+The default curriculum vitae attachment persisted on a student account profile, automatically linked to requisition applications when an applicant elects not to upload a one-off override.
+_Avoid_: DefaultResume, UserCV, StoredResumeMock
+
 ### Datastore & Fixture Lifecycle
 
 **DatastoreManager**:

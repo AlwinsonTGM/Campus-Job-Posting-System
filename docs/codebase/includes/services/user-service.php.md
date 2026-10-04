@@ -124,7 +124,15 @@ function get_logged_user(): ?array
 
 #### `can_access_resume_file(?array $user, string $filename): bool` (Lines 203–245)
 * Document-level gate called directly by `view-resume.php`.
-* Queries database to verify if `$filename` belongs to a valid student profile or application linked to the requesting user.
+* Queries database to verify if `$filename` belongs to a valid student profile or application linked to the requesting user:
+  * **Admins**: Granted global access to audit candidate credentials.
+  * **Students**: Permitted if the requested file matches their persistent **Profile Resume** (`$user['resume_file']` or `$user['resume']`) or any application they previously submitted.
+  * **Employers**: Permitted only if the candidate submitted that resume file to a vacancy owned by the active employer.
+
+#### `update_user_profile(int $user_id, string $role, array $data): bool` (Lines 1240–1310)
+* Updates core user attributes (`name`, `phone`, `office_location`, `website`) and role-specific extension tables:
+  * For **Students**: Serializes the 18-slot `availability` matrix and updates or clears the stored profile resume column (`student_profiles.resume_file`).
+  * For **Employers**: Updates company profile details and accreditation references.
 
 ---
 

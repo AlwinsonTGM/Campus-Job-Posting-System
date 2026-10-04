@@ -125,16 +125,41 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 </div>
 
-                                <!-- Section 5: Resume Upload Mock -->
+                                <!-- Section 5: Resume / Study Load Document -->
                                 <div class="mb-4 pb-3 border-bottom border-line">
                                     <h3 class="card-paper-title fs-5 mb-3">
                                         <i class="bi bi-file-earmark-arrow-up text-accent me-2"></i> 5. Resume / Study Load Document
                                     </h3>
                                     <div>
-                                        <label class="form-label">Attach Updated Resume or Study Load (PDF / DOCX)</label>
+                                        <?php if (!empty($user['resume_file'])): ?>
+                                            <div class="d-flex align-items-center justify-content-between p-3 bg-cream rounded-3 border border-line mb-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4"></i>
+                                                    <div>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <strong class="text-ink small"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
+                                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0" style="font-size: 10px;">Stored Profile Resume</span>
+                                                        </div>
+                                                        <span class="small text-muted-custom" style="font-size: 11.5px;">Linked automatically from your Account Settings.</span>
+                                                    </div>
+                                                </div>
+                                                <a href="../view-resume.php?file=<?= urlencode(basename($user['resume_file'])) ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;">
+                                                    <i class="bi bi-eye"></i> Preview Stored
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="alert alert-info py-2 px-3 small rounded-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="font-size: 12px;">
+                                                <span><i class="bi bi-info-circle me-1"></i> You haven't saved a default resume in your profile yet.</span>
+                                                <a href="../settings.php" target="_blank" class="fw-semibold text-accent text-decoration-underline" style="font-size: 12px;">Upload in Settings <i class="bi bi-box-arrow-up-right"></i></a>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <label class="form-label small fw-semibold text-ink"><?= !empty($user['resume_file']) ? 'Attach Updated Resume or Study Load (Optional)' : 'Attach Resume or Study Load (PDF / DOCX)' ?></label>
                                         <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
                                         <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
-                                            You may attach an updated PDF or leave blank to automatically link your stored student profile resume.
+                                            <?= !empty($user['resume_file'])
+                                                ? 'You may attach an updated PDF or leave blank to automatically link your stored student profile resume (' . htmlspecialchars(basename($user['resume_file'])) . ').'
+                                                : 'You may attach a PDF or DOCX file (Max 5MB).' ?>
                                         </span>
                                     </div>
                                 </div>

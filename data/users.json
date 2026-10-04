@@ -2,7 +2,7 @@
     {
         "id": 1,
         "email": "student@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$ZhtzziDud3AZQrNpIB/7ouBA5kuFoNU0ZDxtdw1ZEC.zpfN4ZAO0K",
         "role": "student",
         "name": "Juan Dela Cruz",
         "student_id": "2024-00123",
@@ -40,7 +40,7 @@
     {
         "id": 2,
         "email": "maria.santos@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$J7z0OMiJsFJx0gwbiCm/XOYErJLrQ7kk6uord3ZTGiJAw4wvGJazW",
         "role": "student",
         "name": "Maria Santos",
         "student_id": "2024-00456",
@@ -78,7 +78,7 @@
     {
         "id": 3,
         "email": "registrar@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$nx/i0rtLltv9GgRvRrmzguvnRWRIXpaXvuernA0ipbg0D9rZNV1.i",
         "role": "employer",
         "name": "Prof. Roberto Hernandez",
         "student_id": null,
@@ -106,7 +106,7 @@
     {
         "id": 4,
         "email": "itdept@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$6pSE6zXkmK0UoKRqvNocEOeFowU78DKkG8X.Df.kjEcOG6iZ43YkK",
         "role": "employer",
         "name": "Engr. Clara Villanueva",
         "student_id": null,
@@ -134,7 +134,7 @@
     {
         "id": 5,
         "email": "admin@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$43tS39kG.iM1G5a.yOUtq.dOi3DAqR8GpbMrSCeeYBaAe2bX2Id0u",
         "role": "admin",
         "name": "KLD Campus System Admin",
         "student_id": null,
@@ -162,7 +162,7 @@
     {
         "id": 6,
         "email": "techvanguard@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$u6jhI9beo28G5VJpbr7V3uF7Mc0isNcJnfsGAdx4K6U/xFr3xbqtu",
         "role": "employer",
         "name": "Atty. Katrina Alcantara",
         "student_id": null,
@@ -190,7 +190,7 @@
     {
         "id": 7,
         "email": "mediahub@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$wHeDam/OzpwICQfAl8hyIu5.9Q3sGH8PrOuJY54FJ7alaE0exIZlO",
         "role": "employer",
         "name": "Marco V. Domingo",
         "student_id": null,
@@ -218,7 +218,7 @@
     {
         "id": 8,
         "email": "campuscafe@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$/jgXWXZwbOt0wzJakUIx9.DEi3e4rxtw1Ch/OQw5F94qFGitnDtVe",
         "role": "employer",
         "name": "Chef Patricia Reyes",
         "student_id": null,
@@ -246,7 +246,7 @@
     {
         "id": 9,
         "email": "apexrobotics@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$dWz9zyp.vcO4Fa8XsHWOQet4qgscejYDVpU5hB2ZTS6Cpjt4pnrnu",
         "role": "employer",
         "name": "Engr. Dennis Ramirez",
         "student_id": null,
@@ -274,7 +274,7 @@
     {
         "id": 10,
         "email": "abustamante@kld.edu.ph",
-        "password": "@Alwinson100",
+        "password": "$2y$10$QdOzTOPxlRTWjp61oTwdku3eiChbgd9JEvj.uBE6KbOHl.FgmJK/u",
         "role": "student",
         "name": "Alwinson Bustamante",
         "student_id": "2025-2-000065",
@@ -312,7 +312,7 @@
     {
         "id": 11,
         "email": "bea.alonzo@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$41G3FyHTgauWFlxh0TkfJODuHkf/dBkMllgYtjEXYEUolR72l43rK",
         "role": "student",
         "name": "Bea Alonzo",
         "student_id": "2024-00789",
@@ -350,7 +350,7 @@
     {
         "id": 12,
         "email": "joshua.garcia@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$FsuDiH29xNO0mg2xev1ZceCtI/cvO8DPSXaD0SMUckhuh3FIG99ty",
         "role": "student",
         "name": "Joshua Garcia",
         "student_id": "2025-00102",
@@ -388,7 +388,7 @@
     {
         "id": 13,
         "email": "camille.delrosario@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$QnQEROjc3xQ.eUxh6/EOpusYuPuOoYNL6HK.CjgsxGyJn6o9KynAK",
         "role": "student",
         "name": "Camille Del Rosario",
         "student_id": "2023-00331",
@@ -426,7 +426,7 @@
     {
         "id": 14,
         "email": "ethan.reyes@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$rIImr.1/zjjiImlrBXwjfOWQ0K6d1tEW5C5iU80.dBeL9qPsJw6DK",
         "role": "student",
         "name": "Ethan Vance Reyes",
         "student_id": "2022-00512",
@@ -464,7 +464,7 @@
     {
         "id": 15,
         "email": "sofia.mendoza@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$rmFXbzgv/Mb6tyRw1VaRYOP1pF7gsHmWP905vQdkV0JcbLAbxB.fe",
         "role": "student",
         "name": "Sofia Mendoza",
         "student_id": "2024-00624",
@@ -502,7 +502,7 @@
     {
         "id": 16,
         "email": "mark.bautista@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$3pKaihH0oNVbuSFFess6N.xkoG6WbszQfbN1KSRQVSmg52nBGhiNS",
         "role": "student",
         "name": "Mark Dave Bautista",
         "student_id": "2024-00811",
@@ -540,7 +540,7 @@
     {
         "id": 17,
         "email": "angela.cruz@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$J5/rGOtipu08TsdFyOtFTuB3WAcwAjZ0ntYnr4hSkFkGqTEDKqoK6",
         "role": "student",
         "name": "Angela Nicole Cruz",
         "student_id": "2023-00445",
@@ -578,7 +578,7 @@
     {
         "id": 18,
         "email": "gabriel.tan@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$IrrNvn8KBZcBzb2dmMp3wOp/y/i4T/Eq/XHAvE1kUTSGEbqwunIYa",
         "role": "student",
         "name": "Gabriel Tan",
         "student_id": "2022-00198",
@@ -616,7 +616,7 @@
     {
         "id": 19,
         "email": "chloe.perez@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$AVypR91G.A5q5yOIkT3.vuFuDi2gx.gsvPZLkDHdrR3YXmWgVbnw.",
         "role": "student",
         "name": "Chloe Danielle Perez",
         "student_id": "2024-00912",
@@ -654,7 +654,7 @@
     {
         "id": 20,
         "email": "ralph.santos@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$AG.rHIk9.5Gxtk2/WTt2kua8EM91CToxRRJQBeKsfAxU1XzOIYzny",
         "role": "student",
         "name": "Ralph Matthew Santos",
         "student_id": "2025-00411",
@@ -692,7 +692,7 @@
     {
         "id": 21,
         "email": "kimberly.ramos@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$/snyAt.OMV0RneBB5im8Fex..LmQMwAwFRsSmEuMHJM02MbW8DMoG",
         "role": "student",
         "name": "Kimberly Joy Ramos",
         "student_id": "2024-00552",
@@ -730,7 +730,7 @@
     {
         "id": 22,
         "email": "guidance@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$uXdbzt7gw9W2236FuO4KVekA2su58u1VZNMsaLBBF3as3hPOTwT/.",
         "role": "employer",
         "name": "Dr. Evelyn Ramos",
         "student_id": null,
@@ -758,7 +758,7 @@
     {
         "id": 23,
         "email": "library@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$HiV05YwHVj7yImDh8xnBbOUvPJyFZ8MP5wO2Nz7zLxHp0ih0S3DFK",
         "role": "employer",
         "name": "Ms. Teresa Cruz",
         "student_id": null,
@@ -786,7 +786,7 @@
     {
         "id": 24,
         "email": "sciencelab@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$/nqRAA9klfkWPoWXq1WkXOrr/DMvZED9NWxs9g1zxkeFiC9oTuyIS",
         "role": "employer",
         "name": "Prof. Corazon Navarro",
         "student_id": null,
@@ -814,7 +814,7 @@
     {
         "id": 25,
         "email": "athletics@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$ynHItZ5o3hq86VSllyfhC.icEU20lrYHoIiegWjFuOsJ5P6ebotLS",
         "role": "employer",
         "name": "Coach Gary Belmonte",
         "student_id": null,
@@ -842,7 +842,7 @@
     {
         "id": 26,
         "email": "scholarships@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$dQucTFEgD/Ao0emUZGBkO.o8MpntC3MmJbO8/iVll1iB2aZlgkDt2",
         "role": "employer",
         "name": "Mr. Arnold Santos",
         "student_id": null,
@@ -870,7 +870,7 @@
     {
         "id": 27,
         "email": "greenleaf@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$4/qYaHpkFz.Hmo/xPX6MOuEXugJ28ewyRBWaxyYYXkC8ZX8Wxdm3G",
         "role": "employer",
         "name": "Ms. Hazel Dimaculangan",
         "student_id": null,
@@ -898,7 +898,7 @@
     {
         "id": 28,
         "email": "cavitebpo@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$bj3Qht/L0QBZNhRfE6SR6.0568HLwB3tRZo/3vMrP0tuI2Atklm0a",
         "role": "employer",
         "name": "Roland Dela Torre",
         "student_id": null,
@@ -926,7 +926,7 @@
     {
         "id": 29,
         "email": "codecrafted@partner.kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$9B4.g0a0Wbx2YdE5YZHpXel/294ZCeGF1FlH.G798rfI7ZU5/nkO2",
         "role": "employer",
         "name": "Michelle Anne Soriano",
         "student_id": null,
@@ -954,7 +954,7 @@
     {
         "id": 30,
         "email": "bursar@kld.edu.ph",
-        "password": "Password123!",
+        "password": "$2y$10$LtXiF/AET07y4UAenOL4B.RsBF4Xi1LNXNHfbvuSBXoRD47PK4/Ua",
         "role": "employer",
         "name": "Mr. Fernando Ocampo",
         "student_id": null,

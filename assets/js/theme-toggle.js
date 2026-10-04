@@ -162,6 +162,44 @@
    * About segmented controls ([data-theme-set]), cycle buttons
    * ([data-theme-toggle]) and the Settings dark-mode switch.
    */
+  function syncBrandLogo(theme) {
+    var probe = document.querySelector('[data-brand-logo]');
+    var base = '';
+    if (probe) {
+      var s = probe.getAttribute('src') || '';
+      var cut = s.indexOf('logo-d4-');
+      if (cut > 0) base = s.substring(0, cut);
+    }
+    var lightLogo = base ? base + 'logo-d4-light-64.png?v=d4' : null;
+    var darkLogo = base ? base + 'logo-d4-dark-64.png?v=d4' : null;
+    var want = theme === DARK ? darkLogo : lightLogo;
+    if (want) {
+      var imgs = document.querySelectorAll('[data-brand-logo]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (imgs[i].getAttribute('src') !== want) imgs[i].setAttribute('src', want);
+      }
+    }
+    var fav32 = document.getElementById('brandFavicon32') || document.querySelector('link[rel="icon"][sizes="32x32"]');
+    var fav16 = document.getElementById('brandFavicon16') || document.querySelector('link[rel="icon"][sizes="16x16"]');
+    if (fav32 && fav16) {
+      var h32 = fav32.getAttribute('href') || '';
+      var h16 = fav16.getAttribute('href') || '';
+      var d32 = h32.substring(0, h32.lastIndexOf('/') + 1);
+      var d16 = h16.substring(0, h16.lastIndexOf('/') + 1);
+      if (d32 && d16) {
+        var next32 = d32 + (theme === DARK ? 'logo-d4-dark-32.png?v=d4' : 'favicon-32.png?v=d4');
+        var next16 = d16 + (theme === DARK ? 'logo-d4-dark-32.png?v=d4' : 'favicon-16.png?v=d4');
+        if (fav32.getAttribute('href') !== next32) fav32.setAttribute('href', next32);
+        if (fav16.getAttribute('href') !== next16) fav16.setAttribute('href', next16);
+      }
+    }
+    // Remove any legacy SVG icon links to prevent browsers from prioritizing stale SVG
+    var favSvg = document.querySelector('link[rel="icon"][type="image/svg+xml"]');
+    if (favSvg && favSvg.parentNode) {
+      favSvg.parentNode.removeChild(favSvg);
+    }
+  }
+
   function applyTheme(theme, isGlitch) {
     var html = document.documentElement;
     html.setAttribute('data-theme', theme);
@@ -210,6 +248,7 @@
     }
 
     // Sync developer photos
+    syncBrandLogo(theme);
     syncDeveloperPhotos(theme, !!isGlitch);
   }
 

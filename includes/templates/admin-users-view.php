@@ -667,7 +667,8 @@ require_once __DIR__ . '/../header.php';
             $org = $u['organization_name'] ?? ($u['department'] ?? 'Campus Organization');
             $accreditation = $u['accreditation_number'] ?? 'PENDING-VERIFICATION';
             $permit_doc = $u['permit_file'] ?? null;
-            $has_permit_file = !empty($permit_doc) && file_exists(__DIR__ . '/../' . $permit_doc);
+            $permit_disk_path = dirname(__DIR__, 2) . '/' . ltrim((string)$permit_doc, '/');
+            $has_permit_file = !empty($permit_doc) && file_exists($permit_disk_path);
         ?>
         <div class="modal fade" id="verifyModal<?= $u['id'] ?>" tabindex="-1" aria-labelledby="verifyModalLabel<?= $u['id'] ?>" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -748,6 +749,15 @@ require_once __DIR__ . '/../header.php';
                                             <i class="bi bi-arrows-fullscreen"></i> View Document in Full Tab
                                         </a>
                                     </div>
+                                <?php elseif (!empty($permit_doc)): ?>
+                                    <div class="card-paper p-3 text-center bg-surface border border-line">
+                                        <i class="bi bi-file-earmark-text text-accent fs-1 d-block mb-2"></i>
+                                        <strong class="text-ink small d-block mb-1">Document Attachment</strong>
+                                        <span class="small text-muted-custom d-block mb-2"><?= htmlspecialchars(basename($permit_doc)) ?></span>
+                                        <a href="../<?= htmlspecialchars($permit_doc) ?>" target="_blank" class="btn-pill btn-pill-sm d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-box-arrow-up-right"></i> View Document
+                                        </a>
+                                    </div>
                                 <?php else: ?>
                                     <div class="p-4 bg-cream rounded-4 border border-line text-center text-muted-custom">
                                         <i class="bi bi-file-earmark-x fs-1 d-block mb-2 text-muted-custom"></i>
@@ -760,6 +770,33 @@ require_once __DIR__ . '/../header.php';
                             </div>
 
                         </div>
+
+                        <?php if (!empty($u['rejection_reason'])): ?>
+                            <div class="mt-3 p-3 bg-danger-subtle text-danger-emphasis rounded-3 border border-danger-subtle small">
+                                <strong class="d-block mb-1"><i class="bi bi-chat-left-quote me-1"></i>Current Rejection / Revision Note:</strong>
+                                <p class="mb-0"><?= htmlspecialchars($u['rejection_reason']) ?></p>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="collapse mt-3" id="rejectPanelEmp<?= $u['id'] ?>">
+                            <div class="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
+                                <form action="users.php" method="POST">
+                                    <input type="hidden" name="action" value="reject_employer">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <label class="form-label small fw-bold text-danger mb-1" for="notes-emp-<?= $u['id'] ?>">
+                                        <i class="bi bi-chat-left-dots me-1"></i> Rejection Reason / Revision Notes
+                                    </label>
+                                    <textarea name="notes" id="notes-emp-<?= $u['id'] ?>" class="form-control form-control-sm mb-2" rows="2" placeholder="Explain why accreditation was not approved (e.g. Expired business permit, accreditation mismatch, illegible document)..."></textarea>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="collapse" data-bs-target="#rejectPanelEmp<?= $u['id'] ?>">Cancel</button>
+                                        <button type="submit" class="btn-pill btn-pill-sm text-white border-0" style="background: #dc3545;">
+                                            <i class="bi bi-x-circle"></i> Confirm Rejection
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="modal-footer bg-cream border-top border-line py-3 px-4 d-flex justify-content-between">
@@ -770,14 +807,9 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <?php if ($ver_status !== 'verified'): ?>
-                                <form action="users.php" method="POST" class="d-inline">
-                                    <input type="hidden" name="action" value="reject_employer">
-                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
-                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                    <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Reject this employer registration?')">
-                                        <i class="bi bi-x-circle"></i> Reject
-                                    </button>
-                                </form>
+                                <button type="button" class="btn-pill-outline btn-pill-sm text-danger border-danger" data-bs-toggle="collapse" data-bs-target="#rejectPanelEmp<?= $u['id'] ?>" aria-expanded="false" aria-controls="rejectPanelEmp<?= $u['id'] ?>">
+                                    <i class="bi bi-x-circle"></i> Reject / Request Revision
+                                </button>
                                 <form action="users.php" method="POST" class="d-inline">
                                     <input type="hidden" name="action" value="approve_employer">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">
@@ -811,7 +843,8 @@ require_once __DIR__ . '/../header.php';
             if ($u['role'] !== 'student') continue;
             $ver_status = $u['verification_status'] ?? 'verified';
             $proof_doc = $u['registration_proof'] ?? ($u['proof_file'] ?? null);
-            $has_proof_file = !empty($proof_doc) && file_exists(__DIR__ . '/../' . $proof_doc);
+            $proof_disk_path = dirname(__DIR__, 2) . '/' . ltrim((string)$proof_doc, '/');
+            $has_proof_file = !empty($proof_doc) && file_exists($proof_disk_path);
             $is_pdf = $has_proof_file && (strtolower(pathinfo($proof_doc, PATHINFO_EXTENSION)) === 'pdf');
         ?>
         <div class="modal fade" id="verifyStudentModal<?= $u['id'] ?>" tabindex="-1" aria-labelledby="verifyStudentModalLabel<?= $u['id'] ?>" aria-hidden="true">
@@ -934,6 +967,24 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 <?php endif; ?>
                             </div>
+                        <div class="collapse mt-3" id="rejectPanelStudent<?= $u['id'] ?>">
+                            <div class="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
+                                <form action="users.php" method="POST">
+                                    <input type="hidden" name="action" value="reject_user">
+                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                                    <label class="form-label small fw-bold text-danger mb-1" for="notes-stu-<?= $u['id'] ?>">
+                                        <i class="bi bi-chat-left-dots me-1"></i> Rejection Reason / Revision Notes
+                                    </label>
+                                    <textarea name="notes" id="notes-stu-<?= $u['id'] ?>" class="form-control form-control-sm mb-2" rows="2" placeholder="Explain why the registration was declined (e.g. Unclear Certificate of Registration, student ID mismatch, illegible photo)..."></textarea>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-toggle="collapse" data-bs-target="#rejectPanelStudent<?= $u['id'] ?>">Cancel</button>
+                                        <button type="submit" class="btn-pill btn-pill-sm text-white border-0" style="background: #dc3545;">
+                                            <i class="bi bi-x-circle"></i> Confirm Rejection
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
@@ -945,14 +996,9 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <?php if ($ver_status !== 'verified'): ?>
-                                <form action="users.php" method="POST" class="d-inline">
-                                    <input type="hidden" name="action" value="reject_user">
-                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
-                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                    <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Decline this student registration?')">
-                                        <i class="bi bi-x-circle"></i> Reject
-                                    </button>
-                                </form>
+                                <button type="button" class="btn-pill-outline btn-pill-sm text-danger border-danger" data-bs-toggle="collapse" data-bs-target="#rejectPanelStudent<?= $u['id'] ?>" aria-expanded="false" aria-controls="rejectPanelStudent<?= $u['id'] ?>">
+                                    <i class="bi bi-x-circle"></i> Reject / Request Revision
+                                </button>
                                 <form action="users.php" method="POST" class="d-inline">
                                     <input type="hidden" name="action" value="approve_user">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">

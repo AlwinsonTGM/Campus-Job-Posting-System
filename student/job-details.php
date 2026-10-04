@@ -18,6 +18,8 @@ if (!$job || (!empty($job['is_archived']) && !in_array($user['role'] ?? '', ['ad
 
 $eligibility = ApplicationService::checkEligibility($job, $user);
 $already_applied = ($eligibility->reason() === 'already_applied');
+$already_employed = ($eligibility->reason() === 'already_employed');
+$active_placement = $already_employed ? $eligibility->existingApplication() : null;
 $app_status = $eligibility->applicationStatus() ?? 'pending';
 
 // Student schedule compatibility overview (read-only, never gates the Apply CTA).

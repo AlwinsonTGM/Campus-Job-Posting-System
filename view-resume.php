@@ -47,7 +47,7 @@ if ($app_id) {
 
     $target_student = get_user_by_id($user_id);
     if ($target_student) {
-        $resume_filename = ($target_student['name'] ?? 'Student') . '_Resume.pdf';
+        $resume_filename = !empty($target_student['resume_file']) ? basename($target_student['resume_file']) : (($target_student['name'] ?? 'Student') . '_Resume.pdf');
     }
 
     if (!$target_student) {
@@ -65,6 +65,8 @@ if ($app_id) {
         }
 
         $resume_filename = $requested_file;
+    } elseif (!empty($current_user['resume_file'])) {
+        $resume_filename = basename($current_user['resume_file']);
     }
 }
 

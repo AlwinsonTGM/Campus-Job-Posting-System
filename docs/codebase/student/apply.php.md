@@ -53,8 +53,8 @@ flowchart TD
     CheckCSRF -- "Invalid" --> CSRFError["Set $error = 'Invalid token'"]
     
     CheckCSRF -- "Valid" --> ValidateUpload{"File uploaded in $_FILES['resume']?"}
-    ValidateUpload -- "Yes" --> SaveResume["save_uploaded_resume($_FILES['resume'])<br/>Verify 5MB cap & MIME type"]
-    ValidateUpload -- "No" --> DefaultResume["Use existing student resume on record"]
+    ValidateUpload -- "Yes" --> SaveResume["AttachmentStore::storeResume($_FILES['resume'])<br/>Verify 5MB cap & MIME type"]
+    ValidateUpload -- "No" --> DefaultResume["Auto-link stored profile resume ($user['resume_file'])<br/>or fallback name"]
     
     SaveResume & DefaultResume --> ValidateInputs{"Validate cover_letter, phone & availability matrix"}
     ValidateInputs -- "Validation Failed" --> SetInputError["Set $error (Phone format or Empty matrix)"]
@@ -139,26 +139,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $availability = $_POST['availability'] ?? [];
         $digits_only = preg_replace('/[^0-9]/', '', $phone);
 
-        $resume_name = ($user['name'] ?? 'Student') . '_Resume.pdf';
+        $resume_name = null;
 
         if (isset($_FILES['resume']) && $_FILES['resume']['error'] !== UPLOAD_ERR_NO_FILE) {
             if ($_FILES['resume']['error'] !== UPLOAD_ERR_OK) {
                 $error = 'File upload failed. Please verify that your resume file is under 5MB.';
             } else {
-                $resume_path = save_uploaded_resume($_FILES['resume']);
-                if (!$resume_path) {
-                    $error = 'Invalid resume format or size. Accepted formats: PDF, DOC, DOCX (Max 5MB).';
+                $resumeRes = AttachmentStore::storeResume($_FILES['resume']);
+                if (!$resumeRes->isOk()) {
+                    $error = $resumeRes->errorMessage();
                 } else {
-                    $resume_name = basename($resume_path);
+                    $resume_name = $resumeRes->filename();
                 }
             }
+        } elseif (!empty($user['resume_file'])) {
+            // Automatically link stored student profile resume
+            $resume_name = basename($user['resume_file']);
+        } elseif (!empty($user['resume'])) {
+            // Backward compatibility alias
+            $resume_name = basename($user['resume']);
+        } else {
+            $resume_name = ($user['name'] ?? 'Student') . '_Resume.pdf';
         }
 ```
-- **File Handling**: If a new file is uploaded, invokes `save_uploaded_resume($_FILES['resume'])` which enforces:
-  - Size limitation: maximum 5MB.
-  - Allowed extensions: `pdf`, `doc`, `docx`.
-  - Path normalization: applies `basename()` to isolate the stored filename.
-- If no file is uploaded, falls back to the default student resume identifier on file.
+- **File Handling & Profile Reusability**:
+  - If a new resume is attached, invokes `AttachmentStore::storeResume($_FILES['resume'])`, enforcing 5MB size ceiling, MIME validation (`pdf`, `doc`, `docx`), and secure unique naming.
+  - If no file is attached, automatically inherits the stored **Profile Resume** (`$user['resume_file']`) saved on the student's account profile in `settings.php`.
+  - Falls back to `Student_Resume.pdf` if no stored document is available.
 
 ---
 

@@ -53,7 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: users.php');
             exit;
         }
-        $notes = trim($_POST['notes'] ?? 'Submitted credentials did not match or require re-submission.');
+        $notes = trim($_POST['notes'] ?? '');
+        if ($notes === '') {
+            $notes = 'Submitted credentials did not match or require re-submission.';
+        }
         if (update_user_verification($reject_id, 'rejected', $notes)) {
             $u_name = $target_user['name'] ?? 'Account';
             $role_label = ucfirst($target_user['role'] ?? 'User');

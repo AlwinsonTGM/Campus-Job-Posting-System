@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (($target_app['status'] ?? '') === 'withdrawn') {
-        set_flash('warning', 'This application was withdrawn by the student candidate and cannot be updated.');
+        set_flash('warning', 'This application has been withdrawn and cannot be updated.');
         header("Location: review-app.php?id={$target_app['id']}");
         exit;
     }
@@ -66,6 +66,12 @@ $page_title = 'Evaluate: ' . $target_app['student_name'];
 
 // Candidate shift availability summary
 $schedule_summary = get_schedule_summary($target_app, $job);
+
+// Candidate campus employment & application pipeline summary
+$placement_summary = ApplicationService::getStudentPlacementSummary(
+    (int)($target_app['student_id'] ?? 0),
+    (int)($target_app['job_id'] ?? 0)
+);
 
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-review-app-view.php';

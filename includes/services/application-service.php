@@ -69,6 +69,12 @@ class RequisitionEligibility {
                 'icon'  => 'bi-check-circle-fill',
                 'desc'  => 'You have already applied for this vacancy.'
             ],
+            'already_employed' => [
+                'bg'    => 'bg-warning-subtle border-warning text-warning-emphasis',
+                'label' => 'Currently Employed',
+                'icon'  => 'bi-briefcase-fill',
+                'desc'  => 'You are already appointed as a Student Assistant at another campus office.'
+            ],
             'unverified_student' => [
                 'bg'    => 'bg-warning-subtle border-warning text-warning-emphasis',
                 'label' => 'Verification Required',
@@ -177,6 +183,21 @@ class ApplicationService {
                     $existing
                 );
             }
+
+            // Institutional Policy: One active appointment at a time.
+            // Check if candidate is already hired/accepted in another campus requisition.
+            $activePlacement = self::getStudentActivePlacement((int)$user['id']);
+            if ($activePlacement && (int)($activePlacement['job_id'] ?? 0) !== (int)$job['id']) {
+                $placedOffice = $activePlacement['department'] ?? ($activePlacement['organization_name'] ?? 'another campus office');
+                $placedTitle = $activePlacement['job_title'] ?? ($activePlacement['title'] ?? 'Student Assistant');
+                return new RequisitionEligibility(
+                    false,
+                    'already_employed',
+                    "You are already actively appointed as a {$placedTitle} at {$placedOffice}. University policy permits only one concurrent campus student assistant appointment at a time.",
+                    'accepted',
+                    $activePlacement
+                );
+            }
         }
 
         return new RequisitionEligibility(
@@ -231,6 +252,119 @@ class ApplicationService {
             }
             return null;
         }
+    }
+
+    /**
+     * Retrieve student's current active placement (accepted/hired application with job details).
+     */
+    public static function getStudentActivePlacement(int $studentId): ?array {
+        if ($studentId <= 0) {
+            return null;
+        }
+        try {
+            $pdo = get_db_connection();
+            $stmt = $pdo->prepare("
+                SELECT 
+                    a.*,
+                    j.`title` AS `job_title`,
+                    j.`department` AS `department`,
+                    j.`employer_id`,
+                    j.`job_type`,
+                    j.`work_setup`,
+                    j.`pay_rate`,
+                    ep.`organization_name`
+                FROM `applications` a
+                INNER JOIN `jobs` j ON a.`job_id` = j.`id`
+                LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+                WHERE a.`student_id` = :student_id 
+                  AND LOWER(a.`status`) IN ('accepted', 'accepted / hired', 'hired')
+                ORDER BY a.`updated_at` DESC
+                LIMIT 1
+            ");
+            $stmt->execute([':student_id' => $studentId]);
+            $row = $stmt->fetch();
+            return $row ? (function_exists('hydrate_application') ? hydrate_application($row) : $row) : null;
+        } catch (Exception $e) {
+            $file = DATA_DIR . '/applications.json';
+            if (file_exists($file)) {
+                $apps = json_decode((string)file_get_contents($file), true) ?? [];
+                foreach ($apps as $a) {
+                    if ((int)($a['student_id'] ?? 0) === $studentId && in_array(strtolower($a['status'] ?? ''), ['accepted', 'hired', 'accepted / hired'])) {
+                        return $a;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Get a comprehensive employment and pipeline summary for an applicant.
+     * Used by employers on review screens to know if a candidate is employed or multi-applying.
+     */
+    public static function getStudentPlacementSummary(int $studentId, ?int $currentJobId = null): array {
+        $activePlacement = self::getStudentActivePlacement($studentId);
+        $otherApplications = [];
+
+        try {
+            $pdo = get_db_connection();
+            $sql = "
+                SELECT 
+                    a.`id`,
+                    a.`job_id`,
+                    a.`status`,
+                    a.`applied_at`,
+                    j.`title` AS `job_title`,
+                    j.`department` AS `department`,
+                    ep.`organization_name`
+                FROM `applications` a
+                INNER JOIN `jobs` j ON a.`job_id` = j.`id`
+                LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+                WHERE a.`student_id` = :student_id
+            ";
+            if ($currentJobId !== null && $currentJobId > 0) {
+                $sql .= " AND a.`job_id` != :current_job_id";
+            }
+            $sql .= " ORDER BY a.`applied_at` DESC";
+
+            $stmt = $pdo->prepare($sql);
+            $params = [':student_id' => $studentId];
+            if ($currentJobId !== null && $currentJobId > 0) {
+                $params[':current_job_id'] = $currentJobId;
+            }
+            $stmt->execute($params);
+            $otherApplications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $file = DATA_DIR . '/applications.json';
+            if (file_exists($file)) {
+                $apps = json_decode((string)file_get_contents($file), true) ?? [];
+                foreach ($apps as $a) {
+                    if ((int)($a['student_id'] ?? 0) === $studentId && ($currentJobId === null || (int)($a['job_id'] ?? 0) !== $currentJobId)) {
+                        $otherApplications[] = $a;
+                    }
+                }
+            }
+        }
+
+        $pendingCount = 0;
+        $inProgressCount = 0;
+        foreach ($otherApplications as $oa) {
+            $st = strtolower($oa['status'] ?? '');
+            if (in_array($st, ['pending', 'pending review'])) {
+                $pendingCount++;
+            } elseif (in_array($st, ['under_review', 'under evaluation', 'under review', 'interview_scheduled', 'interview scheduled'])) {
+                $inProgressCount++;
+            }
+        }
+
+        return [
+            'is_employed'          => !empty($activePlacement),
+            'active_placement'     => $activePlacement,
+            'other_applications'   => $otherApplications,
+            'other_total_count'    => count($otherApplications),
+            'other_pending_count'  => $pendingCount,
+            'other_eval_count'     => $inProgressCount,
+        ];
     }
 
     /**
@@ -359,13 +493,14 @@ class ApplicationService {
             }
         }
 
-        // Calculate candidate schedule availability summary
-        if (function_exists('get_schedule_summary')) {
-            foreach ($results as &$app) {
+        // Calculate candidate schedule availability and campus placement summary
+        foreach ($results as &$app) {
+            if (function_exists('get_schedule_summary')) {
                 $app['schedule_summary'] = get_schedule_summary($app);
             }
-            unset($app);
+            $app['placement_summary'] = self::getStudentPlacementSummary((int)($app['student_id'] ?? 0), (int)($app['job_id'] ?? 0));
         }
+        unset($app);
 
         // In-memory filter for schedule availability tier (since availability is computed)
         if (!empty($fitFilter)) {

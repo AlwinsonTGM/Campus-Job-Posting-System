@@ -43,7 +43,13 @@ flowchart TD
     JobExists -- "Yes" --> ExtractUser["Get logged-in user entity (or null if guest)"]
     
     ExtractUser --> CheckEligibility["Call ApplicationService::checkEligibility($job, $user)"]
-    CheckEligibility --> CheckFit["Query live applicant count via ApplicationService::getApplicantCount()<br/>Compute get_student_schedule_fit($student, $job, $count)"]
+    CheckEligibility --> EvalReason{"eligibility->reason()"}
+    
+    EvalReason -- "already_employed" --> EmployedBanner["Set $already_employed = true<br/>Render 'Currently Employed' Policy Notice (CTA Disabled)"]
+    EvalReason -- "already_applied" --> AppliedBanner["Set $already_applied = true<br/>Render 'Application on File' Status Badge"]
+    EvalReason -- "allowed" --> ActiveCTA["Render Active 'Apply Now' CTA Button"]
+    
+    EmployedBanner & AppliedBanner & ActiveCTA --> CheckFit["Query live applicant count via ApplicationService::getApplicantCount()<br/>Compute get_student_schedule_fit($student, $job, $count)"]
     
     CheckFit --> CalcSlots["Compute Capacity Gauge:<br/>- $slots_total & $slots_filled<br/>- $pct = round((filled / total) * 100)"]
     
@@ -55,10 +61,10 @@ flowchart TD
     classDef danger fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b;
     classDef step fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#0f172a;
     
-    class JobExists gate;
-    class StreamOutput success;
+    class JobExists,EvalReason gate;
+    class StreamOutput,ActiveCTA success;
     class RedirectNotFound danger;
-    class Req,FetchID,QueryJob,ExtractUser,CheckEligibility,CheckFit,CalcSlots,DelegateView step;
+    class Req,FetchID,QueryJob,ExtractUser,CheckEligibility,EmployedBanner,AppliedBanner,CheckFit,CalcSlots,DelegateView step;
 ```
 
 ---
@@ -89,19 +95,21 @@ if (!$job) {
 
 ---
 
-### Lines 18–22: Real-Time Eligibility Evaluation
+### Lines 18–25: Real-Time Eligibility & Appointment Gating
 ```php
 $user = get_logged_user();
 $eligibility = ApplicationService::checkEligibility($job, $user);
 $already_applied = ($eligibility->reason() === 'already_applied');
+$already_employed = ($eligibility->reason() === 'already_employed');
+$active_placement = $already_employed ? $eligibility->existingApplication() : null;
 $app_status = $eligibility->applicationStatus() ?? 'pending';
 ```
 - **`ApplicationService::checkEligibility($job, $user)`**: Returns a `RequisitionEligibility` Value Object that evaluates all multi-constraint business rules:
   - Is the user an authenticated student?
-  - Has the user already applied to this specific job?
-  - Is the student already hired in another active campus position (Single-Contract Rule)?
+  - Has the user already applied to this specific job (`already_applied`)?
+  - Is the student already hired in another active campus position (`already_employed`) under the university's One-Appointment Policy?
   - Is the job fully filled or expired?
-- Identifies if the student already applied (`$already_applied = true`) and pulls their live application review status (`$app_status`).
+- When `$already_employed === true`, captures the candidate's existing placement details (`$active_placement`) to render a prominent "Currently Employed" notice, disabling the Apply button in favor of an institutional explanation.
 
 ---
 

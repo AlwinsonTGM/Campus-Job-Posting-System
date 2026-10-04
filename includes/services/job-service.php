@@ -650,6 +650,122 @@ function dispatch_application_status_notification(
     );
 }
 
+/**
+ * Automatically withdraws all other active/pending applications for a student
+ * once they are accepted/hired for a campus position, notifying both the student
+ * and all affected hiring supervisors/employers.
+ *
+ * @param int $accepted_app_id ID of the accepted application (to exclude)
+ * @param int $student_id ID of the student
+ * @param int $accepted_job_id ID of the accepted job
+ * @param string $accepted_job_title Title of the accepted job
+ * @param string $accepted_dept Department offering the accepted job
+ * @return int Number of other applications automatically withdrawn
+ */
+function auto_withdraw_other_applications(
+    int $accepted_app_id,
+    int $student_id,
+    int $accepted_job_id,
+    string $accepted_job_title,
+    string $accepted_dept
+): int {
+    if ($student_id <= 0 || $accepted_app_id <= 0) {
+        return 0;
+    }
+
+    try {
+        $pdo = get_db_connection();
+
+        // Query all other active/in-progress applications for this student
+        $stmt = $pdo->prepare("
+            SELECT 
+                a.`id`,
+                a.`job_id`,
+                a.`status`,
+                a.`supervisor_notes`,
+                j.`title` AS `job_title`,
+                j.`department` AS `job_department`,
+                j.`employer_id`,
+                u.`name` AS `student_name`
+            FROM `applications` a
+            INNER JOIN `jobs` j ON a.`job_id` = j.`id`
+            INNER JOIN `users` u ON a.`student_id` = u.`id`
+            WHERE a.`student_id` = :student_id
+              AND a.`id` != :accepted_app_id
+              AND LOWER(a.`status`) IN ('pending', 'under_review', 'interview_scheduled')
+        ");
+        $stmt->execute([
+            ':student_id'      => $student_id,
+            ':accepted_app_id' => $accepted_app_id
+        ]);
+        $other_apps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($other_apps)) {
+            return 0;
+        }
+
+        $withdrawn_count = 0;
+
+        foreach ($other_apps as $app) {
+            $other_app_id = (int)$app['id'];
+            $other_job_title = $app['job_title'] ?? 'Campus Job';
+            $other_dept = $app['job_department'] ?? 'Campus Department';
+            $other_employer_id = (int)($app['employer_id'] ?? 0);
+            $student_name = $app['student_name'] ?? 'Candidate';
+
+            $auto_note = "Auto-withdrawn: Candidate accepted position for '{$accepted_job_title}' ({$accepted_dept}).";
+            $prior_note = trim($app['supervisor_notes'] ?? '');
+            $final_notes = !empty($prior_note) ? $auto_note . " | Prior note: " . $prior_note : $auto_note;
+
+            $up_stmt = $pdo->prepare("
+                UPDATE `applications` 
+                SET `status` = 'withdrawn',
+                    `supervisor_notes` = :notes,
+                    `updated_at` = NOW()
+                WHERE `id` = :id
+            ");
+            $up_stmt->execute([
+                ':notes' => $final_notes,
+                ':id'    => $other_app_id
+            ]);
+
+            $withdrawn_count++;
+
+            // Dispatch notification to the employer of the other job vacancy
+            if ($other_employer_id > 0) {
+                create_notification(
+                    $other_employer_id,
+                    'application_withdrawn',
+                    'Candidate Withdrawn (Hired Elsewhere)',
+                    "Candidate {$student_name} accepted an appointment with {$accepted_dept} ('{$accepted_job_title}'). Their application for '{$other_job_title}' has been automatically withdrawn.",
+                    "employer/review-app.php?id={$other_app_id}",
+                    'bi-person-x-fill',
+                    'secondary'
+                );
+            }
+        }
+
+        // Dispatch summary notification to the student
+        if ($withdrawn_count > 0) {
+            $count_str = $withdrawn_count === 1 ? '1 other active application has' : "{$withdrawn_count} other active applications have";
+            create_notification(
+                $student_id,
+                'application_status',
+                'Concurrent Applications Auto-Withdrawn',
+                "Congratulations on your appointment for '{$accepted_job_title}'! In accordance with campus policy (one active appointment per term), {$count_str} been automatically withdrawn.",
+                'student/my-applications.php',
+                'bi-info-circle-fill',
+                'info'
+            );
+        }
+
+        return $withdrawn_count;
+    } catch (Exception $e) {
+        error_log("auto_withdraw_other_applications error: " . $e->getMessage());
+        return 0;
+    }
+}
+
 function update_application_status(int|string $id, string $status, string $notes = '', array $interview_data = []): bool {
     try {
         $pdo = get_db_connection();
@@ -722,6 +838,8 @@ function update_application_status(int|string $id, string $status, string $notes
 
         $student_id = (int)($target_app['student_id'] ?? 0);
         $job_title = $target_app['job_title'] ?? 'Campus Job';
+        $department = $target_app['department'] ?? 'Campus Department';
+
         dispatch_application_status_notification(
             $student_id,
             $job_title,
@@ -732,6 +850,10 @@ function update_application_status(int|string $id, string $status, string $notes
             $interview_time,
             $interview_venue
         );
+
+        if ($old_status !== 'accepted' && $status === 'accepted') {
+            auto_withdraw_other_applications((int)$id, $student_id, $job_id, $job_title, $department);
+        }
 
         return true;
     } catch (Exception $e) {

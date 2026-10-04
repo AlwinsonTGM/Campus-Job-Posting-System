@@ -204,7 +204,22 @@ require_once __DIR__ . '/../header.php';
                             <?php endif; ?>
 
                             <!-- Action CTA -->
-                            <?php if ($already_applied): ?>
+                            <?php if (!empty($already_employed)): ?>
+                                <div class="p-3 bg-warning-subtle rounded-3 border border-warning text-center mb-3">
+                                    <div class="small fw-bold text-warning-emphasis mb-1">
+                                        <i class="bi bi-briefcase-fill text-warning me-1"></i> Currently Appointed
+                                    </div>
+                                    <div class="small text-ink mb-2" style="font-size: 12px; line-height: 1.4;">
+                                        You are currently hired as a <strong><?= htmlspecialchars($active_placement['job_title'] ?? 'Student Assistant') ?></strong> at <strong><?= htmlspecialchars($active_placement['department'] ?? 'another campus office') ?></strong>.
+                                    </div>
+                                    <p class="small text-muted-custom mb-2" style="font-size: 11px;">
+                                        University guidelines permit one concurrent campus student assistant appointment at a time.
+                                    </p>
+                                    <a href="my-applications.php" class="btn-pill-outline btn-pill-sm w-100">
+                                        View Active Appointment
+                                    </a>
+                                </div>
+                            <?php elseif ($already_applied): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
                                     <div class="small fw-bold text-ink mb-1">
                                         <i class="bi bi-check-circle-fill text-accent me-1"></i> Application Active

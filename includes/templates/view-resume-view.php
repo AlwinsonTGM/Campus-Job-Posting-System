@@ -11,15 +11,24 @@
     <meta charset=UTF-8>
     <meta name=viewport content=width=device-width, initial-scale=1.0>
     <title><?= htmlspecialchars($student_name) ?> - Official Student Resume (KLD)</title>
-    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
-    <link rel="apple-touch-icon" href="assets/img/favicon.svg">
+    <link id="brandFavicon32" rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=d4">
+    <link id="brandFavicon16" rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=d4">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-180.png?v=d4">
     <link rel="stylesheet" href="assets/vendor/fonts/fonts.css">
     <link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css">
     <script>
     (function(){
-      var t = localStorage.getItem('campus_hire_theme');
-      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', t);
+      try {
+        var t = localStorage.getItem('campus_hire_theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (t === 'dark') {
+          var f32 = document.getElementById('brandFavicon32');
+          var f16 = document.getElementById('brandFavicon16');
+          if (f32) f32.href = 'assets/img/logo-d4-dark-32.png?v=d4';
+          if (f16) f16.href = 'assets/img/logo-d4-dark-32.png?v=d4';
+        }
+      } catch(e) {}
     })();
     </script>
     <style>

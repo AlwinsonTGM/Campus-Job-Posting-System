@@ -53,15 +53,18 @@ flowchart TD
     Gate4 -- "YES" --> Gate5{"Gate 5: Has Student Already Applied?<br/><code>hasStudentApplied(jobId, studentId)</code>"}
     Gate5 -- "YES (Duplicate)" --> Block5(["Block: Application Active Badge"])
 
-    Gate5 -- "NO (Passed All Checks)" --> Allow(["Grant Access: Return RequisitionEligibility(allowed: true)<br/>Enable Application Submission Form"])
+    Gate5 -- "NO" --> Gate6{"Gate 6: Already Employed Elsewhere?<br/><code>getStudentActivePlacement(studentId)</code>"}
+    Gate6 -- "YES (One-Appt Policy)" --> Block6(["Block: Already Employed Badge"])
+
+    Gate6 -- "NO (Passed All Checks)" --> Allow(["Grant Access: Return RequisitionEligibility(allowed: true)<br/>Enable Application Submission Form"])
 
     %% Semantic styling
     classDef gate fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E;
     classDef block fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#991B1B;
     classDef pass fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#166534;
 
-    class Gate1,Gate2,Gate3,Gate4,Gate5 gate;
-    class Block1,Block2,Block3,Block4,Block5 block;
+    class Gate1,Gate2,Gate3,Gate4,Gate5,Gate6 gate;
+    class Block1,Block2,Block3,Block4,Block5,Block6 block;
     class Allow pass;
 ```
 
@@ -94,19 +97,32 @@ Evaluates all eligibility rules sequentially:
 5. **Role Gating**: Blocks non-students (e.g., employers or admins) from submitting candidate applications.
 6. **Administrative Verification Gate**: Ensures the student account has completed university registration review (`verification_status === 'verified'`).
 7. **Duplicate Prevention**: Calls `getStudentApplication()` to ensure a candidate cannot submit duplicate applications for the same job vacancy.
+8. **One-Appointment Policy Gate**: Calls `getStudentActivePlacement($userId)` to ensure the candidate is not already appointed as a Student Assistant in another campus office. Returns `already_employed` if an active contract is held elsewhere.
 
 ---
 
-### 3. Atomic Application State Queries (Lines 174–244)
+### 3. Atomic Application State & Placement Queries (Lines 174–370)
 
-#### `hasStudentApplied(int $jobId, int $studentId): bool` (Lines 177–195)
+#### `getStudentActivePlacement(int $studentId): ?array` (Lines 258–290)
+* Queries the database for any active appointment (`LOWER(status) IN ('accepted', 'hired', 'accepted / hired')`) held by the student across campus departments.
+* Returns the application row hydrated with job title, department, employer organization, pay rate, and work setup.
+* Powers the institutional One-Appointment Policy gate.
+
+#### `getStudentPlacementSummary(int $studentId, ?int $currentJobId = null): array` (Lines 295–370)
+* Provides hiring supervisors with complete applicant pipeline visibility during candidate evaluation:
+  * `is_employed`: Boolean flag indicating if candidate currently holds an active appointment elsewhere.
+  * `active_placement`: Job details and department of current appointment if active.
+  * `other_applications`: List of all applications submitted to other offices.
+  * `other_pending_count` & `other_eval_count`: Aggregated count of competing applications currently pending review or under evaluation across campus.
+
+#### `hasStudentApplied(int $jobId, int $studentId): bool` (Lines 210–230)
 * **Optimization**: Fast atomic SQL query executing `SELECT 1 FROM applications WHERE job_id = :job_id AND student_id = :student_id LIMIT 1`. Avoids fetching heavy rows when only a boolean check is needed.
 * **Dual Datastore Fallback**: If MySQL PDO fails, falls back to parsing `data/applications.json`.
 
-#### `getStudentApplication(int $jobId, int $studentId): ?array` (Lines 200–219)
+#### `getStudentApplication(int $jobId, int $studentId): ?array` (Lines 235–250)
 * Returns the most recent application submitted by the student for that specific vacancy.
 
-#### `getApplicantCount(int $jobId): int` (Lines 224–244)
+#### `getApplicantCount(int $jobId): int` (Lines 375–395)
 * Executes `SELECT COUNT(*) FROM applications WHERE job_id = :job_id` to provide instantaneous count badges on employer dashboard cards.
 
 ---

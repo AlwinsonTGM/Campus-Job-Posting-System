@@ -64,6 +64,45 @@ require_once __DIR__ . '/../header.php';
                                     <span class="text-muted-custom mx-2">&bull;</span>
                                     <span class="small text-muted-custom"><?= htmlspecialchars($target_app['student_email']) ?></span>
                                 </div>
+                                <?php if (!empty($placement_summary['is_employed'])): 
+                                    $curJob = $placement_summary['active_placement'];
+                                ?>
+                                    <div class="col-md-12">
+                                        <div class="p-3 bg-warning-subtle border border-warning rounded-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <i class="bi bi-exclamation-triangle-fill text-warning-emphasis"></i>
+                                                <strong class="text-warning-emphasis small">Currently Employed on Campus</strong>
+                                            </div>
+                                            <div class="small text-ink">
+                                                This student is currently hired as <strong><?= htmlspecialchars($curJob['job_title'] ?? 'Student Assistant') ?></strong> at <strong><?= htmlspecialchars($curJob['department'] ?? 'another campus office') ?></strong>.
+                                            </div>
+                                            <div class="small text-muted-custom mt-1" style="font-size: 11px;">
+                                                Per university guidelines, candidates can only hold one active Student Assistant appointment. Hiring this candidate requires coordination with their current supervising office.
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php elseif (!empty($placement_summary['other_total_count'])): ?>
+                                    <div class="col-md-12">
+                                        <div class="p-2 px-3 bg-surface border border-line rounded-3 d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center gap-2 small text-muted-custom">
+                                                <i class="bi bi-info-circle text-accent"></i>
+                                                <span>Concurrent Applications:</span>
+                                                <strong class="text-ink"><?= (int)$placement_summary['other_total_count'] ?> other submission<?= $placement_summary['other_total_count'] > 1 ? 's' : '' ?></strong>
+                                                <?php if (!empty($placement_summary['other_eval_count'])): ?>
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 10px;"><?= (int)$placement_summary['other_eval_count'] ?> in review</span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <span class="badge bg-secondary-subtle text-secondary" style="font-size: 10.5px;">Not Yet Appointed</span>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="col-md-12">
+                                        <div class="small text-muted-custom d-flex align-items-center gap-2">
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                            <span>No other campus job appointments or active applications. Fully available.</span>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -171,7 +210,7 @@ require_once __DIR__ . '/../header.php';
                                     <div class="d-flex align-items-center gap-2 mb-1 fw-bold text-warning-emphasis">
                                         <i class="bi bi-info-circle-fill"></i> Candidate Withdrawn
                                     </div>
-                                    <div>This student candidate has withdrawn their application. All evaluation and audit records remain preserved in archive mode.</div>
+                                    <div><?= !empty($target_app['supervisor_notes']) ? htmlspecialchars($target_app['supervisor_notes']) : 'This student candidate has withdrawn their application. All evaluation and audit records remain preserved in archive mode.' ?></div>
                                 </div>
                             <?php endif; ?>
 

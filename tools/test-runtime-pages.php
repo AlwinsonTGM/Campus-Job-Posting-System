@@ -30,7 +30,10 @@ $pages = [
     'admin/users.php',
     'admin/categories.php',
     'admin/updates.php',
-    'admin/ai-settings.php'
+    'admin/ai-settings.php',
+    'admin/settings.php',
+    'employer/settings.php',
+    'student/settings.php'
 ];
 
 $issues = [];

@@ -48,6 +48,16 @@ function hydrate_user(mixed $row): ?array {
     if (!isset($row['organization_name']) && isset($row['department'])) {
         $row['organization_name'] = $row['department'];
     }
+    if (!isset($row['resume_file']) && !empty($row['resume'])) {
+        $row['resume_file'] = basename($row['resume']);
+    } elseif (!empty($row['resume_file'])) {
+        $row['resume_file'] = basename($row['resume_file']);
+    } else {
+        $row['resume_file'] = null;
+    }
+    if (!isset($row['resume'])) {
+        $row['resume'] = $row['resume_file'] ?? null;
+    }
     $row['is_email_verified'] = isset($row['is_email_verified']) ? (int)$row['is_email_verified'] : 1;
     return $row;
 }
@@ -171,7 +181,11 @@ function hydrate_update(mixed $row): ?array {
 function hydrate_devblog(mixed $row): ?array {
     if (!$row || !is_array($row)) return null;
     if (isset($row['daily_logs']) && is_string($row['daily_logs'])) {
-        $row['daily_logs'] = json_decode($row['daily_logs'], true) ?: [];
+        $decoded = json_decode($row['daily_logs'], true) ?: [];
+        $row['daily_logs'] = $decoded;
+        if (is_array($decoded)) {
+            $row = array_merge($decoded, $row);
+        }
     } elseif (!isset($row['daily_logs'])) {
         $row['daily_logs'] = [];
     }

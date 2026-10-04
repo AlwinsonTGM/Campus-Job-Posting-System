@@ -13,13 +13,21 @@ if (!defined('SITE_NAME')) {
             <!-- Brand & Mission Column -->
             <div class="col-lg-4 col-md-6">
                 <div class="d-flex align-items-center gap-2 mb-3">
-                    <span class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-3 p-2 shadow-sm" style="width: 34px; height: 34px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#2ECC5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
+                    <!-- D4 Antenna Helper brand mark (theme-aware: light <-> dark pairing) -->
+                    <script>
+                    (function(){
+                      try {
+                        var t = localStorage.getItem('campus_hire_theme');
+                        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                        document.write(t === 'dark'
+                          ? '<img class="brand-logo-img" data-brand-logo src="<?= $base_url ?>assets/img/logo-d4-dark-64.png?v=d4" width="34" height="34" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" alt="Campus Hire logo">'
+                          : '<img class="brand-logo-img" data-brand-logo src="<?= $base_url ?>assets/img/logo-d4-light-64.png?v=d4" width="34" height="34" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" alt="Campus Hire logo">');
+                      } catch (e) {
+                        document.write('<img class="brand-logo-img" data-brand-logo src="<?= $base_url ?>assets/img/logo-d4-light-64.png?v=d4" width="34" height="34" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" alt="Campus Hire logo">');
+                      }
+                    })();
+                    </script>
+                    <noscript><img class="brand-logo-img" src="<?= $base_url ?>assets/img/logo-d4-light-64.png?v=d4" width="34" height="34" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" alt="Campus Hire logo"></noscript>
                     <h5 class="fw-extrabold text-ink mb-0 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></h5>
                 </div>
                 <p class="text-muted-custom small mb-4 pe-lg-3">
