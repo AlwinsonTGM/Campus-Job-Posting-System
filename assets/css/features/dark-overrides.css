@@ -813,8 +813,11 @@
   background-color: var(--accent);
   border-color: var(--accent);
 }
+[data-theme="dark"] .matrix-table td:has(.matrix-check:checked),
 [data-theme="dark"] .matrix-cell-selected {
-  background-color: var(--accent-soft);
+  background-color: var(--accent-soft) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px rgba(0, 168, 107, 0.25), 0 0 10px rgba(0, 168, 107, 0.2);
 }
 [data-theme="dark"] .matrix-cell-label {
   color: var(--ink);

@@ -11,8 +11,31 @@ window.triggerPrintReport = function () {
 // Global Smart Go Back Helper (handles new tabs, popups, and history traversal)
 window.smartGoBack = function (fallbackUrl) {
   var targetFallback = fallbackUrl || 'index.php';
-  
-  // Attempt window.close if opened in separate window/tab
+  var isFromRegister = window.location.search.indexOf('from=register') !== -1;
+
+  // 1. If coming from registration, the page was opened as an auxiliary tab:
+  // attempt window.close so the user lands back on their intact registration form.
+  if (isFromRegister) {
+    try {
+      if (window.opener && !window.opener.closed) {
+        window.close();
+      }
+      window.close();
+    } catch (e) {}
+
+    setTimeout(function () {
+      window.location.href = targetFallback;
+    }, 150);
+    return;
+  }
+
+  // 2. If this tab has in-site browsing history, navigate back within the tab
+  if (window.history.length > 1 && document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+    window.history.back();
+    return;
+  }
+
+  // 3. If opened in a separate tab without prior history, attempt window.close
   try {
     if (window.opener && !window.opener.closed) {
       window.close();
@@ -20,14 +43,10 @@ window.smartGoBack = function (fallbackUrl) {
     window.close();
   } catch (e) {}
 
-  // If window.close was prevented by browser policy, use history or fallback
+  // 4. Fallback to redirect if window.close was prevented by browser policy
   setTimeout(function () {
-    if (window.history.length > 1 && document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
-      window.history.back();
-    } else {
-      window.location.href = targetFallback;
-    }
-  }, 120);
+    window.location.href = targetFallback;
+  }, 150);
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -1041,8 +1060,11 @@ document.addEventListener('DOMContentLoaded', function () {
       dots.forEach(function (dot, idx) {
         dot.classList.toggle('is-active', idx === currentIndex);
       });
-      if (dots[currentIndex] && typeof dots[currentIndex].scrollIntoView === 'function') {
-        dots[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      const dotsContainer = document.getElementById('devblog-step-dots');
+      if (dotsContainer && dots[currentIndex]) {
+        const dot = dots[currentIndex];
+        const targetScrollLeft = dot.offsetLeft - (dotsContainer.clientWidth / 2) + (dot.clientWidth / 2);
+        dotsContainer.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
       }
 
       // Update counter

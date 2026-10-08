@@ -56,18 +56,24 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $log_fn("Tables created/verified successfully.", "success");
         }
 
-        // Truncate tables if requested for a clean datastore reset
+        // Truncate tables if requested for a clean datastore reset (protected)
         if ($truncate) {
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            $allowed_tables = ['email_verifications', 'notifications', 'devblogs', 'updates', 'profile_requests', 'password_resets', 'applications', 'jobs', 'student_profiles', 'employer_profiles', 'categories', 'users'];
-            foreach ($allowed_tables as $t) {
-                // Strict whitelist validation for security audit compliance
-                if (in_array($t, $allowed_tables, true) && preg_match('/^[a-z0-9_]+$/i', $t)) {
-                    $pdo->exec("TRUNCATE TABLE `" . $t . "`;");
+            $allowWipe = defined('ALLOW_DATABASE_TRUNCATE') && ALLOW_DATABASE_TRUNCATE === true;
+            if (!$allowWipe) {
+                $log_fn("Truncate operation blocked: Database truncation is disabled to protect persistent MySQL records.", "warning");
+                $truncate = false;
+            } else {
+                $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+                $allowed_tables = ['email_verifications', 'notifications', 'devblogs', 'updates', 'profile_requests', 'password_resets', 'applications', 'jobs', 'student_profiles', 'employer_profiles', 'categories', 'users'];
+                foreach ($allowed_tables as $t) {
+                    // Strict whitelist validation for security audit compliance
+                    if (in_array($t, $allowed_tables, true) && preg_match('/^[a-z0-9_]+$/i', $t)) {
+                        $pdo->exec("TRUNCATE TABLE `" . $t . "`;");
+                    }
                 }
+                $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+                $log_fn("All tables truncated.", "info");
             }
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-            $log_fn("All tables truncated.", "info");
         }
 
         $data_dir = $source_dir ?: (dirname(__DIR__) . '/data');
@@ -87,20 +93,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating categories...");
         $categories = $read_json('categories.json');
         $stmt_cat = $pdo->prepare("
-            INSERT INTO `categories` (`id`, `name`, `slug`, `icon`, `description`, `theme`, `badge_tag`, `badge_icon`, `job_count`, `hourly_range`, `image`, `popular_roles`)
+            INSERT IGNORE INTO `categories` (`id`, `name`, `slug`, `icon`, `description`, `theme`, `badge_tag`, `badge_icon`, `job_count`, `hourly_range`, `image`, `popular_roles`)
             VALUES (:id, :name, :slug, :icon, :description, :theme, :badge_tag, :badge_icon, :job_count, :hourly_range, :image, :popular_roles)
-            ON DUPLICATE KEY UPDATE 
-                `name` = VALUES(`name`),
-                `slug` = VALUES(`slug`),
-                `icon` = VALUES(`icon`),
-                `description` = VALUES(`description`),
-                `theme` = VALUES(`theme`),
-                `badge_tag` = VALUES(`badge_tag`),
-                `badge_icon` = VALUES(`badge_icon`),
-                `job_count` = VALUES(`job_count`),
-                `hourly_range` = VALUES(`hourly_range`),
-                `image` = VALUES(`image`),
-                `popular_roles` = VALUES(`popular_roles`)
         ");
 
         $count_cats = 0;
@@ -127,19 +121,12 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating users and subtypes (student_profiles, employer_profiles)...");
         $users = $read_json('users.json');
         $stmt_user = $pdo->prepare("
-            INSERT INTO `users` (`id`, `email`, `password`, `role`, `name`, `phone`, `status`, `created_at`)
+            INSERT IGNORE INTO `users` (`id`, `email`, `password`, `role`, `name`, `phone`, `status`, `created_at`)
             VALUES (:id, :email, :password, :role, :name, :phone, :status, :created_at)
-            ON DUPLICATE KEY UPDATE
-                `email` = VALUES(`email`),
-                `password` = VALUES(`password`),
-                `role` = VALUES(`role`),
-                `name` = VALUES(`name`),
-                `phone` = VALUES(`phone`),
-                `status` = VALUES(`status`)
         ");
 
         $stmt_student = $pdo->prepare("
-            INSERT INTO `student_profiles` (
+            INSERT IGNORE INTO `student_profiles` (
                 `user_id`, `student_id`, `department`, `course`, `year_level`, 
                 `sex`, `birthdate`, `age`, `availability`, `verification_status`, 
                 `rejection_reason`, `registration_proof`, `resume_file`, `created_at`
@@ -148,23 +135,10 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 :sex, :birthdate, :age, :availability, :verification_status,
                 :rejection_reason, :registration_proof, :resume_file, :created_at
             )
-            ON DUPLICATE KEY UPDATE
-                `student_id` = VALUES(`student_id`),
-                `department` = VALUES(`department`),
-                `course` = VALUES(`course`),
-                `year_level` = VALUES(`year_level`),
-                `sex` = VALUES(`sex`),
-                `birthdate` = VALUES(`birthdate`),
-                `age` = VALUES(`age`),
-                `availability` = VALUES(`availability`),
-                `verification_status` = VALUES(`verification_status`),
-                `rejection_reason` = VALUES(`rejection_reason`),
-                `registration_proof` = VALUES(`registration_proof`),
-                `resume_file` = VALUES(`resume_file`)
         ");
 
         $stmt_employer = $pdo->prepare("
-            INSERT INTO `employer_profiles` (
+            INSERT IGNORE INTO `employer_profiles` (
                 `user_id`, `employer_type`, `organization_name`, `office_location`, 
                 `contact_person`, `accreditation_number`, `verification_status`, 
                 `rejection_reason`, `business_permit`, `created_at`
@@ -173,15 +147,6 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 :contact_person, :accreditation_number, :verification_status,
                 :rejection_reason, :business_permit, :created_at
             )
-            ON DUPLICATE KEY UPDATE
-                `employer_type` = VALUES(`employer_type`),
-                `organization_name` = VALUES(`organization_name`),
-                `office_location` = VALUES(`office_location`),
-                `contact_person` = VALUES(`contact_person`),
-                `accreditation_number` = VALUES(`accreditation_number`),
-                `verification_status` = VALUES(`verification_status`),
-                `rejection_reason` = VALUES(`rejection_reason`),
-                `business_permit` = VALUES(`business_permit`)
         ");
 
         $count_users = 0;
@@ -250,7 +215,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating jobs...");
         $jobs = $read_json('jobs.json');
         $stmt_job = $pdo->prepare("
-            INSERT INTO `jobs` (
+            INSERT IGNORE INTO `jobs` (
                 `id`, `title`, `department`, `category_id`, 
                 `employer_id`, `job_type`, `work_setup`, 
                 `location`, `pay_rate`, `pay_type`, `hours_per_week`, 
@@ -263,28 +228,6 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 :vacancies, :slots_total, :slots_filled, :deadline, :status, :image,
                 :tags, :badges, :description, :responsibilities, :qualifications, :created_at
             )
-            ON DUPLICATE KEY UPDATE
-                `title` = VALUES(`title`),
-                `department` = VALUES(`department`),
-                `category_id` = VALUES(`category_id`),
-                `employer_id` = VALUES(`employer_id`),
-                `job_type` = VALUES(`job_type`),
-                `work_setup` = VALUES(`work_setup`),
-                `location` = VALUES(`location`),
-                `pay_rate` = VALUES(`pay_rate`),
-                `pay_type` = VALUES(`pay_type`),
-                `hours_per_week` = VALUES(`hours_per_week`),
-                `vacancies` = VALUES(`vacancies`),
-                `slots_total` = VALUES(`slots_total`),
-                `slots_filled` = VALUES(`slots_filled`),
-                `deadline` = VALUES(`deadline`),
-                `status` = VALUES(`status`),
-                `image` = VALUES(`image`),
-                `tags` = VALUES(`tags`),
-                `badges` = VALUES(`badges`),
-                `description` = VALUES(`description`),
-                `responsibilities` = VALUES(`responsibilities`),
-                `qualifications` = VALUES(`qualifications`)
         ");
 
         $count_jobs = 0;
@@ -326,7 +269,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating applications...");
         $applications = $read_json('applications.json');
         $stmt_app = $pdo->prepare("
-            INSERT INTO `applications` (
+            INSERT IGNORE INTO `applications` (
                 `id`, `job_id`, `student_id`, 
                 `cover_letter`, `availability`, `resume_file`, `study_load_file`, 
                 `status`, `interview_date`, `interview_time`, 
@@ -337,19 +280,6 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 :status, :interview_date, :interview_time,
                 :interview_venue, :supervisor_notes, :applied_at, :updated_at
             )
-            ON DUPLICATE KEY UPDATE
-                `job_id` = VALUES(`job_id`),
-                `student_id` = VALUES(`student_id`),
-                `cover_letter` = VALUES(`cover_letter`),
-                `availability` = VALUES(`availability`),
-                `resume_file` = VALUES(`resume_file`),
-                `study_load_file` = VALUES(`study_load_file`),
-                `status` = VALUES(`status`),
-                `interview_date` = VALUES(`interview_date`),
-                `interview_time` = VALUES(`interview_time`),
-                `interview_venue` = VALUES(`interview_venue`),
-                `supervisor_notes` = VALUES(`supervisor_notes`),
-                `updated_at` = VALUES(`updated_at`)
         ");
 
         $count_apps = 0;
@@ -382,7 +312,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating profile requests...");
         $requests = $read_json('profile_requests.json');
         $stmt_req = $pdo->prepare("
-            INSERT INTO `profile_requests` (
+            INSERT IGNORE INTO `profile_requests` (
                 `id`, `user_id`, `current_profile`, 
                 `requested_profile`, `proof_file`, `reason`, `status`, `admin_notes`, 
                 `dismissed_by_user`, `created_at`, `resolved_at`
@@ -391,16 +321,6 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 :requested_profile, :proof_file, :reason, :status, :admin_notes,
                 :dismissed_by_user, :created_at, :resolved_at
             )
-            ON DUPLICATE KEY UPDATE
-                `user_id` = VALUES(`user_id`),
-                `current_profile` = VALUES(`current_profile`),
-                `requested_profile` = VALUES(`requested_profile`),
-                `proof_file` = VALUES(`proof_file`),
-                `reason` = VALUES(`reason`),
-                `status` = VALUES(`status`),
-                `admin_notes` = VALUES(`admin_notes`),
-                `dismissed_by_user` = VALUES(`dismissed_by_user`),
-                `resolved_at` = VALUES(`resolved_at`)
         ");
 
         $count_reqs = 0;
@@ -426,7 +346,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating career updates...");
         $updates = $read_json('updates.json');
         $stmt_upd = $pdo->prepare("
-            INSERT INTO `updates` (
+            INSERT IGNORE INTO `updates` (
                 `id`, `slug`, `title`, `category`, `published_at`, `read_time`, 
                 `author_id`, `author_avatar`, 
                 `image`, `summary`, `content`, `created_at`, `updated_at`
@@ -435,18 +355,6 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 :author_id, :author_avatar,
                 :image, :summary, :content, :created_at, :updated_at
             )
-            ON DUPLICATE KEY UPDATE
-                `slug` = VALUES(`slug`),
-                `title` = VALUES(`title`),
-                `category` = VALUES(`category`),
-                `published_at` = VALUES(`published_at`),
-                `read_time` = VALUES(`read_time`),
-                `author_id` = VALUES(`author_id`),
-                `author_avatar` = VALUES(`author_avatar`),
-                `image` = VALUES(`image`),
-                `summary` = VALUES(`summary`),
-                `content` = VALUES(`content`),
-                `updated_at` = VALUES(`updated_at`)
         ");
 
         $count_upds = 0;
@@ -478,14 +386,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating devblogs...");
         $devblogs = $read_json('devblogs.json');
         $stmt_blog = $pdo->prepare("
-            INSERT INTO `devblogs` (`id`, `sprint_number`, `sprint_title`, `sprint_dates`, `sprint_focus`, `daily_logs`)
+            INSERT IGNORE INTO `devblogs` (`id`, `sprint_number`, `sprint_title`, `sprint_dates`, `sprint_focus`, `daily_logs`)
             VALUES (:id, :sprint_number, :sprint_title, :sprint_dates, :sprint_focus, :daily_logs)
-            ON DUPLICATE KEY UPDATE
-                `sprint_number` = VALUES(`sprint_number`),
-                `sprint_title` = VALUES(`sprint_title`),
-                `sprint_dates` = VALUES(`sprint_dates`),
-                `sprint_focus` = VALUES(`sprint_focus`),
-                `daily_logs` = VALUES(`daily_logs`)
         ");
 
         $count_blogs = 0;
@@ -507,18 +409,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $notifications = $read_json('notifications.json');
         if (!empty($notifications)) {
             $stmt_notif = $pdo->prepare("
-                INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `link`, `icon`, `badge_color`, `is_read`, `created_at`)
+                INSERT IGNORE INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `link`, `icon`, `badge_color`, `is_read`, `created_at`)
                 VALUES (:id, :user_id, :type, :title, :message, :link, :icon, :badge_color, :is_read, :created_at)
-                ON DUPLICATE KEY UPDATE
-                    `user_id` = VALUES(`user_id`),
-                    `type` = VALUES(`type`),
-                    `title` = VALUES(`title`),
-                    `message` = VALUES(`message`),
-                    `link` = VALUES(`link`),
-                    `icon` = VALUES(`icon`),
-                    `badge_color` = VALUES(`badge_color`),
-                    `is_read` = VALUES(`is_read`),
-                    `created_at` = VALUES(`created_at`)
             ");
             $count_notifs = 0;
             foreach ($notifications as $n) {
@@ -556,6 +448,11 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
 if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
     $is_cli = (php_sapi_name() === 'cli');
     if (!$is_cli) {
+        require_once dirname(__DIR__) . '/includes/auth-check.php';
+        if (!is_logged_in() || !is_admin()) {
+            http_response_code(403);
+            exit('Forbidden: Database migration can only be run via CLI or by authenticated administrators.');
+        }
         echo '<!DOCTYPE html>
         <html lang="en">
         <head>

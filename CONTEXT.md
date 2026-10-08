@@ -86,4 +86,18 @@ _Avoid_: BannedUser, DeletedUser, DisabledAccount
 The privileged administrative capability to revive archived requisitions, categories, and bulletins back into active circulation.
 _Avoid_: Unarchive, RecoverItem, Undelete
 
+### Quality & Layout Verification
+
+**Hybrid Verification Harness**:
+The architectural pattern coupling natural-language agent navigation with deterministic DOM layout invariants and relational datastore verification.
+_Avoid_: PureAITesting, MockRunner
+
+**Continuous Viewport Sweep**:
+The automated verification process dynamically stepping a viewport across breakpoint ranges (360px through 1280px) to surface fluid layout collisions, clipping, and text truncation during window resizing.
+_Avoid_: ResizeTest, SliderCheck
+
+**Zero-Overflow Invariant**:
+The non-negotiable structural constraint asserting that neither the root document nor any primary layout container generates an unwanted horizontal scrollbar (`scrollWidth > clientWidth`).
+_Avoid_: OverflowCheck, WidthBug
+
 

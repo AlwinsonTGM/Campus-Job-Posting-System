@@ -96,11 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $default_availability = (isset($_POST['availability']) && is_array($_POST['availability']))
     ? $_POST['availability']
-    : ((!empty($user['availability']) && is_array($user['availability'])) ? $user['availability'] : [
-        'Mon - Morning (8AM–12NN)',
-        'Wed - Morning (8AM–12NN)',
-        'Fri - Afternoon (1PM–5PM)'
-    ]);
+    : ((!empty($user['availability']) && is_array($user['availability'])) ? $user['availability'] : []);
 
 $page_title = 'Apply for ' . $job['title'];
 

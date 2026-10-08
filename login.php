@@ -14,17 +14,6 @@ $__remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
 $__is_loopback = in_array($__remote_addr, ['127.0.0.1', '::1', '::ffff:127.0.0.1'], true);
 $__test_hooks_enabled = !$__is_production && $__is_loopback;
 
-// Handle Datastore Reset from URL params (E2E / local demo fixtures only)
-if (isset($_GET['reset'])) {
-    if (!$__test_hooks_enabled) {
-        http_response_code(403);
-        exit('Forbidden');
-    }
-    DatastoreManager::resetToDemo('Datastore Reset', true);
-    set_flash('success', 'Datastore reset to pristine baseline.');
-    header('Location: login.php');
-    exit;
-}
 
 // Handle Quick Demo Login from URL params (local / E2E only, role-whitelisted)
 if (isset($_GET['demo'])) {

@@ -433,11 +433,12 @@ if (!function_exists('normalize_availability_slots')) {
             return [];
         }
 
+        $days_order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         $day_map = [
             'monday' => 'Mon', 'mon' => 'Mon',
-            'tuesday' => 'Tue', 'tue' => 'Tue',
+            'tuesday' => 'Tue', 'tue' => 'Tue', 'tues' => 'Tue',
             'wednesday' => 'Wed', 'wed' => 'Wed',
-            'thursday' => 'Thu', 'thu' => 'Thu',
+            'thursday' => 'Thu', 'thu' => 'Thu', 'thur' => 'Thu', 'thurs' => 'Thu',
             'friday' => 'Fri', 'fri' => 'Fri',
             'saturday' => 'Sat', 'sat' => 'Sat',
         ];
@@ -455,27 +456,61 @@ if (!function_exists('normalize_availability_slots')) {
 
             $lower = strtolower($slot_str);
 
-            // Match Day
-            $matched_day = null;
-            foreach ($day_map as $d_needle => $d_code) {
-                if (preg_match('/\b' . $d_needle . '\b/i', $lower)) {
-                    $matched_day = $d_code;
-                    break;
+            // Match Slot(s)
+            $matched_slots = [];
+            if (str_contains($lower, 'morning') || str_contains($lower, '7:00') || str_contains($lower, '8:00') || str_contains($lower, '8am') || str_contains($lower, '11:30') || str_contains($lower, '9:00 am')) {
+                $matched_slots[] = 'Morning (8AM–12NN)';
+            }
+            if (str_contains($lower, 'afternoon') || str_contains($lower, 'after 1:00') || str_contains($lower, 'after 2:00') || str_contains($lower, '1:00 pm') || str_contains($lower, '2:00 pm') || str_contains($lower, '4:00 pm') || str_contains($lower, '5:00 pm') || str_contains($lower, '1pm') || str_contains($lower, '2pm') || str_contains($lower, '5pm')) {
+                $matched_slots[] = 'Afternoon (1PM–5PM)';
+            }
+            if (str_contains($lower, 'evening') || str_contains($lower, '6:00') || str_contains($lower, '8:00 pm') || str_contains($lower, '6pm') || str_contains($lower, '8pm') || str_contains($lower, '5pm–8pm')) {
+                $matched_slots[] = 'Evening (5PM–8PM)';
+            }
+
+            if (empty($matched_slots)) {
+                if (str_contains($lower, 'hybrid') || str_contains($lower, 'flexible')) {
+                    $matched_slots = ['Morning (8AM–12NN)', 'Afternoon (1PM–5PM)'];
                 }
             }
 
-            // Match Slot
-            $matched_slot = null;
-            if (str_contains($lower, 'morning') || str_contains($lower, '8:00') || str_contains($lower, '8am') || str_contains($lower, '12nn') || str_contains($lower, '12:00 pm') || str_contains($lower, '12 pm')) {
-                $matched_slot = 'Morning (8AM–12NN)';
-            } elseif (str_contains($lower, 'afternoon') || str_contains($lower, '1:00') || str_contains($lower, '1pm') || str_contains($lower, '5:00') || str_contains($lower, '5pm')) {
-                $matched_slot = 'Afternoon (1PM–5PM)';
-            } elseif (str_contains($lower, 'evening') || str_contains($lower, '6:00') || str_contains($lower, '6pm') || str_contains($lower, '8:00 pm') || str_contains($lower, '8pm') || str_contains($lower, '5pm–8pm')) {
-                $matched_slot = 'Evening (5PM–8PM)';
+            // Match Day(s): check day ranges (e.g. Mon-Fri, Mon-Thu)
+            $matched_days = [];
+            if (preg_match('/\b(mon|tue|wed|thu|fri|sat)\w*\s*-\s*(mon|tue|wed|thu|fri|sat)\w*\b/i', $lower, $rm)) {
+                $start_day = $day_map[strtolower($rm[1])] ?? null;
+                $end_day = $day_map[strtolower($rm[2])] ?? null;
+                if ($start_day && $end_day) {
+                    $si = array_search($start_day, $days_order, true);
+                    $ei = array_search($end_day, $days_order, true);
+                    if ($si !== false && $ei !== false && $si <= $ei) {
+                        for ($i = $si; $i <= $ei; $i++) {
+                            $matched_days[] = $days_order[$i];
+                        }
+                    }
+                }
             }
 
-            if ($matched_day && $matched_slot) {
-                $canonical[] = "{$matched_day} - {$matched_slot}";
+            if (empty($matched_days)) {
+                if (preg_match_all('/\b(monday|mon|tuesday|tues|tue|wednesday|wed|thursday|thurs|thur|thu|friday|fri|saturday|sat)\b/i', $lower, $dm)) {
+                    foreach ($dm[0] as $token) {
+                        $code = $day_map[strtolower($token)] ?? null;
+                        if ($code && !in_array($code, $matched_days, true)) {
+                            $matched_days[] = $code;
+                        }
+                    }
+                }
+            }
+
+            if (empty($matched_days) && (str_contains($lower, 'hybrid') || str_contains($lower, 'flexible'))) {
+                $matched_days = ['Mon', 'Wed', 'Fri'];
+            }
+
+            if (!empty($matched_days) && !empty($matched_slots)) {
+                foreach ($matched_days as $d) {
+                    foreach ($matched_slots as $s) {
+                        $canonical[] = "{$d} - {$s}";
+                    }
+                }
             } elseif ($slot_str) {
                 $canonical[] = $slot_str;
             }
@@ -523,9 +558,9 @@ if (!function_exists('render_availability_matrix')) {
                             </td>
                             <?php foreach ($days as $day): 
                                 $key = "{$day} - {$slot}";
-                                $is_checked = in_array($key, $selected) || in_array($day, $selected);
+                                $is_checked = in_array($key, $selected, true) || in_array($day, $selected, true);
                             ?>
-                                <td class="<?= $is_checked ? 'matrix-cell-selected' : '' ?>">
+                                <td class="<?= $is_checked ? 'matrix-cell-selected' : '' ?>" <?= !$readonly ? 'style="cursor: pointer;"' : '' ?>>
                                     <input 
                                         type="checkbox" 
                                         name="<?= htmlspecialchars($name) ?>" 
@@ -541,6 +576,41 @@ if (!function_exists('render_availability_matrix')) {
                 </tbody>
             </table>
         </div>
+        <?php if (!$readonly): ?>
+        <script>
+        (function() {
+            function initMatrixInteractions() {
+                var cells = document.querySelectorAll('.matrix-table td');
+                cells.forEach(function(td) {
+                    var cb = td.querySelector('.matrix-check');
+                    if (!cb || td.dataset.matrixBound) return;
+                    td.dataset.matrixBound = '1';
+
+                    // Ensure initial state synchronization
+                    td.classList.toggle('matrix-cell-selected', cb.checked);
+
+                    // Allow entire cell to be clicked to toggle checkbox
+                    td.addEventListener('click', function(e) {
+                        if (e.target === cb || cb.disabled) return;
+                        cb.checked = !cb.checked;
+                        cb.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+
+                    // React to checkbox change and toggle glowing border & background
+                    cb.addEventListener('change', function() {
+                        td.classList.toggle('matrix-cell-selected', cb.checked);
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initMatrixInteractions);
+            } else {
+                initMatrixInteractions();
+            }
+        })();
+        </script>
+        <?php endif; ?>
         <?php
     }
 }

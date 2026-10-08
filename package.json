@@ -1,0 +1,43 @@
+{
+  "name": "campus-job-posting-system-e2e",
+  "version": "1.0.0",
+  "description": "E2E automated Playwright regression and fuzzing test suite for Campus Job Posting System",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "test:public": "playwright test tests/e2e/public.spec.ts",
+    "test:auth": "playwright test tests/e2e/auth.spec.ts",
+    "test:student": "playwright test tests/e2e/student.spec.ts",
+    "test:employer": "playwright test tests/e2e/employer.spec.ts",
+    "test:admin": "playwright test tests/e2e/admin.spec.ts",
+    "test:fuzzing": "playwright test tests/e2e/fuzzing.spec.ts",
+    "test:security": "playwright test tests/e2e/security.spec.ts",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:sweep": "playwright test sweep.spec.ts",
+    "test:hybrid": "e2e run",
+    "test:student:sweep": "playwright test tests/e2e/student-journey-and-sweep.spec.ts",
+    "test:employer:sweep": "playwright test tests/e2e/employer-journey-and-sweep.spec.ts",
+    "test:public:sweep": "playwright test tests/e2e/public-auth-and-quarantine-sweep.spec.ts",
+    "jev:triage": "node tools/jev-triage.mjs",
+    "jev:dispatch": "node tools/jev-dispatch.mjs",
+    "jev:verify": "node tools/jev-verify.mjs",
+    "jev:gate": "node tools/jev-gate.mjs",
+    "jev:gate:strict": "node tools/jev-gate.mjs --api",
+    "jev:structure": "node tools/jev-gate.mjs --structure"
+  },
+  "devDependencies": {
+    "@ai-sdk/openai": "^4.0.89",
+    "@e2e-dev/web": "^0.13.0",
+    "@openrouter/ai-sdk-provider": "^3.1.0",
+    "@playwright/test": "^1.62.1",
+    "ai": "^7.0.133",
+    "e2e": "^0.18.0",
+    "impeccable": "^3.6.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  }
+}

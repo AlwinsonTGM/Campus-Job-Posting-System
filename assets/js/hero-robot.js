@@ -382,6 +382,36 @@
             }
         }
 
+        function resolvePortalUrl(rawUrl) {
+            if (!rawUrl || typeof rawUrl !== 'string') return '';
+            const trimmed = rawUrl.trim();
+            if (/^(https?:|\/\/|mailto:|tel:)/i.test(trimmed)) {
+                return trimmed;
+            }
+
+            // Split path and query/hash
+            const parts = trimmed.split(/([?#].*)/);
+            let path = parts[0];
+            const extra = parts[1] || '';
+
+            // Detect if current page is in a subfolder like /student/, /admin/, /employer/
+            const currentPath = window.location.pathname || '';
+            const inStudentFolder = /\/student\//i.test(currentPath);
+            const inSubfolder = /\/(student|admin|employer)\//i.test(currentPath);
+
+            if (path === 'jobs.php') {
+                path = inStudentFolder ? 'jobs.php' : (inSubfolder ? '../student/jobs.php' : 'student/jobs.php');
+            } else if (path === 'applications.php' || path === 'my-applications.php') {
+                path = inStudentFolder ? 'my-applications.php' : (inSubfolder ? '../student/my-applications.php' : 'student/my-applications.php');
+            } else if (path === 'settings.php' && inSubfolder) {
+                path = '../settings.php';
+            } else if (path === 'faqs.php' && inSubfolder) {
+                path = '../faqs.php';
+            }
+
+            return path + extra;
+        }
+
         function formatSpeechText(str) {
             if (!str) return '';
 
@@ -396,10 +426,10 @@
 
             // 2.5 Safe Markdown links: [label](url)
             safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, label, url) {
-                const trimmedUrl = url.trim();
-                if (/^(https?:\/\/|[a-zA-Z0-9_\-\.\/]+\.php(\?[a-zA-Z0-9_=&-]*)?)/i.test(trimmedUrl)) {
-                    const isExt = trimmedUrl.startsWith('http');
-                    return `<a href="${trimmedUrl}" class="chat-link" ${isExt ? 'target="_blank" rel="noopener"' : ''}>${label}</a>`;
+                const resolvedUrl = resolvePortalUrl(url);
+                if (/^(https?:\/\/|[a-zA-Z0-9_\-\.\/]+\.php(\?[a-zA-Z0-9_=&-]*)?)/i.test(resolvedUrl)) {
+                    const isExt = resolvedUrl.startsWith('http');
+                    return `<a href="${resolvedUrl}" class="chat-link" ${isExt ? 'target="_blank" rel="noopener"' : ''}>${label}</a>`;
                 }
                 return label;
             });
@@ -1749,8 +1779,14 @@
         // Power Saver: Pause render loop when browser tab is inactive
         document.addEventListener('visibilitychange', function () {
             isTabActive = !document.hidden;
-            if (isTabActive && isVisible && isLoaded) {
-                startRenderLoop();
+            if (isTabActive) {
+                // Safely reset any interrupted transient animations so no math explosion occurs
+                if (bodyAnim) bodyAnim.type = 'idle';
+                if (eyeAnim) eyeAnim.type = 'idle';
+                if (clock) nextIdleBlinkTime = clock.getElapsedTime() + 1.2;
+                if (isVisible && isLoaded) {
+                    startRenderLoop();
+                }
             } else {
                 stopRenderLoop();
             }
@@ -1791,10 +1827,11 @@
             let eyeLiftOffsetZ = 0;
 
             if (eyeAnim && eyeAnim.type !== 'idle') {
-                const p = (now - eyeAnim.startTime) / (eyeAnim.duration || 0.35);
-                if (p >= 1) {
+                const rawP = (now - eyeAnim.startTime) / (eyeAnim.duration || 0.35);
+                if (rawP < 0 || rawP >= 1.0) {
                     eyeAnim.type = 'idle';
                 } else {
+                    const p = Math.max(0, Math.min(1.0, rawP));
                     if (eyeAnim.type === 'blink') {
                         // Smooth clean eyelid blink 1 -> 0.04 -> 1
                         const factor = Math.sin(p * Math.PI);
@@ -1905,10 +1942,11 @@
             let animPosY = 0, animPosZ = 0;
 
             if (bodyAnim && bodyAnim.type !== 'idle') {
-                const p = (now - bodyAnim.startTime) / (bodyAnim.duration || 1.0);
-                if (p >= 1) {
+                const rawP = (now - bodyAnim.startTime) / (bodyAnim.duration || 1.0);
+                if (rawP < 0 || rawP >= 1.0) {
                     bodyAnim.type = 'idle';
                 } else {
+                    const p = Math.max(0, Math.min(1.0, rawP));
                     const decay = 1.0 - p;
                     if (bodyAnim.type === 'wiggle') {
                         // Joyful dance shimmy side to side with cute bounce
@@ -1998,7 +2036,6 @@
 
         function startRenderLoop() {
             if (!animationFrameId && isLoaded && isVisible && isTabActive) {
-                clock.start();
                 animate();
             }
         }

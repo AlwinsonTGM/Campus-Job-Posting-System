@@ -22,7 +22,6 @@ __pycache__/
 
 # Dependencies
 node_modules/
-package.json
 package-lock.json
 
 # Agent & Swarm Artifacts
@@ -35,12 +34,13 @@ package-lock.json
 /PROJECT.md
 /QA_TEST_REPORT.md
 
-# Test Runner Reports & Specs
-tests/
-playwright.config.ts
+# Test Runner Reports
 playwright-report/
 test-results/
 blob-report/
+.e2e/artifacts/
+.e2e/report.json
+.e2e/logs/
 data/.pristine_backup/
 
 # Logs & Environment
@@ -64,9 +64,12 @@ uploads/proofs/proof_*
 !uploads/proofs/proof_1789903369_190c86d6.jpg
 !uploads/proofs/proof_1789904998_523463f5.jpg
 !uploads/proofs/proof_1790331069_26ebdc49.pdf
+!uploads/proofs/proof_sample_*
 uploads/jobs/job_*
 uploads/resumes/resume_*
 uploads/permits/permit_*
+!uploads/permits/permit_sample_*
+!uploads/permits/sample_permit_*
 screenshots/
 
 # Local Backups

@@ -26,43 +26,18 @@ class DatastoreManager {
 
     /**
      * Query the currently active dataset mode.
+     * Permanently operating on unified relational MySQL datastore.
      */
     public static function getMode(): string {
-        $modeFile = (defined('DATA_DIR') ? DATA_DIR : dirname(__DIR__, 2) . '/data') . '/system_mode.json';
-        if (file_exists($modeFile)) {
-            $data = json_decode((string)file_get_contents($modeFile), true);
-            if (is_array($data) && !empty($data['active_mode'])) {
-                return (string)$data['active_mode'];
-            }
-        }
-        return 'demo';
+        return 'real';
     }
 
     /**
      * Whether the dataset switcher may be operated at all in this environment.
-     *
-     * The switcher is a demonstration/testing affordance: `real` mode replaces
-     * the dataset with the clean-slate fixtures, so it must never be reachable
-     * on a deployed instance. This is the single source of truth used by both
-     * the controller (to authorise) and the views (to decide whether to render
-     * the controls at all).
-     *
-     * Set APP_ENV=production (or prod) in .env to remove the capability.
+     * Permanently disabled: MySQL is the sole authoritative datastore.
      */
     public static function isToggleAvailable(): bool {
-        $appEnv = strtolower(trim((string)get_env('APP_ENV', '')));
-        if (in_array($appEnv, ['production', 'prod'], true)) {
-            return false;
-        }
-
-        // Escape hatch so the QA suite can exercise the disabled state without
-        // touching .env (define('DATASET_SWITCHER_DISABLED', true) in a test
-        // bootstrap, or pass APP_ENV=production to the server process).
-        if (defined('DATASET_SWITCHER_DISABLED') && DATASET_SWITCHER_DISABLED) {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -162,6 +137,38 @@ class DatastoreManager {
                 if (!$resumeColCheck) {
                     $pdo->exec("ALTER TABLE `student_profiles` ADD COLUMN `resume_file` VARCHAR(255) NULL AFTER `registration_proof`");
                 }
+
+                // Ensure users has is_archived and archived_at
+                $userArchCheck = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'is_archived'")->fetch();
+                if (!$userArchCheck) {
+                    $pdo->exec("ALTER TABLE `users` ADD COLUMN `is_archived` TINYINT(1) NOT NULL DEFAULT 0 AFTER `status`, ADD COLUMN `archived_at` DATETIME NULL AFTER `is_archived`, ADD INDEX `idx_users_archived` (`is_archived`)");
+                    $pdo->exec("UPDATE `users` SET `is_archived` = 1, `archived_at` = `updated_at` WHERE `status` = 'suspended'");
+                }
+
+                // Ensure users has is_revoked, revoked_at, revocation_reason, and verification_status
+                $userRevCheck = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'is_revoked'")->fetch();
+                if (!$userRevCheck) {
+                    $pdo->exec("ALTER TABLE `users` 
+                        ADD COLUMN `is_revoked` TINYINT(1) NOT NULL DEFAULT 0 AFTER `archived_at`, 
+                        ADD COLUMN `revoked_at` DATETIME NULL AFTER `is_revoked`, 
+                        ADD COLUMN `revocation_reason` TEXT NULL AFTER `revoked_at`, 
+                        ADD COLUMN `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'verified' AFTER `revocation_reason`,
+                        ADD INDEX `idx_users_revoked` (`is_revoked`),
+                        ADD INDEX `idx_users_verification` (`verification_status`)
+                    ");
+                }
+
+                // Ensure student_profiles.verification_status ENUM includes 'revoked'
+                $spVerCheck = $pdo->query("SHOW COLUMNS FROM `student_profiles` LIKE 'verification_status'")->fetch();
+                if ($spVerCheck && strpos($spVerCheck['Type'] ?? '', 'revoked') === false) {
+                    $pdo->exec("ALTER TABLE `student_profiles` MODIFY COLUMN `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'pending_approval'");
+                }
+
+                // Ensure employer_profiles.verification_status ENUM includes 'revoked'
+                $epVerCheck = $pdo->query("SHOW COLUMNS FROM `employer_profiles` LIKE 'verification_status'")->fetch();
+                if ($epVerCheck && strpos($epVerCheck['Type'] ?? '', 'revoked') === false) {
+                    $pdo->exec("ALTER TABLE `employer_profiles` MODIFY COLUMN `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'pending_approval'");
+                }
             }
 
             self::$schemaEnsured = true;
@@ -174,74 +181,34 @@ class DatastoreManager {
      * Switch dataset mode ('demo' or 'real') and sync fixture files to storage.
      */
     public static function switchMode(string $mode, string $switchedBy = 'User', bool $purgeSession = false): bool {
-        $normalizedMode = in_array(strtolower($mode), ['real', 'clean'], true) ? 'real' : 'demo';
-        $dataDir = defined('DATA_DIR') ? DATA_DIR : dirname(__DIR__, 2) . '/data';
-        $seedDir = $dataDir . '/seeds/' . $normalizedMode;
-
-        if (!is_dir($seedDir)) {
-            return false;
-        }
-
-        // 1. Sync seed files into active data directory
-        foreach (self::SEED_FILES as $file) {
-            $src = $seedDir . '/' . $file;
-            $dst = $dataDir . '/' . $file;
-            if (file_exists($src)) {
-                copy($src, $dst);
-            }
-        }
-
-        // 2. Re-import and synchronize MySQL tables
-        try {
-            require_once dirname(__DIR__, 2) . '/database/migrate.php';
-            if (function_exists('execute_migration_and_seed')) {
-                execute_migration_and_seed(false, $dataDir, false, true);
-            }
-        } catch (Throwable $e) {
-            error_log("DatastoreManager::switchMode migration notice: " . $e->getMessage());
-        }
-
-        // 3. Record mode change metadata
-        $modeData = [
-            'active_mode'      => $normalizedMode,
-            'last_switched_at' => date('Y-m-d H:i:s'),
-            'switched_by'      => $switchedBy
-        ];
-        $modeFile = $dataDir . '/system_mode.json';
-        file_put_contents($modeFile, json_encode($modeData, JSON_PRETTY_PRINT));
-        // Owner-only: this file sits inside the web root and the mode label is
-        // not public information. Apache already denies it via data/.htaccess.
-        @chmod($modeFile, 0600);
-
-        // 4. Handle session lifecycle
-        if ($purgeSession) {
-            self::purgeSession();
-        } else {
-            self::reconcileSessionUser();
-        }
-
+        // Mode switching is permanently disabled. The system runs exclusively on MySQL.
+        error_log("DatastoreManager::switchMode is disabled. Datastore is permanently locked to MySQL.");
         return true;
     }
 
     /**
      * Reset the active datastore to demo baseline fixtures.
+     * Permanently disarmed to prevent overwriting MySQL state with static fixture files.
      */
     public static function resetToDemo(string $switchedBy = 'System Reset', bool $purgeSession = false): bool {
-        return self::switchMode('demo', $switchedBy, $purgeSession);
+        error_log("DatastoreManager::resetToDemo is disabled to prevent accidental datastore wipes.");
+        return false;
     }
 
     /**
      * Wipe the active datastore to real / clean-slate state.
+     * Permanently disarmed to protect live MySQL records.
      */
     public static function wipeReal(string $switchedBy = 'System Wipe'): bool {
-        return self::switchMode('real', $switchedBy, false);
+        error_log("DatastoreManager::wipeReal is disabled to protect database records.");
+        return false;
     }
 
     /**
      * Reset current active mode to baseline.
      */
     public static function resetCurrent(string $switchedBy = 'User'): bool {
-        return self::switchMode(self::getMode(), $switchedBy, false);
+        return false;
     }
 
     /**

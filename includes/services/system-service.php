@@ -311,6 +311,18 @@ function delete_career_update(int|string $id): bool {
 }
 
 function get_devblogs(): array {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->query("SELECT * FROM `devblogs` ORDER BY CAST(`sprint_number` AS UNSIGNED) DESC");
+        $rows = $stmt->fetchAll();
+        if (!empty($rows)) {
+            return array_map('hydrate_devblog', $rows);
+        }
+    } catch (Exception $e) {
+        error_log("get_devblogs error: " . $e->getMessage());
+    }
+
+    // Secondary fallback to file if DB is uninitialized
     $file = DATA_DIR . '/devblogs.json';
     if (file_exists($file)) {
         $json = json_decode(file_get_contents($file), true);
@@ -318,35 +330,31 @@ function get_devblogs(): array {
             return $json;
         }
     }
-    try {
-        $pdo = get_db_connection();
-        $stmt = $pdo->query("SELECT * FROM `devblogs` ORDER BY CAST(`sprint_number` AS UNSIGNED) DESC");
-        $rows = $stmt->fetchAll();
-        return array_map('hydrate_devblog', $rows);
-    } catch (Exception $e) {
-        error_log("get_devblogs error: " . $e->getMessage());
-        return [];
-    }
+    return [];
 }
 
 function get_devblog_by_id(int|string|null $id): ?array {
     if ($id === null || $id === '') { return null; }
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("SELECT * FROM `devblogs` WHERE `id` = :id OR `sprint_number` = :sprint LIMIT 1");
+        $stmt->execute([':id' => (string)$id, ':sprint' => (string)$id]);
+        $row = $stmt->fetch();
+        if ($row) {
+            return hydrate_devblog($row);
+        }
+    } catch (Exception $e) {
+        error_log("get_devblog_by_id error: " . $e->getMessage());
+    }
+
+    // Fallback search across list
     $blogs = get_devblogs();
     foreach ($blogs as $b) {
         if (($b['id'] ?? '') === (string)$id || ($b['sprint_number'] ?? '') === (string)$id) {
             return $b;
         }
     }
-    try {
-        $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT * FROM `devblogs` WHERE `id` = :id OR `sprint_number` = :sprint LIMIT 1");
-        $stmt->execute([':id' => (string)$id, ':sprint' => (string)$id]);
-        $row = $stmt->fetch();
-        return $row ? hydrate_devblog($row) : null;
-    } catch (Exception $e) {
-        error_log("get_devblog_by_id error: " . $e->getMessage());
-        return null;
-    }
+    return null;
 }
 
 function create_notification(int|string $user_id, string $type, string $title, string $message, ?string $link = null, string $icon = 'bi-bell', string $badge_color = 'primary'): int {

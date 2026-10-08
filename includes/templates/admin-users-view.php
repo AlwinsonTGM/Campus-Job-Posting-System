@@ -20,9 +20,6 @@ require_once __DIR__ . '/../header.php';
                     <a href="reports.php" class="btn-pill">
                         <i class="bi bi-bar-chart-fill"></i> System Reports
                     </a>
-                    <a href="categories.php" class="btn-pill-outline">
-                        <i class="bi bi-grid-fill"></i> Categories
-                    </a>
                 ';
                 render_page_head(
                     '',
@@ -75,43 +72,7 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Verification triage: document completeness summary -->
-                <?php $triage_items = $verification_triage['items'] ?? []; ?>
-                <?php if (!empty($triage_items)): ?>
-                    <div class="card-paper p-4 mb-4 border border-line">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
-                                <i class="bi bi-clipboard-check text-accent"></i> Verification Queue Triage
-                            </span>
-                            <span class="small text-muted-custom"><?= htmlspecialchars($verification_triage['summary'] ?? '') ?></span>
-                        </div>
-                        <div class="d-flex flex-column gap-2">
-                            <?php foreach ($triage_items as $item): ?>
-                                <?php
-                                $tier_badge = ($item['tier'] ?? '') === 'ready' ? 'bg-success-subtle text-success border-success-subtle' : (((($item['tier'] ?? '') === 'blocked') ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-warning-subtle text-warning border-warning-subtle'));
-                                ?>
-                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 p-2 bg-cream rounded-3 border border-line small">
-                                    <div class="min-w-0">
-                                        <span class="badge <?= $tier_badge ?> border me-1" style="font-size: 10px;"><?= (int)($item['score'] ?? 0) ?>% <?= htmlspecialchars(ucfirst($item['tier'] ?? 'review')) ?></span>
-                                        <strong class="text-ink"><?= htmlspecialchars($item['name'] ?? 'Item') ?></strong>
-                                        <span class="text-muted-custom"> — <?= htmlspecialchars($item['kind_label'] ?? '') ?></span>
-                                        <?php foreach (($item['flags'] ?? []) as $flag): ?>
-                                            <span class="text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-dot"></i><?= htmlspecialchars($flag) ?></span>
-                                        <?php endforeach; ?>
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-2 flex-shrink-0">
-                                        <?php foreach (($item['choices'] ?? []) as $choice): ?>
-                                            <a href="<?= htmlspecialchars($choice['href'] ?? 'users.php') ?>" class="btn-pill-outline btn-pill-sm"><?= htmlspecialchars($choice['label'] ?? 'Review') ?></a>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <p class="small text-muted-custom mt-2 mb-0" style="font-size: 11px;">
-                            <i class="bi bi-info-circle me-1"></i> Advisory insights only — the administrator maintains full discretion over approvals and rejections.
-                        </p>
-                    </div>
-                <?php endif; ?>
+
 
                 <!-- Student Profile Verification Requests Queue -->
                 <?php if (!empty($all_profile_requests)): ?>
@@ -268,6 +229,7 @@ require_once __DIR__ . '/../header.php';
                                     <option value="pending_approval" <?= ($ver_filter === 'pending_approval') ? 'selected' : '' ?>>Pending Review</option>
                                     <option value="verified" <?= ($ver_filter === 'verified') ? 'selected' : '' ?>>Verified</option>
                                     <option value="rejected" <?= ($ver_filter === 'rejected') ? 'selected' : '' ?>>Rejected</option>
+                                    <option value="revoked" <?= ($ver_filter === 'revoked') ? 'selected' : '' ?>>Revoked <?= isset($revoked_users_count) && $revoked_users_count > 0 ? "({$revoked_users_count})" : '' ?></option>
                                 </select>
                             </div>
 
@@ -343,6 +305,9 @@ require_once __DIR__ . '/../header.php';
                                                         <div class="fw-bold text-ink text-truncate" title="<?= htmlspecialchars($u['name']) ?>"><?= htmlspecialchars($u['name']) ?></div>
                                                         <div class="small text-muted-custom text-truncate" style="font-size: 11px;" title="<?= htmlspecialchars($u['email']) ?>">
                                                             <span><?= htmlspecialchars($u['email']) ?></span>
+                                                            <?php if ((int)($u['is_email_verified'] ?? 1) === 0): ?>
+                                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle ms-1" style="font-size: 9.5px; padding: 1px 4px;"><i class="bi bi-envelope-exclamation me-1"></i>Unconfirmed</span>
+                                                            <?php endif; ?>
                                                             <?php if ($u['role'] === 'student' && (!empty($u['sex']) || !empty($u['age']))): ?>
                                                                 &bull; <span><?= htmlspecialchars($u['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($u['age'] ?? 20)) ?> yrs</span>
                                                             <?php endif; ?>
@@ -378,8 +343,12 @@ require_once __DIR__ . '/../header.php';
                                                 </span>
                                             </td>
                                             <td data-label="Status" class="text-nowrap">
-                                                <?php if (($u['status'] ?? 'active') === 'suspended'): ?>
-                                                    <span class="badge-status--declined"><i class="bi bi-slash-circle me-1"></i>Suspended</span>
+                                                <?php if (($u['status'] ?? 'active') === 'suspended' || !empty($u['is_archived'])): ?>
+                                                    <span class="badge-status--declined"><i class="bi bi-archive me-1"></i>Archived</span>
+                                                <?php elseif ((int)($u['is_email_verified'] ?? 1) === 0): ?>
+                                                    <span class="badge-status--pending text-warning border-warning"><i class="bi bi-envelope-exclamation me-1"></i>Awaiting OTP</span>
+                                                <?php elseif ($ver_status === 'revoked' || !empty($u['is_revoked'])): ?>
+                                                    <span class="badge-status--declined text-danger border-danger"><i class="bi bi-arrow-counterclockwise me-1"></i>Revoked</span>
                                                 <?php elseif ($ver_status === 'verified'): ?>
                                                     <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Verified</span>
                                                 <?php elseif ($ver_status === 'rejected'): ?>
@@ -720,7 +689,14 @@ require_once __DIR__ . '/../header.php';
                                 </div>
 
                                 <ul class="list-unstyled small text-muted-custom mb-0 d-flex flex-column gap-2">
-                                    <li><strong class="text-ink">Email:</strong> <?= htmlspecialchars($u['email']) ?></li>
+                                    <li>
+                                        <strong class="text-ink">Email:</strong> <?= htmlspecialchars($u['email']) ?>
+                                        <?php if ((int)($u['is_email_verified'] ?? 1) === 1): ?>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size: 10px;"><i class="bi bi-patch-check-fill me-1"></i>OTP Verified</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle ms-1" style="font-size: 10px;"><i class="bi bi-clock-history me-1"></i>Awaiting OTP</span>
+                                        <?php endif; ?>
+                                    </li>
                                     <li><strong class="text-ink">Contact Phone:</strong> <?= htmlspecialchars($u['phone'] ?? 'Not provided') ?></li>
                                     <li><strong class="text-ink">Workplace Address:</strong> <?= htmlspecialchars($u['office_location'] ?? 'Campus Main Office') ?></li>
                                 </ul>
@@ -804,6 +780,10 @@ require_once __DIR__ . '/../header.php';
                         <div>
                             <?php if ($ver_status === 'verified'): ?>
                                 <span class="badge-status--accepted"><i class="bi bi-shield-check me-1"></i> Officially Verified</span>
+                            <?php elseif ($ver_status === 'revoked' || !empty($u['is_revoked'])): ?>
+                                <span class="badge-status--declined text-danger border-danger"><i class="bi bi-arrow-counterclockwise me-1"></i> Revoked by Admin</span>
+                            <?php elseif ($ver_status === 'rejected'): ?>
+                                <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i> Revision Requested</span>
                             <?php endif; ?>
                         </div>
                         <div class="d-flex gap-2">
@@ -821,9 +801,9 @@ require_once __DIR__ . '/../header.php';
                                 </form>
                             <?php else: ?>
                                 <form action="users.php" method="POST" class="d-inline">
-                                    <input type="hidden" name="action" value="reject_employer">
+                                    <input type="hidden" name="action" value="revoke_user">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">
-                                    <input type="hidden" name="notes" value="Revoked by admin">
+                                    <input type="hidden" name="notes" value="Verification revoked by admin">
                                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                     <button type="submit" class="btn-pill-outline btn-pill-sm text-danger border-danger" onclick="return confirm('Revoke verification for this partner?')">
                                         <i class="bi bi-arrow-counterclockwise"></i> Revoke
@@ -884,6 +864,15 @@ require_once __DIR__ . '/../header.php';
                                         <div class="col-5 text-muted-custom">Institutional Email:</div>
                                         <div class="col-7 font-monospace text-ink text-break"><?= htmlspecialchars($u['email']) ?></div>
 
+                                        <div class="col-5 text-muted-custom">Email Ownership:</div>
+                                        <div class="col-7">
+                                            <?php if ((int)($u['is_email_verified'] ?? 1) === 1): ?>
+                                                <span class="text-success fw-semibold"><i class="bi bi-patch-check-fill me-1"></i>Confirmed (OTP Verified)</span>
+                                            <?php else: ?>
+                                                <span class="text-warning fw-bold"><i class="bi bi-clock-history me-1"></i>Awaiting 6-Digit OTP</span>
+                                            <?php endif; ?>
+                                        </div>
+
                                         <div class="col-5 text-muted-custom">Academic Institute:</div>
                                         <div class="col-7 fw-semibold text-ink"><?= htmlspecialchars($u['department'] ?? 'N/A') ?></div>
 
@@ -906,8 +895,10 @@ require_once __DIR__ . '/../header.php';
                                         <div class="col-7">
                                             <?php if ($ver_status === 'verified'): ?>
                                                 <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Verified Active</span>
+                                            <?php elseif ($ver_status === 'revoked' || !empty($u['is_revoked'])): ?>
+                                                <span class="badge-status--declined text-danger border-danger"><i class="bi bi-arrow-counterclockwise me-1"></i>Revoked by Admin</span>
                                             <?php elseif ($ver_status === 'rejected'): ?>
-                                                <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Rejected / Revoked</span>
+                                                <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Application Rejected</span>
                                             <?php else: ?>
                                                 <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
                                             <?php endif; ?>
@@ -995,6 +986,10 @@ require_once __DIR__ . '/../header.php';
                         <div>
                             <?php if ($ver_status === 'verified'): ?>
                                 <span class="badge-status--accepted"><i class="bi bi-shield-check me-1"></i> Verified Student</span>
+                            <?php elseif ($ver_status === 'revoked' || !empty($u['is_revoked'])): ?>
+                                <span class="badge-status--declined text-danger border-danger"><i class="bi bi-arrow-counterclockwise me-1"></i> Revoked by Admin</span>
+                            <?php elseif ($ver_status === 'rejected'): ?>
+                                <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i> Revision Requested</span>
                             <?php endif; ?>
                         </div>
                         <div class="d-flex gap-2">
@@ -1012,7 +1007,7 @@ require_once __DIR__ . '/../header.php';
                                 </form>
                             <?php else: ?>
                                 <form action="users.php" method="POST" class="d-inline">
-                                    <input type="hidden" name="action" value="reject_user">
+                                    <input type="hidden" name="action" value="revoke_user">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                     <input type="hidden" name="notes" value="Verification revoked by admin">
                                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
@@ -1125,7 +1120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (window.location.hash === '#filter-results-container' || window.location.search.includes('ver_status=pending_approval')) {
+    if (window.location.hash === '#filter-results-container') {
         setTimeout(() => {
             const target = document.getElementById('filter-results-container');
             if (target) {

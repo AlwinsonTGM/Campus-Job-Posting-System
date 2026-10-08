@@ -34,11 +34,20 @@ CREATE TABLE IF NOT EXISTS `users` (
     `name` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(50) NULL,
     `status` ENUM('active', 'suspended') NOT NULL DEFAULT 'active',
+    `is_archived` TINYINT(1) NOT NULL DEFAULT 0,
+    `archived_at` DATETIME NULL,
+    `is_revoked` TINYINT(1) NOT NULL DEFAULT 0,
+    `revoked_at` DATETIME NULL,
+    `revocation_reason` TEXT NULL,
+    `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'verified',
     `is_email_verified` TINYINT(1) NOT NULL DEFAULT 1,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_users_role` (`role`),
-    INDEX `idx_users_status` (`status`)
+    INDEX `idx_users_status` (`status`),
+    INDEX `idx_users_archived` (`is_archived`),
+    INDEX `idx_users_revoked` (`is_revoked`),
+    INDEX `idx_users_verification` (`verification_status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -54,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `student_profiles` (
     `birthdate` DATE NULL,
     `age` INT NULL,
     `availability` LONGTEXT NULL,
-    `verification_status` ENUM('verified', 'pending_approval', 'rejected') NOT NULL DEFAULT 'pending_approval',
+    `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'pending_approval',
     `rejection_reason` TEXT NULL,
     `registration_proof` VARCHAR(255) NULL,
     `resume_file` VARCHAR(255) NULL,
@@ -75,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `employer_profiles` (
     `office_location` VARCHAR(255) NOT NULL,
     `contact_person` VARCHAR(191) NULL,
     `accreditation_number` VARCHAR(100) NULL,
-    `verification_status` ENUM('verified', 'pending_approval', 'rejected') NOT NULL DEFAULT 'pending_approval',
+    `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'pending_approval',
     `rejection_reason` TEXT NULL,
     `business_permit` VARCHAR(255) NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

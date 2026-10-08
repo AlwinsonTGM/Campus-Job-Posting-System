@@ -181,7 +181,7 @@ require_once __DIR__ . '/../header.php';
                             <div class="d-flex flex-column gap-2 mb-4">
                                 <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Student ID:</span>
-                                    <span class="fw-bold text-ink text-break"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></span>
+                                    <span class="fw-bold text-ink text-break"><?= htmlspecialchars($user['student_id'] ?? '2025-2-000065') ?></span>
                                 </div>
                                 <div class="d-flex flex-wrap justify-content-between align-items-center p-2 px-3 bg-cream rounded-3 small gap-1">
                                     <span class="text-muted-custom">Degree Program:</span>

@@ -62,8 +62,8 @@ if (!defined('SITE_NAME')) {
             <div class="col-lg-3 col-md-3 col-6">
                 <h6 class="fw-bold text-ink mb-3 small text-uppercase">Legal & Guidelines</h6>
                 <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
-                    <li><a href="<?= $base_url ?>privacy.php">Data Privacy Policy (RA 10173)</a></li>
-                    <li><a href="<?= $base_url ?>terms.php">Terms of Service</a></li>
+                    <li><a href="<?= $base_url ?>privacy.php" target="_blank" rel="noopener">Data Privacy Policy (RA 10173)</a></li>
+                    <li><a href="<?= $base_url ?>terms.php" target="_blank" rel="noopener">Terms of Service</a></li>
                     <li><a href="<?= $base_url ?>faqs.php?open=2#faq-2">20-Hour Work Regulations</a></li>
                     <li><a href="<?= $base_url ?>about-us.php#developers">COAL101 Dev Team</a></li>
                 </ul>
@@ -86,68 +86,6 @@ if (!defined('SITE_NAME')) {
         </div>
     </div>
 </footer>
-
-<?php
-// The dataset switcher is a demo/testing affordance. It is only rendered when
-// the capability is actually available (see DatastoreManager::isToggleAvailable)
-// AND the viewer is an administrator - the controller enforces both, this just
-// avoids offering a control that would be refused.
-$current_data_mode = function_exists('get_system_data_mode') ? get_system_data_mode() : 'demo';
-$is_real_mode = ($current_data_mode === 'real');
-$can_switch_dataset = class_exists('DatastoreManager')
-    && DatastoreManager::isToggleAvailable()
-    && (($_SESSION['user']['role'] ?? '') === 'admin');
-?>
-<?php if ($can_switch_dataset): ?>
-<!-- System Dataset Switcher Modal -->
-<div class="modal fade" id="dataModeModal" tabindex="-1" aria-labelledby="dataModeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-line shadow-lg rounded-4">
-            <div class="modal-header border-line bg-surface">
-                <h5 class="modal-title fs-5 fw-bold text-ink" id="dataModeModalLabel">
-                    <i class="bi bi-database-fill-gear text-accent me-2"></i>System Dataset Switcher
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <p class="text-muted-custom small mb-4">
-                    Easily toggle between <strong>Demo / Placeholder Data</strong> (with pre-populated student assistantships and applicants) and <strong>Real Clean Slate Mode</strong> for live testing.
-                </p>
-
-                <div class="d-flex flex-column gap-3">
-                    <!-- Real Mode Option -->
-                    <form action="<?= $base_url ?>data-toggle.php" method="POST" class="data-mode-fab__form m-0">
-                        <input type="hidden" name="action" value="switch_mode">
-                        <input type="hidden" name="mode" value="real">
-                        <input type="hidden" name="csrf_token" value="<?= function_exists('generate_csrf_token') ? generate_csrf_token() : '' ?>">
-                        <button type="submit" class="btn btn-outline-success w-100 p-3 text-start d-flex align-items-center justify-content-between rounded-3 <?= $is_real_mode ? 'active border-2' : '' ?>">
-                            <div>
-                                <div class="fw-bold"><i class="bi bi-shield-check me-2"></i>Activate Real Clean Slate Mode</div>
-                                <div class="small opacity-75">Wipes placeholder fixtures; allows real live job postings and applicant submissions.</div>
-                            </div>
-                            <i class="bi bi-arrow-right-circle fs-4"></i>
-                        </button>
-                    </form>
-
-                    <!-- Demo Mode Option -->
-                    <form action="<?= $base_url ?>data-toggle.php" method="POST" class="data-mode-fab__form m-0">
-                        <input type="hidden" name="action" value="switch_mode">
-                        <input type="hidden" name="mode" value="demo">
-                        <input type="hidden" name="csrf_token" value="<?= function_exists('generate_csrf_token') ? generate_csrf_token() : '' ?>">
-                        <button type="submit" class="btn btn-outline-warning w-100 p-3 text-start d-flex align-items-center justify-content-between rounded-3 <?= !$is_real_mode ? 'active border-2' : '' ?>">
-                            <div>
-                                <div class="fw-bold"><i class="bi bi-collection-play me-2"></i>Switch to Demo Placeholders</div>
-                                <div class="small opacity-75">Restores standard demo jobs, pre-vetted departments, and test candidates.</div>
-                            </div>
-                            <i class="bi bi-arrow-right-circle fs-4"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
 
 <!-- Shared Floating Spotlight Search Modal -->
 <?php require_once __DIR__ . '/search-modal.php'; ?>

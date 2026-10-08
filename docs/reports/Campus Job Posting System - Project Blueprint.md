@@ -102,7 +102,7 @@ flowchart TB
 #### 1.2 👥 About Us / Developers & 3D DevBlog Section (`about-us.php`)
 > [!tip] 📸 Developer Photo Specifications Compliance
 > * **Standard:** Clean, high-resolution 1:1 square or 3:4 portrait photo.
-> * **Attire:** Formal KLD Green blazer / semi-formal campus attire.
+> * **Attire:** Formal attire / semi-formal campus attire.
 > * **Rules:** ==Strictly no accessories== (No sunglasses, caps, casual beanies, bulky headphones, or facial stickers). Neutral background.
 
 * **Developer Profile Cards (6 Members):**
@@ -427,7 +427,7 @@ D-Day (Sep 09)  ━━━> 🚀 FINAL EVALUATION, SYSTEM DEFENSE PRESENTATION & 
 
 - [x] **Bootstrap 5 UI Responsiveness:** Verified on mobile (375px), tablet (768px), desktop split/half-screen (680px-960px), and wide desktop (1200px+).
 - [x] **No Database Dependency:** Verified without MySQL/XAMPP database — session & flat-file JSON datastore fully functional.
-- [x] **Developer Photos Verified:** All 6 developer images are formal, clear, wearing green institutional blazers, free of accessories.
+- [x] **Developer Photos Verified:** All 6 developer images are formal, clear, wearing formal attire, free of accessories.
 - [x] **Auth Validation:** Password strength meter accurately verifies lowercase, uppercase, digits, symbols, and length.
 - [x] **Forgot Password Layout:** Strictly single institutional email field with anti-enumeration response.
 - [x] **10 FAQs:** Interactive accordion answering 10 university employment questions.

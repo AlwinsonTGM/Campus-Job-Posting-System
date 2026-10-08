@@ -44,7 +44,7 @@ require_once __DIR__ . '/../header.php';
                                     <div>
                                         <h4 class="card-paper-title mb-1" style="font-size: 17px;">Developer 2x2 Photo Standards Policy</h4>
                                         <p class="text-muted-custom small mb-0 lh-base">
-                                            All developer profiles feature 2x2 formal institutional portrait photos in KLD Green blazers and attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories.
+                                            All developer profiles feature 2x2 formal institutional portrait photos in formal attire with clean backgrounds, strictly free of casual headwear, sunglasses, headphones, or accessories.
                                         </p>
                                     </div>
                                 </div>

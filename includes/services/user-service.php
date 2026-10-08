@@ -256,7 +256,9 @@ function get_user_base_query(): string {
     ensure_email_verifications_table();
     return "
         SELECT 
-            u.`id`, u.`email`, u.`password`, u.`role`, u.`name`, u.`phone`, u.`status`, u.`is_email_verified`, u.`created_at`, u.`updated_at`,
+            u.`id`, u.`email`, u.`password`, u.`role`, u.`name`, u.`phone`, u.`status`, 
+            u.`is_archived`, u.`archived_at`, u.`is_revoked`, u.`revoked_at`, u.`revocation_reason`,
+            u.`is_email_verified`, u.`created_at`, u.`updated_at`,
             sp.`student_id`,
             sp.`department` AS `student_department`,
             COALESCE(sp.`department`, ep.`organization_name`, 'General Academics') AS `department`,
@@ -268,8 +270,8 @@ function get_user_base_query(): string {
             sp.`availability`,
             sp.`registration_proof`,
             sp.`resume_file`,
-            COALESCE(sp.`verification_status`, ep.`verification_status`, 'verified') AS `verification_status`,
-            COALESCE(sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
+            COALESCE(u.`verification_status`, sp.`verification_status`, ep.`verification_status`, 'verified') AS `verification_status`,
+            COALESCE(u.`revocation_reason`, sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
             ep.`employer_type`,
             COALESCE(ep.`organization_name`, sp.`department`, u.`name`) AS `organization_name`,
             ep.`office_location`,
@@ -448,7 +450,14 @@ function suspend_user(int|string $id): bool {
         if (!$target || ($target['role'] ?? '') === 'admin') {
             return false;
         }
-        $stmt = $pdo->prepare("UPDATE `users` SET `status` = 'suspended', `updated_at` = NOW() WHERE `id` = :id");
+        $stmt = $pdo->prepare("
+            UPDATE `users` 
+            SET `status` = 'suspended', 
+                `is_archived` = 1, 
+                `archived_at` = NOW(), 
+                `updated_at` = NOW() 
+            WHERE `id` = :id
+        ");
         return $stmt->execute([':id' => (int)$id]);
     } catch (Exception $e) {
         error_log("suspend_user error: " . $e->getMessage());
@@ -459,7 +468,14 @@ function suspend_user(int|string $id): bool {
 function reactivate_user(int|string $id): bool {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("UPDATE `users` SET `status` = 'active', `updated_at` = NOW() WHERE `id` = :id");
+        $stmt = $pdo->prepare("
+            UPDATE `users` 
+            SET `status` = 'active', 
+                `is_archived` = 0, 
+                `archived_at` = NULL, 
+                `updated_at` = NOW() 
+            WHERE `id` = :id
+        ");
         return $stmt->execute([':id' => (int)$id]);
     } catch (Exception $e) {
         error_log("reactivate_user error: " . $e->getMessage());
@@ -476,6 +492,7 @@ function update_user_verification(int|string $id, string $status, string $notes 
         $id = (int)$id;
         $role = $target_user['role'] ?? 'student';
 
+        // 1. Update subtype profile table
         if ($role === 'student') {
             $stmt = $pdo->prepare("
                 UPDATE `student_profiles`
@@ -500,7 +517,29 @@ function update_user_verification(int|string $id, string $status, string $notes 
             ]);
         }
 
-        $success = $stmt->rowCount() > 0 || ($target_user['verification_status'] === $status);
+        // 2. Synchronize authoritative status in users supertype table
+        $is_revoked = ($status === 'revoked') ? 1 : 0;
+        $revoked_at = ($status === 'revoked') ? date('Y-m-d H:i:s') : null;
+        $revocation_reason = ($status === 'revoked') ? $notes : null;
+
+        $stmtUser = $pdo->prepare("
+            UPDATE `users`
+            SET `verification_status` = :status,
+                `is_revoked` = :is_revoked,
+                `revoked_at` = :revoked_at,
+                `revocation_reason` = :revocation_reason,
+                `updated_at` = NOW()
+            WHERE `id` = :id
+        ");
+        $stmtUser->execute([
+            ':status'            => $status,
+            ':is_revoked'        => $is_revoked,
+            ':revoked_at'        => $revoked_at,
+            ':revocation_reason' => $revocation_reason,
+            ':id'                => $id
+        ]);
+
+        $success = $stmt->rowCount() > 0 || $stmtUser->rowCount() > 0 || ($target_user['verification_status'] === $status);
 
         if ($target_user && $success) {
             if ($status === 'verified') {
@@ -516,6 +555,18 @@ function update_user_verification(int|string $id, string $status, string $notes 
                     $link,
                     'bi-patch-check-fill',
                     'success'
+                );
+            } elseif ($status === 'revoked') {
+                $reason_snippet = !empty($notes) ? " Reason: {$notes}." : "";
+                $msg = "Your account verification has been revoked by university administration.{$reason_snippet} Please contact the Office of Student Affairs / Administrator.";
+                create_notification(
+                    $id,
+                    'verification',
+                    'Verification Revoked',
+                    $msg,
+                    'settings.php',
+                    'bi-arrow-counterclockwise',
+                    'danger'
                 );
             } elseif ($status === 'rejected') {
                 $reason_snippet = !empty($notes) ? " Note: {$notes}" : "";
@@ -614,16 +665,111 @@ function validate_email_domain_dns($email): array {
 }
 
 /**
+ * Permanently purge an unverified user account, including any uploaded proof/permit documents.
+ */
+function purge_unverified_user(int $user_id): bool {
+    if ($user_id <= 0) {
+        return false;
+    }
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("
+            SELECT u.`id`, u.`is_email_verified`, sp.`registration_proof`, ep.`business_permit`
+            FROM `users` u
+            LEFT JOIN `student_profiles` sp ON u.`id` = sp.`user_id`
+            LEFT JOIN `employer_profiles` ep ON u.`id` = ep.`user_id`
+            WHERE u.`id` = :id AND u.`is_email_verified` = 0 AND u.`role` != 'admin'
+            LIMIT 1
+        ");
+        $stmt->execute([':id' => $user_id]);
+        $row = $stmt->fetch();
+        if (!$row) {
+            return false;
+        }
+
+        if (!empty($row['registration_proof'])) {
+            AttachmentStore::delete((string)$row['registration_proof']);
+        }
+        if (!empty($row['business_permit'])) {
+            AttachmentStore::delete((string)$row['business_permit']);
+        }
+
+        $del = $pdo->prepare("DELETE FROM `users` WHERE `id` = :id AND `is_email_verified` = 0");
+        $del->execute([':id' => $user_id]);
+
+        return $del->rowCount() > 0;
+    } catch (\Throwable $e) {
+        error_log("purge_unverified_user error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Scan and delete all unverified accounts whose email verification window (15 minutes) has expired.
+ */
+function purge_expired_unverified_users(): int {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("
+            SELECT u.`id`
+            FROM `users` u
+            WHERE u.`is_email_verified` = 0
+              AND u.`role` != 'admin'
+              AND (
+                  (
+                      EXISTS (SELECT 1 FROM `email_verifications` ev WHERE ev.`user_id` = u.`id`)
+                      AND NOT EXISTS (SELECT 1 FROM `email_verifications` ev WHERE ev.`user_id` = u.`id` AND ev.`expires_at` > NOW())
+                  )
+                  OR (
+                      u.`created_at` < DATE_SUB(NOW(), INTERVAL 15 MINUTE)
+                      AND NOT EXISTS (SELECT 1 FROM `email_verifications` ev WHERE ev.`user_id` = u.`id` AND ev.`expires_at` > NOW())
+                  )
+              )
+        ");
+        $stmt->execute();
+        $expired_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $count = 0;
+        foreach ($expired_ids as $uid) {
+            if (purge_unverified_user((int)$uid)) {
+                $count++;
+            }
+        }
+        return $count;
+    } catch (\Throwable $e) {
+        error_log("purge_expired_unverified_users error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+/**
  * Check if an email address is already registered
  */
 function is_email_registered(string $email): bool {
     $email = strtolower(trim((string)$email));
     if (empty($email)) return false;
     try {
+        purge_expired_unverified_users();
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT `id` FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
+        $stmt = $pdo->prepare("SELECT `id`, `is_email_verified` FROM `users` WHERE LOWER(`email`) = LOWER(:email) LIMIT 1");
         $stmt->execute([':email' => $email]);
-        return (bool)$stmt->fetch();
+        $user_row = $stmt->fetch();
+        if (!$user_row) {
+            return false;
+        }
+
+        // If user is unverified and has no active OTP code (and either an OTP expired or account is older than 15 mins), purge it
+        if ((int)$user_row['is_email_verified'] === 0) {
+            $has_active_otp = (bool)$pdo->query("SELECT 1 FROM `email_verifications` WHERE `user_id` = " . (int)$user_row['id'] . " AND `expires_at` > NOW() LIMIT 1")->fetchColumn();
+            $has_any_otp = (bool)$pdo->query("SELECT 1 FROM `email_verifications` WHERE `user_id` = " . (int)$user_row['id'] . " LIMIT 1")->fetchColumn();
+            $is_old = (bool)$pdo->query("SELECT 1 FROM `users` WHERE `id` = " . (int)$user_row['id'] . " AND `created_at` < DATE_SUB(NOW(), INTERVAL 15 MINUTE) LIMIT 1")->fetchColumn();
+            if (!$has_active_otp && ($has_any_otp || $is_old)) {
+                purge_unverified_user((int)$user_row['id']);
+                return false;
+            }
+        }
+
+        return true;
     } catch (Exception $e) {
         $users = get_users();
         foreach ($users as $u) {
@@ -642,10 +788,33 @@ function is_student_id_registered(string $student_id): bool {
     $sid = strtolower(trim((string)$student_id));
     if (empty($sid)) return false;
     try {
+        purge_expired_unverified_users();
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("SELECT `user_id` FROM `student_profiles` WHERE LOWER(TRIM(`student_id`)) = LOWER(TRIM(:sid)) LIMIT 1");
+        $stmt = $pdo->prepare("
+            SELECT sp.`user_id`, u.`is_email_verified`
+            FROM `student_profiles` sp
+            INNER JOIN `users` u ON sp.`user_id` = u.`id`
+            WHERE LOWER(TRIM(sp.`student_id`)) = LOWER(TRIM(:sid))
+            LIMIT 1
+        ");
         $stmt->execute([':sid' => $sid]);
-        return (bool)$stmt->fetch();
+        $row = $stmt->fetch();
+        if (!$row) {
+            return false;
+        }
+
+        // If the student profile belongs to an unverified user with no active code, purge and allow re-registration
+        if ((int)$row['is_email_verified'] === 0) {
+            $has_active_otp = (bool)$pdo->query("SELECT 1 FROM `email_verifications` WHERE `user_id` = " . (int)$row['user_id'] . " AND `expires_at` > NOW() LIMIT 1")->fetchColumn();
+            $has_any_otp = (bool)$pdo->query("SELECT 1 FROM `email_verifications` WHERE `user_id` = " . (int)$row['user_id'] . " LIMIT 1")->fetchColumn();
+            $is_old = (bool)$pdo->query("SELECT 1 FROM `users` WHERE `id` = " . (int)$row['user_id'] . " AND `created_at` < DATE_SUB(NOW(), INTERVAL 15 MINUTE) LIMIT 1")->fetchColumn();
+            if (!$has_active_otp && ($has_any_otp || $is_old)) {
+                purge_unverified_user((int)$row['user_id']);
+                return false;
+            }
+        }
+
+        return true;
     } catch (Exception $e) {
         $users = get_users();
         foreach ($users as $u) {
@@ -781,7 +950,7 @@ function register_user(array $data, ?string $permit_file = null, ?string $proof_
                 $accreditation = $data['accreditation_number'] ?? 'PENDING-VERIFICATION';
             }
         } else {
-            $verification = $is_kld_email ? 'verified' : 'pending_approval';
+            $verification = 'pending_approval';
             $accreditation = $data['student_id'] ?? ('STUDENT-' . rand(10000, 99999));
         }
 

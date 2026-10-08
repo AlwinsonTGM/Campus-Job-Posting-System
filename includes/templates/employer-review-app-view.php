@@ -47,7 +47,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                                 <div class="col-md-6">
                                     <span class="small text-muted-custom d-block mb-1">Student ID Number</span>
-                                    <strong class="text-ink"><?= htmlspecialchars($target_app['student_number'] ?? '2024-00123') ?></strong>
+                                    <strong class="text-ink"><?= htmlspecialchars($target_app['student_number'] ?? '2025-2-000065') ?></strong>
                                 </div>
                                 <div class="col-md-6">
                                     <span class="small text-muted-custom d-block mb-1">Degree Program & Standing</span>

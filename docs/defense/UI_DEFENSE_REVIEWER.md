@@ -66,7 +66,7 @@
 
 > [!tip] 📜 Institutional Compliance & Content Architecture
 > 
-> * **Developer Showcase (`about-us.php`)**: Features 6 formal 2x2 portrait cards adhering to university dress codes (KLD green blazers, clean neutral backgrounds, strictly free of casual accessories) with light/dark photo switching.
+> * **Developer Showcase (`about-us.php`)**: Features 6 formal 2x2 portrait cards adhering to university dress codes (formal attire, clean neutral backgrounds, strictly free of casual accessories) with light/dark photo switching.
 > * **Interactive 3D DevBlog**: CSS 3D perspective stage displaying daily engineering logs from `data/devblogs.json`.
 > * **Data Privacy Policy (`privacy.php`)**: Full statutory alignment with the Philippine ==Data Privacy Act of 2012 (Republic Act No. 10173)== governing student IDs, resumes, and schedule data.
 > * **Terms of Service (`terms.php`)**: Enforces the university labor limit of ==maximum 20 hours per week== during active semesters to safeguard student academic priorities.

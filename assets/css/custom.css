@@ -477,7 +477,7 @@
 @media (min-width: 992px) {
   .paper-navbar > .container-fluid {
     display: grid !important;
-    grid-template-columns: auto 1fr auto !important;
+    grid-template-columns: 1fr auto 1fr !important;
     align-items: center;
     width: 100%;
     min-width: 0 !important;
@@ -513,8 +513,8 @@
   .paper-navbar .paper-nav-search-wrap {
     grid-column: 2;
     justify-self: center;
-    width: 100%;
-    max-width: 580px;
+    width: 580px;
+    max-width: 100%;
     margin: 0 auto;
     min-width: 0;
   }
@@ -617,7 +617,7 @@
   }
 
   .paper-navbar > .container-fluid {
-    grid-template-columns: auto 1fr auto !important;
+    grid-template-columns: 1fr auto 1fr !important;
     padding-left: 0.35rem !important;
     padding-right: 0.35rem !important;
   }
@@ -648,7 +648,8 @@
   }
 
   .paper-navbar .paper-nav-search-wrap {
-    max-width: 360px;
+    width: 360px;
+    max-width: 100%;
   }
 
   .user-avatar-chip {
@@ -674,7 +675,7 @@
   }
 
   .paper-navbar > .container-fluid {
-    grid-template-columns: auto 1fr auto !important;
+    grid-template-columns: 1fr auto 1fr !important;
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
@@ -4662,9 +4663,11 @@ section.py-5.py-lg-6 {
   vertical-align: middle;
 }
 
+.matrix-table td:has(.matrix-check:checked),
 .matrix-table td.matrix-cell-selected {
   background-color: var(--accent-soft) !important;
   border-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px var(--accent-soft), 0 0 8px rgba(0, 168, 107, 0.15);
 }
 
 .matrix-check {

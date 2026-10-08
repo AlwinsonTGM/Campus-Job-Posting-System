@@ -13,6 +13,7 @@ if (is_logged_in()) {
 }
 
 $error = null;
+purge_expired_unverified_users();
 $preselected_role = $_GET['role'] ?? 'student';
 $initial_step = 1;
 $selected_persona = 'student';

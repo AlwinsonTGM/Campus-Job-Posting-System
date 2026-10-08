@@ -54,23 +54,7 @@ require_once __DIR__ . '/includes/header.php';
         <main class="py-4 py-lg-5">
             <div class="container-paper">
 
-                <?php if ($from_register): ?>
-                <!-- Contextual Registration Notice -->
-                <div class="card-paper bg-cream p-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3 border border-line">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="icon-circle icon-circle-dark flex-shrink-0" style="width: 40px; height: 40px;">
-                            <i class="bi bi-person-check-fill text-accent"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-ink small">Account Registration in Progress</div>
-                            <div class="text-muted-custom small">Review the campus employment guidelines below. When ready, return to complete your account submission.</div>
-                        </div>
-                    </div>
-                    <button type="button" onclick="smartGoBack('register.php')" class="btn-pill btn-sm d-inline-flex align-items-center gap-2" style="padding: 0.45rem 1.15rem; font-size: 0.85rem;">
-                        <i class="bi bi-arrow-left"></i> Return to Registration
-                    </button>
-                </div>
-                <?php endif; ?>
+
 
                 <!-- Page Header with Smart Return Action -->
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom border-line">
@@ -82,7 +66,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                     <div>
                         <button type="button" onclick="smartGoBack('<?= $fallback_url ?>')" class="btn-pill-outline d-inline-flex align-items-center gap-2" style="padding: 0.45rem 1.15rem; font-size: 0.9rem;">
-                            <i class="bi bi-arrow-left"></i> <?= $from_register ? 'Return to Registration' : 'Go Back' ?>
+                            <i class="bi <?= $from_register ? 'bi-x-circle' : 'bi-arrow-left' ?>"></i> <?= $from_register ? 'Close &amp; Return to Registration' : 'Go Back' ?>
                         </button>
                     </div>
                 </div>
@@ -364,7 +348,7 @@ require_once __DIR__ . '/includes/header.php';
                             <!-- Bottom Return Action -->
                             <div class="pt-4 mt-4 border-top border-line d-flex flex-wrap justify-content-center gap-3">
                                 <button type="button" onclick="smartGoBack('<?= $fallback_url ?>')" class="btn-pill d-inline-flex align-items-center gap-2">
-                                    <i class="bi bi-arrow-left"></i> <?= $from_register ? 'Return to Registration' : 'Go Back to Previous Page' ?>
+                                    <i class="bi <?= $from_register ? 'bi-x-circle' : 'bi-arrow-left' ?>"></i> <?= $from_register ? 'Close &amp; Return to Registration' : 'Go Back to Previous Page' ?>
                                 </button>
                                 <a href="index.php" class="btn-pill-outline d-inline-flex align-items-center gap-2">
                                     <i class="bi bi-house"></i> Home

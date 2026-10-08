@@ -237,7 +237,7 @@ require_once __DIR__ . '/../header.php';
                                             <div class="col-md-6">
                                                 <div class="p-2 px-3 bg-white rounded-3 border border-line">
                                                     <span class="small text-muted-custom d-block" style="font-size: 11px;"><i class="bi bi-lock-fill text-muted-custom me-1"></i>Student ID Number</span>
-                                                    <strong class="text-ink small"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
+                                                    <strong class="text-ink small"><?= htmlspecialchars($user['student_id'] ?? '2025-2-000065') ?></strong>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -423,46 +423,24 @@ require_once __DIR__ . '/../header.php';
                         </div>
 
                         <?php if (($user['role'] ?? '') === 'admin'): ?>
-                            <?php
-                            $current_data_mode = function_exists('get_system_data_mode') ? $view_get_system_data_mode : 'demo';
-                            $is_real_mode = ($current_data_mode === 'real');
-                            ?>
-                            <!-- Administrator System Dataset & Environment Card -->
-                            <div class="card-paper p-4 p-md-4 mt-4 reveal-fade-rise border-line" id="admin-dataset-settings">
+                            <!-- Administrator System Datastore Info Card -->
+                            <div class="card-paper p-4 p-md-4 mt-4 reveal-fade-rise border-line">
                                 <div class="mb-3 pb-2 border-bottom border-line">
                                     <h3 class="card-paper-title fs-5 mb-0">
-                                        <i class="bi bi-database-gear text-accent me-2"></i> System Dataset &amp; Environment
+                                        <i class="bi bi-database-check text-accent me-2"></i> System Database &amp; Storage
                                     </h3>
                                 </div>
 
-                                <p class="small text-muted-custom mb-3">
-                                    Manage the system dataset environment for demonstration, testing, or live campus hiring operations.
-                                </p>
-
-                                <div class="p-3 bg-surface rounded-3 border border-line mb-3">
-                                    <span class="small text-muted-custom d-block mb-1" style="font-size: 11px;">Active Dataset Mode</span>
+                                <div class="p-3 bg-surface rounded-3 border border-line">
+                                    <span class="small text-muted-custom d-block mb-1" style="font-size: 11px;">Primary Datastore</span>
                                     <div class="d-flex align-items-center gap-2">
-                                        <i class="bi <?= $is_real_mode ? 'bi-shield-check text-success' : 'bi-database-check text-accent' ?> fs-5"></i>
-                                        <strong class="text-ink fs-6"><?= $is_real_mode ? 'Real Data Mode (Clean Slate Active)' : 'Demo Data Mode (Placeholders Active)' ?></strong>
+                                        <i class="bi bi-shield-check text-success fs-5"></i>
+                                        <strong class="text-ink fs-6">MySQL Relational Database Active</strong>
                                     </div>
                                     <span class="small text-muted-custom d-block mt-1" style="font-size: 11.5px;">
-                                        <?= $is_real_mode 
-                                            ? 'Clean slate mode without placeholder fixtures. Ready for actual applicant submissions and live vacancies.' 
-                                            : 'Pre-populated with demo student assistants, departments, partner employers, and mock applicants.' ?>
+                                        All user accounts, job applications, student credentials, and institutional records are permanently persisted in MySQL.
                                     </span>
                                 </div>
-
-                                <?php if (class_exists('DatastoreManager') && DatastoreManager::isToggleAvailable()): ?>
-                                <form action="<?= $base_url ?>data-toggle.php" method="POST" class="m-0">
-                                    <input type="hidden" name="action" value="switch_mode">
-                                    <input type="hidden" name="mode" value="<?= $is_real_mode ? 'demo' : 'real' ?>">
-                                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                    <button type="submit" class="btn-pill-outline w-100 btn-data-mode-toggle py-2">
-                                        <i class="bi <?= $is_real_mode ? 'bi-collection-play' : 'bi-shield-check' ?> me-2"></i>
-                                        <?= $is_real_mode ? 'Switch to Demo Data' : 'Switch to Real Mode' ?>
-                                    </button>
-                                </form>
-                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -731,7 +709,7 @@ require_once __DIR__ . '/../header.php';
 
                             <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-cream rounded-3 border border-line mb-2 small">
                                 <span class="text-muted-custom" style="font-size: 11px;">Student ID:</span>
-                                <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
+                                <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2025-2-000065') ?></strong>
                             </div>
 
                             <div class="mb-2">

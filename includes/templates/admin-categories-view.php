@@ -5,6 +5,42 @@
  * Inline <script> blocks intentionally stay here (guardrail).
  */
 require_once __DIR__ . '/../header.php';
+
+$bootstrap_category_icons = [
+    'bi-briefcase'       => 'Briefcase (General / Office / Career)',
+    'bi-laptop'          => 'Laptop (IT & Technical Support)',
+    'bi-book'            => 'Book (Library Services / Archiving)',
+    'bi-folder2-open'    => 'Folder (Office / Records / Clerical)',
+    'bi-radioactive'     => 'Radioactive (Science & Medical Lab)',
+    'bi-mortarboard'     => 'Mortarboard (Academic / Peer Tutor)',
+    'bi-trophy'          => 'Trophy (Sports & Athletics Aide)',
+    'bi-camera-reels'    => 'Camera Reels (Media / Arts / Design)',
+    'bi-cup-hot'         => 'Cup Hot (Cafe & Campus Dining)',
+    'bi-heart-pulse'     => 'Heart Pulse (Health & Clinical Services)',
+    'bi-gear'            => 'Gear (Engineering & Technical)',
+    'bi-tools'           => 'Tools (Maintenance & Operations)',
+    'bi-people'          => 'People (Student Guidance / Community)',
+    'bi-building-check'  => 'Building (Institutional / Registrar)',
+    'bi-shield-check'    => 'Shield (Campus Safety & Security)',
+    'bi-shop'            => 'Shop (Campus Bookstore & Retail)',
+    'bi-calculator'      => 'Calculator (Accounting & Finance)',
+    'bi-palette'         => 'Palette (Creative Visual Arts)',
+];
+
+$bootstrap_badge_icons = [
+    'bi-star-fill'             => 'Star (Featured / Recommended)',
+    'bi-fire'                  => 'Fire (Most In-Demand / Urgent)',
+    'bi-award-fill'            => 'Award (Academic / Excellence)',
+    'bi-bookmark-star'         => 'Bookmark Star (Quiet Study Hub)',
+    'bi-building-check'        => 'Building Check (Campus Admin)',
+    'bi-patch-check-fill'      => 'Patch Check (Accredited / Verified)',
+    'bi-lightning-charge-fill' => 'Lightning (Fast Track / Priority)',
+    'bi-gem'                   => 'Gem (Specialized / Prestigious)',
+    'bi-moisture'              => 'Moisture (Science & Health)',
+    'bi-shield-fill-check'     => 'Shield Check (Official Institutional)',
+    'bi-check-circle-fill'     => 'Check Circle (Standard Active)',
+    'bi-heart-fill'            => 'Heart (Student Care & Community)',
+];
 ?>
 
 <style>
@@ -308,16 +344,30 @@ require_once __DIR__ . '/../header.php';
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-4">
-                                    <label class="form-label" for="cat-icon">Bootstrap Icon Class</label>
-                                    <input type="text" name="icon" id="cat-icon" class="form-control" value="bi-briefcase" placeholder="bi-heart-pulse">
+                                    <label class="form-label d-flex align-items-center justify-content-between" for="cat-icon">
+                                        <span>Bootstrap Icon Class <span class="text-danger">*</span></span>
+                                        <span id="cat-icon-preview" class="badge bg-cream text-dark border border-line"><i class="bi bi-briefcase fs-6"></i></span>
+                                    </label>
+                                    <select name="icon" id="cat-icon" class="form-select icon-select-picker">
+                                        <?php foreach ($bootstrap_category_icons as $ico_val => $ico_lbl): ?>
+                                            <option value="<?= htmlspecialchars($ico_val) ?>" <?= $ico_val === 'bi-briefcase' ? 'selected' : '' ?>><?= htmlspecialchars($ico_lbl) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label" for="cat-badge-tag">Badge Tag</label>
                                     <input type="text" name="badge_tag" id="cat-badge-tag" class="form-control" placeholder="e.g. Science & Health">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label" for="cat-badge-icon">Badge Icon</label>
-                                    <input type="text" name="badge_icon" id="cat-badge-icon" class="form-control" value="bi-star-fill" placeholder="bi-star-fill">
+                                    <label class="form-label d-flex align-items-center justify-content-between" for="cat-badge-icon">
+                                        <span>Badge Icon</span>
+                                        <span id="cat-badge-icon-preview" class="badge bg-cream text-dark border border-line"><i class="bi bi-star-fill fs-6"></i></span>
+                                    </label>
+                                    <select name="badge_icon" id="cat-badge-icon" class="form-select badge-icon-select-picker">
+                                        <?php foreach ($bootstrap_badge_icons as $bico_val => $bico_lbl): ?>
+                                            <option value="<?= htmlspecialchars($bico_val) ?>" <?= $bico_val === 'bi-star-fill' ? 'selected' : '' ?>><?= htmlspecialchars($bico_lbl) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
 
@@ -443,16 +493,30 @@ require_once __DIR__ . '/../header.php';
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-4">
-                                    <label class="form-label" for="edit-cat-icon">Bootstrap Icon Class</label>
-                                    <input type="text" name="icon" id="edit-cat-icon" class="form-control">
+                                    <label class="form-label d-flex align-items-center justify-content-between" for="edit-cat-icon">
+                                        <span>Bootstrap Icon Class <span class="text-danger">*</span></span>
+                                        <span id="edit-cat-icon-preview" class="badge bg-cream text-dark border border-line"><i class="bi bi-briefcase fs-6"></i></span>
+                                    </label>
+                                    <select name="icon" id="edit-cat-icon" class="form-select icon-select-picker">
+                                        <?php foreach ($bootstrap_category_icons as $ico_val => $ico_lbl): ?>
+                                            <option value="<?= htmlspecialchars($ico_val) ?>"><?= htmlspecialchars($ico_lbl) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label" for="edit-cat-badge-tag">Badge Tag</label>
                                     <input type="text" name="badge_tag" id="edit-cat-badge-tag" class="form-control">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label" for="edit-cat-badge-icon">Badge Icon</label>
-                                    <input type="text" name="badge_icon" id="edit-cat-badge-icon" class="form-control">
+                                    <label class="form-label d-flex align-items-center justify-content-between" for="edit-cat-badge-icon">
+                                        <span>Badge Icon</span>
+                                        <span id="edit-cat-badge-icon-preview" class="badge bg-cream text-dark border border-line"><i class="bi bi-star-fill fs-6"></i></span>
+                                    </label>
+                                    <select name="badge_icon" id="edit-cat-badge-icon" class="form-select badge-icon-select-picker">
+                                        <?php foreach ($bootstrap_badge_icons as $bico_val => $bico_lbl): ?>
+                                            <option value="<?= htmlspecialchars($bico_val) ?>"><?= htmlspecialchars($bico_lbl) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
 
@@ -546,6 +610,17 @@ require_once __DIR__ . '/../header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Helper to resolve relative asset URLs from /admin/ directory
+    function resolveAssetUrl(url) {
+        if (!url || typeof url !== 'string') return '';
+        const trimmed = url.trim();
+        if (!trimmed) return '';
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('/')) {
+            return trimmed;
+        }
+        return '../' + trimmed.replace(/^\.?\//, '');
+    }
+
     // Helper to update image preview box
     function updatePreview(url, previewImgId, placeholderId) {
         const preview = document.getElementById(previewImgId);
@@ -553,15 +628,39 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!preview || !placeholder) return;
 
         if (url && url.trim() !== '') {
-            preview.src = url.trim();
+            const resolved = resolveAssetUrl(url);
+            preview.src = resolved;
             preview.classList.remove('d-none');
             placeholder.classList.add('d-none');
+            preview.onerror = function() {
+                preview.classList.add('d-none');
+                placeholder.classList.remove('d-none');
+            };
         } else {
             preview.src = '';
             preview.classList.add('d-none');
             placeholder.classList.remove('d-none');
         }
     }
+
+    // Icon select live preview helper
+    function attachIconPreview(selectId, previewId) {
+        const sel = document.getElementById(selectId);
+        const prev = document.getElementById(previewId);
+        if (!sel || !prev) return;
+        const update = () => {
+            const val = sel.value || '';
+            prev.innerHTML = val ? `<i class="bi ${val} fs-6"></i>` : '';
+        };
+        sel.addEventListener('change', update);
+        sel.addEventListener('input', update);
+        update();
+    }
+
+    attachIconPreview('cat-icon', 'cat-icon-preview');
+    attachIconPreview('cat-badge-icon', 'cat-badge-icon-preview');
+    attachIconPreview('edit-cat-icon', 'edit-cat-icon-preview');
+    attachIconPreview('edit-cat-badge-icon', 'edit-cat-badge-icon-preview');
 
     // New Category Modal Picture Preview Listener
     const newImageUrlInput = document.getElementById('new-cat-image-url');
@@ -618,14 +717,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     updatePreview(url, 'new-cat-preview', 'new-cat-placeholder');
                 }
                 const newIcon = document.getElementById('cat-icon');
-                if (newIcon && icon) newIcon.value = icon;
+                if (newIcon && icon) {
+                    newIcon.value = icon;
+                    newIcon.dispatchEvent(new Event('change'));
+                }
             } else if (target === 'edit') {
                 if (editImageUrlInput) {
                     editImageUrlInput.value = url;
                     updatePreview(url, 'edit-cat-preview', 'edit-cat-placeholder');
                 }
                 const editIcon = document.getElementById('edit-cat-icon');
-                if (editIcon && icon) editIcon.value = icon;
+                if (editIcon && icon) {
+                    editIcon.value = icon;
+                    editIcon.dispatchEvent(new Event('change'));
+                }
             }
         });
     });
@@ -648,18 +753,25 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit-cat-id').value = id;
             document.getElementById('edit-cat-name').value = name;
             document.getElementById('edit-cat-desc').value = description;
-            document.getElementById('edit-cat-icon').value = icon;
+            
+            const editIconSel = document.getElementById('edit-cat-icon');
+            if (editIconSel) {
+                editIconSel.value = icon;
+                editIconSel.dispatchEvent(new Event('change'));
+            }
+
             document.getElementById('edit-cat-badge-tag').value = badgeTag;
-            document.getElementById('edit-cat-badge-icon').value = badgeIcon;
+
+            const editBadgeIconSel = document.getElementById('edit-cat-badge-icon');
+            if (editBadgeIconSel) {
+                editBadgeIconSel.value = badgeIcon;
+                editBadgeIconSel.dispatchEvent(new Event('change'));
+            }
+
             document.getElementById('edit-cat-hourly').value = hourlyRange;
             document.getElementById('edit-cat-image-url').value = image;
 
-            // Resolve preview
-            let previewSrc = image;
-            if (previewSrc && !previewSrc.startsWith('http') && !previewSrc.startsWith('/')) {
-                previewSrc = '../' + previewSrc;
-            }
-            updatePreview(previewSrc, 'edit-cat-preview', 'edit-cat-placeholder');
+            updatePreview(image, 'edit-cat-preview', 'edit-cat-placeholder');
 
             if (editModal) {
                 editModal.show();

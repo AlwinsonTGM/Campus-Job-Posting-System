@@ -333,8 +333,10 @@ require_once __DIR__ . '/../header.php';
                                 <div class="row g-3 mb-3" id="student-fields">
                                     <div class="col-md-6">
                                         <label class="form-label" for="student_id">Student ID Number <span class="text-danger">*</span></label>
-                                        <input type="text" name="student_id" id="student_id" class="form-control" placeholder="2024-00123" value="<?= htmlspecialchars($student_id ?? '') ?>">
+                                        <input type="text" name="student_id" id="student_id" class="form-control" placeholder="2025-2-000065" value="<?= htmlspecialchars($student_id ?? '') ?>">
+                                        <span class="small text-muted-custom d-block mt-1" style="font-size: 11px;">Format: <strong>YYYY-T-XXXXXX</strong> (6 digits, e.g. 2025-2-000065)</span>
                                         <div id="student-id-duplicate-feedback" class="mt-1 small" style="display: none;"></div>
+                                        <div id="student-id-year-hint" class="mt-1 small text-success fw-semibold" style="display: none; font-size: 11.5px;"></div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="department-select">Academic Institute <span class="text-danger">*</span></label>
@@ -1302,6 +1304,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function autoDetectYearLevelFromStudentId(val) {
+        const yearSelect = document.getElementById('year_level');
+        const hint = document.getElementById('student-id-year-hint');
+        if (!yearSelect) return;
+
+        const match = (val || '').trim().match(/^(\d{4})/);
+        if (!match) {
+            if (hint) { hint.style.display = 'none'; hint.innerHTML = ''; }
+            return;
+        }
+
+        const year = parseInt(match[1], 10);
+        let targetLevel = '';
+        if (year >= 2026) {
+            targetLevel = '1st Year';
+        } else if (year === 2025) {
+            targetLevel = '2nd Year';
+        } else if (year === 2024) {
+            targetLevel = '3rd Year';
+        } else if (year <= 2023 && year >= 2010) {
+            targetLevel = '4th Year';
+        }
+
+        if (targetLevel) {
+            yearSelect.value = targetLevel;
+            if (hint) {
+                hint.innerHTML = `<i class="bi bi-magic me-1"></i>Batch <strong>${year}</strong> detected &mdash; Academic standing set to <strong>${targetLevel}</strong>`;
+                hint.style.display = 'block';
+            }
+        }
+    }
+
     const regStudentIdInput = document.getElementById('student_id');
     if (regStudentIdInput) {
         let sidTimer = null;
@@ -1309,6 +1343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(sidTimer);
             accountCheckCache.studentId.checked = false;
             const val = this.value.trim();
+            autoDetectYearLevelFromStudentId(val);
             if (val.length >= 3 && currentPersona === 'student') {
                 sidTimer = setTimeout(() => {
                     verifyStudentIdAvailability(val);
@@ -1322,10 +1357,16 @@ document.addEventListener('DOMContentLoaded', function() {
         regStudentIdInput.addEventListener('blur', function() {
             clearTimeout(sidTimer);
             const val = this.value.trim();
+            autoDetectYearLevelFromStudentId(val);
             if (val.length >= 3 && currentPersona === 'student') {
                 verifyStudentIdAvailability(val);
             }
         });
+
+        // Trigger on load if pre-filled
+        if (regStudentIdInput.value) {
+            autoDetectYearLevelFromStudentId(regStudentIdInput.value);
+        }
     }
 
     // Check if server initialized at a specific step

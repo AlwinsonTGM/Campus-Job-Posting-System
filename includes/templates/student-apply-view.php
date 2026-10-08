@@ -59,7 +59,7 @@ require_once __DIR__ . '/../header.php';
                                         </div>
                                         <div class="col-md-6">
                                             <span class="small text-muted-custom d-block mb-1">Student ID Number</span>
-                                            <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2024-00123') ?></strong>
+                                            <strong class="text-ink"><?= htmlspecialchars($user['student_id'] ?? '2025-2-000065') ?></strong>
                                         </div>
                                         <div class="col-md-6">
                                             <span class="small text-muted-custom d-block mb-1">Enrolled Degree Program</span>
@@ -104,6 +104,23 @@ require_once __DIR__ . '/../header.php';
                                     <p class="small text-muted-custom mb-3">
                                         Check all weekly time slots when you are free from academic lectures and can perform on-campus duty:
                                     </p>
+
+                                    <?php if (!empty($user['availability'])): ?>
+                                        <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-cream rounded-3 border border-line mb-3 flex-wrap gap-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-calendar-check-fill text-accent fs-5"></i>
+                                                <div>
+                                                    <span class="small text-ink d-block"><strong>Pre-filled from Account Settings:</strong> Your default free time slots are loaded below. You may adjust them for this specific role.</span>
+                                                </div>
+                                            </div>
+                                            <a href="../settings.php" target="_blank" class="small text-accent text-decoration-underline flex-shrink-0" style="font-size: 11.5px;">Edit Default Schedule <i class="bi bi-box-arrow-up-right"></i></a>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="alert alert-info py-2 px-3 small rounded-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="font-size: 12px;">
+                                            <span><i class="bi bi-info-circle me-1"></i> You have not saved a default weekly schedule in your profile yet. Please check your available hours below.</span>
+                                            <a href="../settings.php" target="_blank" class="fw-semibold text-accent text-decoration-underline" style="font-size: 12px;">Set Defaults in Settings <i class="bi bi-box-arrow-up-right"></i></a>
+                                        </div>
+                                    <?php endif; ?>
                                     
                                     <div class="card-paper p-3 bg-surface border border-line position-relative" id="matrixContainer">
                                         <div id="availabilityErrorAlert" class="alert-paper alert-paper--danger mb-3" style="display: none;">
@@ -136,10 +153,7 @@ require_once __DIR__ . '/../header.php';
                                                 <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                     <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 flex-shrink-0"></i>
                                                     <div style="min-width: 0;">
-                                                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                            <strong class="text-ink small text-break"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
-                                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0 flex-shrink-0" style="font-size: 10px;">Stored Profile Resume</span>
-                                                        </div>
+                                                        <strong class="text-ink small text-break d-block"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
                                                         <span class="small text-muted-custom" style="font-size: 11.5px;">Linked automatically from your Account Settings.</span>
                                                     </div>
                                                 </div>

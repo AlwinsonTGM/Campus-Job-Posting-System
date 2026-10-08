@@ -20,11 +20,11 @@ function get_local_curated_catalog(string $user_role): array {
         ],
         [
             'pattern' => '/\b(my applications?|application status|track(ing)?|shortlists?|hired|review stages?|applicants? status|my status|interview results?)\b/i',
-            'reply' => "**TRACKING YOUR APPLICATIONS:**\n\n1. Open **[My Applications](applications.php)**.\n2. View all your submitted student assistantship applications.\n3. Track your real-time stage: **Applied** ➔ **Reviewing** ➔ **Shortlisted** ➔ **Accepted / Hired** (or Declined).\n4. View supervisor notes, interview schedules, and feedback directly on your application card."
+            'reply' => "**TRACKING YOUR APPLICATIONS:**\n\n1. Open **[My Applications](student/my-applications.php)**.\n2. View all your submitted student assistantship applications.\n3. Track your real-time stage: **Applied** ➔ **Reviewing** ➔ **Shortlisted** ➔ **Accepted / Hired** (or Declined).\n4. View supervisor notes, interview schedules, and feedback directly on your application card."
         ],
         [
             'pattern' => '/\b(apply|how to apply|vacanc(y|ies)|find jobs?|browse jobs?|search jobs?|open roles?|job lists?|positions?)\b/i',
-            'reply' => "**HOW TO APPLY FOR ASSISTANTSHIPS:**\n\n1. Head to **[Explore Vacancies](jobs.php)**.\n2. Filter by department, pay rate, or work schedule (roles are strictly &le;20 hrs/week to keep your grades first!).\n3. Click **Apply Now** on your desired role.\n4. Attach your student resume and submit. You can track your status under **[My Applications](applications.php)**."
+            'reply' => "**HOW TO APPLY FOR ASSISTANTSHIPS:**\n\n1. Head to **[Explore Vacancies](student/jobs.php)**.\n2. Filter by department, pay rate, or work schedule (roles are strictly &le;20 hrs/week to keep your grades first!).\n3. Click **Apply Now** on your desired role.\n4. Attach your student resume and submit. You can track your status under **[My Applications](student/my-applications.php)**."
         ],
         [
             'pattern' => '/\b(shifts?|schedules?|availabilit(y|ies)|matrix|work-study|free times?|class schedules?|hours? per week|20 hours?|20 hrs?)\b/i',
@@ -36,15 +36,15 @@ function get_local_curated_catalog(string $user_role): array {
         ],
         [
             'pattern' => '/\b(navigate|navigation|where is|where can i|pages|site maps?|how to get to|website guides?)\b/i',
-            'reply' => "**CAMPUS PORTAL QUICK DIRECTORY:**\n\n• **[Explore Vacancies](jobs.php)** — Search and apply for on-campus student assistantships.\n• **[My Applications](applications.php)** — Real-time tracking of submitted applications.\n• **[Account Settings](settings.php)** — Update contact phone, availability matrix, password, or request official record changes.\n• **[FAQs & Guidelines](faqs.php)** — Assistantship policies, work-hour limits, and stipend info.\n• **[Career Dispatches](updates.php)** — Campus office news and university announcements."
+            'reply' => "**CAMPUS PORTAL QUICK DIRECTORY:**\n\n• **[Explore Vacancies](student/jobs.php)** — Search and apply for on-campus student assistantships.\n• **[My Applications](student/my-applications.php)** — Real-time tracking of submitted applications.\n• **[Account Settings](settings.php)** — Update contact phone, availability matrix, password, or request official record changes.\n• **[FAQs & Guidelines](faqs.php)** — Assistantship policies, work-hour limits, and stipend info.\n• **[Career Dispatches](updates.php)** — Campus office news and university announcements."
         ],
         [
             'pattern' => '/\b(resume|cv|curriculum vitae)\b/i',
-            'reply' => "**RESUME PRO-TIP:**\n\nKeep your student resume concise (1 page)! Highlight class projects, software proficiencies, and your shift availability clearly upfront. You can attach your resume directly when applying under **[Explore Vacancies](jobs.php)**."
+            'reply' => "**RESUME PRO-TIP:**\n\nKeep your student resume concise (1 page)! Highlight class projects, software proficiencies, and your shift availability clearly upfront. You can attach your resume directly when applying under **[Explore Vacancies](student/jobs.php)**."
         ],
         [
             'pattern' => '/\b(boost|motivat|confiden|nervous|scared|anxious|can i do it|inspire)\b/i',
-            'reply' => "**CAREER BOOST:**\n\nYou are capable of more than you realize! Every lecture, project, and club activity has built your problem-solving grit. Campus offices prioritize proactive students who are eager to learn. Head over to **[Explore Vacancies](jobs.php)** and submit your application with pride."
+            'reply' => "**CAREER BOOST:**\n\nYou are capable of more than you realize! Every lecture, project, and club activity has built your problem-solving grit. Campus offices prioritize proactive students who are eager to learn. Head over to **[Explore Vacancies](student/jobs.php)** and submit your application with pride."
         ],
         [
             'pattern' => '/\b(interview|grill|star method|mock|practice question)\b/i',
@@ -89,7 +89,7 @@ function get_curated_local_reply(array $messages, string $model = 'nvidia/nemotr
                  "• *'How do I apply for open assistantship roles?'*\n" .
                  "• *'Where do I update my weekly shift availability?'*\n" .
                  "• *'How do I track my submitted applications?'*\n\n" .
-                 "You can also jump directly to **[Explore Vacancies](jobs.php)** or **[Account Settings](settings.php)**!";
+                 "You can also jump directly to **[Explore Vacancies](student/jobs.php)** or **[Account Settings](settings.php)**!";
     }
 
     return [

@@ -39,8 +39,8 @@ ON DUPLICATE KEY UPDATE `email`=VALUES(`email`);
 -- 2.1 Table: student_profiles (Student Subtype)
 -- ----------------------------------------------------------------------------
 INSERT INTO `student_profiles` (`user_id`, `student_id`, `department`, `course`, `year_level`, `sex`, `birthdate`, `age`, `availability`, `verification_status`, `rejection_reason`, `registration_proof`, `created_at`, `updated_at`) VALUES
-(1, '2024-00123', 'Institute of Computing and Digital Innovation (ICDI)', 'BS Information Systems (BSIS)', '2nd Year', 'Male', NULL, 20, '["Mon - Morning (8AM–12NN)","Tue - Morning (8AM–12NN)","Wed - Morning (8AM–12NN)","Thu - Morning (8AM–12NN)","Fri - Afternoon (1PM–5PM)"]', 'verified', NULL, NULL, '2026-08-01 08:00:00', '2026-09-03 07:53:52'),
-(2, '2024-00456', 'Institute of Computing and Digital Innovation (ICDI)', 'BS Computer Science (BSCS)', '3rd Year', 'Female', '2004-09-20', 21, '["Monday (8:00 AM - 12:00 PM)","Wednesday (8:00 AM - 12:00 PM)"]', 'verified', NULL, NULL, '2026-08-05 09:30:00', '2026-09-03 07:53:52'),
+(1, '2024-1-000123', 'Institute of Computing and Digital Innovation (ICDI)', 'BS Information Systems (BSIS)', '3rd Year', 'Male', NULL, 20, '["Mon - Morning (8AM–12NN)","Tue - Morning (8AM–12NN)","Wed - Morning (8AM–12NN)","Thu - Morning (8AM–12NN)","Fri - Afternoon (1PM–5PM)"]', 'verified', NULL, NULL, '2026-08-01 08:00:00', '2026-09-03 07:53:52'),
+(2, '2024-1-000456', 'Institute of Computing and Digital Innovation (ICDI)', 'BS Computer Science (BSCS)', '3rd Year', 'Female', '2004-09-20', 21, '["Monday (8:00 AM - 12:00 PM)","Wednesday (8:00 AM - 12:00 PM)"]', 'verified', NULL, NULL, '2026-08-05 09:30:00', '2026-09-03 07:53:52'),
 (10, '2025-2-000065', 'Institute of Computing and Digital Innovation (ICDI)', 'BS Information Systems (BSIS)', '2nd Year', 'Male', '2004-06-15', 22, NULL, 'verified', NULL, NULL, '2026-08-27 07:36:51', '2026-09-03 07:53:52')
 ON DUPLICATE KEY UPDATE `student_id`=VALUES(`student_id`);
 
@@ -50,10 +50,10 @@ ON DUPLICATE KEY UPDATE `student_id`=VALUES(`student_id`);
 INSERT INTO `employer_profiles` (`user_id`, `employer_type`, `organization_name`, `office_location`, `contact_person`, `accreditation_number`, `verification_status`, `rejection_reason`, `business_permit`, `created_at`, `updated_at`) VALUES
 (3, 'university_office', 'Office of the University Registrar', 'KLD Admin Building, 1st Floor, Room 102', 'Prof. Roberto Hernandez (Registrar Head)', 'INTERNAL-UNIV-REG01', 'verified', NULL, NULL, '2026-08-01 08:00:00', '2026-09-03 07:53:52'),
 (4, 'university_office', 'Management Information Systems (MIS)', 'KLD Tech Building, 3rd Floor, MIS Center', 'Engr. Clara Villanueva (IT Director)', 'INTERNAL-UNIV-MIS02', 'verified', NULL, NULL, '2026-08-03 10:15:00', '2026-09-03 07:53:52'),
-(6, 'approved_partner', 'TechVanguard Solutions Inc.', 'Dasma Tech Park, Building B, 4th Floor (Near Campus)', 'Atty. Katrina Alcantara (Talent & University Relations)', 'MOA-2026-IT004', 'verified', NULL, 'uploads/permits/sample_permit_apex.svg', '2026-08-10 11:00:00', '2026-09-03 07:53:52'),
-(7, 'approved_partner', 'Dasma Creative Media Studio', 'Creative Hub Center, Suite 201 (Hybrid / Near Campus)', 'Marco V. Domingo (Creative Producer)', 'MOA-2026-M012', 'verified', NULL, 'uploads/permits/sample_permit_apex.svg', '2026-08-12 14:20:00', '2026-09-03 07:53:52'),
+(6, 'approved_partner', 'TechVanguard Solutions Inc.', 'Dasma Tech Park, Building B, 4th Floor (Near Campus)', 'Atty. Katrina Alcantara (Talent & University Relations)', 'MOA-2026-IT004', 'verified', NULL, 'uploads/permits/permit_sample_techvanguard.jpg', '2026-08-10 11:00:00', '2026-09-03 07:53:52'),
+(7, 'approved_partner', 'Dasma Creative Media Studio', 'Creative Hub Center, Suite 201 (Hybrid / Near Campus)', 'Marco V. Domingo (Creative Producer)', 'MOA-2026-M012', 'verified', NULL, 'uploads/permits/permit_sample_dasma_media.jpg', '2026-08-12 14:20:00', '2026-09-03 07:53:52'),
 (8, 'approved_partner', 'Campus Cafe & Co.', 'University Student Pavilion & Commercial Arcade', 'Chef Patricia Reyes (Operations Manager)', 'CONC-2026-F007', 'verified', NULL, NULL, '2026-08-15 09:00:00', '2026-09-03 07:53:52'),
-(9, 'approved_partner', 'Apex Robotics & Automation PH Corp.', '4th Floor Innovation Tower, Dasmariñas City, Cavite', 'Engr. Dennis Ramirez (Chief Technology Officer)', 'SEC-CS2026-098412', 'pending_approval', NULL, 'uploads/permits/sample_permit_apex.svg', '2026-08-27 10:30:00', '2026-09-03 07:53:52')
+(9, 'approved_partner', 'Apex Robotics & Automation PH Corp.', '4th Floor Innovation Tower, Dasmariñas City, Cavite', 'Engr. Dennis Ramirez (Chief Technology Officer)', 'SEC-CS2026-098412', 'pending_approval', NULL, 'uploads/permits/permit_sample_apex.jpg', '2026-08-27 10:30:00', '2026-09-03 07:53:52')
 ON DUPLICATE KEY UPDATE `organization_name`=VALUES(`organization_name`);
 
 

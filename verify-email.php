@@ -12,8 +12,13 @@ $is_ajax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HT
     || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
 
 if (isset($_GET['action']) && $_GET['action'] === 'cancel') {
+    $pending = $_SESSION['pending_verification'] ?? null;
+    if (!empty($pending['user_id'])) {
+        purge_unverified_user((int)$pending['user_id']);
+    }
     unset($_SESSION['pending_verification']);
-    header('Location: login.php');
+    set_flash('info', 'Registration was cancelled. Your temporary unverified details and documents have been cleared.');
+    header('Location: register.php');
     exit;
 }
 
@@ -40,13 +45,13 @@ if (!$existing_user) {
         header('Content-Type: application/json');
         echo json_encode([
             'success' => false,
-            'redirect' => 'login.php',
-            'message' => 'Your verification session has expired. Please sign in or register again.'
+            'redirect' => 'register.php',
+            'message' => 'Your verification session has expired. Please register again.'
         ]);
         exit;
     }
-    set_flash('warning', 'Your verification session has expired. Please register or sign in.');
-    header('Location: login.php');
+    set_flash('warning', 'Your verification session has expired. Please register again.');
+    header('Location: register.php');
     exit;
 }
 

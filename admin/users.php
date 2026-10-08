@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 require_auth(['admin']);
 $user = get_logged_user();
+purge_expired_unverified_users();
 $page_title = 'User Directory & Partner Verification';
 
 $users = get_all_users();
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: users.php');
             exit;
         }
-    } elseif ($action === 'reject_user' || $action === 'reject_student' || $action === 'reject_employer') {
+    } elseif ($action === 'reject_user' || $action === 'reject_student' || $action === 'reject_employer' || $action === 'revoke_user') {
         $reject_id = (int)($_POST['id'] ?? 0);
         $target_user = get_user_by_id($reject_id);
         if ($target_user && ($target_user['role'] ?? '') === 'admin') {
@@ -54,13 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         $notes = trim($_POST['notes'] ?? '');
+        $is_revoke = ($action === 'revoke_user' || stripos($notes, 'revok') !== false);
         if ($notes === '') {
-            $notes = 'Submitted credentials did not match or require re-submission.';
+            $notes = $is_revoke ? 'Verification revoked by admin' : 'Submitted credentials did not match or require re-submission.';
         }
-        if (update_user_verification($reject_id, 'rejected', $notes)) {
+        $target_status = $is_revoke ? 'revoked' : 'rejected';
+        if (update_user_verification($reject_id, $target_status, $notes)) {
             $u_name = $target_user['name'] ?? 'Account';
             $role_label = ucfirst($target_user['role'] ?? 'User');
-            set_flash('warning', "{$role_label} '{$u_name}' registration has been marked as rejected / revision requested.");
+            $msg = $is_revoke 
+                ? "{$role_label} '{$u_name}' verification has been officially revoked."
+                : "{$role_label} '{$u_name}' registration has been marked as rejected / revision requested.";
+            set_flash('warning', $msg);
             header('Location: users.php');
             exit;
         }
@@ -117,7 +123,8 @@ $all_users = get_all_users();
 $pending_employers_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
 $pending_students_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
 $pending_count = $pending_employers_count + $pending_students_count;
-$suspended_users_count = count(array_filter($all_users, fn($u) => ($u['status'] ?? 'active') === 'suspended'));
+$suspended_users_count = count(array_filter($all_users, fn($u) => ($u['status'] ?? 'active') === 'suspended' || !empty($u['is_archived'])));
+$revoked_users_count = count(array_filter($all_users, fn($u) => ($u['verification_status'] ?? '') === 'revoked' || !empty($u['is_revoked'])));
 
 $all_profile_requests = get_profile_requests();
 $pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
@@ -132,11 +139,22 @@ if ($emp_type_filter) {
 }
 
 if ($ver_filter) {
-    $users = array_filter($users, fn($u) => ($u['verification_status'] ?? 'verified') === $ver_filter);
+    $users = array_filter($users, function($u) use ($ver_filter) {
+        $st = $u['verification_status'] ?? 'verified';
+        if ($ver_filter === 'revoked') {
+            return $st === 'revoked' || !empty($u['is_revoked']);
+        }
+        return $st === $ver_filter;
+    });
 }
 
 if ($status_filter) {
-    $users = array_filter($users, fn($u) => ($u['status'] ?? 'active') === $status_filter);
+    $users = array_filter($users, function($u) use ($status_filter) {
+        if ($status_filter === 'suspended' || $status_filter === 'archived') {
+            return ($u['status'] ?? 'active') === 'suspended' || !empty($u['is_archived']);
+        }
+        return ($u['status'] ?? 'active') === $status_filter;
+    });
 }
 
 if ($search) {
@@ -144,12 +162,6 @@ if ($search) {
     $users = array_filter($users, fn($u) => stripos($u['name'] ?? '', $q) !== false || stripos($u['email'] ?? '', $q) !== false || stripos($u['student_id'] ?? '', $q) !== false || stripos($u['organization_name'] ?? '', $q) !== false || stripos($u['accreditation_number'] ?? '', $q) !== false);
 }
 
-// Verification queue triage (read-only completeness scoring; never
-// approves or rejects — POST actions stay sole gate). Scope note: account items
-// respect the current role/search filter ($users), while profile requests are
-// always unfiltered (that queue has no filter in this controller).
-$triage_users = array_values(array_filter($users, fn($u) => ($u['verification_status'] ?? '') === 'pending_approval'));
-$verification_triage = get_verification_triage($triage_users, array_values($pending_profile_requests));
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-users-view.php';
 

@@ -196,11 +196,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$user_availability = $user['availability'] ?? [
-    'Mon - Morning (8AM–12NN)',
-    'Wed - Morning (8AM–12NN)',
-    'Fri - Afternoon (1PM–5PM)'
-];
+$user_availability = (!empty($user['availability']) && is_array($user['availability']))
+    ? $user['availability']
+    : [];
 
 $pending_req = (($user['role'] ?? '') === 'student') ? get_pending_profile_request($user['id']) : null;
 $recent_notice = (($user['role'] ?? '') === 'student') ? get_recent_profile_request_notice($user['id']) : null;

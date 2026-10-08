@@ -87,7 +87,7 @@ require_once __DIR__ . '/../header.php';
                                 <a href="student/jobs.php" class="btn-outline-pill">
                                     <i class="bi bi-search"></i> EXPLORE VACANCIES
                                 </a>
-                                <a href="about-us.php" class="btn-outline-pill">
+                                <a href="about-us.php#developers" class="btn-outline-pill">
                                     MEET THE TEAM <span class="btn-circle-arrow-accent"><i class="bi bi-arrow-up-right"></i></span>
                                 </a>
                             </div>

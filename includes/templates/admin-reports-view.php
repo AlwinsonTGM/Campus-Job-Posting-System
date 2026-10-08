@@ -60,7 +60,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             </div>
                         </div>
-                        <a href="users.php?ver_status=pending_approval" class="btn-pill btn-sm py-1 px-3 text-nowrap d-inline-flex align-items-center gap-1 text-decoration-none">
+                        <a href="users.php" class="btn-pill btn-sm py-1 px-3 text-nowrap d-inline-flex align-items-center gap-1 text-decoration-none">
                             Review Queue <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -186,8 +186,13 @@ require_once __DIR__ . '/../header.php';
                             <div class="mt-3 pt-3 border-top border-line flex-grow-1">
                                 <div class="d-flex flex-column gap-2">
                                     <?php 
-                                     $palette_dots = ['#16A34A', '#0F766E', '#2563EB', '#D97706', '#7C3AED', '#DB2777', '#475569', '#0284C7'];
-                                     foreach (array_slice($category_data ?? [], 0, 5) as $idx => $cat): 
+                                     $palette_dots = ['#16A34A', '#0F766E', '#2563EB', '#D97706', '#7C3AED', '#DB2777', '#475569', '#0284C7', '#E11D48', '#8B5CF6'];
+                                     // Include all categories with active openings so legend total precisely equals chart total
+                                     $active_category_data = array_values(array_filter($category_data ?? [], fn($c) => ($c['count'] ?? 0) > 0));
+                                     if (empty($active_category_data)) {
+                                         $active_category_data = array_slice($category_data ?? [], 0, 6);
+                                     }
+                                     foreach ($active_category_data as $idx => $cat): 
                                          $dotColor = $palette_dots[$idx % count($palette_dots)];
                                      ?>
                                         <div class="d-flex align-items-center justify-content-between small">
@@ -227,7 +232,7 @@ require_once __DIR__ . '/../header.php';
                             </div>
 
                             <div class="flex-grow-1 d-flex flex-column justify-content-center">
-                                <div class="chart-canvas-wrapper" style="height: 330px;">
+                                <div class="chart-canvas-wrapper" id="deptChartCanvasWrapper" style="height: 330px; transition: height 0.3s ease;">
                                     <canvas id="departmentBarChart" aria-label="Applications per department chart" role="img"></canvas>
                                 </div>
                             </div>
@@ -393,6 +398,7 @@ function triggerPrintReport() {
                         y: {
                             grid: { display: false },
                             ticks: { 
+                                autoSkip: false,
                                 color: tokens.textColor, 
                                 font: { family: "'Inter', sans-serif", size: 12, weight: '500' },
                                 callback: function (value) {
@@ -412,18 +418,22 @@ function triggerPrintReport() {
         if (!deptBarChart) return;
         const btnTop6 = document.getElementById('btnDeptTop6');
         const btnAll = document.getElementById('btnDeptAll');
+        const canvasWrapper = document.getElementById('deptChartCanvasWrapper');
 
         if (mode === 'top6') {
             if (btnTop6) btnTop6.classList.add('active');
             if (btnAll) btnAll.classList.remove('active');
+            if (canvasWrapper) canvasWrapper.style.height = '330px';
             deptBarChart.data.labels = deptAppTopLabels;
             deptBarChart.data.datasets[0].data = deptAppTopCounts;
         } else {
             if (btnTop6) btnTop6.classList.remove('active');
             if (btnAll) btnAll.classList.add('active');
+            if (canvasWrapper) canvasWrapper.style.height = Math.max(350, deptAppAllLabels.length * 28) + 'px';
             deptBarChart.data.labels = deptAppAllLabels;
             deptBarChart.data.datasets[0].data = deptAppAllCounts;
         }
+        deptBarChart.resize();
         deptBarChart.update();
     };
 

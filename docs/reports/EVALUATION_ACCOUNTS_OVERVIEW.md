@@ -94,7 +94,7 @@ This document provides a comprehensive operational breakdown of **all 10 account
 * **Role:** `employer` | **Subtype:** `approved_partner` | **User ID:** `6`
 * **Company:** TechVanguard Solutions Inc. (Dasma Tech Park, Building B, 4th Floor)
 * **Phone:** `(046) 489-7200` | **Accreditation:** `MOA-2026-IT004` (Verified)
-* **Permit Document:** `uploads/permits/sample_permit_apex.svg` on file.
+* **Permit Document:** `uploads/permits/permit_sample_apex.jpg` on file.
 * **Requisition Managed:**
   * **Job #5: Junior Web Developer Intern (OJT):** Hybrid setup (2 days on-site, 2 days remote), ₱120.00/hour, 15–20 hrs/week, 3 total slots, 1 filled, 2 open.
 * **Key Functionality Tested:** External corporate internship/practicum postings, industry partner badges, and academic credit compatibility.

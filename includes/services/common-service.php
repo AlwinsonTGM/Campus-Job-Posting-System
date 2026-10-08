@@ -26,6 +26,7 @@ function format_display_date(string|int|null $datetime, bool $include_time = fal
 
 function hydrate_user(mixed $row): ?array {
     if (!$row || !is_array($row)) return null;
+    $raw_avail = $row['availability'] ?? null;
     if (isset($row['availability']) && is_string($row['availability'])) {
         $decoded = json_decode($row['availability'], true);
         if (is_string($decoded)) {
@@ -34,6 +35,15 @@ function hydrate_user(mixed $row): ?array {
         $row['availability'] = is_array($decoded) ? $decoded : [];
     } elseif (!isset($row['availability']) || !is_array($row['availability'])) {
         $row['availability'] = [];
+    }
+
+    // If json_decode returned empty or failed on raw legacy text string, parse via normalize_availability_slots
+    if (empty($row['availability']) && !empty($raw_avail) && is_string($raw_avail)) {
+        if (function_exists('normalize_availability_slots')) {
+            $row['availability'] = normalize_availability_slots($raw_avail);
+        }
+    } elseif (function_exists('normalize_availability_slots') && !empty($row['availability'])) {
+        $row['availability'] = normalize_availability_slots($row['availability']);
     }
     $row['id'] = (int)$row['id'];
     if (isset($row['age'])) $row['age'] = $row['age'] !== null ? (int)$row['age'] : null;
@@ -59,6 +69,8 @@ function hydrate_user(mixed $row): ?array {
         $row['resume'] = $row['resume_file'] ?? null;
     }
     $row['is_email_verified'] = isset($row['is_email_verified']) ? (int)$row['is_email_verified'] : 1;
+    $row['is_archived'] = (!empty($row['is_archived']) || ($row['status'] ?? '') === 'suspended') ? 1 : 0;
+    $row['is_revoked'] = (!empty($row['is_revoked']) || ($row['verification_status'] ?? '') === 'revoked') ? 1 : 0;
     return $row;
 }
 

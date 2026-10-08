@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-08T11:48:25.013Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap link \"Browse Vacancies\"",
+        "target": {
+          "role": "link",
+          "name": "Browse Vacancies"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/prototype-agent.e2e.ts::agent%20explores%20student%20jobs%20directory",
+      "targetId": "desktop",
+      "instructionDigest": "8ec71257c583ff90212a52a97a57a6fabb6a5f778a189be04b5e6e50a9bcfea2",
+      "paramsDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "summary": "Clicked the 'Browse Vacancies' link (href /student/jobs.php) on the student dashboard. Navigation succeeded to the Jobs page at /student/jobs.php showing 'Find Your On-Campus Opportunity' with 10 live positions and job-family filters.",
+    "startPath": "/student/dashboard.php",
+    "endPath": "/student/jobs.php",
+    "endAnchors": [
+      {
+        "role": "heading",
+        "name": "Find Your On-Campus Opportunity"
+      },
+      {
+        "text": "Explore verified student assistantships, academic laboratory assignments, library roles, and peer tutoring opportunities designed to work smoothly around your class schedule."
+      },
+      {
+        "text": "10 Positions Live"
+      },
+      {
+        "text": "₱80 – ₱120 / hr Verified Pay"
+      },
+      {
+        "text": "Active Discipline"
+      },
+      {
+        "text": "All Job Families"
+      },
+      {
+        "role": "heading",
+        "name": "Explore by Job Family"
+      },
+      {
+        "text": "Select a discipline family to filter verified openings"
+      }
+    ],
+    "goneAnchors": [
+      {
+        "role": "alert",
+        "name": "Welcome back, Juan Dela Cruz! Signed in as Student. Close"
+      },
+      {
+        "text": "Welcome back, Juan Dela Cruz! Signed in as Student."
+      },
+      {
+        "role": "button",
+        "name": "Close"
+      },
+      {
+        "text": "Student Career Portal · BS Information Systems (BSIS)"
+      },
+      {
+        "role": "heading",
+        "name": "Welcome back, Juan Dela Cruz"
+      },
+      {
+        "text": "Track your assistantship evaluation status, review upcoming interview schedules, and explore vacancies matching your availability."
+      },
+      {
+        "role": "link",
+        "name": "Browse Vacancies"
+      },
+      {
+        "role": "link",
+        "name": "My Applications (2)"
+      }
+    ],
+    "endWaitMs": 24671
+  }
+}
