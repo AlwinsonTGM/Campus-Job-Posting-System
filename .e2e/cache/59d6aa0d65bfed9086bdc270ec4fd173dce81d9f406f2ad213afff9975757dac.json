@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-08T12:16:56.109Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap button \"Toggle navigation\"",
+        "target": {
+          "role": "button",
+          "name": "Toggle navigation"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap link \"USERS & VERIFICATION 1\" in \"USERS &\"",
+        "target": {
+          "role": "link",
+          "name": "USERS & VERIFICATION 1",
+          "text": "VERIFICATION",
+          "within": "USERS &"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/admin-agent.e2e.ts::admin%20agent%20explores%20user%20management%20and%20governance",
+      "targetId": "mobile",
+      "instructionDigest": "a199b072f0bfa7558005263a0744a1821f520ac6c011e14d7d562aa2f10d3212",
+      "paramsDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "summary": "Opened the admin nav menu and clicked the USERS & VERIFICATION link; the app navigated to /admin/users.php showing the 'Campus User Directory & Roles' page with 10 registered accounts and 1 pending student profile request.",
+    "startPath": "/admin/reports.php",
+    "endPath": "/admin/users.php",
+    "endAnchors": [
+      {
+        "role": "heading",
+        "name": "Campus User Directory & Roles"
+      },
+      {
+        "text": "Manage student accounts, academic departments, and approve accredited external partner organizations."
+      },
+      {
+        "role": "link",
+        "name": "System Reports"
+      },
+      {
+        "text": "1 Student Profile Update Request(s) Awaiting Review:"
+      },
+      {
+        "text": "Students have submitted COR / Student ID documents requesting updates to their verified academic records."
+      },
+      {
+        "role": "link",
+        "name": "Review Student Requests (1)"
+      },
+      {
+        "role": "heading",
+        "name": "Student Profile Change Requests"
+      },
+      {
+        "text": "Official requests submitted by students to update locked academic programs, standing, or identity demographics."
+      }
+    ],
+    "goneAnchors": [
+      {
+        "role": "alert",
+        "name": "Welcome back, KLD Campus System Admin! Signed in as Admin. Close"
+      },
+      {
+        "text": "Welcome back, KLD Campus System Admin! Signed in as Admin."
+      },
+      {
+        "role": "button",
+        "name": "Close"
+      },
+      {
+        "role": "heading",
+        "name": "Campus Employment Analytics"
+      },
+      {
+        "text": "Real-time overview of student job vacancies, application volumes, candidate pipeline status, and hiring placement ratios."
+      },
+      {
+        "role": "button",
+        "name": "Print Report"
+      },
+      {
+        "role": "button",
+        "name": "Export PDF"
+      },
+      {
+        "text": "1 pending verification awaiting review"
+      }
+    ],
+    "endWaitMs": 37519
+  }
+}
