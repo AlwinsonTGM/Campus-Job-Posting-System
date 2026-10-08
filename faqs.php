@@ -20,7 +20,7 @@ $faqs = [
         'id' => 'work-limits',
         'category' => 'Work Hours & Academics',
         'q' => 'How many hours per week can a Student Assistant (SA) work?',
-        'a' => 'To safeguard your academic studies, Student Assistants are restricted to a maximum of <strong>20 hours per week</strong> during regular school semesters. During official summer/semester breaks, working hours may extend up to 40 hours per week upon office approval.'
+        'a' => 'To safeguard your academic studies and personal well-being, Student Assistants are strictly restricted to a maximum of <strong>20 hours per week</strong>. This institutional limit is strictly enforced across all operational periods to ensure campus work never compromises lecture attendance, exam preparation, or academic progress.'
     ],
     [
         'id' => 'multiple-jobs',

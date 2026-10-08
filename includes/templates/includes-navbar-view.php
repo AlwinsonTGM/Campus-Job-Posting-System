@@ -6,7 +6,7 @@
 ?>
 
 <nav class="navbar navbar-expand-lg paper-navbar sticky-top">
-    <div class="container-fluid px-lg-4">
+    <div class="container-fluid px-2 px-xl-4">
         <!-- Left: SVG Mark + SITE_NAME -->
         <?php $brand_url = $current_user ? $dashboard_link : ($base_url . 'index.php'); ?>
         <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $brand_url ?>" title="<?= $current_user ? 'Go to My Dashboard' : 'Go to Home' ?>">

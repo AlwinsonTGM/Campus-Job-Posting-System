@@ -108,7 +108,7 @@ require_once __DIR__ . '/includes/header.php';
 #### Section 3: Work Hour Regulations (20-Hour Weekly Cap)
 - **The 20-Hour Limit**: Explicitly codifies that student assistants may not work more than 20 hours per week during regular instructional periods.
 - **Anti-Coercion Clause**: Strictly prohibits supervisors from requiring students to skip lectures or exams.
-- **Vacation / Recess Exception**: Allows up to 40 hours per week during official semester breaks, subject to prior department approval.
+- **Strict Multi-Term Adherence**: The statutory 20-hour weekly cap remains strictly enforced across all operational periods and semester breaks without exception.
 - **Weekly Shift Matrix**: Highlights the algorithmic verification through the 18-slot matrix preventing shift assignments that intersect with class schedules.
 
 #### Section 4: Single-Account & Single-Identity Integrity

@@ -42,7 +42,7 @@ require_once __DIR__ . '/../header.php';
                                 <div>
                                     <strong class="text-ink fs-6 d-block mb-1">Official Profile Change Request Pending Review</strong>
                                     <span class="small text-muted-custom">
-                                        Submitted on <?= format_display_date($pending_req['created_at'], true) ?> &bull; Document: <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($pending_req['proof_file'])) ?></span>
+                                        Submitted on <?= format_display_date($pending_req['created_at'], true) ?> &bull; Document: <span class="fw-semibold text-ink text-break"><?= htmlspecialchars(basename($pending_req['proof_file'])) ?></span>
                                     </span>
                                     <div class="mt-2 small bg-white p-2 px-3 rounded-3 border border-line text-ink">
                                         <strong>Requested Updates:</strong>
@@ -269,9 +269,18 @@ require_once __DIR__ . '/../header.php';
                                             </div>
                                             <?php if (!empty($user['proof_file'])): ?>
                                                 <div class="col-12 mt-1">
-                                                    <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-white rounded-3 border border-line small">
-                                                        <span class="text-muted-custom"><i class="bi bi-file-earmark-check text-accent me-1"></i>Verified Attachment on File</span>
-                                                        <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($user['proof_file'])) ?></span>
+                                                    <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                                            <span class="small text-muted-custom" style="font-size: 11px;">
+                                                                <i class="bi bi-file-earmark-check text-accent me-1"></i>Verified Attachment on File
+                                                            </span>
+                                                            <a href="<?= htmlspecialchars($user['proof_file']) ?>" target="_blank" rel="noopener noreferrer" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px;">
+                                                                <i class="bi bi-eye"></i> View File
+                                                            </a>
+                                                        </div>
+                                                        <div class="fw-semibold text-ink small text-break" style="font-size: 12px; word-break: break-all;">
+                                                            <?= htmlspecialchars(basename($user['proof_file'])) ?>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             <?php endif; ?>
@@ -334,13 +343,17 @@ require_once __DIR__ . '/../header.php';
                                                 $permit_doc = $user['business_permit'] ?? $user['permit_file'];
                                             ?>
                                                 <div class="col-12 mt-1">
-                                                    <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-white rounded-3 border border-line small">
-                                                        <span class="text-muted-custom"><i class="bi bi-file-earmark-check text-accent me-1"></i>Accreditation Proof on File</span>
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <span class="fw-semibold text-ink"><?= htmlspecialchars(basename($permit_doc)) ?></span>
+                                                    <div class="p-2 px-3 bg-white rounded-3 border border-line">
+                                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                                            <span class="small text-muted-custom" style="font-size: 11px;">
+                                                                <i class="bi bi-file-earmark-check text-accent me-1"></i>Accreditation Proof on File
+                                                            </span>
                                                             <a href="<?= htmlspecialchars($permit_doc) ?>" target="_blank" rel="noopener noreferrer" class="btn-pill-outline btn-pill-sm py-0 px-2" style="font-size: 11px;">
-                                                                <i class="bi bi-eye"></i> View
+                                                                <i class="bi bi-eye"></i> View Document
                                                             </a>
+                                                        </div>
+                                                        <div class="fw-semibold text-ink small text-break" style="font-size: 12px; word-break: break-all;">
+                                                            <?= htmlspecialchars(basename($permit_doc)) ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -374,7 +387,7 @@ require_once __DIR__ . '/../header.php';
                                 <?php if (($user['role'] ?? '') === 'student'): ?>
                                     <!-- Availability Matrix Editor for Students -->
                                     <div class="mt-4 pt-3 border-top border-line" id="availability">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                                             <h4 class="card-paper-title fs-6 mb-0">
                                                 <i class="bi bi-calendar-week text-accent me-2"></i> Weekly Free Shift Availability <span class="text-danger">*</span>
                                             </h4>
@@ -478,14 +491,14 @@ require_once __DIR__ . '/../header.php';
                                 <?php if (!empty($user['resume_file'])): ?>
                                     <div class="p-2 px-3 bg-white rounded-3 border border-line mb-3">
                                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
-                                                <div>
-                                                    <strong class="text-ink small d-block"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
+                                            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-5 flex-shrink-0"></i>
+                                                <div style="min-width: 0;">
+                                                    <strong class="text-ink small d-block text-break"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
                                                     <span class="small text-success" style="font-size: 11px;"><i class="bi bi-check-circle-fill me-1"></i>Active profile resume on file</span>
                                                 </div>
                                             </div>
-                                            <button type="submit" form="removeResumeForm" class="btn btn-sm btn-link text-danger text-decoration-none p-0 small" onclick="return confirm('Are you sure you want to remove your stored profile resume?');">
+                                            <button type="submit" form="removeResumeForm" class="btn btn-sm btn-link text-danger text-decoration-none p-0 small flex-shrink-0" onclick="return confirm('Are you sure you want to remove your stored profile resume?');">
                                                 <i class="bi bi-trash3 me-1"></i>Remove
                                             </button>
                                         </div>

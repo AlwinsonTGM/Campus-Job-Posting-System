@@ -21,9 +21,9 @@ if (!function_exists('render_page_head')) {
                         </span>
                     </div>
                 <?php endif; ?>
-                <h1 class="page-head-title"><?= htmlspecialchars($title) ?></h1>
+                <h1 class="page-head-title"><?= htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) ?></h1>
                 <?php if (!empty($lead)): ?>
-                    <p class="page-head-lead"><?= htmlspecialchars($lead) ?></p>
+                    <p class="page-head-lead"><?= htmlspecialchars($lead, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) ?></p>
                 <?php endif; ?>
             </div>
             <?php if (!empty($actionsHtml)): ?>

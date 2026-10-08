@@ -132,18 +132,18 @@ require_once __DIR__ . '/../header.php';
                                     </h3>
                                     <div>
                                         <?php if (!empty($user['resume_file'])): ?>
-                                            <div class="d-flex align-items-center justify-content-between p-3 bg-cream rounded-3 border border-line mb-3">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4"></i>
-                                                    <div>
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <strong class="text-ink small"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
-                                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0" style="font-size: 10px;">Stored Profile Resume</span>
+                                            <div class="d-flex align-items-center justify-content-between p-3 bg-cream rounded-3 border border-line mb-3 flex-wrap gap-2">
+                                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 flex-shrink-0"></i>
+                                                    <div style="min-width: 0;">
+                                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                            <strong class="text-ink small text-break"><?= htmlspecialchars(basename($user['resume_file'])) ?></strong>
+                                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0 flex-shrink-0" style="font-size: 10px;">Stored Profile Resume</span>
                                                         </div>
                                                         <span class="small text-muted-custom" style="font-size: 11.5px;">Linked automatically from your Account Settings.</span>
                                                     </div>
                                                 </div>
-                                                <a href="../view-resume.php?file=<?= urlencode(basename($user['resume_file'])) ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;">
+                                                <a href="../view-resume.php?file=<?= urlencode(basename($user['resume_file'])) ?>" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-2 flex-shrink-0" style="font-size: 11.5px;">
                                                     <i class="bi bi-eye"></i> Preview Stored
                                                 </a>
                                             </div>

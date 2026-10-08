@@ -42,7 +42,7 @@ To maintain feasibility for implementation and align with the course's time and 
 
 ### Limitations
 
-* The system cannot support multi-institution or multi-campus job consolidation with separate labor policies; it is designed exclusively for a single KLD institution with a statutory 20 hours per week cap (40 hours during breaks).
+* The system cannot support multi-institution or multi-campus job consolidation with separate labor policies; it is designed exclusively for a single KLD institution with a statutory 20 hours per week cap.
 * The system is limited to web-browser operation over a PHP/MySQL/XAMPP stack; it does not provide offline desktop operation, native mobile application integration, or cloud auto-scaling beyond a single database instance.
 * The system is limited to mouse-and-keyboard and file-upload input and does not integrate with hardware devices such as ID card scanners, biometric attendance terminals, or dedicated payroll disbursement hardware.
 * The system cannot automate payroll payout, tax computation, or government benefits remittance, as compensation handling is limited to displayed pay rates, pay types, and stipend expense projections for planning.

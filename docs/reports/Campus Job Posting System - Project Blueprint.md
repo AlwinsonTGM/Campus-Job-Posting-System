@@ -142,7 +142,7 @@ flowchart TB
 
 #### 1.5 📜 Terms of Service (`terms.php`)
 * **Eligibility Clause:** Currently enrolled bona fide KLD students in good academic standing.
-* **20 Hours/Week Labor Regulation:** Strict maximum of **20 hours per week** during active semesters to safeguard academic priorities (expandable to 40 hrs/wk during semester breaks).
+* **20 Hours/Week Labor Regulation:** Strict maximum of **20 hours per week** across all operational periods to safeguard academic priorities and student well-being.
 * **Employer Obligations:** Accurate job requisitions, fair stipend disbursement, flexible scheduling during midterm/final examination weeks.
 * **Code of Conduct:** Zero tolerance for credential misrepresentation, ghost attendance, or harassment.
 

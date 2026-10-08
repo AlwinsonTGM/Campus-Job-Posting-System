@@ -90,7 +90,7 @@ $page_title = 'Frequently Asked Questions (10 FAQs)';
 ### Lines 11–73: 10 Institutional Policy Q&A Dataset
 The `$faqs` array contains 10 structured elements, each with `id`, `category`, `q` (question), and `a` (rich HTML answer):
 1. **`eligibility`**: Undergraduate/graduate enrolled in at least 12 units, maintaining GWA of $\le 2.50$ (Philippine grading scale where 1.0 is highest and 3.0 is passing), zero disciplinary infractions.
-2. **`work-limits`**: Statutory cap of **20 hours per week** during active instructional terms to safeguard degree completion; up to 40 hours during recognized semester breaks.
+2. **`work-limits`**: Statutory cap of **20 hours per week** across all operational periods to safeguard degree completion and student well-being.
 3. **`multiple-jobs`**: Allows applying to multiple campus vacancies, but enforces an institutional limit of **one active contracted position** per semester.
 4. **`track-status`**: Instructions on monitoring live application transitions (`Under Review`, `Interview Scheduled`, `Accepted`, `Declined`) via `student/my-applications.php`.
 5. **`required-docs`**: Mandatory dossier deliverables: PDF Resume, Certificate of Registration (COR) / study load, and Cover Letter.

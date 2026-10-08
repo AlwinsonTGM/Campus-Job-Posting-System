@@ -29,8 +29,8 @@ require_once __DIR__ . '/../header.php';
                 ';
                 render_page_head(
                     '',
-                    'Welcome back, ' . htmlspecialchars($user['name']),
-                    htmlspecialchars($org_name) . ' • Manage active student assistant openings, candidate evaluations, and hiring quotas.',
+                    'Welcome back, ' . ($user['name'] ?? 'Employer'),
+                    ($org_name ?? 'Campus Organization') . ' • Manage active student assistant openings, candidate evaluations, and hiring quotas.',
                     $head_actions
                 );
                 ?>
@@ -121,13 +121,13 @@ require_once __DIR__ . '/../header.php';
                         <div class="table-responsive">
                             <table class="table-paper table-paper-responsive table-paper-dept mb-0">
                                 <colgroup>
-                                    <col style="width: 24%;">
-                                    <col style="width: 13%;">
-                                    <col style="width: 13%;">
-                                    <col style="width: 11%;">
+                                    <col style="width: 20%;">
+                                    <col style="width: 16%;">
                                     <col style="width: 12%;">
-                                    <col style="width: 9%;">
-                                    <col style="width: 18%;">
+                                    <col style="width: 10%;">
+                                    <col style="width: 13%;">
+                                    <col style="width: 10%;">
+                                    <col style="width: 19%;">
                                 </colgroup>
                                 <thead>
                                     <tr>
@@ -157,20 +157,20 @@ require_once __DIR__ . '/../header.php';
                                                 <span class="chip"><?= htmlspecialchars($job['category']) ?></span>
                                             </td>
                                             <td data-label="Slot Quota">
-                                                <div class="d-flex align-items-center gap-2" style="min-width: 125px;" title="Hiring Quota: <?= $slots_filled ?> hired of <?= $slots_total ?> total vacancies">
+                                                <div class="d-flex align-items-center gap-2 w-100" style="min-width: 0;" title="Hiring Quota: <?= $slots_filled ?> hired of <?= $slots_total ?> total vacancies">
                                                     <div class="progress-paper flex-grow-1">
                                                         <div class="progress-paper-bar" style="width: <?= $pct ?>%;"></div>
                                                     </div>
                                                     <span class="small text-ink fw-bold text-nowrap"><?= $slots_filled ?>/<?= $slots_total ?> <span class="text-muted-custom fw-normal" style="font-size: 11px;">hired</span></span>
                                                 </div>
                                             </td>
-                                            <td data-label="Rate" class="fw-bold text-ink">
+                                            <td data-label="Rate" class="fw-bold text-ink text-nowrap">
                                                 <?= htmlspecialchars($job['pay_rate']) ?>
                                             </td>
-                                            <td data-label="Deadline" class="small text-muted-custom">
+                                            <td data-label="Deadline" class="small text-muted-custom text-nowrap">
                                                 <?= htmlspecialchars(format_display_date($job['deadline'] ?? 'Open')) ?>
                                             </td>
-                                            <td data-label="Status">
+                                            <td data-label="Status" class="text-nowrap">
                                                 <?php if (!empty($job['is_archived'])): ?>
                                                     <?= render_status_badge('archived') ?>
                                                 <?php else: ?>
@@ -184,15 +184,15 @@ require_once __DIR__ . '/../header.php';
                                                         <i class="bi bi-people"></i> Applicants (<?= $job_apps ?>)
                                                     </a>
                                                     <?php if (!$is_archived_view): ?>
-                                                        <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm table-action-btn" title="Edit Posting">
-                                                            <i class="bi bi-pencil"></i> Edit
+                                                        <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn-pill-outline btn-pill-sm table-action-btn table-action-btn--icon-sm" title="Edit Posting">
+                                                            <i class="bi bi-pencil"></i><span class="table-action-btn__label ms-1">Edit</span>
                                                         </a>
                                                         <form method="POST" action="dashboard.php" class="d-inline" onsubmit="return confirm('Archive requisition &quot;<?= htmlspecialchars(addslashes($job['title'])) ?>&quot;? All applicant evaluations will remain intact.');">
                                                             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                                             <input type="hidden" name="action" value="archive_job">
                                                             <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
-                                                            <button type="submit" class="btn-pill-outline btn-pill-sm text-warning-emphasis table-action-btn" title="Archive Requisition">
-                                                                <i class="bi bi-archive"></i> Archive
+                                                            <button type="submit" class="btn-pill-outline btn-pill-sm text-warning-emphasis table-action-btn table-action-btn--icon-sm" title="Archive Requisition">
+                                                                <i class="bi bi-archive"></i><span class="table-action-btn__label ms-1">Archive</span>
                                                             </button>
                                                         </form>
                                                     <?php else: ?>

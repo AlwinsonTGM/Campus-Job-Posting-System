@@ -402,6 +402,7 @@ require_once __DIR__ . '/../header.php';
                                                         <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#adminModal<?= $u['id'] ?>">
                                                             <i class="bi bi-shield-check"></i> Inspect
                                                         </button>
+                                                        <span class="d-inline-block" style="width: 62px;" aria-hidden="true"></span>
                                                     <?php endif; ?>
 
                                                     <?php if ($u['role'] !== 'admin'): ?>
@@ -967,6 +968,8 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 <?php endif; ?>
                             </div>
+                        </div>
+
                         <div class="collapse mt-3" id="rejectPanelStudent<?= $u['id'] ?>">
                             <div class="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
                                 <form action="users.php" method="POST">

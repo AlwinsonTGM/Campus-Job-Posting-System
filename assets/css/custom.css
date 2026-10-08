@@ -272,7 +272,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
-  padding: 1.15rem clamp(1.25rem, 3.5vw, 3rem);
+  padding: 0.85rem clamp(0.85rem, 2vw, 2rem);
   transition: all 0.25s ease;
   z-index: 1030;
 }
@@ -477,9 +477,10 @@
 @media (min-width: 992px) {
   .paper-navbar > .container-fluid {
     display: grid !important;
-    grid-template-columns: 1fr auto 1fr !important;
+    grid-template-columns: auto 1fr auto !important;
     align-items: center;
     width: 100%;
+    min-width: 0 !important;
   }
 
   .paper-navbar .navbar-brand {
@@ -487,6 +488,7 @@
     justify-self: start;
     margin-right: 0 !important;
     z-index: 2;
+    flex-shrink: 0;
   }
 
   .paper-navbar .navbar-collapse {
@@ -504,7 +506,8 @@
     margin: 0 !important;
     padding: 0;
     list-style: none;
-    gap: 0.25rem;
+    gap: clamp(0.15rem, 0.4vw, 0.35rem);
+    min-width: 0;
   }
 
   .paper-navbar .paper-nav-search-wrap {
@@ -513,6 +516,7 @@
     width: 100%;
     max-width: 580px;
     margin: 0 auto;
+    min-width: 0;
   }
 
   .paper-navbar .paper-nav-actions {
@@ -525,6 +529,8 @@
     margin-left: auto;
     gap: 0.5rem;
     z-index: 2;
+    flex-shrink: 0;
+    min-width: 0;
   }
 }
 
@@ -607,23 +613,79 @@
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
   .paper-navbar {
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .paper-navbar > .container-fluid {
+    grid-template-columns: auto 1fr auto !important;
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+  }
+
+  .paper-navbar .paper-nav-actions {
+    gap: 0.3rem !important;
   }
 
   .paper-navbar .navbar-brand {
-    font-size: 1.08rem;
-    gap: 0.45rem;
+    font-size: 1.05rem;
+    gap: 0.35rem;
   }
 
   .paper-navbar .navbar-brand span:first-child {
-    width: 32px !important;
-    height: 32px !important;
-    padding: 6px !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 5px !important;
   }
 
   .paper-navbar .nav-link {
-    font-size: 12px;
-    padding: 0.38rem 0.55rem !important;
+    font-size: 11.5px;
+    padding: 0.3rem 0.45rem !important;
+    letter-spacing: 0.01em;
+  }
+
+  .paper-navbar .navbar-nav {
+    gap: 0.1rem !important;
+  }
+
+  .paper-navbar .paper-nav-search-wrap {
+    max-width: 360px;
+  }
+
+  .user-avatar-chip {
+    padding: 0.25rem 0.55rem 0.25rem 0.35rem;
+    font-size: 0.78rem;
+    gap: 0.35rem;
+  }
+
+  .user-chip-name {
+    max-width: 70px;
+  }
+
+  .btn-paper-nav-login,
+  .btn-paper-nav-post {
+    padding: 0.42rem 0.7rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+  .paper-navbar {
+    padding: 0.85rem 1.25rem;
+  }
+
+  .paper-navbar > .container-fluid {
+    grid-template-columns: auto 1fr auto !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .paper-navbar .paper-nav-actions {
+    gap: 0.4rem !important;
+  }
+
+  .paper-navbar .nav-link {
+    font-size: 12.5px;
+    padding: 0.35rem 0.65rem !important;
     letter-spacing: 0.02em;
   }
 
@@ -631,44 +693,8 @@
     gap: 0.15rem !important;
   }
 
-  .paper-navbar .paper-nav-search-wrap {
-    max-width: 380px;
-  }
-
-  .user-avatar-chip {
-    padding: 0.3rem 0.65rem 0.3rem 0.4rem;
-    font-size: 0.8rem;
-    gap: 0.45rem;
-  }
-
   .user-chip-name {
-    max-width: 75px;
-  }
-
-  .btn-paper-nav-login,
-  .btn-paper-nav-post {
-    padding: 0.48rem 0.85rem;
-    font-size: 0.8rem;
-  }
-}
-
-@media (min-width: 1200px) and (max-width: 1399.98px) {
-  .paper-navbar {
-    padding: 1rem 1.5rem;
-  }
-
-  .paper-navbar .nav-link {
-    font-size: 13px;
-    padding: 0.45rem 0.75rem !important;
-    letter-spacing: 0.03em;
-  }
-
-  .paper-navbar .navbar-nav {
-    gap: 0.2rem !important;
-  }
-
-  .user-chip-name {
-    max-width: 110px;
+    max-width: 105px;
   }
 }
 
@@ -719,9 +745,9 @@
     flex-shrink: 0 !important;
   }
 
-  .paper-navbar .btn-circle-icon,
-  .paper-navbar .btn-nav-search-mobile,
-  .paper-navbar .navbar-toggler {
+  .paper-navbar .mobile-header-controls .btn-circle-icon,
+  .paper-navbar .mobile-header-controls .btn-nav-search-mobile,
+  .paper-navbar .mobile-header-controls .navbar-toggler {
     width: 36px !important;
     height: 36px !important;
     min-width: 36px !important;
@@ -739,6 +765,11 @@
     line-height: 1 !important;
     box-shadow: none !important;
     transition: all 0.2s ease !important;
+  }
+
+  .paper-navbar .paper-nav-actions .d-none,
+  .paper-navbar .d-none {
+    display: none !important;
   }
 
   .paper-navbar .navbar-toggler:hover,
@@ -2100,35 +2131,50 @@ section.py-5.py-lg-6 {
 .page-head {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 2.75rem;
-  padding-bottom: 1.75rem;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--line);
 }
 
 @media (min-width: 992px) {
   .page-head {
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-end;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.75rem;
   }
 }
 
 .page-head-content {
-  flex-grow: 1;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  flex: 0 1 auto;
+}
+
+@media (min-width: 992px) {
+  .page-head-content {
+    flex: 1 1 360px;
+    min-width: 280px;
+    width: auto;
+  }
 }
 
 .page-head-title {
-  font-size: clamp(28px, 4.8vw, 48px);
+  font-size: clamp(26px, 4vw, 44px);
   font-weight: 800;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   color: var(--ink);
-  line-height: 1.15;
+  line-height: 1.18;
   margin-top: 0.35rem;
   margin-bottom: 0.5rem;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
 }
 
 .page-head-lead {
@@ -3300,12 +3346,19 @@ section.py-5.py-lg-6 {
 .table-paper-roster .badge-status--review,
 .table-paper-roster .badge-status--interview,
 .table-paper-roster .badge-status--accepted,
-.table-paper-roster .badge-status--declined {
-  font-size: 10px !important;
+.table-paper-roster .badge-status--declined,
+.table-paper-dept .badge-status--pending,
+.table-paper-dept .badge-status--review,
+.table-paper-dept .badge-status--interview,
+.table-paper-dept .badge-status--accepted,
+.table-paper-dept .badge-status--declined {
+  font-size: 10.5px !important;
   padding: 0.2rem 0.55rem !important;
   letter-spacing: 0.04em !important;
   gap: 0.35rem !important;
   white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
 .table-paper-roster .btn-pill-sm:not(.table-action-btn),
@@ -3328,36 +3381,65 @@ section.py-5.py-lg-6 {
 .table-paper-dept {
   width: 100%;
   table-layout: fixed;
-  min-width: 980px;
+  min-width: 890px;
 }
 
 .table-paper-dept thead th {
-  padding: 1.15rem 0.85rem;
+  padding: 1.1rem 0.5rem;
   vertical-align: middle;
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.3;
   text-align: center !important;
 }
 
 .table-paper-dept tbody td {
-  padding: 1.15rem 0.85rem;
+  padding: 1.1rem 0.5rem;
   vertical-align: middle;
-  font-size: 14.5px;
+  font-size: 13.5px;
   text-align: left !important;
+}
+
+.table-paper-dept td[data-label="Rate"],
+.table-paper-dept td[data-label="Deadline"],
+.table-paper-dept td[data-label="Status"],
+.table-paper-dept th:nth-child(4),
+.table-paper-dept th:nth-child(5),
+.table-paper-dept th:nth-child(6) {
+  white-space: nowrap !important;
+}
+
+.table-paper-dept td[data-label="Slot Quota"] > div {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.table-paper-dept .progress-paper {
+  min-width: 35px !important;
+}
+
+.table-paper-dept .chip {
+  white-space: nowrap !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
 }
 
 .table-paper-dept th:first-child,
 .table-paper-dept td:first-child,
 .table-paper-dept th.ps-4,
 .table-paper-dept td.ps-4 {
-  padding-left: 1.5rem !important;
+  padding-left: 1.25rem !important;
 }
 
 .table-paper-dept th:last-child,
 .table-paper-dept td:last-child,
 .table-paper-dept th.pe-4,
 .table-paper-dept td.pe-4 {
-  padding-right: 1.5rem !important;
+  padding-right: 1.25rem !important;
+  text-align: right !important;
+  overflow: visible;
 }
 
 .table-paper-dept .btn-pill-sm:not(.table-action-btn),
@@ -3377,36 +3459,40 @@ section.py-5.py-lg-6 {
 }
 
 /* Responsive Action Buttons Container in Tables
-   The action cell always spans the full column width (no fixed max-width cap),
-   so no dead space is left beside the buttons at any screen size. */
+   The action cell aligns right and buttons stay neatly inside their column */
 .table-actions-wrap {
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-end !important;
   flex-wrap: nowrap !important;
-  gap: clamp(0.35rem, 0.55vw, 0.85rem) !important;
+  gap: clamp(0.25rem, 0.45vw, 0.55rem) !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
-/* Fluid action button sizing: height, padding, label and icon scale with the
-   viewport width, so full-screen layouts automatically get larger buttons. */
+.table-actions-wrap > form {
+  display: inline-flex !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Action button sizing: compact, clean, non-overlapping pill buttons */
 .table-action-btn,
 .table-paper-roster .table-action-btn,
 .table-paper-dept .table-action-btn,
 .table-paper-roster a.table-action-btn,
 .table-paper-dept a.table-action-btn {
-  flex: 1 1 0 !important;
+  flex: 0 0 auto !important;
   max-width: 100% !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: clamp(0.3rem, 0.45vw, 0.6rem) !important;
-  height: clamp(34px, 2.2vw, 46px) !important;
-  min-height: clamp(34px, 2.2vw, 46px) !important;
-  padding: 0 clamp(0.7rem, 1vw, 1.6rem) !important;
-  font-size: clamp(11.5px, 0.7vw + 2px, 14px) !important;
+  gap: 0.25rem !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 0.55rem !important;
+  font-size: 11.5px !important;
   font-weight: 600 !important;
   line-height: 1 !important;
   white-space: nowrap !important;
@@ -3419,7 +3505,32 @@ section.py-5.py-lg-6 {
 .table-action-btn i,
 .table-paper-roster .table-action-btn i,
 .table-paper-dept .table-action-btn i {
-  font-size: clamp(12px, 0.8vw + 2px, 16px) !important;
+  font-size: 12px !important;
+}
+
+.table-action-btn--icon-sm {
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.table-action-btn--icon-sm .table-action-btn__label {
+  display: none;
+}
+
+@media (min-width: 1400px) {
+  .table-action-btn--icon-sm {
+    width: auto !important;
+    padding: 0 0.65rem !important;
+  }
+
+  .table-action-btn--icon-sm .table-action-btn__label {
+    display: inline !important;
+  }
 }
 
 /* Desktop screens (1200px+): hand more of the row over to the Actions column */
@@ -3429,9 +3540,13 @@ section.py-5.py-lg-6 {
   .table-paper-roster col:nth-child(5) { width: 10% !important; }
   .table-paper-roster col:nth-child(7) { width: 20% !important; }
 
-  .table-paper-dept col:nth-child(2) { width: 12% !important; }
+  .table-paper-dept col:nth-child(1) { width: 21% !important; }
+  .table-paper-dept col:nth-child(2) { width: 16% !important; }
+  .table-paper-dept col:nth-child(3) { width: 12% !important; }
   .table-paper-dept col:nth-child(4) { width: 10% !important; }
-  .table-paper-dept col:nth-child(7) { width: 20% !important; }
+  .table-paper-dept col:nth-child(5) { width: 13% !important; }
+  .table-paper-dept col:nth-child(6) { width: 10% !important; }
+  .table-paper-dept col:nth-child(7) { width: 18% !important; }
 }
 
 /* Fullscreen / wide screens (1400px+): Actions column keeps growing with the window */
@@ -3440,9 +3555,13 @@ section.py-5.py-lg-6 {
   .table-paper-roster col:nth-child(6) { width: 12% !important; }
   .table-paper-roster col:nth-child(7) { width: 22% !important; }
 
+  .table-paper-dept col:nth-child(1) { width: 21% !important; }
+  .table-paper-dept col:nth-child(2) { width: 15% !important; }
   .table-paper-dept col:nth-child(3) { width: 12% !important; }
-  .table-paper-dept col:nth-child(5) { width: 11% !important; }
-  .table-paper-dept col:nth-child(7) { width: 22% !important; }
+  .table-paper-dept col:nth-child(4) { width: 10% !important; }
+  .table-paper-dept col:nth-child(5) { width: 12% !important; }
+  .table-paper-dept col:nth-child(6) { width: 9% !important; }
+  .table-paper-dept col:nth-child(7) { width: 21% !important; }
 }
 
 /* Ultra-wide screens (1600px+): full-bodied buttons seamlessly balancing the table */
@@ -3451,12 +3570,16 @@ section.py-5.py-lg-6 {
   .table-paper-roster col:nth-child(3) { width: 11% !important; }
   .table-paper-roster col:nth-child(7) { width: 24% !important; }
 
-  .table-paper-dept col:nth-child(2) { width: 11% !important; }
+  .table-paper-dept col:nth-child(1) { width: 22% !important; }
+  .table-paper-dept col:nth-child(2) { width: 15% !important; }
+  .table-paper-dept col:nth-child(3) { width: 12% !important; }
+  .table-paper-dept col:nth-child(4) { width: 10% !important; }
+  .table-paper-dept col:nth-child(5) { width: 12% !important; }
   .table-paper-dept col:nth-child(6) { width: 8% !important; }
-  .table-paper-dept col:nth-child(7) { width: 24% !important; }
+  .table-paper-dept col:nth-child(7) { width: 21% !important; }
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 1199.98px) {
   .table-paper-responsive thead {
     display: none;
   }
@@ -3558,18 +3681,37 @@ section.py-5.py-lg-6 {
     gap: 8px !important;
   }
 
+  .table-paper-responsive td:last-child .table-actions-wrap > form {
+    flex: 1 1 0% !important;
+    display: flex !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
   .table-paper-responsive td:last-child .d-flex .btn-pill,
   .table-paper-responsive td:last-child .d-flex .btn-pill-outline,
-  .table-paper-responsive td:last-child .table-action-btn {
+  .table-paper-responsive td:last-child .table-action-btn,
+  .table-paper-responsive td:last-child .table-actions-wrap > form .table-action-btn {
     flex: 1 1 0% !important;
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
     min-height: 38px;
     height: 38px !important;
+    width: 100% !important;
     text-align: center;
     font-size: 12px !important;
-    padding: 0.45rem 0.75rem !important;
+    padding: 0.45rem 0.5rem !important;
+  }
+
+  .table-paper-responsive td:last-child .table-action-btn--icon-sm {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0.45rem 0.5rem !important;
+  }
+
+  .table-paper-responsive td:last-child .table-action-btn--icon-sm .table-action-btn__label {
+    display: inline !important;
   }
 
   .table-paper-responsive td .fw-bold,
@@ -3577,6 +3719,24 @@ section.py-5.py-lg-6 {
   .table-paper-responsive td .text-ink {
     word-break: break-word;
     overflow-wrap: break-word;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .table-paper-responsive td:last-child .table-actions-wrap {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .table-paper-responsive td:last-child .table-actions-wrap > a:first-child {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+
+  .table-paper-responsive td:last-child .table-actions-wrap > a.table-action-btn--icon-sm,
+  .table-paper-responsive td:last-child .table-actions-wrap > form {
+    flex: 1 1 calc(50% - 4px) !important;
+    width: calc(50% - 4px) !important;
   }
 }
 
