@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-08T12:28:47.344Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap link \"Terms of Service\"",
+        "target": {
+          "role": "link",
+          "name": "Terms of Service"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/auxiliary-agent.e2e.ts::agent%20explores%20public%20legal%20and%20auxiliary%20content",
+      "targetId": "mobile",
+      "instructionDigest": "58b8ef31c7e5752e2568ceef84661585299efea03df8599ee74cae4841a3537e",
+      "paramsDigest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "summary": "Clicked the footer link 'Terms of Service' (href=/terms.php) on /faqs.php; the app navigated to /terms.php, showing the heading 'Terms of Service & Campus Work Guidelines' and full terms content (sections 1-16) plus a Table of Contents.",
+    "startPath": "/faqs.php",
+    "endPath": "/terms.php",
+    "endAnchors": [
+      {
+        "role": "heading",
+        "name": "Terms of Service & Campus Work Guidelines"
+      },
+      {
+        "text": "Effective Date:"
+      },
+      {
+        "role": "button",
+        "name": "Go Back"
+      },
+      {
+        "text": "KLD Campus Job Posting System (Campus Hire)"
+      },
+      {
+        "text": "Kolehiyo ng Lungsod ng Dasmariñas (KLD)"
+      },
+      {
+        "role": "heading",
+        "name": "1. Acceptance of Terms & Institutional Scope"
+      },
+      {
+        "text": "1.1 Contractual Nature and Binding Assent."
+      },
+      {
+        "text": "1.2 Institutional Scope, Administrative Oversight, and Invalidation."
+      }
+    ],
+    "goneAnchors": [
+      {
+        "role": "heading",
+        "name": "Frequently Asked Questions"
+      },
+      {
+        "text": "Everything you need to know about student assistant eligibility, work hour limits, stipend payouts, and departmental application workflows."
+      },
+      {
+        "text": "Q1"
+      },
+      {
+        "text": "Who is eligible to apply for on-campus jobs?"
+      },
+      {
+        "text": "maintaining a General Weighted Average (GWA) of 2.50 or better"
+      },
+      {
+        "text": "no disciplinary records"
+      },
+      {
+        "text": "Q2"
+      },
+      {
+        "text": "How many hours per week can a Student Assistant (SA) work?"
+      }
+    ],
+    "endWaitMs": 18164
+  }
+}

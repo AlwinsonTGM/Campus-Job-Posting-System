@@ -62,8 +62,8 @@ if (!defined('SITE_NAME')) {
             <div class="col-lg-3 col-md-3 col-6">
                 <h6 class="fw-bold text-ink mb-3 small text-uppercase">Legal & Guidelines</h6>
                 <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
-                    <li><a href="<?= $base_url ?>privacy.php" target="_blank" rel="noopener">Data Privacy Policy (RA 10173)</a></li>
-                    <li><a href="<?= $base_url ?>terms.php" target="_blank" rel="noopener">Terms of Service</a></li>
+                    <li><a href="<?= $base_url ?>privacy.php">Data Privacy Policy (RA 10173)</a></li>
+                    <li><a href="<?= $base_url ?>terms.php">Terms of Service</a></li>
                     <li><a href="<?= $base_url ?>faqs.php?open=2#faq-2">20-Hour Work Regulations</a></li>
                     <li><a href="<?= $base_url ?>about-us.php#developers">COAL101 Dev Team</a></li>
                 </ul>

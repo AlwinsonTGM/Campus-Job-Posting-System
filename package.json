@@ -22,6 +22,7 @@
     "test:employer:sweep": "playwright test tests/e2e/employer-journey-and-sweep.spec.ts",
     "test:public:sweep": "playwright test tests/e2e/public-auth-and-quarantine-sweep.spec.ts",
     "test:admin:sweep": "playwright test tests/e2e/admin-governance-and-sweep.spec.ts",
+    "test:auxiliary:sweep": "playwright test tests/e2e/auxiliary-and-settings-sweep.spec.ts",
     "jev:triage": "node tools/jev-triage.mjs",
     "jev:dispatch": "node tools/jev-dispatch.mjs",
     "jev:verify": "node tools/jev-verify.mjs",
