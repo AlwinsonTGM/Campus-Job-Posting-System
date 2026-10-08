@@ -50,7 +50,7 @@ class DatastoreManager {
      * Set APP_ENV=production (or prod) in .env to remove the capability.
      */
     public static function isToggleAvailable(): bool {
-        $appEnv = strtolower(trim((string)(getenv('APP_ENV') ?: '')));
+        $appEnv = strtolower(trim((string)get_env('APP_ENV', '')));
         if (in_array($appEnv, ['production', 'prod'], true)) {
             return false;
         }

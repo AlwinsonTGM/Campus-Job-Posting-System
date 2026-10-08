@@ -7,6 +7,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/data-helper.php';
+require_once __DIR__ . '/ai/env.php';
 
 /**
  * Whether registration may dispatch a real verification email.
@@ -24,7 +25,7 @@ require_once __DIR__ . '/data-helper.php';
  * rendered on screen, so the full OTP journey stays testable without email.
  */
 function registration_mail_allowed(): bool {
-    return trim((string)getenv('QA_MAIL_DISABLED')) !== '1';
+    return trim((string)get_env('QA_MAIL_DISABLED', '')) !== '1';
 }
 
 class SessionGuard {

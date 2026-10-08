@@ -22,8 +22,8 @@ function is_smtp_configured(): bool {
     }
 
     load_env();
-    $smtp_user = trim((string)getenv('MAIL_USERNAME'));
-    $smtp_pass = trim((string)getenv('MAIL_PASSWORD'));
+    $smtp_user = trim((string)get_env('MAIL_USERNAME', ''));
+    $smtp_pass = trim((string)get_env('MAIL_PASSWORD', ''));
     return ($smtp_user !== '' && $smtp_pass !== '');
 }
 
@@ -62,8 +62,8 @@ function send_campus_email(string $recipient_email, string $recipient_name, stri
 
     load_env();
 
-    $smtp_user = (string)getenv('MAIL_USERNAME');
-    $smtp_pass = (string)getenv('MAIL_PASSWORD');
+    $smtp_user = trim((string)get_env('MAIL_USERNAME', ''));
+    $smtp_pass = trim((string)get_env('MAIL_PASSWORD', ''));
     if ($smtp_user === '' || $smtp_pass === '') {
         return false;
     }
@@ -71,18 +71,19 @@ function send_campus_email(string $recipient_email, string $recipient_name, stri
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host       = (string)(getenv('MAIL_HOST') ?: 'smtp.gmail.com');
+        $mail->Host       = (string)get_env('MAIL_HOST', 'smtp.gmail.com');
         $mail->SMTPAuth   = true;
         $mail->Username   = $smtp_user;
         $mail->Password   = $smtp_pass;
-        $mail->Port       = (int)(getenv('MAIL_PORT') ?: 587);
+        $mail->Port       = (int)get_env('MAIL_PORT', 587);
         $mail->CharSet    = 'UTF-8';
-        $mail->SMTPSecure = (strtolower((string)getenv('MAIL_ENCRYPTION')) === 'ssl' || $mail->Port === 465)
+        $encryption       = strtolower((string)get_env('MAIL_ENCRYPTION', 'tls'));
+        $mail->SMTPSecure = ($encryption === 'ssl' || $mail->Port === 465)
             ? PHPMailer::ENCRYPTION_SMTPS
             : PHPMailer::ENCRYPTION_STARTTLS;
 
-        $from_address = (string)(getenv('MAIL_FROM_ADDRESS') ?: $smtp_user);
-        $from_name    = (string)(getenv('MAIL_FROM_NAME') ?: 'KLD Campus Job Portal');
+        $from_address = (string)get_env('MAIL_FROM_ADDRESS', $smtp_user);
+        $from_name    = (string)get_env('MAIL_FROM_NAME', 'KLD Campus Job Portal');
 
         $mail->setFrom($from_address, $from_name);
         $mail->addAddress($recipient_email, $recipient_name ?: $recipient_email);

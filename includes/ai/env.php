@@ -50,11 +50,14 @@ function load_env(?string $env_path = null): array {
         }
 
         $env_cache[$key] = $val;
-        if (!getenv($key)) {
-            putenv("$key=$val");
+        if (function_exists('putenv')) {
+            @putenv("$key=$val");
         }
         if (!isset($_ENV[$key])) {
             $_ENV[$key] = $val;
+        }
+        if (!isset($_SERVER[$key])) {
+            $_SERVER[$key] = $val;
         }
     }
 
@@ -62,16 +65,37 @@ function load_env(?string $env_path = null): array {
 }
 
 /**
- * Get configuration value from .env or getenv with default
+ * Universal environment variable accessor.
+ * Reads from parsed .env cache first, then $_ENV, $_SERVER, and getenv().
+ * Safe against environments where putenv() is disabled (e.g. shared hosting like InfinityFree).
  */
-function get_ai_env(string $key, mixed $default = null): mixed {
+function get_env(string $key, mixed $default = null): mixed {
     $env = load_env();
     if (isset($env[$key]) && $env[$key] !== '') {
         return $env[$key];
     }
-    $val = getenv($key);
-    if ($val !== false && $val !== '') {
-        return $val;
+    if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+        return $_ENV[$key];
+    }
+    if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+        return $_SERVER[$key];
+    }
+    if (function_exists('getenv')) {
+        $val = @getenv($key);
+        if ($val !== false && $val !== '') {
+            return $val;
+        }
+    }
+    if (array_key_exists($key, $env)) {
+        return $env[$key];
     }
     return $default;
+}
+
+/**
+ * Get configuration value from .env or getenv with default.
+ * Alias for get_env() for backward compatibility.
+ */
+function get_ai_env(string $key, mixed $default = null): mixed {
+    return get_env($key, $default);
 }

@@ -8,17 +8,11 @@
 require_once __DIR__ . '/ai/env.php';
 load_env();
 
-$db_host = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? '127.0.0.1');
-$db_port = getenv('DB_PORT') ?: ($_ENV['DB_PORT'] ?? '3306');
-$db_name = getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? 'campus_job_portal');
-$db_user = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? 'root');
-$db_pass = getenv('DB_PASS');
-if ($db_pass === false && isset($_ENV['DB_PASS'])) {
-    $db_pass = $_ENV['DB_PASS'];
-}
-if ($db_pass === false || $db_pass === null) {
-    $db_pass = '';
-}
+$db_host = (string)get_env('DB_HOST', '127.0.0.1');
+$db_port = (string)get_env('DB_PORT', '3306');
+$db_name = (string)get_env('DB_NAME', 'campus_job_portal');
+$db_user = (string)get_env('DB_USER', 'root');
+$db_pass = (string)get_env('DB_PASS', '');
 
 if (!defined('DB_HOST')) define('DB_HOST', $db_host);
 if (!defined('DB_PORT')) define('DB_PORT', $db_port);

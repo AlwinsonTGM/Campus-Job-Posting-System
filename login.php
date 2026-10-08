@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/auth-check.php';
 
 // Test hooks (?reset / ?demo) — LOCAL-ONLY. Blocked in production and for remote clients.
 // E2E suite runs on 127.0.0.1 so tests keep working. Set APP_ENV=production in prod .env to hard-close.
-$__app_env = strtolower(trim((string)(getenv('APP_ENV') ?: '')));
+$__app_env = strtolower(trim((string)get_env('APP_ENV', '')));
 $__is_production = ($__app_env === 'production' || $__app_env === 'prod');
 $__remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
 $__is_loopback = in_array($__remote_addr, ['127.0.0.1', '::1', '::ffff:127.0.0.1'], true);
