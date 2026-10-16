@@ -65,7 +65,7 @@ require_once __DIR__ . '/../header.php';
                                     <th>Title &amp; Summary</th>
                                     <th>Author / Office</th>
                                     <th>Published</th>
-                                    <th class="text-end pe-4" style="width: 140px;">Actions</th>
+                                    <th class="text-center pe-4" style="width: 140px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
