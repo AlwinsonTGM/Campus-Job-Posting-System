@@ -93,11 +93,11 @@ require_once __DIR__ . '/../header.php';
                             <p class="text-muted-custom small mb-0"><?= $is_archived_view ? 'Archived requisitions safely preserved. Only Admins can restore them.' : 'Overview of student assistantship postings published by your office' ?></p>
                         </div>
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <a href="dashboard.php" class="chip chip-selectable <?= !$is_archived_view ? 'active' : '' ?>">
-                                <i class="bi bi-briefcase text-accent"></i> <span class="chip-text">Active (<?= count($active_dept_jobs) ?>)</span>
+                            <a href="dashboard.php" class="chip chip-selectable text-decoration-none <?= !$is_archived_view ? 'active' : '' ?>">
+                                <i class="bi bi-briefcase text-accent"></i> Active (<?= count($active_dept_jobs) ?>)
                             </a>
-                            <a href="dashboard.php?tab=archived" class="chip chip-selectable <?= $is_archived_view ? 'active' : '' ?>">
-                                <i class="bi bi-archive text-warning"></i> <span class="chip-text">Archived (<?= count($archived_dept_jobs) ?>)</span>
+                            <a href="dashboard.php?tab=archived" class="chip chip-selectable text-decoration-none <?= $is_archived_view ? 'active' : '' ?>">
+                                <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_dept_jobs) ?>)
                             </a>
                             <a href="create-job.php" class="btn-pill btn-pill-sm ms-2">
                                 <i class="bi bi-plus-lg"></i> Post Vacancy
@@ -126,7 +126,7 @@ require_once __DIR__ . '/../header.php';
                                     <col style="width: 12%;">
                                     <col style="width: 10%;">
                                     <col style="width: 13%;">
-                                    <col style="width: 15%;">
+                                    <col style="width: 10%;">
                                     <col style="width: 19%;">
                                 </colgroup>
                                 <thead>
@@ -137,7 +137,7 @@ require_once __DIR__ . '/../header.php';
                                         <th>Rate</th>
                                         <th>Deadline</th>
                                         <th>Status</th>
-                                        <th class="pe-4">Actions</th>
+                                        <th class="pe-4 text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
