@@ -3282,7 +3282,17 @@ section.py-5.py-lg-6 {
   padding: 1.25rem 1.45rem;
   border-bottom: 1.5px solid var(--line);
   white-space: nowrap;
-  text-align: center;
+  text-align: left;
+}
+
+.table-paper thead th.text-center,
+.table-paper tbody td.text-center {
+  text-align: center !important;
+}
+
+.table-paper thead th.text-end,
+.table-paper tbody td.text-end {
+  text-align: right !important;
 }
 
 .table-paper tbody td {
@@ -3321,12 +3331,24 @@ section.py-5.py-lg-6 {
   vertical-align: middle;
   font-size: 12px;
   line-height: 1.3;
+  text-align: left !important;
+}
+
+.table-paper-roster thead th.text-center,
+.table-paper-roster tbody td.text-center {
+  text-align: center !important;
+}
+
+.table-paper-roster thead th.text-end,
+.table-paper-roster tbody td.text-end {
+  text-align: right !important;
 }
 
 .table-paper-roster tbody td {
   padding: 1.1rem 0.65rem;
   vertical-align: middle;
   font-size: 14.5px;
+  text-align: left !important;
 }
 
 .table-paper-roster th:first-child,
@@ -3341,6 +3363,7 @@ section.py-5.py-lg-6 {
 .table-paper-roster th.pe-4,
 .table-paper-roster td.pe-4 {
   padding-right: 1.5rem !important;
+  text-align: right !important;
 }
 
 .table-paper-roster .badge-status--pending,
@@ -3390,7 +3413,17 @@ section.py-5.py-lg-6 {
   vertical-align: middle;
   font-size: 11.5px;
   line-height: 1.3;
+  text-align: left !important;
+}
+
+.table-paper-dept thead th.text-center,
+.table-paper-dept tbody td.text-center {
   text-align: center !important;
+}
+
+.table-paper-dept thead th.text-end,
+.table-paper-dept tbody td.text-end {
+  text-align: right !important;
 }
 
 .table-paper-dept tbody td {
