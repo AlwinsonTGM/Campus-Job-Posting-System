@@ -48,10 +48,10 @@ require_once __DIR__ . '/../header.php';
                             <p class="text-muted-custom small mb-0"><?= ($tab === 'archived') ? 'Archived dispatches hidden from public view. Only Admins can restore.' : 'Live on the homepage and public Career Center feed.' ?></p>
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="updates.php" class="chip chip-selectable <?= ($tab !== 'archived') ? 'active' : '' ?>">
+                            <a href="updates.php" class="chip chip-selectable text-decoration-none <?= ($tab !== 'archived') ? 'active' : '' ?>">
                                 <i class="bi bi-newspaper text-accent"></i> Active (<?= count($active_updates) ?>)
                             </a>
-                            <a href="updates.php?tab=archived" class="chip chip-selectable <?= ($tab === 'archived') ? 'active' : '' ?>">
+                            <a href="updates.php?tab=archived" class="chip chip-selectable text-decoration-none <?= ($tab === 'archived') ? 'active' : '' ?>">
                                 <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_updates) ?>)
                             </a>
                         </div>
