@@ -293,7 +293,7 @@ require_once __DIR__ . '/../header.php';
                                         <th style="max-width: 240px;">Organization / Program</th>
                                         <th style="width: 150px;">ID / Code</th>
                                         <th style="width: 130px;">Status</th>
-                                        <th class="text-end pe-4" style="width: 140px;">Actions</th>
+                                        <th class="text-center pe-4" style="width: 140px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
