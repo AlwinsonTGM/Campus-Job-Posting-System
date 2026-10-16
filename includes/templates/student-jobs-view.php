@@ -271,34 +271,34 @@ require_once __DIR__ . '/../header.php';
                         <!-- Quick Filter Chips -->
                         <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top border-line" id="quick-filter-chips">
                             <span class="small fw-bold text-muted-custom text-uppercase" style="font-size: 11px;">Quick Filters:</span>
-                            <a href="jobs.php" class="chip chip-selectable <?= (empty($job_type) && empty($work_setup) && empty($employer_type) && empty($pay_type) && empty($category)) ? 'active' : '' ?>" data-filter-type="reset">
+                            <a href="jobs.php" class="chip chip-selectable text-decoration-none <?= (empty($job_type) && empty($work_setup) && empty($employer_type) && empty($pay_type) && empty($category)) ? 'active' : '' ?>" data-filter-type="reset">
                                 All Roles
                             </a>
-                            <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Student Assistant">
+                            <a href="jobs.php?job_type=Student+Assistant" class="chip chip-selectable text-decoration-none <?= ($job_type === 'Student Assistant') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Student Assistant">
                                 <i class="bi bi-mortarboard"></i> Student Assistant
                             </a>
-                            <a href="jobs.php?job_type=Part-Time" class="chip chip-selectable <?= ($job_type === 'Part-Time') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Part-Time">
+                            <a href="jobs.php?job_type=Part-Time" class="chip chip-selectable text-decoration-none <?= ($job_type === 'Part-Time') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Part-Time">
                                 <i class="bi bi-clock"></i> Part-Time
                             </a>
-                            <a href="jobs.php?job_type=<?= urlencode('Internship / OJT') ?>" class="chip chip-selectable <?= ($job_type === 'Internship / OJT') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Internship / OJT">
+                            <a href="jobs.php?job_type=<?= urlencode('Internship / OJT') ?>" class="chip chip-selectable text-decoration-none <?= ($job_type === 'Internship / OJT') ? 'active' : '' ?>" data-filter-name="job_type" data-filter-val="Internship / OJT">
                                 <i class="bi bi-briefcase"></i> Internship / OJT
                             </a>
-                            <a href="jobs.php?category=Peer+Tutor" class="chip chip-selectable <?= $is_peer_tutor_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Peer Tutor">
+                            <a href="jobs.php?category=Peer+Tutor" class="chip chip-selectable text-decoration-none <?= $is_peer_tutor_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Peer Tutor">
                                 <i class="bi bi-person-video3"></i> Peer Tutor
                             </a>
-                            <a href="jobs.php?category=<?= urlencode('Science & Computer Lab Assistant') ?>" class="chip chip-selectable <?= $is_lab_assistant_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Science & Computer Lab Assistant">
+                            <a href="jobs.php?category=<?= urlencode('Science & Computer Lab Assistant') ?>" class="chip chip-selectable text-decoration-none <?= $is_lab_assistant_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Science & Computer Lab Assistant">
                                 <i class="bi bi-radioactive"></i> Lab Assistant
                             </a>
-                            <a href="jobs.php?category=Library+Services" class="chip chip-selectable <?= $is_library_aide_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Library Services">
+                            <a href="jobs.php?category=Library+Services" class="chip chip-selectable text-decoration-none <?= $is_library_aide_active ? 'active' : '' ?>" data-filter-name="category" data-filter-val="Library Services">
                                 <i class="bi bi-book"></i> Library Aide
                             </a>
-                            <a href="jobs.php?work_setup=On-Campus" class="chip chip-selectable <?= ($work_setup === 'On-Campus') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="On-Campus">
+                            <a href="jobs.php?work_setup=On-Campus" class="chip chip-selectable text-decoration-none <?= ($work_setup === 'On-Campus') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="On-Campus">
                                 <i class="bi bi-geo-alt"></i> On-Campus
                             </a>
-                            <a href="jobs.php?work_setup=Hybrid" class="chip chip-selectable <?= ($work_setup === 'Hybrid') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="Hybrid">
+                            <a href="jobs.php?work_setup=Hybrid" class="chip chip-selectable text-decoration-none <?= ($work_setup === 'Hybrid') ? 'active' : '' ?>" data-filter-name="work_setup" data-filter-val="Hybrid">
                                 <i class="bi bi-laptop"></i> Hybrid
                             </a>
-                            <a href="jobs.php?employer_type=approved_partner" class="chip chip-selectable <?= ($employer_type === 'approved_partner') ? 'active' : '' ?>" data-filter-name="employer_type" data-filter-val="approved_partner">
+                            <a href="jobs.php?employer_type=approved_partner" class="chip chip-selectable text-decoration-none <?= ($employer_type === 'approved_partner') ? 'active' : '' ?>" data-filter-name="employer_type" data-filter-val="approved_partner">
                                 <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
                             </a>
                         </div>
