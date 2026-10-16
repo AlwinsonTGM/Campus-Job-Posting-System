@@ -2528,31 +2528,56 @@ section.py-5.py-lg-6 {
   transition: all 0.2s ease;
 }
 
-/* Base text color (if needed, adjust to your default non-hover color) */
-.chip-selectable .chip-text {
-    transition: color 0.2s ease-in-out;
-}
-
-/* Force ONLY the text to white when the parent chip is hovered */
-.chip-selectable:hover .chip-text {
-    color: #ffffff !important; 
-}
-
+/* Base text color & transitions for selectable chips */
 .chip-selectable {
   cursor: pointer;
   user-select: none;
+  transition: all 0.2s ease;
 }
 
-.chip-selectable:hover {
+.chip-selectable .chip-text {
+  transition: color 0.2s ease-in-out;
+}
+
+/* Light mode (default): Inactive chips when hovered should have dark text on warm cream background */
+.chip-selectable:not(.active):not(.is-selected):hover,
+a.chip-selectable:not(.active):not(.is-selected):hover {
   background-color: var(--cream);
   border-color: var(--ink);
+  color: var(--ink) !important;
 }
 
+.chip-selectable:not(.active):not(.is-selected):hover .chip-text {
+  color: var(--ink) !important;
+}
+
+/* Light mode (default): Active chips have solid dark background with light text */
 .chip-selectable.active,
-.chip-selectable.is-selected {
+.chip-selectable.is-selected,
+a.chip-selectable.active,
+a.chip-selectable.is-selected {
   background-color: var(--ink);
   border-color: var(--ink);
-  color: var(--white);
+  color: var(--white) !important;
+}
+
+.chip-selectable.active .chip-text,
+.chip-selectable.is-selected .chip-text {
+  color: var(--white) !important;
+}
+
+.chip-selectable.active:hover,
+.chip-selectable.is-selected:hover,
+a.chip-selectable.active:hover,
+a.chip-selectable.is-selected:hover {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--white) !important;
+}
+
+.chip-selectable.active:hover .chip-text,
+.chip-selectable.is-selected:hover .chip-text {
+  color: var(--white) !important;
 }
 
 .chip-sm {

@@ -94,10 +94,10 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex flex-wrap align-items-center gap-2">
                             <a href="dashboard.php" class="chip chip-selectable <?= !$is_archived_view ? 'active' : '' ?>">
-                                <i class="bi bi-briefcase text-accent"></i> Active (<?= count($active_dept_jobs) ?>)
+                                <i class="bi bi-briefcase text-accent"></i> <span class="chip-text">Active (<?= count($active_dept_jobs) ?>)</span>
                             </a>
                             <a href="dashboard.php?tab=archived" class="chip chip-selectable <?= $is_archived_view ? 'active' : '' ?>">
-                                <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_dept_jobs) ?>)
+                                <i class="bi bi-archive text-warning"></i> <span class="chip-text">Archived (<?= count($archived_dept_jobs) ?>)</span>
                             </a>
                             <a href="create-job.php" class="btn-pill btn-pill-sm ms-2">
                                 <i class="bi bi-plus-lg"></i> Post Vacancy

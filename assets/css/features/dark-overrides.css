@@ -874,6 +874,47 @@
   background-color: var(--cream);
   border-color: var(--muted);
 }
+
+/* Dark mode: Inactive selectable chips when hovered have white text on dark background */
+[data-theme="dark"] .chip-selectable:not(.active):not(.is-selected):hover,
+[data-theme="dark"] a.chip-selectable:not(.active):not(.is-selected):hover {
+  background-color: var(--cream);
+  border-color: var(--muted);
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .chip-selectable:not(.active):not(.is-selected):hover .chip-text {
+  color: #ffffff !important;
+}
+
+/* Dark mode: Active chips have light background with dark text */
+[data-theme="dark"] .chip-selectable.active,
+[data-theme="dark"] .chip-selectable.is-selected,
+[data-theme="dark"] a.chip-selectable.active,
+[data-theme="dark"] a.chip-selectable.is-selected {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--surface) !important;
+}
+
+[data-theme="dark"] .chip-selectable.active .chip-text,
+[data-theme="dark"] .chip-selectable.is-selected .chip-text {
+  color: var(--surface) !important;
+}
+
+[data-theme="dark"] .chip-selectable.active:hover,
+[data-theme="dark"] .chip-selectable.is-selected:hover,
+[data-theme="dark"] a.chip-selectable.active:hover,
+[data-theme="dark"] a.chip-selectable.is-selected:hover {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--surface) !important;
+}
+
+[data-theme="dark"] .chip-selectable.active:hover .chip-text,
+[data-theme="dark"] .chip-selectable.is-selected:hover .chip-text {
+  color: var(--surface) !important;
+}
 [data-theme="dark"] .updates-filter-pill {
   background-color: var(--surface);
   border-color: var(--line);
