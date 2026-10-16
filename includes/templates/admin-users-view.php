@@ -891,18 +891,8 @@ require_once __DIR__ . '/../header.php';
                                         <div class="col-5 text-muted-custom">Registered Date:</div>
                                         <div class="col-7 text-ink"><?= format_display_date($u['created_at'], true) ?></div>
 
-                                        <div class="col-5 text-muted-custom">Verification Status:</div>
-                                        <div class="col-7">
-                                            <?php if ($ver_status === 'verified'): ?>
-                                                <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Verified Active</span>
-                                            <?php elseif ($ver_status === 'revoked' || !empty($u['is_revoked'])): ?>
-                                                <span class="badge-status--declined text-danger border-danger"><i class="bi bi-arrow-counterclockwise me-1"></i>Revoked by Admin</span>
-                                            <?php elseif ($ver_status === 'rejected'): ?>
-                                                <span class="badge-status--declined"><i class="bi bi-x-circle me-1"></i>Application Rejected</span>
-                                            <?php else: ?>
-                                                <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
-                                            <?php endif; ?>
-                                        </div>
+                                        
+                                        
                                     </div>
                                 </div>
 
