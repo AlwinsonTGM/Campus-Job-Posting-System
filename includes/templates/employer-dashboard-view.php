@@ -252,7 +252,7 @@ require_once __DIR__ . '/../header.php';
                                             Applied for: <strong class="text-ink"><?= htmlspecialchars($app['job_title']) ?></strong> &bull; <?= format_display_date($app['applied_at']) ?>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-2 gap-sm-3 pt-2 pt-md-0 border-top border-md-0 border-line">
+                                    <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-2 gap-sm-3 pt-2 pt-md-0 border-line">
                                         <div class="flex-shrink-1 min-w-0">
                                             <?= render_status_badge($app['status']) ?>
                                         </div>
