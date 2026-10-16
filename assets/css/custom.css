@@ -2528,6 +2528,16 @@ section.py-5.py-lg-6 {
   transition: all 0.2s ease;
 }
 
+/* Base text color (if needed, adjust to your default non-hover color) */
+.chip-selectable .chip-text {
+    transition: color 0.2s ease-in-out;
+}
+
+/* Force ONLY the text to white when the parent chip is hovered */
+.chip-selectable:hover .chip-text {
+    color: #ffffff !important; 
+}
+
 .chip-selectable {
   cursor: pointer;
   user-select: none;

@@ -165,12 +165,12 @@ $bootstrap_badge_icons = [
                 <!-- Taxonomy View Tabs -->
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom border-line">
                     <div class="d-flex gap-2">
-                        <a href="categories.php" class="chip chip-selectable <?= ($tab !== 'archived') ? 'active' : '' ?>">
-                            <i class="bi bi-folder2-open text-accent"></i> Active Categories (<?= count($active_categories) ?>)
-                        </a>
-                        <a href="categories.php?tab=archived" class="chip chip-selectable <?= ($tab === 'archived') ? 'active' : '' ?>">
-                            <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_categories) ?>)
-                        </a>
+                        <a href="categories.php" class="chip chip-selectable text-decoration-none <?= ($tab !== 'archived') ? 'active' : '' ?>">
+                            <i class="bi bi-folder2-open text-accent"></i> <span class="chip-text">Active Categories (<?= count($active_categories) ?>)</span>
+                                </a>
+                        <a href="categories.php?tab=archived" class="chip chip-selectable text-decoration-none <?= ($tab === 'archived') ? 'active' : '' ?>">
+                            <i class="bi bi-archive text-warning"></i> <span class="chip-text">Archived (<?= count($archived_categories) ?>)</span>
+                                </a>
                     </div>
                     <?php if ($tab === 'archived'): ?>
                         <div class="small text-muted-custom">

@@ -49,10 +49,10 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <a href="updates.php" class="chip chip-selectable text-decoration-none <?= ($tab !== 'archived') ? 'active' : '' ?>">
-                                <i class="bi bi-newspaper text-accent"></i> Active (<?= count($active_updates) ?>)
+                                <i class="bi bi-newspaper text-accent"></i> <span class="chip-text">Active (<?= count($active_updates) ?>)</span>
                             </a>
                             <a href="updates.php?tab=archived" class="chip chip-selectable text-decoration-none <?= ($tab === 'archived') ? 'active' : '' ?>">
-                                <i class="bi bi-archive text-warning"></i> Archived (<?= count($archived_updates) ?>)
+                                <i class="bi bi-archive text-warning"></i> <span class="chip-text">Archived (<?= count($archived_updates) ?>)</span>
                             </a>
                         </div>
                     </div>
