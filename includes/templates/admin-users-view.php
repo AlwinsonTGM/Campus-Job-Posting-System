@@ -93,13 +93,20 @@ require_once __DIR__ . '/../header.php';
 
                         <div class="table-responsive">
                             <table class="table-paper table-paper-responsive mb-0">
+                                <colgroup>
+                                    <col style="width: 15%;">
+                                    <col style="width: 32%;">
+                                    <col style="width: 28%;">
+                                    <col style="width: 12%;">
+                                    <col style="width: 13%;">
+                                </colgroup>
                                 <thead>
                                     <tr>
-                                        <th class="ps-4" style="width: 140px;">Request Ref</th>
-                                        <th style="max-width: 240px;">Student Details</th>
-                                        <th style="max-width: 260px;">Target Program</th>
-                                        <th style="width: 130px;">Status</th>
-                                        <th class="text-end pe-4" style="width: 140px;">Actions</th>
+                                        <th class="ps-4 text-start">Request Ref</th>
+                                        <th class="text-start">Student Details</th>
+                                        <th class="text-start">Target Program</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,11 +115,11 @@ require_once __DIR__ . '/../header.php';
                                         $proof = $req['proof_file'] ?? '';
                                     ?>
                                         <tr>
-                                            <td class="ps-4 text-nowrap" data-label="Request Ref">
+                                            <td class="ps-4 text-start text-nowrap" data-label="Request Ref">
                                                 <span class="font-monospace fw-bold text-ink small">#REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?></span>
                                                 <div class="small text-muted-custom" style="font-size: 11px;"><?= format_display_date($req['created_at']) ?></div>
                                             </td>
-                                            <td data-label="Student Details" style="max-width: 240px;">
+                                            <td class="text-start" data-label="Student Details" style="max-width: 240px;">
                                                 <div class="fw-bold text-ink text-truncate" title="<?= htmlspecialchars($req['user_name']) ?>"><?= htmlspecialchars($req['user_name']) ?></div>
                                                 <div class="small text-muted-custom text-truncate" style="font-size: 11px;" title="<?= htmlspecialchars($req['user_email']) ?>">
                                                     <span><?= htmlspecialchars($req['student_id'] ?? '') ?></span> &bull; 
@@ -126,7 +133,7 @@ require_once __DIR__ . '/../header.php';
                                                     </div>
                                                 <?php endif; ?>
                                             </td>
-                                            <td data-label="Target Program" style="max-width: 260px;">
+                                            <td class="text-start" data-label="Target Program" style="max-width: 260px;">
                                                 <div class="small fw-semibold text-ink text-truncate" title="<?= htmlspecialchars(($req['requested_profile']['course'] ?? '') . ' • ' . ($req['requested_profile']['year_level'] ?? '')) ?>">
                                                     <?= htmlspecialchars($req['requested_profile']['course'] ?? '') ?>
                                                 </div>
@@ -134,7 +141,7 @@ require_once __DIR__ . '/../header.php';
                                                     <span class="fw-semibold text-ink"><?= htmlspecialchars($req['requested_profile']['year_level'] ?? '') ?></span> &bull; <?= htmlspecialchars($req['requested_profile']['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($req['requested_profile']['age'] ?? 20)) ?> yrs
                                                 </div>
                                             </td>
-                                            <td data-label="Status" class="text-nowrap">
+                                            <td class="text-center text-nowrap" data-label="Status">
                                                 <?php if ($req_status === 'approved'): ?>
                                                     <span class="badge-status--accepted"><i class="bi bi-check-circle me-1"></i>Approved</span>
                                                 <?php elseif ($req_status === 'rejected'): ?>
@@ -143,7 +150,7 @@ require_once __DIR__ . '/../header.php';
                                                     <span class="badge-status--pending"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="text-end pe-4 text-nowrap" data-label="Actions">
+                                            <td class="text-center text-nowrap" data-label="Actions">
                                                 <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" style="font-size: 11.5px;" data-bs-toggle="modal" data-bs-target="#inspectProfileReqModal<?= $req['id'] ?>">
                                                     <i class="bi bi-eye"></i> Inspect Diff
                                                 </button>

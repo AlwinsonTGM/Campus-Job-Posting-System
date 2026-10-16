@@ -3282,7 +3282,7 @@ section.py-5.py-lg-6 {
   padding: 1.25rem 1.45rem;
   border-bottom: 1.5px solid var(--line);
   white-space: nowrap;
-  text-align: center;
+  text-align: left;
 }
 
 .table-paper tbody td {
@@ -3633,11 +3633,13 @@ section.py-5.py-lg-6 {
 
   .table-paper-responsive td,
   .table-paper-responsive td.ps-4,
-  .table-paper-responsive td.pe-4 {
+  .table-paper-responsive td.pe-4,
+  .table-paper-responsive td.text-center,
+  .table-paper-responsive td.text-start {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    text-align: left;
+    text-align: left !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box;
