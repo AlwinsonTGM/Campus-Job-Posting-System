@@ -126,7 +126,7 @@ require_once __DIR__ . '/../header.php';
                                     <col style="width: 12%;">
                                     <col style="width: 10%;">
                                     <col style="width: 13%;">
-                                    <col style="width: 10%;">
+                                    <col style="width: 15%;">
                                     <col style="width: 19%;">
                                 </colgroup>
                                 <thead>
