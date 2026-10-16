@@ -44,6 +44,7 @@ if (!defined('SITE_NAME')) {
                     </div>
                     <input type="hidden" name="job_type" id="spotlightJobTypeHidden" value="">
                     <input type="hidden" name="work_setup" id="spotlightWorkSetupHidden" value="">
+                    <input type="hidden" name="employer_type" id="spotlightEmployerTypeHidden" value="">
                 </form>
 
                 <!-- Quick Filter Chips -->
@@ -71,6 +72,12 @@ if (!defined('SITE_NAME')) {
                     </button>
                     <button type="button" class="spotlight-chip" data-filter-type="work_setup" data-filter-val="Remote">
                         <i class="bi bi-globe me-1"></i> Remote
+                    </button>
+                    <button type="button" class="spotlight-chip" data-filter-type="employer_type" data-filter-val="university_office">
+                        <i class="bi bi-bank me-1"></i> University Office
+                    </button>
+                    <button type="button" class="spotlight-chip" data-filter-type="employer_type" data-filter-val="approved_partner">
+                        <i class="bi bi-patch-check-fill text-accent me-1"></i> Partner
                     </button>
                 </div>
             </div>

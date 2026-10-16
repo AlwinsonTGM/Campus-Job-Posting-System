@@ -21,6 +21,9 @@ $department = is_string($raw_department) ? trim($raw_department) : '';
 $raw_work_setup = $_GET['work_setup'] ?? '';
 $work_setup = is_string($raw_work_setup) ? trim($raw_work_setup) : '';
 
+$raw_employer_type = $_GET['employer_type'] ?? '';
+$employer_type = is_string($raw_employer_type) ? trim($raw_employer_type) : '';
+
 $raw_limit = $_GET['limit'] ?? null;
 $limit = (is_scalar($raw_limit) && is_numeric($raw_limit)) ? max(1, min(20, (int)$raw_limit)) : 8;
 
@@ -31,7 +34,7 @@ $jobs = get_jobs(
     $department ?: null,
     null,
     $job_type ?: null,
-    null,
+    $employer_type ?: null,
     $work_setup ?: null
 );
 
@@ -42,6 +45,8 @@ $formatted_results = [];
 foreach ($results_slice as $job) {
     $org_name = $job['organization_name'] ?? ($job['department'] ?? 'University Department');
     $is_partner = ($job['employer_type'] ?? '') === 'approved_partner';
+    $employer_label = $is_partner ? 'Partner' : 'University Office';
+    $employer_icon = $is_partner ? 'bi-patch-check-fill' : 'bi-bank';
     
     $formatted_results[] = [
         'id' => (int)($job['id'] ?? 0),
@@ -50,6 +55,8 @@ foreach ($results_slice as $job) {
         'organization_name' => $org_name,
         'is_partner' => $is_partner,
         'employer_type' => $job['employer_type'] ?? 'university_office',
+        'employer_label' => $employer_label,
+        'employer_icon' => $employer_icon,
         'job_type' => $job['job_type'] ?? 'Student Assistant',
         'work_setup' => $job['work_setup'] ?? 'On-Campus',
         'pay_rate' => $job['pay_rate'] ?? '₱65.00 / hr',

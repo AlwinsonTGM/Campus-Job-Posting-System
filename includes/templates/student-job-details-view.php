@@ -49,6 +49,9 @@ require_once __DIR__ . '/../header.php';
 
                             <!-- Badges Header -->
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-3 border-bottom border-line">
+                                <span class="chip">
+                                    <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i> <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
+                                </span>
                                 <span class="chip active">
                                     <i class="bi bi-tag-fill text-accent"></i> <?= htmlspecialchars($jtype) ?>
                                 </span>
@@ -124,6 +127,14 @@ require_once __DIR__ . '/../header.php';
                             </h3>
 
                             <div class="d-flex flex-column gap-3 mb-4 small">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted-custom">Hiring Entity:</span>
+                                    <span class="fw-semibold text-ink">
+                                        <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?> me-1"></i>
+                                        <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
+                                    </span>
+                                </div>
+
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Compensation:</span>
                                     <span class="fw-bold text-ink fs-6"><?= htmlspecialchars($job['pay_rate']) ?></span>

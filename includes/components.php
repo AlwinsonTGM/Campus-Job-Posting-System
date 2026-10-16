@@ -263,7 +263,7 @@ if (!function_exists('render_job_card')) {
 
                     <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small">
                         <span class="d-inline-flex align-items-center gap-1">
-                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-building' ?>"></i>
+                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i>
                             <span class="fw-semibold text-ink"><?= htmlspecialchars($org_name) ?></span>
                         </span>
                         <span>&bull;</span>
@@ -275,7 +275,7 @@ if (!function_exists('render_job_card')) {
                     <!-- Plain metadata row (moved off photo): employer type, category, pay -->
                     <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small mt-2">
                         <span class="d-inline-flex align-items-center gap-1">
-                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill' : 'bi-bank' ?>"></i>
+                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i>
                             <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
                         </span>
                         <span>&bull;</span>

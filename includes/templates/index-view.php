@@ -689,6 +689,11 @@ require_once __DIR__ . '/../header.php';
                                                     style="background-color: var(--ink); color: #fff;">
                                                     <i class="bi bi-patch-check-fill text-accent"></i> Approved Partner
                                                 </span>
+                                            <?php else: ?>
+                                                <span class="badge-tag-overlay"
+                                                    style="background-color: var(--ink); color: #fff;">
+                                                    <i class="bi bi-bank text-accent"></i> University Office
+                                                </span>
                                             <?php endif; ?>
                                             <?php foreach ($badges as $b): ?>
                                                 <span class="badge-tag-overlay">
@@ -709,7 +714,7 @@ require_once __DIR__ . '/../header.php';
                                             <?php if ($is_partner): ?>
                                                 <i class="bi bi-patch-check-fill text-accent"></i>
                                             <?php else: ?>
-                                                <i class="bi bi-building text-muted-custom"></i>
+                                                <i class="bi bi-bank text-accent"></i>
                                             <?php endif; ?>
                                             <span><?= htmlspecialchars($org_name) ?></span>
                                         </div>

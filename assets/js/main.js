@@ -421,6 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (query) params.push(`keyword=${encodeURIComponent(query)}`);
         if (activeFilterType === 'job_type' && activeFilterVal) params.push(`job_type=${encodeURIComponent(activeFilterVal)}`);
         if (activeFilterType === 'work_setup' && activeFilterVal) params.push(`work_setup=${encodeURIComponent(activeFilterVal)}`);
+        if (activeFilterType === 'employer_type' && activeFilterVal) params.push(`employer_type=${encodeURIComponent(activeFilterVal)}`);
         if (params.length > 0) fullUrl += '?' + params.join('&');
         fullSearchLink.href = fullUrl;
       }
@@ -439,6 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (query) apiUrl += `&q=${encodeURIComponent(query)}`;
       if (activeFilterType === 'job_type' && activeFilterVal) apiUrl += `&job_type=${encodeURIComponent(activeFilterVal)}`;
       if (activeFilterType === 'work_setup' && activeFilterVal) apiUrl += `&work_setup=${encodeURIComponent(activeFilterVal)}`;
+      if (activeFilterType === 'employer_type' && activeFilterVal) apiUrl += `&employer_type=${encodeURIComponent(activeFilterVal)}`;
 
       fetch(apiUrl, { signal: currentAbortController.signal })
         .then(function (res) {
@@ -474,9 +476,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const jobImg = (job.image && (job.image.startsWith('http://') || job.image.startsWith('https://') || job.image.startsWith('/')))
               ? job.image
               : `${baseUrl}${job.image ? job.image.replace(/^\//, '') : 'assets/img/jobs/job-01.jpg'}`;
-            const isPartnerBadge = job.is_partner
-              ? `<span class="badge-tag-overlay p-1 px-2 small me-1" style="background-color: var(--ink); color: #fff; font-size: 10px;"><i class="bi bi-patch-check-fill text-accent"></i> Partner</span>`
-              : '';
+            const isPartner = Boolean(job.is_partner || job.employer_type === 'approved_partner');
+            const employerLabel = job.employer_label || (isPartner ? 'Partner' : 'University Office');
+            const employerIcon = job.employer_icon || (isPartner ? 'bi-patch-check-fill' : 'bi-bank');
+            const employerBadge = `<span class="badge-tag-overlay p-1 px-2 small me-1" style="background-color: var(--ink); color: #fff; font-size: 10px;"><i class="bi ${employerIcon} text-accent"></i> ${escapeHtml(employerLabel)}</span>`;
 
             html += `
               <div class="spotlight-job-item">
@@ -484,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   <img src="${escapeHtml(jobImg)}" alt="${escapeHtml(job.title)}" class="spotlight-job-thumb" onerror="this.src='${baseUrl}assets/img/jobs/job-01.jpg';">
                   <div class="spotlight-job-info">
                     <div class="d-flex align-items-center gap-1 mb-1">
-                      ${isPartnerBadge}
+                      ${employerBadge}
                       <span class="spotlight-job-meta fw-semibold text-truncate d-inline-block">
                         ${escapeHtml(job.organization_name || job.department)}
                       </span>
@@ -555,6 +558,15 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.add('active');
         activeFilterType = this.getAttribute('data-filter-type') || '';
         activeFilterVal = this.getAttribute('data-filter-val') || '';
+
+        // Sync hidden form inputs for full page submit
+        const jtInput = document.getElementById('spotlightJobTypeHidden');
+        const wsInput = document.getElementById('spotlightWorkSetupHidden');
+        const etInput = document.getElementById('spotlightEmployerTypeHidden');
+        if (jtInput) jtInput.value = (activeFilterType === 'job_type') ? activeFilterVal : '';
+        if (wsInput) wsInput.value = (activeFilterType === 'work_setup') ? activeFilterVal : '';
+        if (etInput) etInput.value = (activeFilterType === 'employer_type') ? activeFilterVal : '';
+
         executeSpotlightSearch();
       });
     });
