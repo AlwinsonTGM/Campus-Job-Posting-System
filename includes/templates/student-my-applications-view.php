@@ -30,26 +30,26 @@ require_once __DIR__ . '/../header.php';
                 ?>
 
                 <!-- Filter Tabs -->
-                <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-bottom border-line">
+                <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-line">
                     <a href="my-applications.php" class="chip chip-selectable <?= empty($filter_status) ? 'active' : '' ?>">
                         All Submissions
                     </a>
-                    <a href="my-applications.php?status=pending" class="chip chip-selectable <?= ($filter_status === 'pending') ? 'active' : '' ?>">
+                    <a href="my-applications.php?status=pending" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'pending') ? 'active' : '' ?>">
                         <i class="bi bi-hourglass-split text-accent"></i> Pending Review
                     </a>
-                    <a href="my-applications.php?status=review" class="chip chip-selectable <?= ($filter_status === 'review') ? 'active' : '' ?>">
+                    <a href="my-applications.php?status=review" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'review') ? 'active' : '' ?>">
                         <i class="bi bi-search text-accent"></i> Under Evaluation
                     </a>
-                    <a href="my-applications.php?status=interview" class="chip chip-selectable <?= ($filter_status === 'interview') ? 'active' : '' ?>">
+                    <a href="my-applications.php?status=interview" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'interview') ? 'active' : '' ?>">
                         <i class="bi bi-calendar-event text-accent"></i> Interviews Scheduled
                     </a>
-                    <a href="my-applications.php?status=accepted" class="chip chip-selectable <?= ($filter_status === 'accepted') ? 'active' : '' ?>">
+                    <a href="my-applications.php?status=accepted" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'accepted') ? 'active' : '' ?>">
                         <i class="bi bi-check-circle-fill text-accent"></i> Accepted / Hired
                     </a>
-                    <a href="my-applications.php?status=declined" class="chip chip-selectable <?= ($filter_status === 'declined') ? 'active' : '' ?>">
+                    <a href="my-applications.php?status=declined" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'declined') ? 'active' : '' ?>">
                         <i class="bi bi-x-circle text-danger"></i> Declined / Filled
                     </a>
-                    <a href="my-applications.php?status=withdrawn" class="chip chip-selectable <?= ($filter_status === 'withdrawn') ? 'active' : '' ?>">
+                    <a href="my-applications.php?status=withdrawn" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'withdrawn') ? 'active' : '' ?>">
                         <i class="bi bi-dash-circle text-muted"></i> Withdrawn
                     </a>
                 </div>
