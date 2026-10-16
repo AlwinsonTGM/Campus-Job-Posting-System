@@ -100,7 +100,7 @@ require_once __DIR__ . '/../header.php';
                                 <label class="form-label" for="login-email">Institutional Email Address</label>
                                 <div class="input-group input-group-integrated">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" name="email" id="login-email" class="form-control" placeholder="username@kld.edu.ph" required autofocus>
+                                    <input type="email" name="email" id="login-email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email ?? '') ?>" required <?= empty($email) ? 'autofocus' : '' ?>>
                                 </div>
                             </div>
 
@@ -114,7 +114,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                                 <div class="input-group input-group-integrated">
                                     <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                                    <input type="password" name="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                                    <input type="password" name="password" id="login-password" class="form-control" placeholder="••••••••" required <?= !empty($email) ? 'autofocus' : '' ?>>
                                     <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('login-password', 'toggle-pw-icon')" aria-label="Toggle password visibility">
                                         <i class="bi bi-eye" id="toggle-pw-icon"></i>
                                     </button>

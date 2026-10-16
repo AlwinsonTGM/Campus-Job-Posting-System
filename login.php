@@ -54,8 +54,8 @@ if (is_logged_in()) {
 }
 
 $error = null;
+$email = trim((string)($_POST['email'] ?? ($_GET['email'] ?? '')));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
     $res = login_user($email, $password);
