@@ -384,6 +384,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultCountEl = document.getElementById('spotlightResultCount');
     const fullSearchLink = document.getElementById('spotlightFullSearchLink');
     const filterChips = spotlightModalEl.querySelectorAll('.spotlight-chip');
+    const chipsScrollContainer = spotlightModalEl.querySelector('.spotlight-chips-scroll');
+
+    // Natural mouse wheel scrolling: scroll up/down translates to horizontal scrolling without Shift
+    if (chipsScrollContainer) {
+      chipsScrollContainer.addEventListener('wheel', function (e) {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && e.deltaY !== 0) {
+          e.preventDefault();
+          chipsScrollContainer.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
+    }
 
     let activeFilterType = '';
     let activeFilterVal = '';
@@ -556,6 +567,9 @@ document.addEventListener('DOMContentLoaded', function () {
       chip.addEventListener('click', function () {
         filterChips.forEach(function (c) { c.classList.remove('active'); });
         this.classList.add('active');
+        if (typeof this.scrollIntoView === 'function') {
+          this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
         activeFilterType = this.getAttribute('data-filter-type') || '';
         activeFilterVal = this.getAttribute('data-filter-val') || '';
 
