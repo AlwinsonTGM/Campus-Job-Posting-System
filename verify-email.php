@@ -149,6 +149,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
         if ($verify_res['success']) {
             $user = SessionGuard::graduateVerification($user_id);
             $role = $user['role'] ?? 'student';
+
+            // Check if admin approval is still required before granting portal access
+            $ver_status = $user['verification_status'] ?? 'pending_approval';
+            if ($ver_status === 'pending_approval' && $role !== 'admin') {
+                $_SESSION['pending_approval_notice'] = [
+                    'user_id' => (int)($user['id'] ?? 0),
+                    'name'    => $user['name'] ?? 'User',
+                    'email'   => $user['email'] ?? '',
+                    'role'    => $role,
+                ];
+                unset($_SESSION['user']);
+
+                if ($is_ajax) {
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success'  => true,
+                        'redirect' => 'pending-approval.php',
+                        'message'  => 'Email verified! Your account is awaiting administrator approval.',
+                    ]);
+                    exit;
+                }
+
+                set_flash('success', 'Email verified! Your account is now pending administrator approval. You will be notified once it is reviewed.');
+                header('Location: pending-approval.php');
+                exit;
+            }
+
             $dest_url = SessionGuard::getRoleDashboardUrl($role);
 
             $role_msg = !empty($pending['role_message'])

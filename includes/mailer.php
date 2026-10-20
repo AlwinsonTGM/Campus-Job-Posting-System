@@ -158,3 +158,46 @@ function send_verification_code_email(string $email, string $name, string $code)
         'message' => $sent ? 'Verification code sent to your email.' : 'Failed to dispatch verification email via SMTP server.'
     ];
 }
+
+function get_app_base_url(): string {
+    $app_url = function_exists('get_env') ? trim((string)get_env('APP_URL', '')) : '';
+    if ($app_url !== '') {
+        return rtrim($app_url, '/');
+    }
+
+    if (!empty($_SERVER['HTTP_HOST'])) {
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        $scheme = $https ? 'https://' : 'http://';
+        $host = $_SERVER['HTTP_HOST'];
+
+        $script_name = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+        $dir = dirname($script_name);
+        $base = preg_replace('#/(admin|employer|student|api|includes|tools)(/.*)?$#i', '', $dir);
+        $base = ($base === '/' || $base === '.') ? '' : rtrim($base, '/');
+
+        return $scheme . $host . $base;
+    }
+
+    return 'http://localhost/Campus-Job-Posting-System';
+}
+
+function send_account_approved_email(string $email, string $name, string $role = 'student'): bool {
+    $site = defined('SITE_NAME') ? SITE_NAME : 'KLD Campus Job Portal';
+    $subject = 'Account Approved & Verified - ' . $site;
+    
+    // Resolve absolute login URL for email clients
+    $login_url = get_app_base_url() . '/login.php';
+
+    $body = render_email_template('account-approved-email', [
+        'recipient_name' => $name,
+        'role'           => $role,
+        'login_url'      => $login_url
+    ]);
+
+    if ($body === '') {
+        return false;
+    }
+
+    return send_campus_email($email, $name, $subject, $body);
+}

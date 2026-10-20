@@ -26,7 +26,7 @@ require_once __DIR__ . '/../header.php';
                 ';
                 render_page_head(
                     '<i class="bi bi-mortarboard-fill text-accent me-1"></i> Student Career Portal · ' . htmlspecialchars($user['course'] ?? 'BSIS'),
-                    'Welcome back, ' . htmlspecialchars($user['name']),
+                    'Welcome, ' . htmlspecialchars($user['name']),
                     'Track your assistantship evaluation status, review upcoming interview schedules, and explore vacancies matching your availability.',
                     $head_actions
                 );

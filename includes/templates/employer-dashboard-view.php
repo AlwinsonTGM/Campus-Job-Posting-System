@@ -29,7 +29,7 @@ require_once __DIR__ . '/../header.php';
                 ';
                 render_page_head(
                     '',
-                    'Welcome back, ' . ($user['name'] ?? 'Employer'),
+                    'Welcome, ' . ($user['name'] ?? 'Employer'),
                     ($org_name ?? 'Campus Organization') . ' • Manage active student assistant openings, candidate evaluations, and hiring quotas.',
                     $head_actions
                 );

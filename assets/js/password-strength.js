@@ -1,6 +1,6 @@
 /**
  * Campus Job Posting System - Password Strength Engine & Validation (COAL101)
- * Real-time 4-Stage Strength Scoring & Criteria Checklist
+ * Real-time 4-Stage Strength Scoring, Criteria Checklist & History Safeguards
  */
 
 // Global Toggle Password Visibility Helper
@@ -38,6 +38,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const reqNumber = document.getElementById('req-number');
   const reqSpecial = document.getElementById('req-special');
   const confirmFeedback = document.getElementById('confirm-feedback');
+
+  // Duplicate / Old Password Prevention elements
+  const tokenInput = document.querySelector('input[name="token"]');
+  const oldPasswordWarning = document.getElementById('old-password-warning');
+  let oldPassCheckTimer = null;
+  let isSameAsOld = false;
 
   function updateRequirement(element, isMet) {
     if (!element) return;
@@ -91,6 +97,55 @@ document.addEventListener('DOMContentLoaded', function () {
     return { count, checks };
   }
 
+  function checkOldPassword() {
+    if (!tokenInput || !passwordInput || !oldPasswordWarning) return;
+    const val = passwordInput.value;
+    if (!val || val.length === 0) {
+      oldPasswordWarning.classList.add('d-none');
+      isSameAsOld = false;
+      return;
+    }
+
+    clearTimeout(oldPassCheckTimer);
+    oldPassCheckTimer = setTimeout(() => {
+      fetch('reset-password.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+          action: 'check_old_password',
+          token: tokenInput.value,
+          password: val
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const pGroup = passwordInput.closest('.input-group, .input-group-integrated');
+        if (data && data.valid && data.same_as_old) {
+          isSameAsOld = true;
+          oldPasswordWarning.classList.remove('d-none');
+          passwordInput.classList.add('is-invalid');
+          if (pGroup) {
+            pGroup.classList.remove('is-valid');
+            pGroup.classList.add('is-invalid');
+          }
+        } else {
+          isSameAsOld = false;
+          oldPasswordWarning.classList.add('d-none');
+          if (pGroup && passwordInput.classList.contains('is-invalid') && !isSameAsOld) {
+            passwordInput.classList.remove('is-invalid');
+            pGroup.classList.remove('is-invalid');
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback safely to server-side enforcement on submit
+      });
+    }, 300);
+  }
+
   function handlePasswordInput() {
     if (!meterFill) return;
     const val = passwordInput.value;
@@ -102,6 +157,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       resetRequirements();
       validatePasswordMatch();
+      if (oldPasswordWarning) oldPasswordWarning.classList.add('d-none');
+      isSameAsOld = false;
       return;
     }
 
@@ -129,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    checkOldPassword();
     validatePasswordMatch();
   }
 
@@ -136,27 +194,40 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!confirmPasswordInput || !passwordInput) return true;
     const pVal = passwordInput.value;
     const cpVal = confirmPasswordInput.value;
+    const group = confirmPasswordInput.closest('.input-group, .input-group-integrated');
 
     if (!cpVal) {
       confirmPasswordInput.classList.remove('is-valid', 'is-invalid');
-      if (confirmFeedback) confirmFeedback.innerHTML = '';
+      if (group) group.classList.remove('is-valid', 'is-invalid');
+      if (confirmFeedback) {
+        confirmFeedback.innerHTML = '';
+        confirmFeedback.className = 'mt-1';
+      }
       return false;
     }
 
     if (pVal === cpVal) {
       confirmPasswordInput.classList.remove('is-invalid');
       confirmPasswordInput.classList.add('is-valid');
+      if (group) {
+        group.classList.remove('is-invalid');
+        group.classList.add('is-valid');
+      }
       if (confirmFeedback) {
-        confirmFeedback.className = 'valid-feedback d-block small';
-        confirmFeedback.innerHTML = '<i class="bi bi-check-circle-fill text-accent"></i> Passwords match.';
+        confirmFeedback.className = 'valid-feedback d-block small mt-1';
+        confirmFeedback.innerHTML = '<span class="text-accent fw-semibold"><i class="bi bi-check-circle-fill me-1 text-accent"></i> Passwords match.</span>';
       }
       return true;
     } else {
       confirmPasswordInput.classList.remove('is-valid');
       confirmPasswordInput.classList.add('is-invalid');
+      if (group) {
+        group.classList.remove('is-valid');
+        group.classList.add('is-invalid');
+      }
       if (confirmFeedback) {
-        confirmFeedback.className = 'invalid-feedback d-block small';
-        confirmFeedback.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i> Passwords do not match.';
+        confirmFeedback.className = 'invalid-feedback d-block small mt-1';
+        confirmFeedback.innerHTML = '<span class="text-danger fw-semibold"><i class="bi bi-x-circle-fill me-1 text-danger"></i> Passwords do not match.</span>';
       }
       return false;
     }
@@ -164,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (passwordInput) {
     passwordInput.addEventListener('input', handlePasswordInput);
+    passwordInput.addEventListener('change', checkOldPassword);
   }
 
   if (confirmPasswordInput) {
@@ -178,6 +250,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (count < 2) {
         e.preventDefault();
         alert('Please choose a stronger password (at least 8 characters with numbers or uppercase letters).');
+        if (passwordInput) passwordInput.focus();
+        return false;
+      }
+
+      if (isSameAsOld) {
+        e.preventDefault();
+        alert('Your new password cannot be the same as your previous password. Please choose a different password.');
         if (passwordInput) passwordInput.focus();
         return false;
       }

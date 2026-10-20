@@ -185,6 +185,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'New password must contain at least 8 characters.';
             } elseif ($new_pass !== $confirm_pass) {
                 $error = 'New password and confirm password do not match.';
+            } elseif ($current_pass === $new_pass || (!empty($stored_pass) && (password_verify($new_pass, $stored_pass) || $stored_pass === $new_pass))) {
+                $error = 'New password cannot be the same as your current password.';
             } else {
                 $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
                 update_user_password($user['id'], $hashed_password);
