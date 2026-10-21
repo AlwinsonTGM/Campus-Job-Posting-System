@@ -878,22 +878,21 @@ function get_categories(bool $include_archived = false, bool $only_archived = fa
         $cats = array_map('hydrate_category', $stmt_cat->fetchAll());
 
         // Dynamic active job counts
+        // ⚡ Bolt Optimization: Removed unnecessary JOIN with categories and GROUP BY string name.
+        // Counts are now aggregated entirely on the jobs table via foreign key integer category_id.
         $stmt_counts = $pdo->query("
-            SELECT j.`category_id`, c.`name` AS category_name, COUNT(*) AS cnt 
-            FROM `jobs` j
-            JOIN `categories` c ON j.`category_id` = c.`id`
-            WHERE j.`status` = 'active' 
-            GROUP BY j.`category_id`, c.`name`
+            SELECT `category_id`, COUNT(*) AS cnt
+            FROM `jobs`
+            WHERE `status` = 'active' AND `category_id` IS NOT NULL
+            GROUP BY `category_id`
         ");
         $counts_by_id = [];
-        $counts_by_name = [];
         while ($row = $stmt_counts->fetch()) {
             $counts_by_id[(int)$row['category_id']] = (int)$row['cnt'];
-            $counts_by_name[$row['category_name']] = (int)$row['cnt'];
         }
 
         foreach ($cats as &$cat) {
-            $cat['job_count'] = $counts_by_id[(int)$cat['id']] ?? ($counts_by_name[$cat['name']] ?? 0);
+            $cat['job_count'] = $counts_by_id[(int)$cat['id']] ?? 0;
         }
 
         return $cats;
