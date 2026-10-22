@@ -28,7 +28,7 @@ if (isset($_GET['demo'])) {
     }
     $user = quick_login($role);
     if ($user) {
-        set_flash('success', "Welcome back, {$user['name']}! Signed in as " . ucfirst($role) . '.');
+        set_flash('success', "Welcome, {$user['name']}! Signed in as " . ucfirst($role) . '.');
         redirect_by_role($role);
     }
 }
@@ -61,7 +61,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $res = login_user($email, $password);
     if ($res['success']) {
         $u = $res['user'];
-        set_flash('success', "Welcome back, {$u['name']}!");
+        // Block portal access if account is pending admin approval
+        if (($u['verification_status'] ?? 'pending_approval') === 'pending_approval' && ($u['role'] ?? '') !== 'admin') {
+            $_SESSION['pending_approval_notice'] = [
+                'user_id' => (int)($u['id'] ?? 0),
+                'name'    => $u['name'] ?? 'User',
+                'email'   => $u['email'] ?? '',
+                'role'    => $u['role'] ?? 'student',
+            ];
+            unset($_SESSION['user']);
+            set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
+            header('Location: pending-approval.php');
+            exit;
+        }
+        set_flash('success', "Welcome, {$u['name']}!");
         if ($safe_next !== '') {
             header('Location: ' . $safe_next);
             exit;

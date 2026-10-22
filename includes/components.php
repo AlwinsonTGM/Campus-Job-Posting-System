@@ -261,31 +261,25 @@ if (!function_exists('render_job_card')) {
                         </a>
                     </h3>
 
-                    <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small">
-                        <span class="d-inline-flex align-items-center gap-1">
-                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i>
-                            <span class="fw-semibold text-ink"><?= htmlspecialchars($org_name) ?></span>
-                        </span>
-                        <span>&bull;</span>
-                        <span class="d-inline-flex align-items-center gap-1 text-truncate">
-                            <i class="bi bi-geo-alt"></i>
-                            <span><?= htmlspecialchars($location) ?></span>
-                        </span>
-                    </div>
-                    <!-- Plain metadata row (moved off photo): employer type, category, pay -->
-                    <div class="d-flex align-items-center flex-wrap gap-2 text-muted-custom small mt-2">
-                        <span class="d-inline-flex align-items-center gap-1">
-                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i>
-                            <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
-                        </span>
-                        <span>&bull;</span>
-                        <span class="d-inline-flex align-items-center gap-1">
-                            <i class="bi bi-tag"></i><?= htmlspecialchars($job['category'] ?? 'Campus Role') ?>
-                        </span>
-                        <span>&bull;</span>
-                        <span class="d-inline-flex align-items-center gap-1 fw-semibold text-ink">
-                            <i class="bi bi-cash-coin"></i><?= htmlspecialchars($pay_raw) ?>
-                        </span>
+                    <div class="d-flex flex-column gap-1 text-muted-custom small">
+                        <div class="d-flex align-items-center gap-1 text-truncate">
+                            <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?> flex-shrink-0"></i>
+                            <span class="fw-semibold text-ink text-truncate"><?= htmlspecialchars($org_name) ?></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1 text-truncate">
+                            <i class="bi bi-geo-alt flex-shrink-0"></i>
+                            <span class="text-truncate"><?= htmlspecialchars($location) ?></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <span class="d-inline-flex align-items-center gap-1 flex-shrink-0">
+                                <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i>
+                                <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
+                            </span>
+                            <span>&bull;</span>
+                            <span class="d-inline-flex align-items-center gap-1 text-truncate">
+                                <i class="bi bi-tag"></i><?= htmlspecialchars($job['category'] ?? 'Campus Role') ?>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -300,6 +294,11 @@ if (!function_exists('render_job_card')) {
 
                 <!-- Slots, Progress, Deadline, Actions -->
                 <div class="mt-auto pt-3 border-top border-line">
+                    <div class="d-flex justify-content-end mb-1">
+                        <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-cash-coin"></i><?= htmlspecialchars($pay_raw) ?>
+                        </span>
+                    </div>
                     <div class="d-flex justify-content-between small text-muted-custom mb-1">
                         <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
                         <span class="fw-bold text-ink"><?= $pct ?>%</span>

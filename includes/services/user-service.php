@@ -270,7 +270,7 @@ function get_user_base_query(): string {
             sp.`availability`,
             sp.`registration_proof`,
             sp.`resume_file`,
-            COALESCE(u.`verification_status`, sp.`verification_status`, ep.`verification_status`, 'verified') AS `verification_status`,
+            COALESCE(u.`verification_status`, sp.`verification_status`, ep.`verification_status`, 'pending_approval') AS `verification_status`,
             COALESCE(u.`revocation_reason`, sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
             ep.`employer_type`,
             COALESCE(ep.`organization_name`, sp.`department`, u.`name`) AS `organization_name`,
@@ -556,6 +556,18 @@ function update_user_verification(int|string $id, string $status, string $notes 
                     'bi-patch-check-fill',
                     'success'
                 );
+
+                // Dispatch approval email notification if recipient has valid email
+                if (!empty($target_user['email'])) {
+                    require_once dirname(__DIR__) . '/mailer.php';
+                    if (function_exists('send_account_approved_email')) {
+                        send_account_approved_email(
+                            $target_user['email'],
+                            $target_user['name'] ?? 'User',
+                            $target_user['role'] ?? 'student'
+                        );
+                    }
+                }
             } elseif ($status === 'revoked') {
                 $reason_snippet = !empty($notes) ? " Reason: {$notes}." : "";
                 $msg = "Your account verification has been revoked by university administration.{$reason_snippet} Please contact the Office of Student Affairs / Administrator.";
@@ -845,8 +857,8 @@ function insert_user_base_record(PDO $pdo, array $data, string $email, string $r
     $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
 
     $stmt_user = $pdo->prepare("
-        INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `is_email_verified`, `created_at`)
-        VALUES (:name, :email, :password, :role, :phone, 'active', 0, NOW())
+        INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `is_email_verified`, `verification_status`, `created_at`)
+        VALUES (:name, :email, :password, :role, :phone, 'active', 0, 'pending_approval', NOW())
     ");
     $stmt_user->execute([
         ':name'     => trim($data['name'] ?? ''),

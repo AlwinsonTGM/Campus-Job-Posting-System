@@ -106,12 +106,7 @@ require_once __DIR__ . '/../header.php';
 
                             <!-- Password Input with Show/Hide Toggle -->
                             <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <label class="form-label mb-0" for="login-password">Account Password</label>
-                                    <a href="forgot-pass.php" class="small fw-bold text-ink text-decoration-none">
-                                        Forgot Password?
-                                    </a>
-                                </div>
+                                <label class="form-label" for="login-password">Account Password</label>
                                 <div class="input-group input-group-integrated">
                                     <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                                     <input type="password" name="password" id="login-password" class="form-control" placeholder="Password" required <?= !empty($email) ? 'autofocus' : '' ?>>
@@ -121,12 +116,17 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                             </div>
 
-                            <!-- Remember Me Checkbox -->
-                            <div class="mb-4 form-check">
-                                <input type="checkbox" class="form-check-input" id="rememberMe" checked>
-                                <label class="form-check-label small text-muted-custom" for="rememberMe">
-                                    Keep me signed in on this device
-                                </label>
+                            <!-- Remember Me Checkbox & Forgot Password Link -->
+                            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                                <div class="form-check mb-0">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe" checked>
+                                    <label class="form-check-label small text-muted-custom" for="rememberMe">
+                                        Keep me signed in on this device
+                                    </label>
+                                </div>
+                                <a href="forgot-pass.php" class="small fw-bold text-ink text-decoration-none">
+                                    Forgot Password?
+                                </a>
                             </div>
 
                             <!-- Submit Button -->

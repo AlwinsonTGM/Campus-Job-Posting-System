@@ -176,6 +176,20 @@ class SessionGuard {
             return [];
         }
 
+        // Admin-approval Quarantine check: email verified but pending admin review
+        if (($user['verification_status'] ?? 'pending_approval') === 'pending_approval' && ($user['role'] ?? '') !== 'admin') {
+            $prefix = self::getDirectoryPrefix();
+            $_SESSION['pending_approval_notice'] = [
+                'user_id' => (int)($user['id'] ?? 0),
+                'name'    => $user['name'] ?? 'User',
+                'email'   => $user['email'] ?? '',
+                'role'    => $user['role'] ?? 'student',
+            ];
+            unset($_SESSION['user']);
+            self::redirect($prefix . 'pending-approval.php', 'pending_approval');
+            return [];
+        }
+
         // Role authorization check
         if (!empty($allowedRoles)) {
             $userRole = $user['role'] ?? '';

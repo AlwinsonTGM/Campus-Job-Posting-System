@@ -390,7 +390,7 @@ require_once __DIR__ . '/../header.php';
                                             <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                             <input type="date" name="birthdate" id="reg-birthdate" class="form-control" value="<?= htmlspecialchars($birthdate ?? '') ?>" max="<?= date('Y-m-d', strtotime('-15 years')) ?>">
                                         </div>
-                                        <span class="small text-muted-custom" style="font-size: 11px;">Verification for student eligibility (RA 10173 protected).</span>
+                                        <span class="small text-muted-custom" style="font-size: 11px;"><i class="bi bi-shield-lock-fill text-success me-1"></i>Verification for student eligibility (RA 10173 protected).</span>
                                     </div>
                                 </div>
 
@@ -895,7 +895,7 @@ async function verifyEmailAvailability(emailVal) {
             } else if (data.email_exists) {
                 if (emailInput) emailInput.classList.add('is-invalid');
                 if (feedback) {
-                    feedback.innerHTML = '<div class="text-danger fw-semibold d-flex align-items-center justify-content-between mt-1"><span><i class="bi bi-exclamation-circle-fill me-1"></i> This KLD account / email is already registered.</span><a href="login.php" class="text-accent fw-bold ms-2 text-decoration-underline text-nowrap">Sign in &rarr;</a></div>';
+                    feedback.innerHTML = '<div class="text-danger fw-semibold mt-1"><i class="bi bi-exclamation-circle-fill me-1"></i> This KLD account / email is already registered.</div>';
                     feedback.style.display = 'block';
                 }
                 return false;
