@@ -65,6 +65,16 @@ $all_dept_apps = ApplicationService::search([
     'rank_sort'   => $rank_sort
 ]);
 
+$total_apps = count($all_dept_apps);
+$page = max(1, (int)($_GET['page'] ?? 1));
+$per_page = 25;
+$total_pages = max(1, (int)ceil($total_apps / $per_page));
+if ($page > $total_pages) {
+    $page = $total_pages;
+}
+$paged_apps = array_slice($all_dept_apps, ($page - 1) * $per_page, $per_page);
+$all_dept_apps = $paged_apps;
+
 $dept_jobs = get_jobs(null, null, null, null, null, null, null, $emp_id_filter);
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-applicants-view.php';

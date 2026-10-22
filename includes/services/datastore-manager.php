@@ -49,6 +49,13 @@ class DatastoreManager {
             return;
         }
 
+        $dataDir = defined('DATA_DIR') ? DATA_DIR : (dirname(__DIR__, 2) . '/data');
+        $lockFile = $dataDir . '/.schema_verified.lock';
+        if (!$force && file_exists($lockFile) && (time() - (int)@filemtime($lockFile)) < 3600) {
+            self::$schemaEnsured = true;
+            return;
+        }
+
         try {
             if (!function_exists('get_db_connection')) {
                 return;
@@ -169,6 +176,24 @@ class DatastoreManager {
                 if ($epVerCheck && strpos($epVerCheck['Type'] ?? '', 'revoked') === false) {
                     $pdo->exec("ALTER TABLE `employer_profiles` MODIFY COLUMN `verification_status` ENUM('verified', 'pending_approval', 'rejected', 'revoked') NOT NULL DEFAULT 'pending_approval'");
                 }
+                // Ensure 1,000-user scalability composite indexes
+                try {
+                    $pdo->exec("ALTER TABLE `applications` ADD INDEX `idx_app_job_status` (`job_id`, `status`)");
+                } catch (Throwable $e) {}
+                try {
+                    $pdo->exec("ALTER TABLE `applications` ADD INDEX `idx_app_student_status` (`student_id`, `status`)");
+                } catch (Throwable $e) {}
+                try {
+                    $pdo->exec("ALTER TABLE `notifications` ADD INDEX `idx_notif_user_read` (`user_id`, `is_read`, `created_at`)");
+                } catch (Throwable $e) {}
+                try {
+                    $pdo->exec("ALTER TABLE `users` ADD INDEX `idx_users_role_ver_status` (`role`, `verification_status`, `status`)");
+                } catch (Throwable $e) {}
+
+                if (!is_dir($dataDir)) {
+                    @mkdir($dataDir, 0777, true);
+                }
+                @touch($lockFile);
             }
 
             self::$schemaEnsured = true;

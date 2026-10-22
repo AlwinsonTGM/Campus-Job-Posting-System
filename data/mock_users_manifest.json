@@ -1,0 +1,97 @@
+{
+    "generated_at": "2026-10-22 19:06:48",
+    "total_users": 1000,
+    "students_count": 839,
+    "employers_count": 160,
+    "admins_count": 1,
+    "jobs_count": 160,
+    "applications_count": 1720,
+    "notifications_count": 122,
+    "sample_admins": [
+        {
+            "name": "System Administrator (KLD MIS)",
+            "email": "admin@kld.edu.ph",
+            "password": "AdminKld2026!",
+            "role": "admin",
+            "scope": "Super Administrator (Full Portal Authority)"
+        }
+    ],
+    "sample_employers": [
+        {
+            "name": "Novare Technologies Cavite Hub",
+            "email": "hr@novaretechn29.ph",
+            "password": "Partner2026!",
+            "type": "Approved Partner",
+            "status": "verified",
+            "contact": "Juan Santos (HR Director)"
+        },
+        {
+            "name": "Prime Construct Infrastructure Builders (4)",
+            "email": "hr@primeconstr124.ph",
+            "password": "Partner2026!",
+            "type": "Approved Partner",
+            "status": "pending_approval",
+            "contact": "Nathaniel Soriano (HR Director)"
+        },
+        {
+            "name": "Novare Technologies Cavite Hub (6)",
+            "email": "hr@novaretechn154.ph",
+            "password": "Partner2026!",
+            "type": "Approved Partner",
+            "status": "rejected",
+            "contact": "Neil Navarro (HR Director)"
+        }
+    ],
+    "sample_students": [
+        {
+            "name": "Maria Ramos",
+            "student_id": "2026-1-000001",
+            "email": "maria.ramos.2026.164@kld.edu.ph",
+            "password": "Student2026!",
+            "course": "BS Life Sciences (BSLS)",
+            "year": "1st Year",
+            "gwa": "1.10",
+            "status": "Star Scholar"
+        },
+        {
+            "name": "Mark Lopez",
+            "student_id": "2026-1-000002",
+            "email": "mark.lopez.2026.165@kld.edu.ph",
+            "password": "Student2026!",
+            "course": "BS Computer Science (BSCS)",
+            "year": "1st Year",
+            "gwa": "1.12",
+            "status": "Star Scholar"
+        },
+        {
+            "name": "Nicole Villanueva",
+            "student_id": "2026-1-000003",
+            "email": "nicole.villanueva.2026.166@kld.edu.ph",
+            "password": "Student2026!",
+            "course": "BS Midwifery (BSM)",
+            "year": "1st Year",
+            "gwa": "1.13",
+            "status": "Star Scholar"
+        },
+        {
+            "name": "Christian Corpuz",
+            "student_id": "2026-1-000004",
+            "email": "christian.corpuz.2026.167@kld.edu.ph",
+            "password": "Student2026!",
+            "course": "BS Nursing (BSN)",
+            "year": "1st Year",
+            "gwa": "1.15",
+            "status": "Star Scholar"
+        },
+        {
+            "name": "Kimberly Valdez",
+            "student_id": "2026-1-000005",
+            "email": "kimberly.valdez.2026.168@kld.edu.ph",
+            "password": "Student2026!",
+            "course": "BS Information Systems (BSIS)",
+            "year": "1st Year",
+            "gwa": "1.16",
+            "status": "Star Scholar"
+        }
+    ]
+}

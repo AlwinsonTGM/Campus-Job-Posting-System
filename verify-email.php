@@ -88,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         $error = $msg;
     } else {
+        unset($_SESSION['otp_failed_attempts']);
         $code = create_email_verification_code($user_id);
         if ($code === '') {
             unset($_SESSION['pending_verification']);
@@ -147,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
     } else {
         $verify_res = verify_email_code($user_id, $clean_code);
         if ($verify_res['success']) {
+            unset($_SESSION['otp_failed_attempts']);
             $user = SessionGuard::graduateVerification($user_id);
             $role = $user['role'] ?? 'student';
 
@@ -195,12 +197,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['action']) || $_POST
 
             SessionGuard::redirectByRole($role);
         } else {
+            $_SESSION['otp_failed_attempts'] = ($_SESSION['otp_failed_attempts'] ?? 0) + 1;
+            if ($_SESSION['otp_failed_attempts'] >= 5) {
+                $_SESSION['otp_failed_attempts'] = 0;
+                try {
+                    $pdo = get_db_connection();
+                    $pdo->prepare("DELETE FROM `email_verifications` WHERE `user_id` = :u")->execute([':u' => $user_id]);
+                } catch (Exception $e) { /* non-fatal */ }
+                $msg = 'Maximum verification attempts exceeded. Your verification code has been invalidated. Please request a new code.';
+            } else {
+                $msg = $verify_res['message'];
+            }
             if ($is_ajax) {
                 header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => $verify_res['message']]);
+                echo json_encode(['success' => false, 'message' => $msg]);
                 exit;
             }
-            $error = $verify_res['message'];
+            $error = $msg;
         }
     }
 }

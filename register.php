@@ -133,9 +133,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $proof_file_path = null;
         if ($role === 'student') {
+            $is_kld_email = (bool)preg_match('/@kld\.edu\.ph$/i', $email);
             $proofRes = AttachmentStore::storeProof($_FILES['student_proof'] ?? null);
             if ($proofRes->isOk()) {
                 $proof_file_path = $proofRes->path();
+            } elseif ($proofRes->errorCode() === 'no_file') {
+                if (!$is_kld_email) {
+                    $error = 'Students using personal email addresses (Gmail, Yahoo, etc.) must upload a Certificate of Registration (COR), Diploma, or Student ID for verification.';
+                    $initial_step = 3;
+                }
             } else {
                 $error = $proofRes->errorMessage();
                 $initial_step = 3;

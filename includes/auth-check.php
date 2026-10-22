@@ -170,6 +170,22 @@ class SessionGuard {
 
         $user = self::user();
 
+        // Live Session Reconciliation for Suspended Users (VULN-05)
+        if (!empty($user['id']) && (time() - ($_SESSION['user']['_last_db_sync'] ?? 0) > 15)) {
+            $freshUser = function_exists('get_user_by_id') ? get_user_by_id((int)$user['id']) : null;
+            if (!$freshUser || ($freshUser['status'] ?? 'active') === 'suspended') {
+                self::logout();
+                set_flash('danger', 'Account Suspended: Your account has been deactivated by institutional administration.');
+                self::redirect(self::getDirectoryPrefix() . 'login.php', 'suspended');
+                return [];
+            }
+            $_SESSION['user']['status'] = $freshUser['status'] ?? 'active';
+            $_SESSION['user']['verification_status'] = $freshUser['verification_status'] ?? 'verified';
+            $_SESSION['user']['is_email_verified'] = (int)($freshUser['is_email_verified'] ?? 1);
+            $_SESSION['user']['_last_db_sync'] = time();
+            $user = self::user();
+        }
+
         // Verification Quarantine check: non-admin unverified email
         if (isset($user['is_email_verified']) && (int)$user['is_email_verified'] === 0 && ($user['role'] ?? '') !== 'admin') {
             self::quarantineForVerification($user);

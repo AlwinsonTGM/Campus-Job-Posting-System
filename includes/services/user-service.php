@@ -284,13 +284,18 @@ function get_user_base_query(): string {
     ";
 }
 
-function get_all_users(?string $role = null, ?string $keyword = null, ?string $emp_type = null, ?string $ver_status = null, ?string $account_status = null): array {
+function get_all_users(?string $role = null, ?string $keyword = null, ?string $emp_type = null, ?string $ver_status = null, ?string $account_status = null, bool $include_archived = false): array {
     try {
         $pdo = get_db_connection();
         $sql = get_user_base_query() . " WHERE 1=1";
         $params = [];
 
-        if ($account_status) {
+        // By default, archived accounts act as soft-deleted for the website and are excluded from lists & counts
+        if (!$include_archived && $account_status !== 'archived' && $account_status !== 'suspended') {
+            $sql .= " AND (u.`is_archived` = 0 OR u.`is_archived` IS NULL) AND (u.`status` != 'suspended' OR u.`status` IS NULL)";
+        } elseif ($account_status === 'archived' || $account_status === 'suspended') {
+            $sql .= " AND (u.`is_archived` = 1 OR u.`status` = 'suspended')";
+        } elseif ($account_status) {
             $sql .= " AND u.`status` = :acc_status";
             $params[':acc_status'] = $account_status;
         }
@@ -388,7 +393,7 @@ function login_user(string $email, string $password): array {
             return ['success' => false, 'message' => 'Invalid password credentials.'];
         }
 
-        if (strtolower($user['status'] ?? 'active') === 'suspended') {
+        if (strtolower($user['status'] ?? 'active') === 'suspended' || !empty($user['is_archived'])) {
             return [
                 'success' => false,
                 'message' => 'Account Suspended: This account has been archived or deactivated by institutional administration. Please contact the Career Services Office.'
@@ -408,6 +413,7 @@ function login_user(string $email, string $password): array {
             session_regenerate_id(true);
         }
         unset($user['password']);
+        $user['_last_db_sync'] = time();
         $_SESSION['user'] = $user;
         return ['success' => true, 'user' => $user];
     } catch (Exception $e) {
@@ -433,6 +439,7 @@ function quick_login(string $role, int|string|null $user_id = null): ?array {
             if (strtolower($user['status'] ?? 'active') === 'suspended') {
                 return null;
             }
+            $user['_last_db_sync'] = time();
             $_SESSION['user'] = $user;
             return $user;
         }
@@ -613,6 +620,7 @@ function update_employer_verification(int|string $id, string $status, string $no
  * @return array ['valid' => bool, 'error' => string|null, 'domain' => string]
  */
 function validate_email_domain_dns($email): array {
+    static $dns_cache = [];
     $clean_email = trim((string)$email);
 
     if ($clean_email === '' || !filter_var($clean_email, FILTER_VALIDATE_EMAIL)) {
@@ -634,23 +642,33 @@ function validate_email_domain_dns($email): array {
 
     $domain = strtolower(substr($clean_email, $at_pos + 1));
 
+    if (isset($dns_cache[$domain])) {
+        return $dns_cache[$domain];
+    }
+
     if (!str_contains($domain, '.') || !preg_match('/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i', $domain)) {
-        return [
+        return $dns_cache[$domain] = [
             'valid' => false,
             'error' => "The email domain \"{$domain}\" is invalid.",
             'domain' => $domain
         ];
     }
 
-    // Institutional campus domains and test domains whitelist bypass
+    // Institutional campus domains, common email providers, and test domains whitelist bypass
     if (
         $domain === 'kld.edu.ph' ||
+        $domain === 'partner.kld.edu.ph' ||
+        $domain === 'gmail.com' ||
+        $domain === 'yahoo.com' ||
+        $domain === 'outlook.com' ||
+        $domain === 'hotmail.com' ||
+        $domain === 'icloud.com' ||
         str_ends_with($domain, '.kld.edu.ph') ||
         $domain === 'localhost' ||
         str_ends_with($domain, '.local') ||
         str_ends_with($domain, '.test')
     ) {
-        return [
+        return $dns_cache[$domain] = [
             'valid' => true,
             'error' => null,
             'domain' => $domain
@@ -662,14 +680,14 @@ function validate_email_domain_dns($email): array {
     $has_a  = function_exists('checkdnsrr') ? (@checkdnsrr($domain, 'A') || @checkdnsrr($domain, 'AAAA')) : true;
 
     if (!$has_mx && !$has_a) {
-        return [
+        return $dns_cache[$domain] = [
             'valid' => false,
             'error' => "The email domain or subdomain \"{$domain}\" does not exist or has no active mail servers.",
             'domain' => $domain
         ];
     }
 
-    return [
+    return $dns_cache[$domain] = [
         'valid' => true,
         'error' => null,
         'domain' => $domain
@@ -852,20 +870,21 @@ function validate_registration_payload(array $data, string $email, string $role)
     return null;
 }
 
-function insert_user_base_record(PDO $pdo, array $data, string $email, string $role): int {
+function insert_user_base_record(PDO $pdo, array $data, string $email, string $role, string $verification = 'pending_approval'): int {
     $raw_pass = $data['password'] ?? 'Password123!';
     $hashed_pass = password_hash($raw_pass, PASSWORD_DEFAULT);
 
     $stmt_user = $pdo->prepare("
         INSERT INTO `users` (`name`, `email`, `password`, `role`, `phone`, `status`, `is_email_verified`, `verification_status`, `created_at`)
-        VALUES (:name, :email, :password, :role, :phone, 'active', 0, 'pending_approval', NOW())
+        VALUES (:name, :email, :password, :role, :phone, 'active', 0, :ver_status, NOW())
     ");
     $stmt_user->execute([
-        ':name'     => trim($data['name'] ?? ''),
-        ':email'    => $email,
-        ':password' => $hashed_pass,
-        ':role'     => $role,
-        ':phone'    => $data['phone'] ?? null
+        ':name'        => trim($data['name'] ?? ''),
+        ':email'       => $email,
+        ':password'    => $hashed_pass,
+        ':role'        => $role,
+        ':phone'       => $data['phone'] ?? null,
+        ':ver_status'  => $verification
     ]);
 
     return (int)$pdo->lastInsertId();
@@ -955,14 +974,20 @@ function register_user(array $data, ?string $permit_file = null, ?string $proof_
 
         if ($role === 'employer') {
             if ($employer_type === 'university_office' && $is_kld_email) {
-                $verification = 'verified';
+                $verification = $data['verification_status'] ?? 'verified';
                 $accreditation = 'INTERNAL-UNIV';
             } else {
-                $verification = 'pending_approval';
+                $verification = $data['verification_status'] ?? 'pending_approval';
                 $accreditation = $data['accreditation_number'] ?? 'PENDING-VERIFICATION';
             }
         } else {
-            $verification = 'pending_approval';
+            // Institutional email trust bypass: active @kld.edu.ph domain students are auto-verified upon OTP validation.
+            // Personal emails (Gmail, Yahoo, etc., such as alumni) remain in pending_approval for rapid verification deck review.
+            if ($is_kld_email) {
+                $verification = $data['verification_status'] ?? 'verified';
+            } else {
+                $verification = $data['verification_status'] ?? 'pending_approval';
+            }
             $accreditation = $data['student_id'] ?? ('STUDENT-' . rand(10000, 99999));
         }
 
@@ -971,7 +996,7 @@ function register_user(array $data, ?string $permit_file = null, ?string $proof_
 
         $pdo->beginTransaction();
 
-        $new_id = insert_user_base_record($pdo, $data, $email, $role);
+        $new_id = insert_user_base_record($pdo, $data, $email, $role, $verification);
 
         if ($role === 'student') {
             insert_student_profile($pdo, $new_id, $data, $verification, $proof_path);

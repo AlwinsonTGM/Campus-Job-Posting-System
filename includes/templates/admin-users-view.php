@@ -16,7 +16,11 @@ require_once __DIR__ . '/../header.php';
                 
                 <!-- Page Head -->
                 <?php
+                $ver_btn_class = $pending_count > 0 ? 'btn-pill me-2' : 'btn-pill-outline me-2';
                 $head_actions = '
+                    <a href="verification-deck.php" class="' . $ver_btn_class . '">
+                        <i class="bi bi-shield-check me-1"></i> Verification Queue (' . $pending_count . ')
+                    </a>
                     <a href="reports.php" class="btn-pill">
                         <i class="bi bi-bar-chart-fill"></i> System Reports
                     </a>
@@ -66,9 +70,14 @@ require_once __DIR__ . '/../header.php';
                                 </span>
                             </div>
                         </div>
-                        <a href="users.php?ver_status=pending_approval#filter-results-container" id="inspectPendingAccountsBtn" class="btn-pill btn-pill-sm">
-                            Inspect Pending (<?= $pending_count ?>)
-                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="verification-deck.php" class="btn-pill btn-pill-sm shadow-sm" style="background: #10b981; color: #ffffff; border-color: #059669;">
+                                <i class="bi bi-shield-check me-1"></i> Verification Queue (<?= $pending_count ?>)
+                            </a>
+                            <a href="users.php?ver_status=pending_approval#filter-results-container" id="inspectPendingAccountsBtn" class="btn-pill-outline btn-pill-sm">
+                                Table View
+                            </a>
+                        </div>
                     </div>
                 <?php endif; ?>
 
@@ -165,7 +174,7 @@ require_once __DIR__ . '/../header.php';
 
                 <!-- Filter & Search Bar -->
                 <?php
-                $active_filters_count = (!empty($search) ? 1 : 0) + (!empty($role_filter) ? 1 : 0) + (!empty($emp_type_filter) ? 1 : 0) + (!empty($ver_filter) ? 1 : 0) + (!empty($status_filter) ? 1 : 0);
+                $active_filters_count = (!empty($search) ? 1 : 0) + (!empty($role_filter) ? 1 : 0) + (!empty($emp_type_filter) ? 1 : 0) + (!empty($ver_filter) ? 1 : 0);
                 $has_active_filters = $active_filters_count > 0;
                 ?>
                 <div class="card-paper p-3 p-md-4 mb-4">
@@ -216,7 +225,7 @@ require_once __DIR__ . '/../header.php';
 
                         <!-- Row 2: Secondary Attributes & Reset Action -->
                         <div class="row g-3 align-items-end">
-                            <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="col-12 col-sm-6 col-lg-4">
                                 <label class="form-label" for="emp-select">
                                     <i class="bi bi-building text-muted-custom me-1"></i>Employer Type
                                 </label>
@@ -227,7 +236,7 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="col-12 col-sm-6 col-lg-4">
                                 <label class="form-label" for="ver-select">
                                     <i class="bi bi-patch-check text-muted-custom me-1"></i>Accreditation
                                 </label>
@@ -240,19 +249,8 @@ require_once __DIR__ . '/../header.php';
                                 </select>
                             </div>
 
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <label class="form-label" for="status-select">
-                                    <i class="bi bi-shield-check text-muted-custom me-1"></i>Account State
-                                </label>
-                                <select name="status" id="status-select" class="form-select <?= !empty($status_filter) ? 'filter-applied' : '' ?>">
-                                    <option value="">All States</option>
-                                    <option value="active" <?= ($status_filter === 'active') ? 'selected' : '' ?>>Active</option>
-                                    <option value="suspended" <?= ($status_filter === 'suspended') ? 'selected' : '' ?>>Suspended (<?= $suspended_users_count ?>)</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-sm-6 col-lg-3" id="filterResetBtnWrap">
-                                <label class="form-label d-none d-sm-block text-muted-custom" style="opacity: 0.7;">Quick Action</label>
+                            <div class="col-12 col-sm-12 col-lg-4" id="filterResetBtnWrap">
+                                <label class="form-label d-none d-lg-block text-muted-custom" style="opacity: 0.7;">Quick Action</label>
                                 <a href="users.php" class="btn-filter-reset-wide <?= $has_active_filters ? 'btn-filter-reset-active' : '' ?>" title="Reset all filters" aria-label="Reset all filters">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                     <span>Reset Filters</span>
@@ -392,11 +390,11 @@ require_once __DIR__ . '/../header.php';
                                                                 </button>
                                                             </form>
                                                         <?php else: ?>
-                                                            <form action="users.php" method="POST" class="d-inline" onsubmit="return confirm('Suspend and archive this user account? The user will be blocked from logging in.');">
+                                                            <form action="users.php" method="POST" class="d-inline" onsubmit="return confirm('Archive and remove this user from the website? The account will be soft-deleted from all website listings and user counts, but preserved in the database.');">
                                                                 <input type="hidden" name="action" value="suspend_user">
                                                                 <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-                                                                <button type="submit" class="btn-pill-outline btn-pill-sm py-1 px-2 text-warning border-warning" style="font-size: 11.5px;" title="Suspend / Archive Account">
+                                                                <button type="submit" class="btn-pill-outline btn-pill-sm py-1 px-2 text-danger border-danger" style="font-size: 11.5px;" title="Archive & Remove from Website">
                                                                     <i class="bi bi-archive"></i>
                                                                 </button>
                                                             </form>
@@ -409,6 +407,41 @@ require_once __DIR__ . '/../header.php';
                                 </tbody>
                             </table>
                         </div>
+                        <?php if (isset($total_pages) && $total_pages > 1): ?>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 px-4 py-3 border-top border-line bg-surface">
+                                <div class="small text-muted">
+                                    Showing <?= (($page - 1) * $per_page) + 1 ?>–<?= min($total_filtered_users, $page * $per_page) ?> of <?= $total_filtered_users ?> accounts
+                                </div>
+                                <nav aria-label="User directory pagination">
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <?php
+                                            $queryParams = $_GET;
+                                            $prevPage = max(1, $page - 1);
+                                            $nextPage = min($total_pages, $page + 1);
+                                        ?>
+                                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $prevPage])) ?>#filter-results-container" aria-label="Previous">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <?php for ($p = 1; $p <= $total_pages; $p++): ?>
+                                            <?php if ($p === 1 || $p === $total_pages || ($p >= $page - 2 && $p <= $page + 2)): ?>
+                                                <li class="page-item <?= ($p === $page) ? 'active' : '' ?>">
+                                                    <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $p])) ?>#filter-results-container"><?= $p ?></a>
+                                                </li>
+                                            <?php elseif ($p === $page - 3 || $p === $page + 3): ?>
+                                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                                            <?php endif; ?>
+                                        <?php endfor; ?>
+                                        <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $nextPage])) ?>#filter-results-container" aria-label="Next">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
@@ -637,6 +670,7 @@ require_once __DIR__ . '/../header.php';
         <?php endforeach; ?>
 
         <!-- Document Verification Modals for Employer Partners -->
+        <div id="user-modals-container">
         <?php foreach ($users as $u): 
             if ($u['role'] !== 'employer') continue;
             $is_partner = ($u['employer_type'] ?? '') === 'approved_partner';
@@ -1078,6 +1112,7 @@ require_once __DIR__ . '/../header.php';
             </div>
         </div>
         <?php endforeach; ?>
+        </div><!-- /#user-modals-container -->
 
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
@@ -1105,10 +1140,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const target = document.getElementById('filter-results-container');
             if (verSelect && target) {
                 e.preventDefault();
-                if (verSelect.value !== 'pending_approval') {
-                    verSelect.value = 'pending_approval';
-                    verSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                }
+                const roleSelect = document.getElementById('role-select');
+                if (roleSelect && roleSelect.value) roleSelect.value = '';
+                const empSelect = document.getElementById('emp-select');
+                if (empSelect && empSelect.value) empSelect.value = '';
+                const searchInput = document.querySelector('.auto-filter-form input[name="search"]');
+                if (searchInput && searchInput.value) searchInput.value = '';
+
+                verSelect.value = 'pending_approval';
+                verSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
                 if (window.history && window.history.replaceState) {
                     window.history.replaceState(null, '', 'users.php?ver_status=pending_approval#filter-results-container');
                 }
@@ -1117,25 +1158,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (window.location.hash === '#filter-results-container') {
+    if (window.location.hash === '#filter-results-container' || window.location.search.includes('page=')) {
         setTimeout(() => {
             const target = document.getElementById('filter-results-container');
             if (target) {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }, 150);
+        }, 100);
     }
 
-    document.querySelectorAll('form[action="users.php"][method="POST"]').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            const btn = form.querySelector('button[type="submit"]');
-            if (btn) {
-                setTimeout(() => {
-                    btn.disabled = true;
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Processing...';
-                }, 10);
-            }
-        });
+    // Delegated submit handler so dynamically swapped modals also show loading indicator
+    document.addEventListener('submit', function(e) {
+        const form = e.target.closest('form[action="users.php"][method="POST"]');
+        if (!form) return;
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) {
+            setTimeout(() => {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Processing...';
+            }, 10);
+        }
     });
 });
 </script>

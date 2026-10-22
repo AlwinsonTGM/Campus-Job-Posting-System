@@ -232,6 +232,41 @@ require_once __DIR__ . '/../header.php';
                             <i class="bi bi-clock-history text-muted-custom flex-shrink-0"></i>
                             <span class="small text-muted-custom" style="font-size: 11px;">Schedule availability is evaluated from student declared shift slots against the institutional 20-hour workload policy.</span>
                         </div>
+                        <?php if (isset($total_pages) && $total_pages > 1): ?>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 px-4 py-3 border-top border-line bg-surface">
+                                <div class="small text-muted">
+                                    Showing <?= (($page - 1) * $per_page) + 1 ?>–<?= min($total_apps, $page * $per_page) ?> of <?= $total_apps ?> applicants
+                                </div>
+                                <nav aria-label="Applicant roster pagination">
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <?php
+                                            $queryParams = $_GET;
+                                            $prevPage = max(1, $page - 1);
+                                            $nextPage = min($total_pages, $page + 1);
+                                        ?>
+                                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $prevPage])) ?>#filter-results-container" aria-label="Previous">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <?php for ($p = 1; $p <= $total_pages; $p++): ?>
+                                            <?php if ($p === 1 || $p === $total_pages || ($p >= $page - 2 && $p <= $page + 2)): ?>
+                                                <li class="page-item <?= ($p === $page) ? 'active' : '' ?>">
+                                                    <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $p])) ?>#filter-results-container"><?= $p ?></a>
+                                                </li>
+                                            <?php elseif ($p === $page - 3 || $p === $page + 3): ?>
+                                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                                            <?php endif; ?>
+                                        <?php endfor; ?>
+                                        <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $nextPage])) ?>#filter-results-container" aria-label="Next">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
@@ -241,4 +276,17 @@ require_once __DIR__ . '/../header.php';
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#filter-results-container' || window.location.search.includes('page=')) {
+        setTimeout(() => {
+            const target = document.getElementById('filter-results-container');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+});
+</script>
 

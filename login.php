@@ -58,33 +58,49 @@ $email = trim((string)($_POST['email'] ?? ($_GET['email'] ?? '')));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
-    $res = login_user($email, $password);
-    if ($res['success']) {
-        $u = $res['user'];
-        // Block portal access if account is pending admin approval
-        if (($u['verification_status'] ?? 'pending_approval') === 'pending_approval' && ($u['role'] ?? '') !== 'admin') {
-            $_SESSION['pending_approval_notice'] = [
-                'user_id' => (int)($u['id'] ?? 0),
-                'name'    => $u['name'] ?? 'User',
-                'email'   => $u['email'] ?? '',
-                'role'    => $u['role'] ?? 'student',
-            ];
-            unset($_SESSION['user']);
-            set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
-            header('Location: pending-approval.php');
-            exit;
-        }
-        set_flash('success', "Welcome, {$u['name']}!");
-        if ($safe_next !== '') {
-            header('Location: ' . $safe_next);
-            exit;
-        }
-        redirect_by_role($u['role'] ?? null);
-    } elseif (!empty($res['unverified'])) {
-        SessionGuard::quarantineForVerification($res['user']);
-        exit;
+    $lockout_until = (int)($_SESSION['login_lockout_until'] ?? 0);
+    if (time() < $lockout_until) {
+        $remaining = $lockout_until - time();
+        $error = "Too many failed login attempts. Please wait {$remaining}s before trying again.";
     } else {
-        $error = $res['message'];
+        $res = login_user($email, $password);
+        if ($res['success']) {
+            unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
+            $u = $res['user'];
+            // Block portal access if account is pending admin approval
+            if (($u['verification_status'] ?? 'pending_approval') === 'pending_approval' && ($u['role'] ?? '') !== 'admin') {
+                $_SESSION['pending_approval_notice'] = [
+                    'user_id' => (int)($u['id'] ?? 0),
+                    'name'    => $u['name'] ?? 'User',
+                    'email'   => $u['email'] ?? '',
+                    'role'    => $u['role'] ?? 'student',
+                ];
+                unset($_SESSION['user']);
+                set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
+                header('Location: pending-approval.php');
+                exit;
+            }
+            set_flash('success', "Welcome, {$u['name']}!");
+            if ($safe_next !== '') {
+                header('Location: ' . $safe_next);
+                exit;
+            }
+            redirect_by_role($u['role'] ?? null);
+        } elseif (!empty($res['unverified'])) {
+            unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
+            SessionGuard::quarantineForVerification($res['user']);
+            exit;
+        } else {
+            $attempts = (int)($_SESSION['login_failed_attempts'] ?? 0) + 1;
+            $_SESSION['login_failed_attempts'] = $attempts;
+            if ($attempts >= 5) {
+                $_SESSION['login_lockout_until'] = time() + 60;
+                $_SESSION['login_failed_attempts'] = 0;
+                $error = 'Too many failed login attempts. Account access is temporarily locked for 60 seconds.';
+            } else {
+                $error = $res['message'];
+            }
+        }
     }
 }
 

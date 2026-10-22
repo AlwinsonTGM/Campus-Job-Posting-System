@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     INDEX `idx_users_status` (`status`),
     INDEX `idx_users_archived` (`is_archived`),
     INDEX `idx_users_revoked` (`is_revoked`),
-    INDEX `idx_users_verification` (`verification_status`)
+    INDEX `idx_users_verification` (`verification_status`),
+    INDEX `idx_users_role_ver_status` (`role`, `verification_status`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
@@ -181,6 +182,8 @@ CREATE TABLE IF NOT EXISTS `applications` (
     INDEX `idx_applications_job_id` (`job_id`),
     INDEX `idx_applications_student_id` (`student_id`),
     INDEX `idx_applications_status` (`status`),
+    INDEX `idx_app_job_status` (`job_id`, `status`),
+    INDEX `idx_app_student_status` (`student_id`, `status`),
     CONSTRAINT `fk_applications_job` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_applications_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -247,7 +250,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
     `is_read` TINYINT(1) NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_notifications_user_id` (`user_id`),
-    INDEX `idx_notifications_user_read` (`user_id`, `is_read`),
+    INDEX `idx_notifications_user_read` (`user_id`, `is_read`, `created_at`),
     INDEX `idx_notifications_created_at` (`created_at`),
     CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

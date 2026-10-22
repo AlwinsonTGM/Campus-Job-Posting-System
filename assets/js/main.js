@@ -717,6 +717,13 @@ document.addEventListener('DOMContentLoaded', function () {
             currentTargetEl.style.opacity = '1';
           }
 
+          // 1b. Update Dynamic Inspection Modals Container (e.g. for user inspection modals)
+          const newModalsEl = doc.getElementById('user-modals-container') || doc.querySelector('[data-dynamic-modals]');
+          const currentModalsEl = document.getElementById('user-modals-container') || document.querySelector('[data-dynamic-modals]');
+          if (newModalsEl && currentModalsEl) {
+            currentModalsEl.innerHTML = newModalsEl.innerHTML;
+          }
+
           // 2. Update Category Visual Tiles Discovery Section
           const newCategorySec = doc.getElementById('category-discovery-section');
           const currentCategorySec = document.getElementById('category-discovery-section');

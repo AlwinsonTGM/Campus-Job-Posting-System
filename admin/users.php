@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (suspend_user($suspend_id)) {
             $u_name = $target_user['name'] ?? 'User';
-            set_flash('warning', "Account '{$u_name}' has been suspended / archived.");
+            set_flash('warning', "Account '{$u_name}' has been archived and removed from the active directory.");
             header('Location: users.php');
             exit;
         }
@@ -115,20 +115,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $role_filter = $_GET['role'] ?? null;
 $emp_type_filter = $_GET['emp_type'] ?? null;
 $ver_filter = $_GET['ver_status'] ?? null;
-$status_filter = $_GET['status'] ?? null;
 $search = $_GET['q'] ?? null;
 
-// Count pending verifications & student requests across all roles
+// Count pending verifications & student requests across active un-archived roles
 $all_users = get_all_users();
 $pending_employers_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
 $pending_students_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
 $pending_count = $pending_employers_count + $pending_students_count;
-$suspended_users_count = count(array_filter($all_users, fn($u) => ($u['status'] ?? 'active') === 'suspended' || !empty($u['is_archived'])));
 $revoked_users_count = count(array_filter($all_users, fn($u) => ($u['verification_status'] ?? '') === 'revoked' || !empty($u['is_revoked'])));
 
 $all_profile_requests = get_profile_requests();
 $pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
 $pending_profile_count = count($pending_profile_requests);
+
+// Archived accounts act as deleted on the website and are never shown in active directory views
+$users = $all_users;
 
 if ($role_filter) {
     $users = array_filter($users, fn($u) => $u['role'] === $role_filter);
@@ -148,19 +149,20 @@ if ($ver_filter) {
     });
 }
 
-if ($status_filter) {
-    $users = array_filter($users, function($u) use ($status_filter) {
-        if ($status_filter === 'suspended' || $status_filter === 'archived') {
-            return ($u['status'] ?? 'active') === 'suspended' || !empty($u['is_archived']);
-        }
-        return ($u['status'] ?? 'active') === $status_filter;
-    });
-}
-
 if ($search) {
     $q = strtolower(trim($search));
     $users = array_filter($users, fn($u) => stripos($u['name'] ?? '', $q) !== false || stripos($u['email'] ?? '', $q) !== false || stripos($u['student_id'] ?? '', $q) !== false || stripos($u['organization_name'] ?? '', $q) !== false || stripos($u['accreditation_number'] ?? '', $q) !== false);
 }
+
+$total_filtered_users = count($users);
+$page = max(1, (int)($_GET['page'] ?? 1));
+$per_page = 25;
+$total_pages = max(1, (int)ceil($total_filtered_users / $per_page));
+if ($page > $total_pages) {
+    $page = $total_pages;
+}
+$paged_users = array_slice(array_values($users), ($page - 1) * $per_page, $per_page);
+$users = $paged_users;
 
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-users-view.php';

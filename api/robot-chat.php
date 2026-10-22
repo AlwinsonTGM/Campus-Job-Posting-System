@@ -59,6 +59,11 @@ if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
 }
 $user_role = $_SESSION['user']['role'] ?? 'guest';
 
+// Release session lock before long-running cURL call
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
+
 // Sanitize user prompt
 $raw_trimmed = trim((string)$raw_prompt);
 $prompt = sanitize_ai_prompt($raw_prompt, 800);

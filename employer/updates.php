@@ -57,6 +57,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id <= 0 || empty($title) || empty($content)) {
             $error = 'Valid update ID, title, and content are required.';
         } else {
+            $target_update = get_career_update_by_id($id);
+            if (!$target_update) {
+                set_flash('danger', 'Dispatch not found.');
+                header('Location: updates.php');
+                exit;
+            }
+
+            if (($user['role'] ?? '') !== 'admin') {
+                $target_author_id = (int)($target_update['author_id'] ?? 0);
+                $target_office = $target_update['author_office'] ?? ($target_update['author']['office'] ?? '');
+                $is_owner = ($target_author_id > 0 && $target_author_id === (int)$user['id']) ||
+                            (!empty($target_office) && strcasecmp(trim($target_office), trim($org_name)) === 0);
+                if (!$is_owner) {
+                    set_flash('danger', 'Unauthorized: You can only modify or delete dispatches published by your department.');
+                    header('Location: updates.php');
+                    exit;
+                }
+            }
+
             update_career_update($id, [
                 'title' => $title,
                 'summary' => $summary,
@@ -73,6 +92,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'archive' || $action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
+            $target_update = get_career_update_by_id($id);
+            if (!$target_update) {
+                set_flash('danger', 'Dispatch not found.');
+                header('Location: updates.php');
+                exit;
+            }
+
+            if (($user['role'] ?? '') !== 'admin') {
+                $target_author_id = (int)($target_update['author_id'] ?? 0);
+                $target_office = $target_update['author_office'] ?? ($target_update['author']['office'] ?? '');
+                $is_owner = ($target_author_id > 0 && $target_author_id === (int)$user['id']) ||
+                            (!empty($target_office) && strcasecmp(trim($target_office), trim($org_name)) === 0);
+                if (!$is_owner) {
+                    set_flash('danger', 'Unauthorized: You can only modify or delete dispatches published by your department.');
+                    header('Location: updates.php');
+                    exit;
+                }
+            }
+
             archive_career_update($id);
             set_flash('success', "Dispatch #{$id} has been moved to Archive.");
             header('Location: updates.php');
@@ -90,4 +128,3 @@ $dept_updates = array_filter($all_updates, function($u) use ($org_name, $user) {
 });
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-updates-view.php';
-

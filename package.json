@@ -28,7 +28,8 @@
     "jev:verify": "node tools/jev-verify.mjs",
     "jev:gate": "node tools/jev-gate.mjs",
     "jev:gate:strict": "node tools/jev-gate.mjs --api",
-    "jev:structure": "node tools/jev-gate.mjs --structure"
+    "jev:structure": "node tools/jev-gate.mjs --structure",
+    "repomix": "repomix"
   },
   "devDependencies": {
     "@ai-sdk/openai": "^4.0.89",
@@ -37,7 +38,8 @@
     "@playwright/test": "^1.62.1",
     "ai": "^7.0.133",
     "e2e": "^0.18.0",
-    "impeccable": "^3.6.0"
+    "impeccable": "^3.6.0",
+    "repomix": "^1.18.1"
   },
   "dependencies": {
     "chart.js": "^4.5.1"

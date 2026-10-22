@@ -1,0 +1,190 @@
+# ==============================================================================
+# Repomix Ignore File (.repomixignore)
+# Optimized to exclude high-token, non-essential, binary, vendor, and generated
+# files so Repomix focuses strictly on meaningful application source code.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Third-Party Dependencies & Vendored Libraries
+# ------------------------------------------------------------------------------
+node_modules/
+vendor/
+assets/vendor/
+includes/PHPMailer/
+assets/js/three.min.js
+assets/js/GLTFLoader.js
+
+# ------------------------------------------------------------------------------
+# 2. Package Manager Lockfiles
+# ------------------------------------------------------------------------------
+package-lock.json
+bun.lock
+bun.lockb
+yarn.lock
+pnpm-lock.yaml
+composer.lock
+
+# ------------------------------------------------------------------------------
+# 3. Minified Assets, Bundles & Source Maps
+# ------------------------------------------------------------------------------
+*.min.js
+*.min.css
+*.map
+*.bundle.js
+*.bundle.css
+*.tsbuildinfo
+
+# ------------------------------------------------------------------------------
+# 4. Binary Assets, Images, 3D Models, Media & Fonts
+# ------------------------------------------------------------------------------
+assets/models/
+assets/img/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.webp
+*.avif
+*.bmp
+*.glb
+*.gltf
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.otf
+*.mp3
+*.mp4
+*.wav
+*.ogg
+*.webm
+*.mov
+*.pdf
+*.docx
+*.doc
+*.pptx
+*.ppt
+*.xlsx
+*.xls
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.rar
+*.7z
+*.exe
+*.dll
+*.wasm
+*.node
+
+# ------------------------------------------------------------------------------
+# 5. Database Seed Dumps & Heavy Mock Data
+# (Preserves database/schema.sql and database/migrate.php for schema architecture)
+# ------------------------------------------------------------------------------
+database/seed_data.sql
+database/infinityfree_setup.sql
+data/seeds/
+data/.pristine_backup/
+data/devblogs.json
+data/jobs.json
+data/users.json
+data/applications.json
+data/updates.json
+data/categories.json
+data/profile_requests.json
+data/notifications.json
+triage-queue.json
+*.sql.gz
+*.sql.bak
+*.dump
+*.sqlite
+*.db
+
+# ------------------------------------------------------------------------------
+# 6. User Uploads & Staging Directories
+# ------------------------------------------------------------------------------
+uploads/
+qa/uploads-tmp/
+
+# ------------------------------------------------------------------------------
+# 7. Test Results, Playwright Reports, Caches & Screenshots
+# ------------------------------------------------------------------------------
+playwright-report/
+test-results/
+blob-report/
+screenshots/
+.e2e/
+qa/artifacts/
+qa/backups/
+qa/env-backup/
+qa/evidence/
+qa/reports/
+qa/sessions/
+coverage/
+*.lcov
+*.snap
+
+# ------------------------------------------------------------------------------
+# 8. Agent, LLM Scratch & Swarm Directories
+# ------------------------------------------------------------------------------
+.agents/
+.agent/
+.codex/
+.claude/
+.gemini/
+.impeccable/
+.scratch/
+scratch/
+
+# ------------------------------------------------------------------------------
+# 9. Logs, Temp, Cache, OS & IDE Files
+# ------------------------------------------------------------------------------
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.bak
+*.tmp
+*.temp
+*.sw?
+*.stackdump
+Thumbs.db
+ehthumbs*.db
+[Dd]esktop.ini
+.DS_Store
+.Spotlight-V100
+.Trashes
+.vscode/
+.idea/
+.obsidian/
+docs/codebase/.obsidian/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+__pycache__/
+*.pyc
+
+# ------------------------------------------------------------------------------
+# 10. Secrets & Sensitive Environment Files
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+tools/upload_*.py
+dbtest.php
+
+# ------------------------------------------------------------------------------
+# 11. Repomix Output Files
+# ------------------------------------------------------------------------------
+repomix-output.*
+repomix-output.xml
+repomix-output.txt
+repomix-output.json
+repomix-output.md

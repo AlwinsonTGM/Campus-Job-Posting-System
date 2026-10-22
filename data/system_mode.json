@@ -1,5 +1,5 @@
 {
-    "active_mode": "real",
-    "last_switched_at": "2026-10-08 17:00:00",
-    "switched_by": "System Migration (Authoritative MySQL)"
+    "active_mode": "demo",
+    "last_switched_at": "2026-10-22 21:23:46",
+    "switched_by": "Adversarial Reset"
 }

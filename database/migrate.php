@@ -121,8 +121,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
         $log_fn("Migrating users and subtypes (student_profiles, employer_profiles)...");
         $users = $read_json('users.json');
         $stmt_user = $pdo->prepare("
-            INSERT IGNORE INTO `users` (`id`, `email`, `password`, `role`, `name`, `phone`, `status`, `created_at`)
-            VALUES (:id, :email, :password, :role, :name, :phone, :status, :created_at)
+            INSERT IGNORE INTO `users` (`id`, `email`, `password`, `role`, `name`, `phone`, `status`, `verification_status`, `is_archived`, `created_at`)
+            VALUES (:id, :email, :password, :role, :name, :phone, :status, :verification_status, :is_archived, :created_at)
         ");
 
         $stmt_student = $pdo->prepare("
@@ -162,20 +162,33 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                 : password_hash($raw_pass, PASSWORD_DEFAULT);
 
             $stmt_user->execute([
-                ':id'         => $u['id'],
-                ':email'      => strtolower(trim($u['email'])),
-                ':password'   => $pwd_to_save,
-                ':role'       => $u['role'] ?? 'student',
-                ':name'       => $u['name'] ?? '',
-                ':phone'      => $u['phone'] ?? null,
-                ':status'     => $u['status'] ?? 'active',
-                ':created_at' => $created_at
+                ':id'                  => $u['id'],
+                ':email'               => strtolower(trim($u['email'])),
+                ':password'            => $pwd_to_save,
+                ':role'                => $u['role'] ?? 'student',
+                ':name'                => $u['name'] ?? '',
+                ':phone'               => $u['phone'] ?? null,
+                ':status'              => $u['status'] ?? 'active',
+                ':verification_status' => $u['verification_status'] ?? 'verified',
+                ':is_archived'         => (int)($u['is_archived'] ?? 0),
+                ':created_at'          => $created_at
             ]);
             $count_users++;
 
             if (($u['role'] ?? '') === 'student') {
                 $bdate = (!empty($u['birthdate']) && $u['birthdate'] !== '0000-00-00') ? $u['birthdate'] : null;
                 $student_id = !empty($u['student_id']) ? $u['student_id'] : ('KLD-' . str_pad($u['id'], 6, '0', STR_PAD_LEFT));
+                $raw_avail = $u['availability'] ?? null;
+                $avail_to_save = null;
+                if ($raw_avail !== null) {
+                    if (is_array($raw_avail)) {
+                        $avail_to_save = json_encode($raw_avail);
+                    } elseif (is_string($raw_avail)) {
+                        json_decode($raw_avail);
+                        $avail_to_save = (json_last_error() === JSON_ERROR_NONE) ? $raw_avail : json_encode([$raw_avail]);
+                    }
+                }
+
                 $stmt_student->execute([
                     ':user_id'             => $u['id'],
                     ':student_id'          => $student_id,
@@ -185,7 +198,7 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
                     ':sex'                 => $u['sex'] ?? null,
                     ':birthdate'           => $bdate,
                     ':age'                 => isset($u['age']) ? (int)$u['age'] : null,
-                    ':availability'        => isset($u['availability']) ? (is_array($u['availability']) ? json_encode($u['availability']) : $u['availability']) : null,
+                    ':availability'        => $avail_to_save,
                     ':verification_status' => $u['verification_status'] ?? 'verified',
                     ':rejection_reason'    => $u['rejection_reason'] ?? null,
                     ':registration_proof'  => $u['proof_file'] ?? ($u['registration_proof'] ?? null),
@@ -445,10 +458,12 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
 }
 
 // If accessed directly (not included by another file)
-if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
+if (realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'] ?? '')) {
     $is_cli = (php_sapi_name() === 'cli');
     if (!$is_cli) {
+        require_once dirname(__DIR__) . '/includes/data-helper.php';
         require_once dirname(__DIR__) . '/includes/auth-check.php';
+        require_auth(['admin']);
         if (!is_logged_in() || !is_admin()) {
             http_response_code(403);
             exit('Forbidden: Database migration can only be run via CLI or by authenticated administrators.');

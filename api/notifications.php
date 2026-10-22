@@ -17,14 +17,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'click') {
             mark_notification_as_read($notif_id, (int)$user['id']);
             $target_link = trim($notif['link'] ?? '');
             if (!empty($target_link)) {
-                // Ensure target link does not contain protocol for internal navigation security
-                if (!preg_match('#^https?://#i', $target_link)) {
-                    $target_link = ltrim($target_link, '/');
-                    header('Location: ../' . $target_link);
+                $safe_link = SessionGuard::sanitizeReturnTo($target_link);
+                if ($safe_link !== null) {
+                    header('Location: ../' . ltrim($safe_link, '/'));
                     exit;
                 }
-                header('Location: ' . $target_link);
-                exit;
             }
         }
     }
@@ -52,6 +49,29 @@ if ($method === 'POST') {
     $input_json = json_decode(file_get_contents('php://input'), true);
     if (is_array($input_json)) {
         $post_data = array_merge($post_data, $input_json);
+    }
+
+    $csrf = $post_data['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+    $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1';
+    $is_same_origin = false;
+    if (!empty($origin) && parse_url($origin, PHP_URL_HOST) === parse_url('http://' . $host, PHP_URL_HOST)) {
+        $is_same_origin = true;
+    } elseif (!empty($referer) && parse_url($referer, PHP_URL_HOST) === parse_url('http://' . $host, PHP_URL_HOST)) {
+        $is_same_origin = true;
+    }
+
+    if (!empty($csrf)) {
+        if (!verify_csrf_token($csrf)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'CSRF verification failed']);
+            exit;
+        }
+    } elseif (!$is_same_origin) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Cross-origin request blocked']);
+        exit;
     }
 
     $action = $post_data['action'] ?? '';
@@ -84,6 +104,11 @@ if ($method === 'POST') {
 
     echo json_encode(['success' => false, 'message' => 'Invalid action.']);
     exit;
+}
+
+// Release session lock before DB read queries on GET polling requests
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
 }
 
 // Handle GET: Return latest notifications & unread count for polling / UI

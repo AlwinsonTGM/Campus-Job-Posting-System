@@ -53,11 +53,13 @@ assert_test(($intercepted['reason'] ?? '') === 'unauthenticated', 'Reason is una
 
 // 4. Role authorization gating
 $_SESSION['user'] = [
-    'id' => 999,
+    'id' => 999999,
     'name' => 'Demo Employer',
     'email' => 'employer@campus.edu',
     'role' => 'employer',
-    'is_email_verified' => 1
+    'is_email_verified' => 1,
+    'verification_status' => 'verified',
+    '_last_db_sync' => time()
 ];
 $intercepted = null;
 $result = SessionGuard::protect(['student']);
@@ -69,7 +71,7 @@ assert_test(strpos($intercepted['url'] ?? '', 'employer/dashboard.php') !== fals
 // 5. Authorized role access
 $intercepted = null;
 $result = SessionGuard::protect(['employer']);
-assert_test(!empty($result) && $result['id'] === 999, 'Authorized role passes and returns user record');
+assert_test(!empty($result) && $result['id'] === 999999, 'Authorized role passes and returns user record');
 assert_test($intercepted === null, 'No redirect triggered for authorized user');
 assert_test(SessionGuard::hasRole('employer') === true, 'hasRole detects employer');
 assert_test(SessionGuard::hasRole('student') === false, 'hasRole denies student');
@@ -80,7 +82,7 @@ $_SESSION['user']['role'] = 'student';
 $intercepted = null;
 // Avoid mail dispatch network dependencies by catching or testing quarantine structure
 $_SESSION['pending_verification'] = [
-    'user_id' => 999,
+    'user_id' => 999999,
     'email' => 'unverified@campus.edu',
     'name' => 'Unverified Student',
     'role' => 'student'

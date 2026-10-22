@@ -145,3 +145,99 @@ h1, h2, h3, h4, h5, h6,
 .border-primary-subtle {
   border-color: rgba(46, 204, 94, 0.3) !important;
 }
+
+/* ==========================================================================
+   Bootstrap Component Resets (Paper Sheet Theme)
+   Eliminates default Bootstrap blue (#0d6efd) leaks in all themes
+   ========================================================================== */
+
+/* Dropdown Menu & Items */
+.dropdown-menu {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-card, 16px) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
+  padding: 0.5rem !important;
+}
+
+.dropdown-item {
+  color: var(--ink) !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 0.85rem !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--cream) !important;
+  color: var(--ink) !important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--accent-soft) !important;
+  color: var(--ink) !important;
+  font-weight: 700 !important;
+}
+
+.dropdown-divider {
+  border-color: var(--line) !important;
+  opacity: 1 !important;
+  margin: 0.4rem 0 !important;
+}
+
+/* Pagination Links & Active States */
+.pagination {
+  gap: 4px !important;
+  --bs-pagination-bg: var(--surface);
+  --bs-pagination-color: var(--ink);
+  --bs-pagination-border-color: var(--line);
+  --bs-pagination-hover-bg: var(--cream);
+  --bs-pagination-hover-color: var(--ink);
+  --bs-pagination-hover-border-color: var(--line);
+  --bs-pagination-focus-bg: var(--cream);
+  --bs-pagination-focus-color: var(--ink);
+  --bs-pagination-focus-box-shadow: none;
+  --bs-pagination-active-bg: var(--accent);
+  --bs-pagination-active-color: var(--ink);
+  --bs-pagination-active-border-color: var(--accent);
+  --bs-pagination-disabled-bg: var(--surface);
+  --bs-pagination-disabled-color: var(--muted);
+  --bs-pagination-disabled-border-color: var(--line);
+}
+
+.page-item .page-link {
+  background-color: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: 8px !important;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.page-item .page-link:hover,
+.page-item .page-link:focus {
+  background-color: var(--cream) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #161616 !important;
+  font-weight: 800 !important;
+}
+
+.page-item.disabled .page-link {
+  background-color: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--muted) !important;
+  opacity: 0.6 !important;
+}

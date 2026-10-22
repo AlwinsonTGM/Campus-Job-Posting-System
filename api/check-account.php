@@ -6,6 +6,45 @@
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
+
+// IP-based Rate Limiting (max 30 checks per minute per IP)
+$ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+$rl_file = sys_get_temp_dir() . '/cjps_acc_rl_' . md5($ip) . '.json';
+$now = time();
+$window = 60;
+$max_requests = 30;
+
+$fp = @fopen($rl_file, 'c+');
+if ($fp) {
+    if (flock($fp, LOCK_EX)) {
+        $raw = stream_get_contents($fp);
+        $data = json_decode($raw ?: '[]', true);
+        $timestamps = is_array($data) ? array_values(array_filter($data, fn($ts) => is_numeric($ts) && ($now - (int)$ts) < $window)) : [];
+        if (count($timestamps) >= $max_requests) {
+            flock($fp, LOCK_UN);
+            fclose($fp);
+            http_response_code(429);
+            echo json_encode([
+                'success' => false,
+                'available' => false,
+                'error' => 'RATE_LIMIT_EXCEEDED',
+                'message' => 'Too many account check requests. Please wait a moment and try again.'
+            ]);
+            exit;
+        }
+        $timestamps[] = $now;
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, json_encode($timestamps));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+    }
+    fclose($fp);
+}
+
 require_once __DIR__ . '/../includes/data-helper.php';
 
 $raw_email = $_GET['email'] ?? $_POST['email'] ?? '';

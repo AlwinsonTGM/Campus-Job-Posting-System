@@ -401,6 +401,10 @@ function time_ago_short(string|int|null $datetime): string {
     return date('M j', $timestamp);
 }
 
+function time_ago(string|int|null $datetime): string {
+    return time_ago_short($datetime);
+}
+
 // Legacy JSON Compatibility Shims
 function load_json_file(string $filename): array {
     $base = basename($filename, '.json');
@@ -421,7 +425,14 @@ function save_json_file(string $filename, array $data): bool {
     if (is_dir(DATA_DIR) && is_writable(DATA_DIR)) {
         $encoded = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         if ($encoded !== false) {
-            return file_put_contents($path, $encoded) !== false;
+            $tmpPath = DATA_DIR . '/.' . $filename . '.' . uniqid('tmp_', true) . '.swap';
+            if (@file_put_contents($tmpPath, $encoded, LOCK_EX) !== false) {
+                if (@rename($tmpPath, $path)) {
+                    return true;
+                }
+                @unlink($tmpPath);
+            }
+            return @file_put_contents($path, $encoded, LOCK_EX) !== false;
         }
     }
     return false;

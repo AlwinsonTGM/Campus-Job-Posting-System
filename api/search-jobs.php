@@ -6,6 +6,10 @@
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
+
 require_once __DIR__ . '/../includes/data-helper.php';
 
 // Safely parse and guard query parameters against non-string/array types (PHP 8.2 compatibility)
@@ -27,7 +31,7 @@ $employer_type = is_string($raw_employer_type) ? trim($raw_employer_type) : '';
 $raw_limit = $_GET['limit'] ?? null;
 $limit = (is_scalar($raw_limit) && is_numeric($raw_limit)) ? max(1, min(20, (int)$raw_limit)) : 8;
 
-// Fetch filtered jobs using existing system data-helper
+// Fetch filtered jobs using SQL LIMIT to avoid full-table in-memory slicing
 $jobs = get_jobs(
     null,
     $query ?: null,
@@ -35,14 +39,18 @@ $jobs = get_jobs(
     null,
     $job_type ?: null,
     $employer_type ?: null,
-    $work_setup ?: null
+    $work_setup ?: null,
+    null,
+    false,
+    false,
+    $limit,
+    0
 );
 
 $total_matches = count($jobs);
-$results_slice = array_slice($jobs, 0, $limit);
 
 $formatted_results = [];
-foreach ($results_slice as $job) {
+foreach ($jobs as $job) {
     $org_name = $job['organization_name'] ?? ($job['department'] ?? 'University Department');
     $is_partner = ($job['employer_type'] ?? '') === 'approved_partner';
     $employer_label = $is_partner ? 'Partner' : 'University Office';

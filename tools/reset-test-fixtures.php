@@ -14,8 +14,9 @@ try {
     // We clean any application where student_id = 1 and job_id NOT IN (1, 2) so test applications are hermetic
     $pdo->exec("DELETE FROM applications WHERE student_id = 1 AND job_id NOT IN (1, 2)");
 
-    // Reset slots_filled on jobs that were incremented by test applications
-    $pdo->exec("UPDATE jobs SET slots_filled = 0 WHERE id IN (4, 8, 10) AND slots_filled > 0");
+    // Reset slots_filled & vacancies dynamically on jobs that were touched by tests
+    $pdo->exec("UPDATE jobs SET slots_filled = (SELECT COUNT(*) FROM applications a WHERE a.job_id = jobs.id AND a.status = 'accepted')");
+    $pdo->exec("UPDATE jobs SET vacancies = slots_total - slots_filled");
 
     echo json_encode(['status' => 'success', 'message' => 'Test fixtures restored to baseline']);
 } catch (Throwable $e) {

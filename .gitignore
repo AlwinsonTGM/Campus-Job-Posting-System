@@ -60,6 +60,7 @@ dbtest.php
 
 # Temporary Test Upload Artifacts
 uploads/proofs/proof_*
+uploads/proofs/cor_*
 !uploads/proofs/proof_1787818447_8a7d0655.pdf
 !uploads/proofs/proof_1789903369_190c86d6.jpg
 !uploads/proofs/proof_1789904998_523463f5.jpg
@@ -70,7 +71,15 @@ uploads/resumes/resume_*
 uploads/permits/permit_*
 !uploads/permits/permit_sample_*
 !uploads/permits/sample_permit_*
+uploads/categories/cat_*
 screenshots/
+
+# Runtime & Schema Locks
+data/*.lock
+data/.*.lock
+
+# Bundler & LLM Packager Output
+repomix-output.*
 
 # Local Backups
 *.bak

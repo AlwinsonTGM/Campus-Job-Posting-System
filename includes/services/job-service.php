@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Extracted from includes/data-helper.php — 100% function contract preserved.
  */
 
-function get_jobs(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false): array {
+function get_jobs(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false, ?int $limit = null, int $offset = 0): array {
     try {
         $pdo = get_db_connection();
         $sql = "
@@ -112,6 +112,9 @@ function get_jobs(string|array|null $category = null, ?string $keyword = null, ?
         }
 
         $sql .= " ORDER BY j.`id` DESC";
+        if ($limit !== null) {
+            $sql .= " LIMIT " . max(1, (int)$limit) . " OFFSET " . max(0, (int)$offset);
+        }
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
@@ -462,6 +465,7 @@ function get_application_by_id(mixed $id): ?array {
 }
 
 function create_application(array $data): array {
+    $pdo = null;
     try {
         $pdo = get_db_connection();
         $user = get_logged_user() ?? (!empty($data['student_id']) ? get_user_by_id((int)$data['student_id']) : null);
@@ -488,41 +492,61 @@ function create_application(array $data): array {
         $resume_file = !empty($data['resume_file']) ? htmlspecialchars($data['resume_file']) : ('Student_Resume_' . $student_id . '.pdf');
         $study_load = 'Study_Load_' . $student_id . '.pdf';
 
-        $stmt = $pdo->prepare("
-            INSERT INTO `applications` (
-                `job_id`, `student_id`, `cover_letter`, `availability`,
-                `resume_file`, `study_load_file`, `status`,
-                `supervisor_notes`, `applied_at`, `updated_at`
-            ) VALUES (
-                :job_id, :student_id, :cover_letter, :availability,
-                :resume_file, :study_load_file, 'pending',
-                'Application submitted and queued for evaluation.', NOW(), NOW()
-            )
-            ON DUPLICATE KEY UPDATE
-                `cover_letter` = VALUES(`cover_letter`),
-                `availability` = VALUES(`availability`),
-                `resume_file` = VALUES(`resume_file`),
-                `study_load_file` = VALUES(`study_load_file`),
-                `status` = 'pending',
-                `supervisor_notes` = 'Application re-submitted and queued for evaluation.',
-                `updated_at` = NOW()
-        ");
+        $pdo->beginTransaction();
 
-        $stmt->execute([
-            ':job_id'          => $job['id'],
-            ':student_id'      => $student_id,
-            ':cover_letter'    => $data['cover_letter'] ?? '',
-            ':availability'    => json_encode($availability),
-            ':resume_file'     => $resume_file,
-            ':study_load_file' => $study_load
-        ]);
+        $checkStmt = $pdo->prepare("SELECT `id`, `status` FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id FOR UPDATE");
+        $checkStmt->execute([':job_id' => $job['id'], ':student_id' => $student_id]);
+        $existing = $checkStmt->fetch();
 
-        $new_id = (int)$pdo->lastInsertId();
-        if ($new_id === 0) {
-            $findStmt = $pdo->prepare("SELECT `id` FROM `applications` WHERE `job_id` = :job_id AND `student_id` = :student_id LIMIT 1");
-            $findStmt->execute([':job_id' => $job['id'], ':student_id' => $student_id]);
-            $new_id = (int)$findStmt->fetchColumn();
+        if ($existing && strtolower($existing['status'] ?? '') !== 'withdrawn') {
+            $pdo->rollBack();
+            return ['success' => false, 'message' => 'You have already submitted an application for this requisition.'];
         }
+
+        if ($existing) {
+            $updateStmt = $pdo->prepare("
+                UPDATE `applications` SET
+                    `cover_letter` = :cover_letter,
+                    `availability` = :availability,
+                    `resume_file` = :resume_file,
+                    `study_load_file` = :study_load_file,
+                    `status` = 'pending',
+                    `supervisor_notes` = 'Application re-submitted and queued for evaluation.',
+                    `updated_at` = NOW()
+                WHERE `id` = :id
+            ");
+            $updateStmt->execute([
+                ':cover_letter'    => $data['cover_letter'] ?? '',
+                ':availability'    => json_encode($availability),
+                ':resume_file'     => $resume_file,
+                ':study_load_file' => $study_load,
+                ':id'              => (int)$existing['id']
+            ]);
+            $new_id = (int)$existing['id'];
+        } else {
+            $stmt = $pdo->prepare("
+                INSERT INTO `applications` (
+                    `job_id`, `student_id`, `cover_letter`, `availability`,
+                    `resume_file`, `study_load_file`, `status`,
+                    `supervisor_notes`, `applied_at`, `updated_at`
+                ) VALUES (
+                    :job_id, :student_id, :cover_letter, :availability,
+                    :resume_file, :study_load_file, 'pending',
+                    'Application submitted and queued for evaluation.', NOW(), NOW()
+                )
+            ");
+            $stmt->execute([
+                ':job_id'          => $job['id'],
+                ':student_id'      => $student_id,
+                ':cover_letter'    => $data['cover_letter'] ?? '',
+                ':availability'    => json_encode($availability),
+                ':resume_file'     => $resume_file,
+                ':study_load_file' => $study_load
+            ]);
+            $new_id = (int)$pdo->lastInsertId();
+        }
+
+        $pdo->commit();
 
         // Dispatch notification to hiring employer
         if ($new_id > 0 && !empty($job['employer_id'])) {
@@ -540,11 +564,17 @@ function create_application(array $data): array {
 
         return ['success' => true, 'id' => $new_id];
     } catch (PDOException $e) {
+        if ($pdo && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         if ((string)$e->getCode() === '23000' || strpos($e->getMessage(), 'unique_student_job') !== false) {
-            return ['success' => false, 'message' => 'You have already submitted an application for this position.'];
+            return ['success' => false, 'message' => 'You have already submitted an application for this requisition.'];
         }
         return ['success' => false, 'message' => 'Application failed: ' . $e->getMessage()];
     } catch (Exception $e) {
+        if ($pdo && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         return ['success' => false, 'message' => 'Application failed: ' . $e->getMessage()];
     }
 }
@@ -808,6 +838,22 @@ function update_application_status(int|string $id, string $status, string $notes
         }
 
         $pdo->beginTransaction();
+
+        if ($status === 'accepted' && $old_status !== 'accepted' && $job_id > 0) {
+            $stmt_check = $pdo->prepare("SELECT `slots_filled`, `slots_total`, `vacancies` FROM `jobs` WHERE `id` = :job_id FOR UPDATE");
+            $stmt_check->execute([':job_id' => $job_id]);
+            $job_quota = $stmt_check->fetch(PDO::FETCH_ASSOC);
+            if (!$job_quota) {
+                $pdo->rollBack();
+                return false;
+            }
+            $slots_max = max(1, (int)($job_quota['slots_total'] ?? 0), (int)($job_quota['vacancies'] ?? 0));
+            $slots_curr = (int)($job_quota['slots_filled'] ?? 0);
+            if ($slots_curr >= $slots_max) {
+                $pdo->rollBack();
+                return false;
+            }
+        }
 
         $stmt = $pdo->prepare("
             UPDATE `applications` SET
