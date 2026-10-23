@@ -153,6 +153,7 @@ require_once __DIR__ . '/../header.php';
                                     $formatted_date = format_display_date($article['published_at'] ?? 'now');
                                 ?>
                                     <div class="col-md-6 update-card-wrapper" data-title="<?= htmlspecialchars(strtolower($article['title'] ?? '')) ?>" data-summary="<?= htmlspecialchars(strtolower($article['summary'] ?? '')) ?>" data-author="<?= htmlspecialchars(strtolower($article['author']['name'] ?? '')) ?>">
+                                        <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($article['id']) ?>" class="update-feed-card">
                                             <?php
                                             $art_img = $article['image'] ?? 'assets/img/hero-office.jpg';
                                             $art_img_src = (str_starts_with($art_img, 'http://') || str_starts_with($art_img, 'https://') || str_starts_with($art_img, '/'))

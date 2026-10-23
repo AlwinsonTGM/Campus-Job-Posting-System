@@ -121,6 +121,7 @@ require_once __DIR__ . '/../header.php';
                                         $lat_date = format_display_date($lat_art['published_at'] ?? 'now');
                                     ?>
                                         <div class="col-md-4">
+                                            <a href="<?= $base_url ?>update-detail.php?id=<?= urlencode($lat_art['id']) ?>" class="update-compact-card">
                                                 <?php
                                                 $lat_img = $lat_art['image'] ?? 'assets/img/hero-office.jpg';
                                                 $lat_img_src = (str_starts_with($lat_img, 'http://') || str_starts_with($lat_img, 'https://') || str_starts_with($lat_img, '/'))
