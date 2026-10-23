@@ -68,7 +68,7 @@ test.describe('Milestone 1: Live Health & Smoke Verification', () => {
 
     // Fill credentials and sign in
     await emailInput.fill('student@kld.edu.ph');
-    await passwordInput.fill('Password123!');
+    await passwordInput.fill('Student2026!');
 
     await submitBtn.click();
     await page.waitForURL(/.*student\/dashboard\.php/);

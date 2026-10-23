@@ -43,7 +43,7 @@ if ($action === 'get_deck' || ($_SERVER['REQUEST_METHOD'] === 'GET' && empty($ac
                 sp.`department`,
                 sp.`course`,
                 sp.`year_level`,
-                sp.`rejection_reason`,
+                COALESCE(sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
                 sp.`registration_proof`,
                 ep.`organization_name`,
                 ep.`employer_type`,
@@ -84,22 +84,23 @@ if ($action === 'get_deck' || ($_SERVER['REQUEST_METHOD'] === 'GET' && empty($ac
 
             $deck[] = [
                 'id'              => (int)$r['id'],
-                'name'            => htmlspecialchars($r['name'] ?? 'Applicant'),
-                'email'           => htmlspecialchars($r['email'] ?? ''),
-                'domain'          => htmlspecialchars($domain),
+                'name'            => $r['name'] ?? 'Applicant',
+                'email'           => $r['email'] ?? '',
+                'domain'          => $domain,
                 'is_kld'          => $is_kld,
                 'is_gmail'        => $is_gmail,
                 'role'            => $r['role'],
-                'phone'           => htmlspecialchars($r['phone'] ?? 'N/A'),
-                'identifier'      => htmlspecialchars($id_num),
-                'department'      => htmlspecialchars($r['department'] ?? ($r['organization_name'] ?? 'General')),
-                'course'          => htmlspecialchars($r['course'] ?? ''),
-                'year_level'      => htmlspecialchars($r['year_level'] ?? ''),
-                'org_name'        => htmlspecialchars($r['organization_name'] ?? ''),
+                'phone'           => $r['phone'] ?? 'N/A',
+                'identifier'      => $id_num,
+                'department'      => $r['department'] ?? ($r['organization_name'] ?? 'General'),
+                'course'          => $r['course'] ?? '',
+                'year_level'      => $r['year_level'] ?? '',
+                'org_name'        => $r['organization_name'] ?? '',
                 'employer_type'   => $r['employer_type'] ?? '',
+                'office_location' => $r['office_location'] ?? '',
                 'proof_url'       => $proof_url,
                 'proof_is_pdf'    => $proof_is_pdf,
-                'rejection_notes' => htmlspecialchars($r['rejection_reason'] ?? ''),
+                'rejection_notes' => $r['rejection_reason'] ?? '',
                 'created_at'      => date('M d, Y g:i A', strtotime($r['created_at'] ?? 'now')),
                 'created_ago'     => time_ago($r['created_at'] ?? 'now'),
             ];
@@ -126,6 +127,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = !empty($json_input) ? $json_input : $_POST;
+$csrf_token = $input['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+if (!verify_csrf_token($csrf_token)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Security validation failed: Invalid CSRF token.']);
+    exit;
+}
+
 $action = $input['action'] ?? '';
 $target_id = (int)($input['id'] ?? 0);
 $notes = trim((string)($input['notes'] ?? ''));
@@ -230,8 +238,13 @@ try {
 
         case 'rollback':
             // Multi-level Undo handler: restores user to pending_approval state
-            $ok = update_user_verification($target_id, 'pending_approval', '');
+            $prev_notes = (string)($input['previous_notes'] ?? '');
+            $ok = update_user_verification($target_id, 'pending_approval', $prev_notes);
             if ($ok) {
+                $pdo = get_db_connection();
+                $delStmt = $pdo->prepare("DELETE FROM `notifications` WHERE `user_id` = :uid AND `type` IN ('verification_approved', 'verification_rejected', 'verification_revision') ORDER BY `id` DESC LIMIT 1");
+                $delStmt->execute([':uid' => $target_id]);
+
                 echo json_encode([
                     'success' => true,
                     'action'  => 'rollback',

@@ -16,7 +16,7 @@ $models_list = array_values($models_map);
 
 $api_key = trim(get_ai_env('NVIDIA_API_KEY', ''));
 $is_configured = !empty($api_key) && !str_contains($api_key, 'YOUR_API_KEY') && !str_contains($api_key, 'YOUR_KEY');
-$default_model = get_ai_env('NVIDIA_DEFAULT_MODEL', 'nvidia/nemotron-3.5-lightning-30b-a3b');
+$default_model = get_ai_env('NVIDIA_DEFAULT_MODEL', AI_DEFAULT_PRIMARY_MODEL);
 $fallback_model = get_ai_fallback_model($default_model);
 $rate_limit = (int)get_ai_env('AI_RATE_LIMIT_PER_MINUTE', 10);
 $rate_status = get_ai_rate_limit_status($rate_limit);

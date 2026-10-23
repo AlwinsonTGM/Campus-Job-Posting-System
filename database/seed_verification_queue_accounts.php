@@ -1055,4 +1055,25 @@ file_put_contents($usersFile, json_encode($mergedUsers, JSON_PRETTY_PRINT | JSON
 file_put_contents(__DIR__ . '/../data/seeds/demo/users.json', json_encode($mergedUsers, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 file_put_contents(__DIR__ . '/../data/seeds/realistic_1k/users.json', json_encode($mergedUsers, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
+$manifestFile = __DIR__ . '/../data/mock_users_manifest.json';
+if (file_exists($manifestFile)) {
+    $manifest = json_decode(file_get_contents($manifestFile), true);
+    if (is_array($manifest)) {
+        $st_count = 0;
+        $emp_count = 0;
+        $adm_count = 0;
+        foreach ($mergedUsers as $u) {
+            $r = $u['role'] ?? '';
+            if ($r === 'student') $st_count++;
+            elseif ($r === 'employer') $emp_count++;
+            elseif ($r === 'admin') $adm_count++;
+        }
+        $manifest['total_users'] = count($mergedUsers);
+        $manifest['students_count'] = $st_count;
+        $manifest['employers_count'] = $emp_count;
+        $manifest['admins_count'] = $adm_count;
+        file_put_contents($manifestFile, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}
+
 echo ">>> Done! 20 fresh verification candidates ready in admin/verification-deck.php.\n";

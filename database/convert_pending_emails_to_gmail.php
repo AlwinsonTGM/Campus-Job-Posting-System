@@ -18,7 +18,7 @@ $pdo->beginTransaction();
 
 // 1. Fetch all pending accounts currently using @kld.edu.ph
 $stmt = $pdo->query("
-    SELECT u.id, u.name, u.email, u.role, sp.student_id, sp.department, sp.course, sp.year_level, sp.resume_file,
+    SELECT u.id, u.name, u.email, u.role, u.phone, sp.student_id, sp.department, sp.course, sp.year_level, sp.resume_file,
            ep.employer_type, ep.organization_name
     FROM users u
     LEFT JOIN student_profiles sp ON u.id = sp.user_id
@@ -89,7 +89,7 @@ function generate_student_resume(array $st, string $newEmail): string {
     $ops[] = "200 0 Td (" . $e("Student ID: ") . ") Tj\n/F2 8 Tf (" . $e($st['student_id'] ?? 'N/A') . ") Tj\nET";
     
     $ops[] = "BT\n0.15 0.20 0.25 rg\n/F1 8 Tf";
-    $ops[] = "44 669 Td (" . $e("Contact Number: ") . ") Tj\n/F2 8 Tf (" . $e("+63 920 411 " . $st['id']) . ") Tj\n/F1 8 Tf";
+    $ops[] = "44 669 Td (" . $e("Contact Number: ") . ") Tj\n/F2 8 Tf (" . $e($st['phone'] ?? ('+63 920 411 ' . sprintf('%04d', (int)$st['id']))) . ") Tj\n/F1 8 Tf";
     $ops[] = "200 0 Td (" . $e("Academic Standing: ") . ") Tj\n/F2 8 Tf (" . $e("GWA " . ($st['gwa'] ?? '1.50') . " · Dean's List Standing") . ") Tj\nET";
     
     $ops[] = "0.08 0.38 0.22 rg";

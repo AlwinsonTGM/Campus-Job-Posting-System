@@ -256,25 +256,23 @@ require_once __DIR__ . '/../header.php';
                         </p>
                     </div>
 
-                    <div class="row g-4">
+                    <div class="category-grid-fluid">
                         <?php foreach ($categories as $idx => $cat): ?>
-                            <div class="col-6 col-lg-2">
-                                <a href="student/jobs.php?category=<?= htmlspecialchars($cat['id']) ?>"
-                                    class="category-mini-card">
-                                    <div class="category-mini-arrow">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </div>
-                                    <div class="category-mini-icon-circle">
-                                        <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
-                                    </div>
-                                    <h3 class="h6 fw-bold text-ink mb-1 text-center" style="font-size: 0.875rem;">
-                                        <?= htmlspecialchars($cat['name']) ?>
-                                    </h3>
-                                    <span class="text-muted-custom small mt-auto">
-                                        <?= (int) ($cat['job_count'] ?? 0) ?> Openings
-                                    </span>
-                                </a>
-                            </div>
+                            <a href="student/jobs.php?category=<?= htmlspecialchars($cat['id']) ?>"
+                                class="category-mini-card">
+                                <div class="category-mini-arrow">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </div>
+                                <div class="category-mini-icon-circle">
+                                    <i class="bi <?= htmlspecialchars($cat['icon']) ?>"></i>
+                                </div>
+                                <h3 class="h6 fw-bold text-ink mb-1 text-center" style="font-size: 0.875rem;">
+                                    <?= htmlspecialchars($cat['name']) ?>
+                                </h3>
+                                <span class="text-muted-custom small mt-auto">
+                                    <?= (int) ($cat['job_count'] ?? 0) ?> Openings
+                                </span>
+                            </a>
                         <?php endforeach; ?>
                     </div>
                 </div>

@@ -9,6 +9,10 @@ if (!defined('NVIDIA_CONFIG_LOADED')) {
     define('NVIDIA_CONFIG_LOADED', true);
 }
 
+if (!defined('AI_DEFAULT_PRIMARY_MODEL')) {
+    define('AI_DEFAULT_PRIMARY_MODEL', 'nvidia/nemotron-3.5-lightning-30b-a3b');
+}
+
 require_once __DIR__ . '/ai/env.php';
 require_once __DIR__ . '/ai/security.php';
 require_once __DIR__ . '/ai/rate-limit.php';

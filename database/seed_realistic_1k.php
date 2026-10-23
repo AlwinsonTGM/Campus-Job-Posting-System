@@ -1543,17 +1543,23 @@ foreach ($jobs as &$jb) {
 unset($jb);
 
 // Profile requests
+$user_name_by_id = [];
+foreach ($users as $u) {
+    $user_name_by_id[$u['id']] = $u['name'];
+}
+
 $profile_requests = [];
 for ($p = 0; $p < 18; $p++) {
     $target_s = $active_students[($p * 17) % count($active_students)];
     $target_uid = $target_s['user_id'];
     $req_status = ($p < 8) ? 'pending' : (($p < 14) ? 'approved' : 'rejected');
+    $student_real_name = $user_name_by_id[$target_uid] ?? 'Student Applicant';
     
     $profile_requests[] = [
         'id' => $p + 1,
         'user_id' => $target_uid,
-        'current_profile' => json_encode(['name' => $target_s['student_id'], 'course' => $target_s['course'], 'year_level' => $target_s['year_level']]),
-        'requested_profile' => json_encode(['name' => $target_s['student_id'], 'course' => $target_s['course'], 'year_level' => '3rd Year']),
+        'current_profile' => json_encode(['name' => $student_real_name, 'course' => $target_s['course'], 'year_level' => $target_s['year_level']]),
+        'requested_profile' => json_encode(['name' => $student_real_name, 'course' => $target_s['course'], 'year_level' => '3rd Year']),
         'proof_file' => $target_s['registration_proof'],
         'reason' => 'Completed all prerequisite units as validated by my Dean\'s office evaluation sheet.',
         'status' => $req_status,

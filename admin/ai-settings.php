@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'save_settings') {
             $submitted_key = trim($_POST['nvidia_api_key'] ?? '');
             $clear_key = !empty($_POST['clear_api_key']);
-            $default_model = trim($_POST['default_model'] ?? 'openai/gpt-oss-20b');
+            $default_model = trim($_POST['default_model'] ?? AI_DEFAULT_PRIMARY_MODEL);
             $fallback_model = trim($_POST['fallback_model'] ?? 'meta/llama-3.2-11b-vision-instruct');
             $rate_limit = max(1, min(60, (int)($_POST['rate_limit'] ?? 10)));
             $temperature = max(0.0, min(1.0, (float)($_POST['temperature'] ?? 0.6)));
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: ai-settings.php');
             exit;
         } elseif ($action === 'test_connection') {
-            $test_model = trim($_POST['test_model'] ?? 'nvidia/nemotron-3.5-lightning-30b-a3b');
+            $test_model = trim($_POST['test_model'] ?? AI_DEFAULT_PRIMARY_MODEL);
             $test_messages = [
                 ['role' => 'system', 'content' => 'You are Campus AI. Reply with a short 1-sentence confirmation.'],
                 ['role' => 'user', 'content' => 'Test connection ping. Are you online?']
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $current_key = get_ai_env('NVIDIA_API_KEY', '');
 $is_configured = !empty($current_key) && !str_contains($current_key, 'YOUR_API_KEY') && !str_contains($current_key, 'YOUR_KEY');
 $masked_key = mask_ai_api_key($current_key);
-$current_model = get_ai_env('NVIDIA_DEFAULT_MODEL', 'openai/gpt-oss-20b');
+$current_model = get_ai_env('NVIDIA_DEFAULT_MODEL', AI_DEFAULT_PRIMARY_MODEL);
 $current_fallback = get_ai_fallback_model($current_model);
 $current_rate_limit = (int)get_ai_env('AI_RATE_LIMIT_PER_MINUTE', 10);
 $current_temp = (float)get_ai_env('AI_TEMPERATURE', 0.6);

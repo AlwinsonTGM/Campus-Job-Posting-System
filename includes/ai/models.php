@@ -127,7 +127,7 @@ function get_nvidia_models(): array {
  */
 function validate_ai_model(?string $model_id): string {
     $catalog = get_nvidia_free_models();
-    $default = (string)get_ai_env('NVIDIA_DEFAULT_MODEL', 'nvidia/nemotron-3.5-lightning-30b-a3b');
+    $default = (string)get_ai_env('NVIDIA_DEFAULT_MODEL', defined('AI_DEFAULT_PRIMARY_MODEL') ? AI_DEFAULT_PRIMARY_MODEL : 'nvidia/nemotron-3.5-lightning-30b-a3b');
 
     if (empty($model_id) || $model_id === 'auto') {
         return $default;

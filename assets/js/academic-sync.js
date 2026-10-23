@@ -10,17 +10,22 @@ function setupInstituteCourseSync(deptSelectId, courseSelectId) {
     if (!deptSelect || !courseSelect) return;
 
     function syncOptions() {
-        const selected = deptSelect.value;
+        const selected = deptSelect.value.trim();
         const groups = courseSelect.querySelectorAll('optgroup');
 
         groups.forEach(group => {
-            const isMatch = !selected || selected === 'Other Institute / Outsider' || group.label === selected;
+            const groupLabel = (group.label || '').trim();
+            const isMatch = !selected || selected === 'Other Institute / Outsider' || groupLabel === selected;
             group.disabled = !isMatch;
             group.hidden = !isMatch;
+            group.querySelectorAll('option').forEach(opt => {
+                opt.disabled = !isMatch;
+                opt.hidden = !isMatch;
+            });
         });
 
         const activeOption = courseSelect.selectedOptions[0];
-        if (activeOption?.parentElement?.tagName === 'OPTGROUP' && activeOption.parentElement.disabled) {
+        if (activeOption && (activeOption.disabled || (activeOption.parentElement?.tagName === 'OPTGROUP' && activeOption.parentElement.disabled))) {
             courseSelect.value = '';
         }
     }
@@ -29,8 +34,8 @@ function setupInstituteCourseSync(deptSelectId, courseSelectId) {
 
     courseSelect.addEventListener('change', function () {
         const parentGroup = this.selectedOptions[0]?.parentElement;
-        if (parentGroup?.tagName === 'OPTGROUP' && parentGroup.label && deptSelect.value !== parentGroup.label) {
-            deptSelect.value = parentGroup.label;
+        if (parentGroup?.tagName === 'OPTGROUP' && parentGroup.label && deptSelect.value.trim() !== parentGroup.label.trim()) {
+            deptSelect.value = parentGroup.label.trim();
             deptSelect.dispatchEvent(new Event('change'));
         }
     });

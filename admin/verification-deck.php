@@ -25,7 +25,7 @@ $sql = "
         sp.`department`,
         sp.`course`,
         sp.`year_level`,
-        sp.`rejection_reason`,
+        COALESCE(sp.`rejection_reason`, ep.`rejection_reason`) AS `rejection_reason`,
         sp.`registration_proof`,
         ep.`organization_name`,
         ep.`employer_type`,
@@ -79,6 +79,7 @@ foreach ($raw_cards as $r) {
         'year_level'      => $r['year_level'] ?? '',
         'org_name'        => $r['organization_name'] ?? '',
         'employer_type'   => $r['employer_type'] ?? '',
+        'office_location' => $r['office_location'] ?? '',
         'proof_url'       => $proof_url,
         'proof_is_pdf'    => $proof_is_pdf,
         'rejection_notes' => $r['rejection_reason'] ?? '',
@@ -791,7 +792,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <div class="modal-body p-4">
                 <label class="form-label small fw-bold text-ink mb-2">Preset Guidance (Click to insert):</label>
-                <div class="d-flex flex-wrap gap-2 mb-3">
+                <div id="commentPresetChips" class="d-flex flex-wrap gap-2 mb-3">
                     <span class="quick-chip" onclick="deckEngine.insertReason('Document image is blurry or unreadable. Please provide a clear, well-lit photo.')">
                         Blurry or unreadable photo
                     </span>
@@ -876,11 +877,14 @@ require_once __DIR__ . '/../includes/header.php';
      ========================================================================== -->
 <script>
 const INITIAL_DECK = <?= json_encode($deck_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+const DECK_CSRF_TOKEN = <?= json_encode(generate_csrf_token()) ?>;
 
 class VerificationDeckEngine {
     constructor(cards) {
         this.deck = [...cards];
         this.undoStack = [];
+        this.isSwiping = false;
+        this.swipeTimer = null;
         this.isDragging = false;
         this.startX = 0;
         this.startY = 0;
@@ -922,6 +926,7 @@ class VerificationDeckEngine {
     }
 
     renderStack() {
+        this.isSwiping = false;
         this.stackEl.innerHTML = '';
 
         if (this.deck.length === 0) {
@@ -1001,7 +1006,7 @@ class VerificationDeckEngine {
         } else {
             const docElement = data.proof_is_pdf
                 ? `<canvas class="deck-proof-img" id="imgProof${data.id}" data-pdf="${this.escapeHtml(data.proof_url)}" draggable="false"></canvas>`
-                : `<img src="${data.proof_url}" alt="Proof Document" class="deck-proof-img" id="imgProof${data.id}" loading="eager" draggable="false">`;
+                : `<img src="${this.escapeHtml(data.proof_url)}" alt="Proof Document" class="deck-proof-img" id="imgProof${data.id}" loading="eager" draggable="false">`;
 
             const pillIcon = data.proof_is_pdf ? 'bi-file-earmark-pdf' : 'bi-mouse';
 
@@ -1018,7 +1023,7 @@ class VerificationDeckEngine {
                     <button type="button" class="deck-tool-btn" title="Rotate Document" onclick="event.stopPropagation(); deckEngine.rotateCardImage(${data.id})">
                         <i class="bi bi-arrow-clockwise"></i>
                     </button>
-                    <a href="${data.proof_url}" target="_blank" class="deck-tool-btn" title="Open File in New Tab" onclick="event.stopPropagation();">
+                    <a href="${this.escapeHtml(data.proof_url)}" target="_blank" class="deck-tool-btn" title="Open File in New Tab" onclick="event.stopPropagation();">
                         <i class="bi bi-box-arrow-up-right"></i>
                     </a>
                     <button type="button" class="deck-tool-btn" title="Fullscreen Zoom (Space)" onclick="event.stopPropagation(); deckEngine.openProofZoom()">
@@ -1048,10 +1053,14 @@ class VerificationDeckEngine {
                         <span class="dossier-val">${this.escapeHtml(data.employer_type || 'Private Organization')}</span>
                     </div>
                     <div class="dossier-item">
+                        <span class="dossier-label">Office Location</span>
+                        <span class="dossier-val text-truncate" title="${this.escapeHtml(data.office_location || 'Not Specified')}">${this.escapeHtml(data.office_location || 'Not Specified')}</span>
+                    </div>
+                    <div class="dossier-item">
                         <span class="dossier-label">Mobile / Contact</span>
                         <span class="dossier-val">${this.escapeHtml(data.phone || 'N/A')}</span>
                     </div>
-                    <div class="dossier-item">
+                    <div class="dossier-item" style="grid-column: span 2;">
                         <span class="dossier-label">Official Email</span>
                         <span class="dossier-val text-truncate" title="${this.escapeHtml(data.email)}">${this.escapeHtml(data.email)}</span>
                     </div>
@@ -1100,6 +1109,10 @@ class VerificationDeckEngine {
             `;
         }
 
+        const checkCopy = data.role === 'employer'
+            ? `Ensure the organization name (<strong class="text-ink">${this.escapeHtml(data.org_name || data.name)}</strong>) and Accreditation / TIN (<strong class="text-ink font-monospace">${this.escapeHtml(data.identifier)}</strong>) match the attached permit.`
+            : `Ensure the student name (<strong class="text-ink">${this.escapeHtml(data.name)}</strong>) and Student ID (<strong class="text-ink font-monospace">${this.escapeHtml(data.identifier)}</strong>) match the attached document.`;
+
         card.innerHTML = `
             <div class="stamp stamp-approve">APPROVED</div>
             <div class="stamp stamp-reject">REJECTED</div>
@@ -1141,7 +1154,7 @@ class VerificationDeckEngine {
                         <span class="badge border border-line bg-surface text-muted" style="font-size: 0.65rem;">Match Check</span>
                     </div>
                     <div class="small text-muted-custom" style="font-size: 0.74rem; line-height: 1.4;">
-                        Ensure the student name (<strong class="text-ink">${this.escapeHtml(data.name)}</strong>) and Student ID (<strong class="text-ink font-monospace">${this.escapeHtml(data.identifier)}</strong>) match the attached document.
+                        ${checkCopy}
                     </div>
                 </div>
 
@@ -1344,10 +1357,11 @@ class VerificationDeckEngine {
     }
 
     swipe(action, customNotes = '') {
-        if (this.deck.length === 0) return;
+        if (this.deck.length === 0 || this.isSwiping) return;
         const topCard = this.stackEl.querySelector('.deck-card[data-layer="0"]');
         if (!topCard) return;
 
+        this.isSwiping = true;
         const currentApplicant = this.deck[0];
 
         topCard.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2), opacity 0.3s';
@@ -1373,14 +1387,16 @@ class VerificationDeckEngine {
         this.undoStack.push({
             data: currentApplicant,
             action: action,
-            notes: customNotes
+            notes: customNotes,
+            previousNotes: currentApplicant.rejection_notes || ''
         });
 
         this.dispatchApiAction(action, currentApplicant.id, customNotes);
         this.showUndoToast(currentApplicant.name, action);
 
-        setTimeout(() => {
+        this.swipeTimer = setTimeout(() => {
             this.deck.shift();
+            this.isSwiping = false;
             this.renderStack();
         }, 180);
     }
@@ -1392,16 +1408,30 @@ class VerificationDeckEngine {
                 'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify({ action: action, id: id, notes: notes })
+            body: JSON.stringify({ action: action, id: id, notes: notes, csrf_token: DECK_CSRF_TOKEN })
         })
         .then(res => res.json())
         .then(data => {
-            if (!data.success) console.error('Failed:', data.message);
+            if (!data.success) {
+                console.error('Failed:', data.message);
+                alert('Action failed: ' + (data.message || 'Unable to update verification status.'));
+                this.undo();
+            }
         })
-        .catch(err => console.error('Error:', err));
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Network error while processing verification action. Restoring card...');
+            this.undo();
+        });
     }
 
     undo() {
+        if (this.swipeTimer) {
+            clearTimeout(this.swipeTimer);
+            this.swipeTimer = null;
+            this.isSwiping = false;
+        }
+
         if (this.undoStack.length === 0) return;
 
         const lastAction = this.undoStack.pop();
@@ -1410,7 +1440,18 @@ class VerificationDeckEngine {
         fetch('../api/verification-card-action.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-            body: JSON.stringify({ action: 'rollback', id: applicant.id })
+            body: JSON.stringify({
+                action: 'rollback',
+                id: applicant.id,
+                csrf_token: DECK_CSRF_TOKEN,
+                previous_notes: lastAction.previousNotes || ''
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Rollback failed:', data.message);
+            }
         })
         .catch(err => console.error('Rollback error:', err));
 
@@ -1472,6 +1513,31 @@ class VerificationDeckEngine {
         const current = this.deck[0];
         document.getElementById('commentApplicantName').innerText = `Applicant: ${current.name} (${current.identifier})`;
         document.getElementById('revisionNotesInput').value = '';
+
+        const chipsContainer = document.getElementById('commentPresetChips');
+        if (chipsContainer) {
+            const studentPresets = [
+                { label: 'Blurry or unreadable photo', text: 'Document image is blurry or unreadable. Please provide a clear, well-lit photo.' },
+                { label: 'Invalid document type', text: 'Invalid document type. Please upload your official Diploma, Alumni ID, or Certificate of Registration (COR).' },
+                { label: 'Name mismatch', text: 'The name shown on the uploaded document does not match your registered name.' },
+                { label: 'Student ID mismatch', text: 'Student ID number provided does not correspond to institutional records.' },
+                { label: 'Expired proof document', text: 'Document is expired. Please upload proof reflecting your current graduation or enrollment status.' }
+            ];
+
+            const employerPresets = [
+                { label: 'Expired Mayor\'s Permit', text: 'Submitted Mayor\'s Business Permit is expired. Please upload your 2026 BPLO renewal.' },
+                { label: 'TIN / Org mismatch', text: 'BIR Form 2303 TIN or business name does not match the registered organization profile.' },
+                { label: 'Illegible document scan', text: 'Submitted business registration documents are illegible. Please upload clear, high-resolution scans.' },
+                { label: 'Missing SEC / DTI', text: 'SEC Certificate of Incorporation / DTI Business Name registration is missing or incomplete.' },
+                { label: 'Signatory authorization required', text: 'Official corporate authorization letter or company ID of designated representative is required.' }
+            ];
+
+            const presets = current.role === 'employer' ? employerPresets : studentPresets;
+            chipsContainer.innerHTML = presets.map(p => 
+                `<span class="quick-chip" onclick="deckEngine.insertReason('${p.text.replace(/'/g, "\\'")}')">${p.label}</span>`
+            ).join('');
+        }
+
         this.commentModal.show();
         setTimeout(() => {
             document.getElementById('revisionNotesInput').focus();
@@ -1510,7 +1576,7 @@ class VerificationDeckEngine {
 
         const targetHtml = current.proof_is_pdf
             ? `<canvas id="modalZoomCanvas" class="rounded-2 shadow-2xl" style="max-width: 90vw; max-height: 80vh; pointer-events: none;" draggable="false"></canvas>`
-            : `<img src="${current.proof_url}" class="rounded-2 shadow-2xl" style="max-width: 90vw; max-height: 80vh; object-fit: contain; pointer-events: none;" alt="Document">`;
+            : `<img src="${this.escapeHtml(current.proof_url)}" class="rounded-2 shadow-2xl" style="max-width: 90vw; max-height: 80vh; object-fit: contain; pointer-events: none;" alt="Document">`;
 
         contentEl.innerHTML = `
             <div id="zoomStageContainer" class="pan-zoom-stage">
@@ -1591,9 +1657,12 @@ class VerificationDeckEngine {
             this.applyModalZoomTransform();
         });
 
-        const endPan = () => {
+        const endPan = (e) => {
             if (!this.isZoomPanning) return;
             this.isZoomPanning = false;
+            if (e && e.pointerId !== undefined && stage.hasPointerCapture && stage.hasPointerCapture(e.pointerId)) {
+                stage.releasePointerCapture(e.pointerId);
+            }
             stage.style.cursor = 'grab';
         };
 
@@ -1655,7 +1724,8 @@ class VerificationDeckEngine {
         let rot = parseInt(target.getAttribute('data-rotation') || '0', 10);
         rot = (rot + 90) % 360;
         target.setAttribute('data-rotation', rot);
-        target.style.transform = `rotate(${rot}deg)`;
+        const scaleAdjust = (rot % 180 !== 0) ? ' scale(0.78)' : '';
+        target.style.transform = `rotate(${rot}deg)${scaleAdjust}`;
     }
 
     resetTopCardZoom() {
@@ -1707,7 +1777,14 @@ class VerificationDeckEngine {
                 return;
             }
 
-            if (document.getElementById('zoomModal').classList.contains('show')) return;
+            if (document.getElementById('zoomModal').classList.contains('show')) {
+                if (e.key === '+' || e.key === '=') { e.preventDefault(); this.stepModalZoom(1.25); }
+                else if (e.key === '-') { e.preventDefault(); this.stepModalZoom(0.8); }
+                else if (e.key === '0') { e.preventDefault(); this.resetModalZoom(); }
+                else if (e.key.toLowerCase() === 'r') { e.preventDefault(); this.rotateZoomModal(); }
+                else if (e.key === ' ') { e.preventDefault(); this.zoomModal.hide(); }
+                return;
+            }
             if (isInputActive) return;
 
             if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'z')) {

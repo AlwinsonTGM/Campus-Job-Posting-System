@@ -1308,11 +1308,38 @@
 /* --------------------------------------------------------------------------
    9. CATEGORIES GRID
    -------------------------------------------------------------------------- */
+.category-grid-fluid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.category-grid-fluid .category-mini-card {
+  flex: 0 1 calc(50% - 0.5rem);
+  min-width: 135px;
+  max-width: 100%;
+  min-height: 220px;
+}
+
+@media (min-width: 576px) {
+  .category-grid-fluid {
+    gap: 1.25rem;
+  }
+
+  .category-grid-fluid .category-mini-card {
+    flex: 1 1 160px;
+    max-width: 220px;
+    min-width: 150px;
+    min-height: 220px;
+  }
+}
+
 .category-mini-card {
   background-color: var(--white);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
-  padding: 1.85rem 1.25rem;
+  padding: 1.5rem 1rem;
   text-decoration: none;
   color: var(--ink);
   display: flex;

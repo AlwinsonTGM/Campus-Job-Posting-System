@@ -71,7 +71,7 @@ require_once __DIR__ . '/../header.php';
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <a href="verification-deck.php" class="btn-pill btn-pill-sm shadow-sm" style="background: #10b981; color: #ffffff; border-color: #059669;">
+                            <a href="verification-deck.php" class="btn-pill btn-pill-sm">
                                 <i class="bi bi-shield-check me-1"></i> Verification Queue (<?= $pending_count ?>)
                             </a>
                             <a href="users.php?ver_status=pending_approval#filter-results-container" id="inspectPendingAccountsBtn" class="btn-pill-outline btn-pill-sm">

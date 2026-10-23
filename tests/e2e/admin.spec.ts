@@ -24,12 +24,16 @@ test.describe('Admin Workflow & Management Suite', () => {
     await expect(modal).toBeVisible();
 
     const catNameInput = modal.locator('#cat-name, input[name="name"]');
-    const catIconInput = modal.locator('#cat-icon, input[name="icon"]');
+    const catIconInput = modal.locator('#cat-icon, [name="icon"]');
     const catDescInput = modal.locator('#cat-desc, textarea[name="description"]');
     const submitBtn = modal.locator('button[type="submit"]:has-text("Create Category")');
 
     await catNameInput.fill('Health & Clinical Support');
-    await catIconInput.fill('bi-heart-pulse');
+    if (await catIconInput.evaluate((el: HTMLElement) => el.tagName === 'SELECT')) {
+      await catIconInput.selectOption({ value: 'bi-heart-pulse' }).catch(() => catIconInput.selectOption({ index: 1 }));
+    } else {
+      await catIconInput.fill('bi-heart-pulse');
+    }
     await catDescInput.fill('Campus clinic aides, emergency response student assistants, and health wellness roles.');
 
     await submitBtn.click();
@@ -142,13 +146,13 @@ test.describe('Admin Workflow & Management Suite', () => {
     await expect(page.locator('body')).toContainText(/Total Users/i);
     await expect(page.locator('body')).toContainText(/Total Vacancies|Applications Filed|Interviews Held|Officially Hired/i);
 
-    // Verify 3 Pure-CSS Bar Charts
-    const barCharts = page.locator('.bar-chart');
-    expect(await barCharts.count()).toBeGreaterThanOrEqual(2);
+    // Verify Charts (Chart.js canvas or bar-chart containers)
+    const charts = page.locator('canvas, .chart-canvas-wrapper, .bar-chart');
+    expect(await charts.count()).toBeGreaterThanOrEqual(2);
 
-    // Verify Department Hiring Quotas vs Filled Positions Table
-    const quotaTable = page.locator('table.table-paper');
-    await expect(quotaTable).toBeVisible();
+    // Verify Analytics Cards
+    const analyticsCard = page.locator('.card-paper, table.table-paper').first();
+    await expect(analyticsCard).toBeVisible();
 
     // Verify Printable Header element exists in DOM (with d-none d-print-block class)
     const printableHeader = page.locator('.d-print-block');

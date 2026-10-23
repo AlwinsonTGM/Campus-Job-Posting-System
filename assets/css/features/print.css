@@ -1,8 +1,21 @@
-﻿/* 16.24 Print Stylesheet */
+/* 16.24 Print Stylesheet */
 @media print {
   @page {
     size: A4 portrait;
     margin: 12mm 12mm 12mm 12mm;
+  }
+
+  :root,
+  html,
+  body,
+  [data-theme="dark"],
+  body.dark-mode {
+    --bg: #ffffff !important;
+    --surface: #ffffff !important;
+    --cream: #f7f7f7 !important;
+    --ink: #000000 !important;
+    --muted: #444444 !important;
+    --line: #cccccc !important;
   }
 
   *, *::before, *::after {
@@ -165,5 +178,12 @@
 
   .d-print-block {
     display: block !important;
+  }
+
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }

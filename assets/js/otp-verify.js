@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('btn-submit-otp');
 
     let isSubmitting = false;
+    let errorClearTimer = null;
 
     const showError = (msg) => {
         if (errorAlert && errorText) {
@@ -54,15 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
             inputsWrapper.classList.add('otp-shake');
         }
 
-        setTimeout(() => {
+        clearTimeout(errorClearTimer);
+        errorClearTimer = setTimeout(() => {
             inputs.forEach(input => {
                 input.value = '';
-                input.classList.remove('pod-error');
+                input.classList.remove('pod-error', 'filled');
             });
             syncHiddenCode();
             if (inputs.length > 0) {
                 inputs[0].focus();
             }
+            errorClearTimer = null;
         }, 600);
     };
 
@@ -152,7 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 triggerHapticError(data.message || 'Invalid verification code.');
             }
-        } catch {
+        } catch (err) {
+            isSubmitting = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-shield-check me-1"></i> VERIFY EMAIL & CONTINUE';
+            }
             // If fetch/JSON fails, fall back gracefully to standard form submit
             if (form) {
                 form.submit();
@@ -167,6 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputs.forEach((input, index) => {
         input.addEventListener('input', () => {
+            if (errorClearTimer) {
+                clearTimeout(errorClearTimer);
+                errorClearTimer = null;
+                inputs.forEach(p => p.classList.remove('pod-error'));
+            }
+
             const val = input.value.replace(/\D/g, '');
             input.value = val ? val.charAt(val.length - 1) : '';
 
@@ -208,6 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         input.addEventListener('paste', (event) => {
             event.preventDefault();
+            if (errorClearTimer) {
+                clearTimeout(errorClearTimer);
+                errorClearTimer = null;
+                inputs.forEach(p => p.classList.remove('pod-error'));
+            }
+
             const clipboard = event.clipboardData || window.clipboardData;
             const pasteText = clipboard ? clipboard.getData('text') : '';
             const digits = pasteText.replace(/\D/g, '').slice(0, 6);
