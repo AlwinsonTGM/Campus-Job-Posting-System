@@ -628,9 +628,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let debounceTimer = null;
     let currentAbortController = null;
 
-    function executeLiveFilter(usePushState, smoothScrollToSection) {
+    function executeLiveFilter(usePushState, smoothScrollToSection, preservePage) {
       if (typeof usePushState === 'undefined') usePushState = false;
       if (typeof smoothScrollToSection === 'undefined') smoothScrollToSection = false;
+      if (typeof preservePage === 'undefined') preservePage = false;
 
       const formData = new FormData(form);
       const params = new URLSearchParams();
@@ -640,6 +641,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (trimmed !== null && trimmed !== undefined && trimmed !== '') {
           params.append(key, trimmed);
         }
+      }
+
+      // Preserve the current page when restoring history state (Back/Forward)
+      if (preservePage && !params.has('page')) {
+        const historyPage = new URLSearchParams(window.location.search).get('page');
+        if (historyPage) params.append('page', historyPage);
       }
 
       const actionUrl = form.getAttribute('action') || window.location.pathname;
@@ -934,7 +941,7 @@ document.addEventListener('DOMContentLoaded', function () {
       form.querySelectorAll('select, input[type="text"], input[type="search"], input[type="hidden"]').forEach(function (el) {
         el.value = urlParams.get(el.name) || '';
       });
-      executeLiveFilter(false /* skip pushState on popstate */);
+      executeLiveFilter(false /* skip pushState on popstate */, false, true /* preservePage */);
     });
   });
 

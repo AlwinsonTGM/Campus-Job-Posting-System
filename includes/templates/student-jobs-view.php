@@ -53,7 +53,7 @@ require_once __DIR__ . '/../header.php';
                                 </p>
                                 <div class="d-flex flex-wrap align-items-center gap-2 pt-1">
                                     <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
-                                        <i class="bi bi-briefcase-fill text-warning me-1"></i> <?= count($jobs) ?> Positions Live
+                                        <i class="bi bi-briefcase-fill text-warning me-1"></i> <?= $total_jobs ?> Positions Live
                                     </span>
                                     <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
                                         <i class="bi bi-clock-history text-accent me-1"></i> Max 20 hrs/week Safe Cap
@@ -321,7 +321,13 @@ require_once __DIR__ . '/../header.php';
                     <!-- Results Header Count -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <span class="small text-muted-custom">
-                            Showing <strong><?= count($jobs) ?></strong> verified campus opportunities
+                            <?php if ($total_jobs === 0): ?>
+                                Showing <strong>0</strong> verified campus opportunities
+                            <?php elseif ($total_pages > 1): ?>
+                                Showing <strong><?= $range_start ?>&ndash;<?= $range_end ?></strong> of <strong><?= $total_jobs ?></strong> verified campus opportunities
+                            <?php else: ?>
+                                Showing <strong><?= $total_jobs ?></strong> verified campus opportunities
+                            <?php endif; ?>
                         </span>
                         <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">
                             <i class="bi bi-clock-history text-accent"></i> Max 20 hrs/week
@@ -340,13 +346,46 @@ require_once __DIR__ . '/../header.php';
                         );
                         ?>
                     <?php else: ?>
-                        <div class="row g-4 mb-5">
+                        <div class="row g-4 mb-4">
                             <?php foreach ($jobs as $job): ?>
                                 <div class="col-md-6 col-lg-4">
                                     <?php render_job_card($job, '../'); ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
+
+                        <?php if ($total_pages > 1): ?>
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mb-5" id="jobs-pagination">
+                                <span class="small text-muted-custom">
+                                    Page <strong><?= $page ?></strong> of <strong><?= $total_pages ?></strong>
+                                </span>
+                                <nav aria-label="Campus opportunities pagination">
+                                    <ul class="pagination pagination-sm mb-0 flex-wrap justify-content-center">
+                                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => max(1, $page - 1)]))) ?>#filter-results-container" aria-label="Previous page" <?= ($page <= 1) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <?php for ($p = 1; $p <= $total_pages; $p++): ?>
+                                            <?php if ($p === 1 || $p === $total_pages || ($p >= $page - 2 && $p <= $page + 2)): ?>
+                                                <li class="page-item <?= ($p === $page) ? 'active' : '' ?>">
+                                                    <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => $p]))) ?>#filter-results-container" <?= ($p === $page) ? 'aria-current="page"' : '' ?>>
+                                                        <?= $p ?>
+                                                    </a>
+                                                </li>
+                                            <?php elseif ($p === $page - 3 || $p === $page + 3): ?>
+                                                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                                            <?php endif; ?>
+                                        <?php endfor; ?>
+                                        <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => min($total_pages, $page + 1)]))) ?>#filter-results-container" aria-label="Next page" <?= ($page >= $total_pages) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
 

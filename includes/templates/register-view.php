@@ -243,7 +243,7 @@ require_once __DIR__ . '/../header.php';
                                         </div>
                                     </div>
 
-                                    <div class="small text-muted-custom mt-2"><i class="bi bi-info-circle text-accent me-1"></i><strong>KLD Department or University Office?</strong> Internal campus office accounts are provisioned directly by the Career Services Administrator. Already have credentials? <a href="portal-login.php" class="text-accent fw-semibold text-decoration-none">Sign in to Partner &amp; Staff Portal</a>.</div>
+                                    
                                 </div>
 
                                 <!-- Student Name Fields (First, Middle, Last) -->
@@ -541,7 +541,7 @@ require_once __DIR__ . '/../header.php';
 
                                 <!-- Terms & Conditions Checkbox -->
                                 <div class="mb-4 form-check">
-                                    <input type="checkbox" class="form-check-input" id="termsCheck" required checked>
+                                    <input type="checkbox" class="form-check-input" id="termsCheck" required>
                                     <label class="form-check-label small text-muted-custom" for="termsCheck">
                                         I agree to the <a href="terms.php?from=register" target="_blank" class="text-ink fw-bold text-decoration-underline">Terms of Service</a> and have read the <a href="privacy.php?from=register" target="_blank" class="text-ink fw-bold text-decoration-underline">Data Privacy Policy (RA 10173)</a>.
                                     </label>
