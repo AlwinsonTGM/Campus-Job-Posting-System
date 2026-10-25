@@ -103,7 +103,7 @@ require_once __DIR__ . '/../header.php';
                         <?php foreach ($my_apps as $app): 
                             $is_pending = in_array(strtolower($app['status'] ?? ''), ['pending', 'pending review']);
                         ?>
-                            <div class="card-paper p-4 p-md-4 reveal-fade-rise">
+                            <div id="app-<?= (int)$app['id'] ?>" data-highlight-id="app-<?= (int)$app['id'] ?>" class="card-paper p-4 p-md-4 reveal-fade-rise">
                                 
                                 <!-- Top Bar: Title + Department + Status Badge -->
                                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3 pb-3 border-bottom border-line">

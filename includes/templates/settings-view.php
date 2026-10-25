@@ -189,7 +189,7 @@ require_once __DIR__ . '/../header.php';
                                 <span class="badge rounded-pill d-inline-flex align-items-center gap-1 <?= $role_badge_class ?>"><?= ucfirst($user['role'] ?? 'student') ?></span>
                             </div>
 
-                            <form action="settings.php" method="POST" enctype="multipart/form-data" class="form-paper">
+                            <form id="profile-form" data-highlight-id="profile-form" action="settings.php" method="POST" enctype="multipart/form-data" class="form-paper">
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                 <input type="hidden" name="action" value="profile">
 

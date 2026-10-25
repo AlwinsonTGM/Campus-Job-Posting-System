@@ -556,7 +556,7 @@ function create_application(array $data): array {
                 'new_application',
                 'New Candidate Application',
                 "{$student_disp} submitted an application for '{$job['title']}'.",
-                "employer/review-app.php?id={$new_id}",
+                "employer/review-app.php?id={$new_id}&highlight=app-{$new_id}#app-{$new_id}",
                 'bi-file-earmark-person',
                 'info'
             );
@@ -629,7 +629,8 @@ function dispatch_application_status_notification(
     string $notes,
     ?string $interview_date,
     ?string $interview_time,
-    ?string $interview_venue
+    ?string $interview_venue,
+    ?int $application_id = null
 ): void {
     if ($student_id <= 0) {
         return;
@@ -669,12 +670,16 @@ function dispatch_application_status_notification(
         $notif_msg .= " Supervisor Note: " . trim($notes);
     }
 
+    $target_link = ($application_id && $application_id > 0)
+        ? "student/my-applications.php?highlight=app-{$application_id}#app-{$application_id}"
+        : "student/my-applications.php";
+
     create_notification(
         $student_id,
         'application_status',
         $notif_title,
         $notif_msg,
-        'student/my-applications.php',
+        $target_link,
         $notif_icon,
         $notif_badge
     );
@@ -768,7 +773,7 @@ function auto_withdraw_other_applications(
                     'application_withdrawn',
                     'Candidate Withdrawn (Hired Elsewhere)',
                     "Candidate {$student_name} accepted an appointment with {$accepted_dept} ('{$accepted_job_title}'). Their application for '{$other_job_title}' has been automatically withdrawn.",
-                    "employer/review-app.php?id={$other_app_id}",
+                    "employer/review-app.php?id={$other_app_id}&highlight=app-{$other_app_id}#app-{$other_app_id}",
                     'bi-person-x-fill',
                     'secondary'
                 );
@@ -783,7 +788,7 @@ function auto_withdraw_other_applications(
                 'application_status',
                 'Concurrent Applications Auto-Withdrawn',
                 "Congratulations on your appointment for '{$accepted_job_title}'! In accordance with campus policy (one active appointment per term), {$count_str} been automatically withdrawn.",
-                'student/my-applications.php',
+                'student/my-applications.php?status=withdrawn#applications-list',
                 'bi-info-circle-fill',
                 'info'
             );
@@ -894,7 +899,8 @@ function update_application_status(int|string $id, string $status, string $notes
             $notes,
             $interview_date,
             $interview_time,
-            $interview_venue
+            $interview_venue,
+            (int)$id
         );
 
         if ($old_status !== 'accepted' && $status === 'accepted') {

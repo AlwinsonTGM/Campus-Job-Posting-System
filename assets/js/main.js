@@ -1430,3 +1430,69 @@ window.addEventListener('pageshow', function (event) {
     window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   });
 })();
+
+// Deep Link Section Highlight & Smooth Center Scroll Engine
+(function () {
+  'use strict';
+
+  function handleDeepLinkHighlight() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var highlightId = params.get('highlight') || (window.location.hash ? window.location.hash.replace(/^#/, '') : null);
+      if (!highlightId) return;
+
+      var targetEl = document.getElementById(highlightId);
+      if (!targetEl) {
+        try {
+          targetEl = document.querySelector('[data-highlight-id="' + CSS.escape(highlightId) + '"]');
+        } catch (e) {}
+      }
+      if (!targetEl) return;
+
+      // Auto-switch tab if target is inside an inactive Bootstrap tab
+      var tabPane = targetEl.closest('.tab-pane');
+      if (tabPane && !tabPane.classList.contains('active')) {
+        var tabTrigger = document.querySelector('[data-bs-target="#' + tabPane.id + '"], [href="#' + tabPane.id + '"]');
+        if (tabTrigger && typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+          bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+        }
+      }
+
+      // Auto-expand accordion if target is inside a collapsed Bootstrap accordion
+      var accordionCollapse = targetEl.closest('.accordion-collapse');
+      if (accordionCollapse && !accordionCollapse.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+          bootstrap.Collapse.getOrCreateInstance(accordionCollapse).show();
+        }
+      }
+
+      // Smooth center scroll + glow pulse animation
+      setTimeout(function () {
+        var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        targetEl.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'center' });
+        targetEl.classList.remove('section-highlight-active');
+        void targetEl.offsetWidth; // trigger reflow
+        targetEl.classList.add('section-highlight-active');
+      }, 150);
+
+      // Clean animation class and optional ?highlight= param after 3.2s
+      setTimeout(function () {
+        targetEl.classList.remove('section-highlight-active');
+        if (params.has('highlight') && window.history && window.history.replaceState) {
+          params.delete('highlight');
+          var newQuery = params.toString() ? ('?' + params.toString()) : '';
+          window.history.replaceState(null, '', window.location.pathname + newQuery + window.location.hash);
+        }
+      }, 3200);
+    } catch (err) {
+      console.debug('Deep-link highlight skipped:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', handleDeepLinkHighlight);
+  } else {
+    handleDeepLinkHighlight();
+  }
+  window.addEventListener('hashchange', handleDeepLinkHighlight);
+})();
