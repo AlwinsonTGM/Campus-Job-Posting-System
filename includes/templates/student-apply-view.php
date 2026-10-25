@@ -142,12 +142,17 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 </div>
 
-                                <!-- Section 5: Resume / Study Load Document -->
+                                <!-- Section 5: Resume / Academic Credential Proof -->
                                 <div class="mb-4 pb-3 border-bottom border-line">
                                     <h3 class="card-paper-title fs-5 mb-3">
-                                        <i class="bi bi-file-earmark-arrow-up text-accent me-2"></i> 5. Resume / Study Load Document
+                                        <i class="bi bi-file-earmark-arrow-up text-accent me-2"></i> 5. Attached Resume &amp; Academic Credential (<?= htmlspecialchars($credential_label ?? 'e-COR / Diploma') ?>)
                                     </h3>
-                                    <div>
+                                    
+                                    <!-- Candidate Resume Block -->
+                                    <div class="mb-4">
+                                        <label class="form-label small fw-bold text-ink mb-2 d-flex align-items-center gap-1">
+                                            <i class="bi bi-file-earmark-person text-accent"></i> Candidate Resume / Curriculum Vitae
+                                        </label>
                                         <?php if (!empty($user['resume_file'])): ?>
                                             <div class="d-flex align-items-center justify-content-between p-3 bg-cream rounded-3 border border-line mb-3 flex-wrap gap-2">
                                                 <div class="d-flex align-items-center gap-2" style="min-width: 0;">
@@ -168,12 +173,44 @@ require_once __DIR__ . '/../header.php';
                                             </div>
                                         <?php endif; ?>
 
-                                        <label class="form-label small fw-semibold text-ink"><?= !empty($user['resume_file']) ? 'Attach Updated Resume or Study Load (Optional)' : 'Attach Resume or Study Load (PDF / DOCX)' ?></label>
+                                        <label class="form-label small fw-semibold text-ink"><?= !empty($user['resume_file']) ? 'Attach Updated Resume (Optional)' : 'Attach Resume (PDF / DOCX)' ?></label>
                                         <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
                                         <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
                                             <?= !empty($user['resume_file'])
                                                 ? 'You may attach an updated PDF or leave blank to automatically link your stored student profile resume (' . htmlspecialchars(basename($user['resume_file'])) . ').'
                                                 : 'You may attach a PDF or DOCX file (Max 5MB).' ?>
+                                        </span>
+                                    </div>
+
+                                    <!-- Academic Credential Proof Block -->
+                                    <div class="pt-3 border-top border-line">
+                                        <label class="form-label small fw-bold text-ink mb-2 d-flex align-items-center gap-1">
+                                            <i class="bi bi-mortarboard text-accent"></i> Academic Credential Proof (<?= htmlspecialchars($credential_label ?? 'Official e-COR / KLD Diploma') ?>)
+                                        </label>
+                                        <?php if (!empty($user['registration_proof'])): ?>
+                                            <div class="d-flex align-items-center justify-content-between p-3 bg-cream rounded-3 border border-line mb-3 flex-wrap gap-2">
+                                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                    <i class="bi bi-file-earmark-check-fill text-success fs-4 flex-shrink-0"></i>
+                                                    <div style="min-width: 0;">
+                                                        <strong class="text-ink small text-break d-block"><?= htmlspecialchars(basename($user['registration_proof'])) ?></strong>
+                                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0" style="font-size: 10.5px;">Linked automatically from your verified Student Profile (<?= htmlspecialchars($credential_label ?? 'e-COR / Diploma') ?>)</span>
+                                                    </div>
+                                                </div>
+                                                <a href="../view-resume.php?doc=proof" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-2 flex-shrink-0" style="font-size: 11.5px;">
+                                                    <i class="bi bi-eye"></i> Preview Credential
+                                                </a>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="alert alert-info py-2 px-3 small rounded-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="font-size: 12px;">
+                                                <span><i class="bi bi-info-circle me-1"></i> No registration proof currently linked to your profile.</span>
+                                                <span class="small text-muted-custom">Please upload your document below.</span>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <label class="form-label small fw-semibold text-ink"><?= !empty($user['registration_proof']) ? 'Upload Updated ' . htmlspecialchars($credential_label ?? 'e-COR / KLD Diploma') . ' for this Application (Optional)' : 'Upload ' . htmlspecialchars($credential_label ?? 'Official e-COR or KLD Diploma') . ' (PDF / Image)' ?></label>
+                                        <input type="file" name="credential_proof" class="form-control" accept=".pdf,image/jpeg,image/png,image/webp">
+                                        <span class="small text-muted-custom mt-1 d-block" style="font-size: 12px;">
+                                            Department supervisors and employers review your <?= htmlspecialchars($credential_label ?? 'e-COR / KLD Diploma') ?> alongside your Resume PDF to verify academic load and scheduling eligibility.
                                         </span>
                                     </div>
                                 </div>

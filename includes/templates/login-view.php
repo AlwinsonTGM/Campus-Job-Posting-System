@@ -44,7 +44,7 @@ require_once __DIR__ . '/../header.php';
                                 Empowering Student Talent &amp; Campus Opportunities
                             </h2>
                             <p class="text-muted-custom small mb-4">
-                                Sign in to manage your student applications, explore departmental assistantships, or evaluate student candidates.
+                                Sign in to manage your student applications, explore departmental assistantships, and track your institutional employment.
                             </p>
 
                             <!-- Feature List -->
@@ -75,20 +75,25 @@ require_once __DIR__ . '/../header.php';
                     <div class="auth-form-panel">
                         
                         <div class="mb-4">
-                            <h2 class="card-paper-title fs-4 mb-1">Sign In to Your Account</h2>
-                            <p class="text-muted-custom small mb-0">Enter your institutional credentials to proceed</p>
+                            <h2 class="card-paper-title fs-4 mb-1">Student Sign In</h2>
+                            <p class="text-muted-custom small mb-0">Enter your student credentials to apply for campus assistantships and track your applications</p>
                         </div>
 
                         <?php if ($error): ?>
                             <div class="alert-paper alert-paper--danger mb-4">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
+                                    <i class="bi bi-exclamation-octagon-fill text-danger fs-5 flex-shrink-0"></i>
                                     <div class="small fw-semibold text-ink"><?= htmlspecialchars($error) ?></div>
                                 </div>
+                                <?php if (!empty($portal_redirect_hint)): ?>
+                                    <div class="mt-3 pt-2 border-top border-line">
+                                        <a href="portal-login.php?email=<?= urlencode($email ?? '') ?><?= $safe_next !== '' ? '&next=' . urlencode($safe_next) : '' ?>" class="btn-pill btn-pill-sm text-decoration-none d-inline-flex align-items-center gap-1">
+                                            <span>Go to Partner &amp; Staff Portal</span> <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
-
-
 
                         <form action="login.php" method="POST" class="form-paper">
                             <?php if ($safe_next !== ''): ?>
@@ -131,7 +136,7 @@ require_once __DIR__ . '/../header.php';
 
                             <!-- Submit Button -->
                             <button type="submit" class="btn-pill w-100 mb-3">
-                                <i class="bi bi-box-arrow-in-right"></i> SIGN IN TO PORTAL
+                                <i class="bi bi-box-arrow-in-right"></i> SIGN IN AS STUDENT
                             </button>
                         </form>
 
@@ -141,6 +146,17 @@ require_once __DIR__ . '/../header.php';
                             <a href="register.php" class="text-ink fw-bold small ms-1 text-decoration-none">
                                 Create an Account <i class="bi bi-arrow-right"></i>
                             </a>
+                        </div>
+
+                        <!-- Partner & Staff Callout Card -->
+                        <div class="mt-4 p-3 rounded-3 bg-cream border border-line text-center">
+                            <div class="d-flex align-items-center justify-content-center gap-2 mb-1 text-muted-custom small">
+                                <i class="bi bi-building-lock text-accent"></i>
+                                <span>Department Office, Industry Partner, or Administrator?</span>
+                            </div>
+                            <div>
+                                <a href="portal-login.php<?= $safe_next !== '' ? '?next=' . urlencode($safe_next) : '' ?>" id="link-portal-login" class="fw-bold text-accent text-decoration-none">Sign in to Partner &amp; Staff Portal <i class="bi bi-arrow-right"></i></a>
+                            </div>
                         </div>
 
                     </div>

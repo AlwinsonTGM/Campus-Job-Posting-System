@@ -9,6 +9,7 @@ require_once __DIR__ . '/includes/auth-check.php';
 require_auth();
 $user = get_logged_user();
 $page_title = 'Account Settings & Preferences';
+$must_change_password = !empty($user['must_change_password']);
 
 $error = null;
 
@@ -190,6 +191,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
                 update_user_password($user['id'], $hashed_password);
+                $fresh = get_user_by_id((int)$user['id']);
+                if ($fresh) {
+                    unset($fresh['password']);
+                    $_SESSION['user'] = $fresh;
+                }
+                if ($must_change_password) {
+                    set_flash('success', 'Your personal password has been set! Welcome to your portal dashboard.');
+                    redirect_by_role($user['role'] ?? 'employer');
+                    exit;
+                }
                 set_flash('success', 'Your password has been updated successfully.');
                 header('Location: settings.php');
                 exit;

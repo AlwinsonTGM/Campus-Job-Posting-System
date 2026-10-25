@@ -238,61 +238,60 @@ test.describe('Milestone 2: Security, Access Control & Relational Integrity Test
   /* -------------------------------------------------------------------------- */
   test.describe('4. Employer Email Domain Verification & Registration Gating', () => {
 
-    test('4.1 University Office registration with non-@kld.edu.ph email fails validation', async ({ page }) => {
+    test('4.1 Industry Partner registration with @kld.edu.ph email fails validation', async ({ page }) => {
       await page.goto('/register.php?role=employer');
       await expect(page.locator('#reg-name')).toBeVisible();
 
-      // Fill form with unauthorized external email
-      await page.fill('#reg-name', 'Prof. External User');
-      await page.fill('#reg-email', 'unauthorized.user@gmail.com');
+      // Fill form with institutional @kld.edu.ph email on Industry Partner registration
+      await page.fill('#reg-name', 'External Partner Using KLD Email');
+      await page.fill('#reg-email', 'partner.attempt@kld.edu.ph');
       await page.fill('#reg-phone', '+63 917 000 1122');
 
-      // Attempt to advance step with unauthorized non-kld email
+      // Attempt to advance step with forbidden @kld.edu.ph email
       await page.locator('#step-pane-1 button.btn-step-next').click();
 
       // Verify validation error is displayed and user remains on register page
       await expect(page).toHaveURL(/.*register\.php/);
-      await expect(page.locator('#step-error-alert, #server-error-alert, .alert-danger').first()).toContainText('University Office accounts must use an official @kld.edu.ph institutional email address. External partners must select "Industry Partner".');
+      await expect(page.locator('#step-error-alert, #server-error-alert, .alert-danger').first()).toContainText(/@kld\.edu\.ph/i);
     });
 
-    test('4.2 University Office registration with official @kld.edu.ph domain succeeds', async ({ page }) => {
-      await page.goto('/register.php?role=employer');
-      await expect(page.locator('#reg-name')).toBeVisible();
+    test('4.2 Admin provisions University Office account with temporary password and first-login gate', async ({ page }) => {
+      await loginAsDemo(page, 'admin');
+      await page.goto('/admin/users.php');
+
+      await page.locator('#btn-provision-employer').click();
+      await expect(page.locator('#provisionEmployerModal')).toBeVisible();
 
       const testEmail = `univ.office.${Date.now()}@kld.edu.ph`;
+      const tempPass = 'TempOffice@2026!';
 
-      // Step 1: Fill basic info
-      await page.fill('#reg-name', 'Prof. Self Verified');
-      await page.fill('#reg-email', testEmail);
-      await page.fill('#reg-phone', '+63 917 000 1122');
-      await page.locator('#step-pane-1 button.btn-step-next').click();
+      await page.locator('#prov_office_select').selectOption('Management Information Systems (MIS)');
+      await page.fill('#prov_name', 'Prof. Provisioned Head');
+      await page.fill('#prov_email', testEmail);
+      await page.fill('#prov_phone', '+63 917 000 1122');
+      await page.fill('#prov_office_location', 'Building 1, Room 204');
+      await page.fill('#prov_temp_password', tempPass);
 
-      // Step 2: Department details
-      await expect(page.locator('#step-pane-2')).toBeVisible();
-      await page.locator('#office_name_select').selectOption('Management Information Systems (MIS)');
-      await page.locator('#step-pane-2 button.btn-step-next').click();
+      await page.locator('#provisionEmployerForm button[type="submit"]').click();
+      await expect(page).toHaveURL(/.*admin\/users\.php/);
+      await expect(page.locator('body')).toContainText(/provisioned and verified/i);
 
-      // Step 3: Password credentials
-      await expect(page.locator('#step-pane-3')).toBeVisible();
-      await page.fill('#password', 'Password123!');
-      await page.fill('#confirm_password', 'Password123!');
+      // Sign out and sign in via Partner & Staff Portal (portal-login.php)
+      await logout(page);
+      await page.goto('/portal-login.php');
+      await page.fill('#login-email', testEmail);
+      await page.fill('#login-password', tempPass);
+      await page.click('button[type="submit"]');
 
-      // Submit registration
-      await page.locator('#btn-submit-registration').click();
-
-      // Verify redirect to email verification or employer dashboard
-      await expect(page).toHaveURL(/.*(verify-email\.php|employer\/dashboard\.php)/);
-
-      // Verify immediate ability to post jobs
-      await page.goto('/employer/create-job.php');
-      await expect(page.locator('#job-wizard-form')).toBeVisible();
+      // Must be routed to Temporary Password Gate on settings.php
+      await expect(page).toHaveURL(/.*settings\.php\?setup_password=1/);
     });
 
     test('4.3 Registration with employer_type "approved_partner" requires admin review (pending_approval)', async ({ page }) => {
       await page.goto('/register.php?role=employer');
       await expect(page.locator('#reg-name')).toBeVisible();
 
-      const partnerEmail = `partner.${Date.now()}@partner.kld.edu.ph`;
+      const partnerEmail = `partner.${Date.now()}@gmail.com`;
       const partnerOrg = `Automated Partner Corp ${Date.now()}`;
 
       // Click Industry Partner chip / card
@@ -309,8 +308,13 @@ test.describe('Milestone 2: Security, Access Control & Relational Integrity Test
       await page.fill('#organization_name', partnerOrg);
       await page.locator('#step-pane-2 button.btn-step-next').click();
 
-      // Step 3: Password credentials
+      // Step 3: Password credentials & permit upload
       await expect(page.locator('#step-pane-3')).toBeVisible();
+      await page.setInputFiles('#reg-permit-photo', {
+        name: 'Partner_Permit.pdf',
+        mimeType: 'application/pdf',
+        buffer: Buffer.from('%PDF-1.4 dummy partner business permit')
+      });
       await page.fill('#password', 'Password123!');
       await page.fill('#confirm_password', 'Password123!');
 
@@ -318,7 +322,7 @@ test.describe('Milestone 2: Security, Access Control & Relational Integrity Test
       await page.locator('#btn-submit-registration').click();
 
       // Verify redirect to email verification or employer dashboard
-      await expect(page).toHaveURL(/.*(verify-email\.php|employer\/dashboard\.php)/);
+      await expect(page).toHaveURL(/.*(verify-email\.php|employer\/dashboard\.php|pending-approval\.php)/);
     });
   });
 
@@ -526,7 +530,7 @@ test.describe('Milestone 2: Security, Access Control & Relational Integrity Test
       await page.goto('/register.php?role=employer');
       await expect(page.locator('#reg-name')).toBeVisible();
 
-      const testEmail = `hacker.${Date.now()}@kld.edu.ph`;
+      const testEmail = `hacker.${Date.now()}@gmail.com`;
 
       // Step 1: Fill basic info
       await page.fill('#reg-name', 'Hacker Attempting Admin');
@@ -534,13 +538,18 @@ test.describe('Milestone 2: Security, Access Control & Relational Integrity Test
       await page.fill('#reg-phone', '+63 917 000 9999');
       await page.locator('#step-pane-1 button.btn-step-next').click();
 
-      // Step 2: Select department
+      // Step 2: Organization name
       await expect(page.locator('#step-pane-2')).toBeVisible();
-      await page.locator('#office_name_select').selectOption('Management Information Systems (MIS)');
+      await page.fill('#organization_name', 'Attempted Admin Corp');
       await page.locator('#step-pane-2 button.btn-step-next').click();
 
-      // Step 3: Fill password credentials
+      // Step 3: Fill password credentials & permit
       await expect(page.locator('#step-pane-3')).toBeVisible();
+      await page.setInputFiles('#reg-permit-photo', {
+        name: 'Permit_10_1.pdf',
+        mimeType: 'application/pdf',
+        buffer: Buffer.from('%PDF-1.4 dummy permit')
+      });
       await page.fill('#password', 'Password123!');
       await page.fill('#confirm_password', 'Password123!');
 

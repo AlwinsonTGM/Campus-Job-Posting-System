@@ -22,6 +22,18 @@ _Avoid_: RedirectUri, NextUrl, Callback
 The canonical landing route assigned to an authenticated account role (`student`, `employer`, `admin`).
 _Avoid_: Home, LandingPage, DefaultRoute
 
+**Partner & Staff Portal**:
+The dedicated authentication gateway (`portal-login.php`) for university department offices, accredited industry partners, and career services administrators, strictly separated from student applicant sign-in (`login.php`).
+_Avoid_: AdminLogin, StaffLogin, BackofficeSignIn
+
+**Administrative Account Provisioning**:
+The administrator-initiated creation of pre-verified university office (`university_office`) or industry partner (`approved_partner`) employer accounts issued with a temporary credential.
+_Avoid_: ManualSignup, AdminRegister, BypassedAccount
+
+**Temporary Password Gate**:
+The restricted session state (`must_change_password`) requiring an administratively provisioned account to establish a personal password upon initial authentication before accessing operational portal routes.
+_Avoid_: FirstLoginLock, PasswordResetForce, TempAuthState
+
 ### Requisitions & Applications
 
 **ApplicationService**:
@@ -53,6 +65,10 @@ _Avoid_: UploadResponse, FileOutput, SaveStatus
 **Candidate Profile Resume**:
 The default curriculum vitae attachment persisted on a student account profile, automatically linked to requisition applications when an applicant elects not to upload a one-off override.
 _Avoid_: DefaultResume, UserCV, StoredResumeMock
+
+**Academic Credential Proof**:
+The verified institutional document persisted on a student profile (`registration_proof`) and linked to requisition applications (`study_load_file`)—either an **Official Certificate of Registration (e-COR)** for enrolled `@kld.edu.ph` students, or an **Official KLD Diploma** for graduated alumni and non-`@kld.edu.ph` (`@gmail.com`) student accounts—inspected alongside the candidate's resume during employer evaluation.
+_Avoid_: StudentProof, GenericAttachment, IDUpload
 
 ### Datastore & Fixture Lifecycle
 

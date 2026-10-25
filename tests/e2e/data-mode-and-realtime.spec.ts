@@ -62,24 +62,8 @@ test.describe('Dataset Mode Toggle & Private Browser Real-Time Synchronization',
     const employerContext = await browser.newContext();
     const pageEmp = await employerContext.newPage();
 
-    // Register real employer (University Office)
-    await pageEmp.goto('/register.php', { waitUntil: 'domcontentloaded' });
-    await pageEmp.click('#lbl-role-employer');
-    await pageEmp.fill('#reg-name', 'Dr. Elena Rostova');
-    await pageEmp.fill('#reg-email', 'elena.rostova@kld.edu.ph');
-    await pageEmp.fill('#reg-phone', '+63 917 123 4567');
-    await pageEmp.locator('#step-pane-1 button.btn-step-next').click();
-    await expect(pageEmp.locator('#step-pane-2')).toBeVisible();
-
-    await pageEmp.selectOption('#office_name_select', 'Management Information Systems (MIS)');
-    await pageEmp.locator('#step-pane-2 button.btn-step-next').click();
-    await expect(pageEmp.locator('#step-pane-3')).toBeVisible();
-
-    await pageEmp.fill('input[name=password]', 'Password123!');
-    await pageEmp.fill('input[name=confirm_password]', 'Password123!');
-    await pageEmp.click('#register-form button[type=submit]');
-
-    // Verify employer registered and logged in
+    // Sign in as University Office Employer (provisioned by Admin in Real/Demo Mode)
+    await loginAsDemo(pageEmp, 'employer');
     await expect(pageEmp).toHaveURL(/.*employer\/dashboard\.php/);
 
     // Employer posts a new job

@@ -16,11 +16,67 @@ require_once __DIR__ . '/../header.php';
                 
                 <!-- Page Head -->
                 <?php
+                $admin_actions_html = '
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn-pill btn-pill-sm" data-bs-toggle="modal" data-bs-target="#provisionEmployerModal" id="btn-provision-employer">
+                            <i class="bi bi-building-add me-1"></i> Provision Employer Account
+                        </button>
+                    </div>
+                ';
                 render_page_head(
                     '',
                     'Campus User Directory & Roles',
-                    'Manage student accounts, academic departments, and approve accredited external partner organizations.'
+                    'Manage student accounts, academic departments, and approve accredited external partner organizations.',
+                    $admin_actions_html
                 );
+                ?>
+
+                <!-- One-time Dismissible Provisioned Account Notice -->
+                <?php if (!empty($_SESSION['provisioned_account_notice'])): 
+                    $notice = $_SESSION['provisioned_account_notice'];
+                    $notice_org = htmlspecialchars($notice['organization_name'] ?? 'Employer');
+                    $notice_type = ($notice['employer_type'] ?? '') === 'university_office' ? 'University Office' : 'Accredited Industry Partner';
+                    $notice_email = htmlspecialchars($notice['email'] ?? '');
+                    $notice_pw = htmlspecialchars($notice['temp_password'] ?? '');
+                ?>
+                    <div class="alert-paper alert-paper--success mb-4 reveal-fade-rise border-2 border-success shadow-sm" role="alert" id="provisioned-success-alert">
+                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0 mt-1">
+                                    <i class="bi bi-check2-circle fs-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-ink fs-6 fw-bold mb-1">
+                                        Employer Account Successfully Provisioned &amp; Verified!
+                                    </h4>
+                                    <p class="small text-muted-custom mb-2">
+                                        An active, verified employer account was created for <strong><?= $notice_org ?></strong> (<?= $notice_type ?>). The account has been placed under the Temporary Password Gate and will be required to set a personal password upon first sign-in.
+                                    </p>
+                                    <div class="bg-surface p-2 px-3 rounded-3 border border-line d-inline-flex flex-wrap align-items-center gap-3 small text-ink mb-2">
+                                        <div>
+                                            <span class="text-muted-custom">Login Email:</span>
+                                            <code class="fw-bold ms-1" id="provisioned-email"><?= $notice_email ?></code>
+                                        </div>
+                                        <div class="border-start border-line ps-3">
+                                            <span class="text-muted-custom">Temporary Password:</span>
+                                            <code class="fw-bold text-accent ms-1" id="provisioned-password"><?= $notice_pw ?></code>
+                                        </div>
+                                        <div class="border-start border-line ps-3">
+                                            <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" id="btn-copy-provisioned" onclick="copyProvisionedCredentials('<?= addslashes($notice_email) ?>', '<?= addslashes($notice_pw) ?>', this)">
+                                                <i class="bi bi-clipboard me-1"></i> Copy Credentials
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted-custom">
+                                        <i class="bi bi-info-circle me-1"></i> A welcome dispatch containing login instructions has been queued. Please share these credentials directly with the department head or partner representative if necessary.
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <?php unset($_SESSION['provisioned_account_notice']); ?>
+                <?php endif; 
                 ?>
 
                 <!-- Pending Verification Banners (if any) -->
@@ -1122,7 +1178,178 @@ require_once __DIR__ . '/../header.php';
             </div>
         </div>
         <?php endforeach; ?>
-        </div><!-- /#user-modals-container -->
+        
+        <!-- Provision Employer Account Modal -->
+        <div class="modal fade" id="provisionEmployerModal" tabindex="-1" aria-labelledby="provisionEmployerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content rounded-4 border-line shadow-lg">
+                    <form action="users.php" method="POST" enctype="multipart/form-data" class="m-0" id="form-provision-employer" onsubmit="return syncProvisionOrgName();">
+                        <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                        <input type="hidden" name="action" value="provision_employer">
+                        <input type="hidden" name="organization_name" id="final_organization_name" value="">
+
+                        <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-circle icon-circle-sm icon-circle-dark">
+                                    <i class="bi bi-building-add fs-5"></i>
+                                </div>
+                                <div>
+                                    <h5 class="modal-title fs-6 fw-bold text-ink mb-0" id="provisionEmployerModalLabel">
+                                        Provision Employer Account
+                                    </h5>
+                                    <span class="small text-muted-custom">Directly instantiate verified university offices or external industry partners</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body p-4">
+                            <!-- Employer Type Selector Tabs/Radios -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-ink mb-2">Employer Classification <span class="text-danger">*</span></label>
+                                <div class="row g-3">
+                                    <div class="col-12 col-sm-6">
+                                        <label class="card-paper p-3 d-flex align-items-start gap-3 h-100 cursor-pointer border border-line radio-box-label" for="type_univ_office">
+                                            <input class="form-check-input mt-1 flex-shrink-0" type="radio" name="employer_type" id="type_univ_office" value="university_office" checked onchange="toggleEmployerType('university_office')">
+                                            <div>
+                                                <strong class="d-block text-ink fs-6 mb-1">
+                                                    <i class="bi bi-mortarboard text-accent me-1"></i> KLD University Office
+                                                </strong>
+                                                <span class="small text-muted-custom">Internal campus department, institute, or office. Requires an official @kld.edu.ph email address.</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label class="card-paper p-3 d-flex align-items-start gap-3 h-100 cursor-pointer border border-line radio-box-label" for="type_approved_partner">
+                                            <input class="form-check-input mt-1 flex-shrink-0" type="radio" name="employer_type" id="type_approved_partner" value="approved_partner" onchange="toggleEmployerType('approved_partner')">
+                                            <div>
+                                                <strong class="d-block text-ink fs-6 mb-1">
+                                                    <i class="bi bi-building text-accent me-1"></i> Industry Partner
+                                                </strong>
+                                                <span class="small text-muted-custom">Accredited corporate partner, private entity, or NGO. Requires an external, non-institutional email.</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Fields Section -->
+                            <div class="row g-3">
+                                <!-- University Office Select & Custom Field -->
+                                <div class="col-12" id="block-univ-office">
+                                    <label class="form-label fw-bold text-ink" for="office_select">Campus Office / Institute / Department <span class="text-danger">*</span></label>
+                                    <select class="form-select mb-2" id="office_select" onchange="handleOfficeSelect(this)">
+                                        <option value="">-- Select Official KLD Office / Institute --</option>
+                                        <?php if (!empty($kld_offices)): ?>
+                                            <?php foreach ($kld_offices as $office): ?>
+                                                <option value="<?= htmlspecialchars($office) ?>"><?= htmlspecialchars($office) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                        <option value="__custom__">+ Enter Custom Office / Department Name...</option>
+                                    </select>
+                                    <div id="custom-office-wrapper" class="d-none">
+                                        <input type="text" id="office_input" class="form-control" placeholder="e.g. Office of Institutional Linkages" value="">
+                                    </div>
+                                </div>
+
+                                <!-- Industry Partner Company Name -->
+                                <div class="col-12 d-none" id="block-partner-company">
+                                    <label class="form-label fw-bold text-ink" for="partner_company_name">Company / Organization Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="partner_company_name" class="form-control" placeholder="e.g. Ayala Land Inc. / Accenture Philippines">
+                                </div>
+
+                                <!-- Representative Full Name -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold text-ink" for="rep_name">Representative Full Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input type="text" name="name" id="rep_name" class="form-control" placeholder="e.g. Dr. Maria Santos / John Doe" required>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Phone -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold text-ink" for="contact_phone">Contact Phone Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" name="phone" id="contact_phone" class="form-control" placeholder="09171234567 or +63 917 123 4567" required>
+                                    </div>
+                                </div>
+
+                                <!-- Login Email -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold text-ink" for="provision_email">
+                                        Official Login Email <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" name="email" id="provision_email" class="form-control" placeholder="office@kld.edu.ph" required oninput="validateProvisionEmailDomain()">
+                                    </div>
+                                    <div id="email-domain-hint" class="small mt-1 text-muted-custom">
+                                        Must be an official <strong class="text-success">@kld.edu.ph</strong> address.
+                                    </div>
+                                </div>
+
+                                <!-- Office Location / Business Address -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold text-ink" id="label-location" for="office_location">
+                                        Campus Building / Room Location
+                                    </label>
+                                    <input type="text" name="office_location" id="office_location" class="form-control" placeholder="e.g. Admin Bldg Room 204">
+                                </div>
+
+                                <!-- Accreditation / Reference Number -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold text-ink" id="label-accreditation" for="accreditation_number">
+                                        Memo / Reference No. <span class="small text-muted-custom fw-normal">(Optional)</span>
+                                    </label>
+                                    <input type="text" name="accreditation_number" id="accreditation_number" class="form-control" placeholder="Leave blank to auto-generate">
+                                </div>
+
+                                <!-- Business Permit File (Partner Only) -->
+                                <div class="col-12 d-none" id="block-permit-upload">
+                                    <label class="form-label fw-bold text-ink" for="permit_photo">
+                                        Business Permit / Certificate of Accreditation <span class="small text-muted-custom fw-normal">(Optional, PDF / PNG / JPG, Max 5MB)</span>
+                                    </label>
+                                    <input type="file" name="permit_photo" id="permit_photo" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
+                                </div>
+
+                                <!-- Temporary Password Section -->
+                                <div class="col-12">
+                                    <div class="bg-surface p-3 rounded-3 border border-line">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <label class="form-label fw-bold text-ink mb-0" for="temporary_password">
+                                                <i class="bi bi-key-fill text-accent me-1"></i> Temporary Password <span class="text-danger">*</span>
+                                            </label>
+                                            <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" onclick="regenerateProvisionPassword()">
+                                                <i class="bi bi-arrow-clockwise me-1"></i> Regenerate
+                                            </button>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="password" name="temporary_password" id="temporary_password" class="form-control font-monospace" required minlength="8">
+                                            <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('temporary_password', 'toggle-prov-pw')" aria-label="Toggle password visibility">
+                                                <i class="bi bi-eye" id="toggle-prov-pw"></i>
+                                            </button>
+                                        </div>
+                                        <div class="small text-muted-custom mt-2">
+                                            <i class="bi bi-shield-lock me-1"></i> The employer account will be placed under the <strong>Temporary Password Gate</strong> and prompted to replace this with a personal password upon first sign-in.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer bg-cream border-top border-line py-3 px-4">
+                            <button type="button" class="btn-pill-outline" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i> Provision &amp; Verify Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div><!-- /#user-modals-container -->
 
         
 <script src="<?= $base_url ?>assets/js/roblox-search.js?v=<?= time() ?>"></script>
@@ -1192,5 +1419,130 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function generateStrongTempPassword() {
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
+    return "KldHire@" + randomDigits + "!";
+}
+
+function regenerateProvisionPassword() {
+    const input = document.getElementById("temporary_password");
+    if (input) {
+        input.value = generateStrongTempPassword();
+    }
+}
+
+function copyProvisionedCredentials(email, password, btnElement) {
+    const text = "Email: " + email + "\nTemporary Password: " + password;
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = btnElement.innerHTML;
+        btnElement.innerHTML = '<i class="bi bi-check2 text-success me-1"></i> Copied!';
+        setTimeout(() => {
+            btnElement.innerHTML = orig;
+        }, 2000);
+    }).catch(() => {
+        prompt("Copy credentials:", text);
+    });
+}
+
+function toggleEmployerType(type) {
+    const isPartner = type === "approved_partner";
+    const blockOffice = document.getElementById("block-univ-office");
+    const blockPartner = document.getElementById("block-partner-company");
+    const blockPermit = document.getElementById("block-permit-upload");
+    const emailInput = document.getElementById("provision_email");
+    const locationInput = document.getElementById("office_location");
+    const locationLabel = document.getElementById("label-location");
+    const accreditationInput = document.getElementById("accreditation_number");
+    const accreditationLabel = document.getElementById("label-accreditation");
+
+    if (isPartner) {
+        if (blockOffice) blockOffice.classList.add("d-none");
+        if (blockPartner) blockPartner.classList.remove("d-none");
+        if (blockPermit) blockPermit.classList.remove("d-none");
+        if (emailInput) emailInput.placeholder = "contact@partnercompany.com";
+        if (locationLabel) locationLabel.innerText = "Commercial Business Address";
+        if (locationInput) locationInput.placeholder = "e.g. 12th Floor Ayala Tower, Makati City";
+        if (accreditationLabel) accreditationLabel.innerHTML = 'MOA / SEC Registration No. <span class="small text-muted-custom fw-normal">(Optional)</span>';
+        if (accreditationInput) accreditationInput.placeholder = "Leave blank for KLD-MOA-YYYY-####";
+    } else {
+        if (blockOffice) blockOffice.classList.remove("d-none");
+        if (blockPartner) blockPartner.classList.add("d-none");
+        if (blockPermit) blockPermit.classList.add("d-none");
+        if (emailInput) emailInput.placeholder = "office@kld.edu.ph";
+        if (locationLabel) locationLabel.innerText = "Campus Building / Room Location";
+        if (locationInput) locationInput.placeholder = "e.g. Admin Bldg Room 204";
+        if (accreditationLabel) accreditationLabel.innerHTML = 'Memo / Reference No. <span class="small text-muted-custom fw-normal">(Optional)</span>';
+        if (accreditationInput) accreditationInput.placeholder = "Leave blank for KLD-OFF-YYYY-####";
+    }
+    validateProvisionEmailDomain();
+}
+
+function handleOfficeSelect(selectEl) {
+    const wrapper = document.getElementById("custom-office-wrapper");
+    const customInput = document.getElementById("office_input");
+    if (!wrapper || !customInput) return;
+    if (selectEl.value === "__custom__") {
+        wrapper.classList.remove("d-none");
+        customInput.focus();
+    } else {
+        wrapper.classList.add("d-none");
+        customInput.value = "";
+    }
+}
+
+function validateProvisionEmailDomain() {
+    const emailInput = document.getElementById("provision_email");
+    const hint = document.getElementById("email-domain-hint");
+    if (!emailInput || !hint) return;
+    const isPartner = document.getElementById("type_approved_partner") && document.getElementById("type_approved_partner").checked;
+    const email = emailInput.value.trim().toLowerCase();
+
+    if (isPartner) {
+        if (/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/.test(email)) {
+            hint.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>External partners cannot use an @kld.edu.ph institutional domain.</span>';
+        } else if (email.includes("@") && email.includes(".")) {
+            hint.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Valid external company domain.</span>';
+        } else {
+            hint.innerHTML = '<span class="text-muted-custom">Must be an external corporate/personal email (cannot end in @kld.edu.ph).</span>';
+        }
+    } else {
+        if (/@kld\.edu\.ph$/.test(email)) {
+            hint.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Official KLD institutional email detected.</span>';
+        } else if (email !== "") {
+            hint.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Must end in official <strong>@kld.edu.ph</strong> domain.</span>';
+        } else {
+            hint.innerHTML = '<span class="text-muted-custom">Must be an official <strong class="text-success">@kld.edu.ph</strong> address.</span>';
+        }
+    }
+}
+
+function syncProvisionOrgName() {
+    const isPartner = document.getElementById("type_approved_partner") && document.getElementById("type_approved_partner").checked;
+    const finalInput = document.getElementById("final_organization_name");
+    if (!finalInput) return true;
+
+    if (isPartner) {
+        const partnerNameEl = document.getElementById("partner_company_name");
+        finalInput.value = partnerNameEl ? partnerNameEl.value.trim() : "";
+    } else {
+        const select = document.getElementById("office_select");
+        if (select && select.value === "__custom__") {
+            const customInput = document.getElementById("office_input");
+            finalInput.value = customInput ? customInput.value.trim() : "";
+        } else if (select) {
+            finalInput.value = select.value.trim();
+        }
+    }
+    return true;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const pwInput = document.getElementById("temporary_password");
+    if (pwInput && !pwInput.value) {
+        pwInput.value = generateStrongTempPassword();
+    }
+});
+
 </script>
 

@@ -363,6 +363,32 @@ function delete_job(int|string $id): bool {
     return archive_job($id);
 }
 
+/**
+ * Hydrate academic credential metadata onto an application record.
+ */
+function hydrate_application_credentials(?array $row): ?array {
+    if (!$row) return null;
+    $row['registration_proof'] = $row['registration_proof'] ?? null;
+    $study_load = trim((string)($row['study_load_file'] ?? ''));
+    $reg_proof = trim((string)($row['registration_proof'] ?? ''));
+
+    if ($study_load !== '' && !preg_match('/^Study_Load_\d+\.pdf$/i', $study_load)) {
+        $row['credential_file'] = $study_load;
+    } elseif ($reg_proof !== '') {
+        $row['credential_file'] = $reg_proof;
+    } else {
+        $row['credential_file'] = $study_load ?: ('eCOR_' . ($row['student_id'] ?? 'Student') . '.pdf');
+    }
+
+    $student_email = strtolower(trim((string)($row['student_email'] ?? '')));
+    $is_kld_email = $student_email === '' || (bool)preg_match('/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i', $student_email);
+    $requires_diploma = (($row['year_level'] ?? '') === 'Alumnus / Graduated') || !$is_kld_email;
+    $row['credential_type'] = $requires_diploma ? 'diploma' : 'cor';
+    $row['credential_label'] = $requires_diploma ? 'Official KLD Diploma' : 'Official Certificate of Registration (e-COR)';
+
+    return $row;
+}
+
 function get_applications(int|string|null $student_id = null, int|string|null $job_id = null, ?string $department = null, int|string|null $employer_id = null): array {
     try {
         $pdo = get_db_connection();
@@ -386,7 +412,8 @@ function get_applications(int|string|null $student_id = null, int|string|null $j
                 sp.`year_level`,
                 sp.`sex`,
                 sp.`birthdate`,
-                sp.`age`
+                sp.`age`,
+                sp.`registration_proof` AS `registration_proof`
             FROM `applications` a
             INNER JOIN `jobs` j ON a.`job_id` = j.`id`
             INNER JOIN `users` u ON a.`student_id` = u.`id`
@@ -417,7 +444,8 @@ function get_applications(int|string|null $student_id = null, int|string|null $j
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
 
-        return array_map('hydrate_application', $rows);
+        $hydrated = array_map('hydrate_application', $rows);
+        return array_map('hydrate_application_credentials', $hydrated);
     } catch (Exception $e) {
         error_log("get_applications error: " . $e->getMessage());
         return [];
@@ -448,7 +476,8 @@ function get_application_by_id(mixed $id): ?array {
                 sp.`year_level`,
                 sp.`sex`,
                 sp.`birthdate`,
-                sp.`age`
+                sp.`age`,
+                sp.`registration_proof` AS `registration_proof`
             FROM `applications` a
             INNER JOIN `jobs` j ON a.`job_id` = j.`id`
             INNER JOIN `users` u ON a.`student_id` = u.`id`
@@ -457,7 +486,11 @@ function get_application_by_id(mixed $id): ?array {
         ");
         $stmt->execute([':id' => (int)$id]);
         $row = $stmt->fetch();
-        return $row ? hydrate_application($row) : null;
+        if (!$row) {
+            return null;
+        }
+        $hydrated = hydrate_application($row);
+        return $hydrated ? hydrate_application_credentials($hydrated) : null;
     } catch (Exception $e) {
         error_log("get_application_by_id error: " . $e->getMessage());
         return null;
@@ -490,7 +523,13 @@ function create_application(array $data): array {
 
         $availability = !empty($data['availability']) ? (is_array($data['availability']) ? $data['availability'] : explode(',', $data['availability'])) : ['Flexible Weekdays'];
         $resume_file = !empty($data['resume_file']) ? htmlspecialchars($data['resume_file']) : ('Student_Resume_' . $student_id . '.pdf');
-        $study_load = 'Study_Load_' . $student_id . '.pdf';
+        if (!empty($data['study_load_file'])) {
+            $study_load = (string)$data['study_load_file'];
+        } elseif (!empty($user['registration_proof'])) {
+            $study_load = (string)$user['registration_proof'];
+        } else {
+            $study_load = 'Study_Load_' . $student_id . '.pdf';
+        }
 
         $pdo->beginTransaction();
 
@@ -511,7 +550,7 @@ function create_application(array $data): array {
                     `resume_file` = :resume_file,
                     `study_load_file` = :study_load_file,
                     `status` = 'pending',
-                    `supervisor_notes` = 'Application re-submitted and queued for evaluation.',
+                    `supervisor_notes` = NULL,
                     `updated_at` = NOW()
                 WHERE `id` = :id
             ");
@@ -532,7 +571,7 @@ function create_application(array $data): array {
                 ) VALUES (
                     :job_id, :student_id, :cover_letter, :availability,
                     :resume_file, :study_load_file, 'pending',
-                    'Application submitted and queued for evaluation.', NOW(), NOW()
+                    NULL, NOW(), NOW()
                 )
             ");
             $stmt->execute([

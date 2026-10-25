@@ -136,6 +136,17 @@ require_once __DIR__ . '/../header.php';
                                 </div>
 
                                 <!-- Conditional Notice Callouts -->
+                                <?php if (in_array(strtolower($app['status']), ['under_review', 'under review', 'under evaluation']) && !empty($app['supervisor_notes'])): ?>
+                                    <div class="card-paper bg-cream p-3 mb-3 border border-line">
+                                        <div class="d-flex align-items-center gap-2 fw-bold text-ink mb-1">
+                                            <i class="bi bi-hourglass-split text-accent fs-5"></i>
+                                            <span>Application Under Evaluation</span>
+                                        </div>
+                                        <p class="small text-muted-custom mb-0">
+                                            <strong>Department Remarks:</strong> <?= htmlspecialchars($app['supervisor_notes']) ?>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if (in_array(strtolower($app['status']), ['interview_scheduled', 'interview scheduled']) && !empty($app['interview_date'])): ?>
                                     <div class="card-paper bg-cream p-3 mb-3 border border-line">
                                         <div class="d-flex align-items-center gap-2 fw-bold text-ink mb-1">
@@ -145,6 +156,9 @@ require_once __DIR__ . '/../header.php';
                                         <div class="small text-ink">
                                             <strong>Date & Time:</strong> <?= htmlspecialchars(format_display_date($app['interview_date'])) ?> at <?= htmlspecialchars($app['interview_time']) ?><br>
                                             <strong>Interview Venue / Room:</strong> <?= htmlspecialchars($app['interview_venue']) ?><br>
+                                            <?php if (!empty($app['supervisor_notes'])): ?>
+                                                <strong>Supervisor Instructions:</strong> <?= htmlspecialchars($app['supervisor_notes']) ?><br>
+                                            <?php endif; ?>
                                             <span class="text-muted-custom"><em>Please bring your valid student ID card and latest study load.</em></span>
                                         </div>
                                     </div>
@@ -158,6 +172,9 @@ require_once __DIR__ . '/../header.php';
                                         </div>
                                         <p class="small text-muted-custom mb-0">
                                             Please report to <strong><?= htmlspecialchars($app['department']) ?></strong> to sign your student assistantship agreement and receive your Daily Time Record (DTR) orientation.
+                                            <?php if (!empty($app['supervisor_notes'])): ?>
+                                                <br><strong class="text-ink">Supervisor Note:</strong> <span class="text-ink"><?= htmlspecialchars($app['supervisor_notes']) ?></span>
+                                            <?php endif; ?>
                                         </p>
                                     </div>
                                 <?php endif; ?>

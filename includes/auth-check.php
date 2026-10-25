@@ -163,7 +163,16 @@ class SessionGuard {
             }
 
             $sanitized = self::sanitizeReturnTo($returnTo);
-            $loginUrl = $prefix . 'login.php' . ($sanitized ? '?next=' . urlencode($sanitized) : '');
+            $isStaffRoute = (strpos($scriptName, '/admin/') !== false || strpos($scriptName, '/employer/') !== false);
+            if (!$isStaffRoute && !empty($allowedRoles)) {
+                $hasStudent = in_array('student', $allowedRoles, true);
+                $hasStaff = in_array('admin', $allowedRoles, true) || in_array('employer', $allowedRoles, true);
+                if ($hasStaff && !$hasStudent) {
+                    $isStaffRoute = true;
+                }
+            }
+            $targetLogin = $isStaffRoute ? 'portal-login.php' : 'login.php';
+            $loginUrl = $prefix . $targetLogin . ($sanitized ? '?next=' . urlencode($sanitized) : '');
             self::redirect($loginUrl, 'unauthenticated');
             return [];
         }
@@ -182,6 +191,7 @@ class SessionGuard {
             $_SESSION['user']['status'] = $freshUser['status'] ?? 'active';
             $_SESSION['user']['verification_status'] = $freshUser['verification_status'] ?? 'verified';
             $_SESSION['user']['is_email_verified'] = (int)($freshUser['is_email_verified'] ?? 1);
+            $_SESSION['user']['must_change_password'] = (int)($freshUser['must_change_password'] ?? 0);
             $_SESSION['user']['_last_db_sync'] = time();
             $user = self::user();
         }
@@ -228,6 +238,16 @@ class SessionGuard {
             unset($_SESSION['user']);
             self::redirect($prefix . 'pending-approval.php', $verStatus);
             return [];
+        }
+
+        // Temporary Password Gate: provisioned users must establish a personal password
+        if (!empty($user['must_change_password'])) {
+            $currentScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
+            if ($currentScript !== 'settings.php' && $currentScript !== 'logout.php') {
+                set_flash('warning', 'Security Requirement: Please replace your temporary password with a new personal password before accessing the portal.');
+                self::redirect($prefix . 'settings.php?setup_password=1#password-section', 'must_change_password');
+                return [];
+            }
         }
 
         // Role authorization check

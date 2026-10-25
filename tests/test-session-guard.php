@@ -51,6 +51,18 @@ assert_test($intercepted !== null, 'Redirect was intercepted without process exi
 assert_test(strpos($intercepted['url'] ?? '', 'login.php?next=student%2Fapply.php%3Fid%3D42') !== false, 'Captured deep link in ?next= param');
 assert_test(($intercepted['reason'] ?? '') === 'unauthenticated', 'Reason is unauthenticated');
 
+// 3b. Unauthenticated employer & admin routes redirect to portal-login.php
+$intercepted = null;
+$_SERVER['SCRIPT_NAME'] = '/employer/create-job.php';
+$_SERVER['QUERY_STRING'] = '';
+$resultEmp = SessionGuard::protect(['employer', 'admin']);
+assert_test(empty($resultEmp) && strpos($intercepted['url'] ?? '', 'portal-login.php?next=employer%2Fcreate-job.php') !== false, 'Unauthenticated employer route redirects to portal-login.php');
+
+$intercepted = null;
+$_SERVER['SCRIPT_NAME'] = '/admin/users.php';
+$resultAdm = SessionGuard::protect(['admin']);
+assert_test(empty($resultAdm) && strpos($intercepted['url'] ?? '', 'portal-login.php?next=admin%2Fusers.php') !== false, 'Unauthenticated admin route redirects to portal-login.php');
+
 // 4. Role authorization gating
 $_SESSION['user'] = [
     'id' => 999999,
@@ -75,6 +87,15 @@ assert_test(!empty($result) && $result['id'] === 999999, 'Authorized role passes
 assert_test($intercepted === null, 'No redirect triggered for authorized user');
 assert_test(SessionGuard::hasRole('employer') === true, 'hasRole detects employer');
 assert_test(SessionGuard::hasRole('student') === false, 'hasRole denies student');
+
+// 5b. Temporary Password Gate (must_change_password = 1)
+$_SESSION['user']['must_change_password'] = 1;
+$_SERVER['SCRIPT_NAME'] = '/employer/dashboard.php';
+$intercepted = null;
+$resultGate = SessionGuard::protect(['employer']);
+assert_test(empty($resultGate) && ($intercepted['reason'] ?? '') === 'must_change_password', 'Temporary Password Gate intercepts protected route');
+assert_test(strpos($intercepted['url'] ?? '', 'settings.php?setup_password=1#password-section') !== false, 'Temporary Password Gate redirects to settings.php#password-section');
+$_SESSION['user']['must_change_password'] = 0;
 
 // 6. Verification Quarantine detection
 $_SESSION['user']['is_email_verified'] = 0;
