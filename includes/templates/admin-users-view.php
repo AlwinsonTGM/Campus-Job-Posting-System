@@ -798,6 +798,7 @@ require_once __DIR__ . '/../header.php';
                             </div>
                         <?php endif; ?>
 
+                        <?php if ($ver_status !== 'rejected'): ?>
                         <div class="collapse mt-3" id="rejectPanelEmp<?= $u['id'] ?>">
                             <div class="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
                                 <form action="users.php" method="POST">
@@ -817,6 +818,7 @@ require_once __DIR__ . '/../header.php';
                                 </form>
                             </div>
                         </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="modal-footer bg-cream border-top border-line py-3 px-4 d-flex justify-content-between">
@@ -831,9 +833,11 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <?php if ($ver_status !== 'verified'): ?>
+                                <?php if ($ver_status !== 'rejected'): ?>
                                 <button type="button" class="btn-pill-outline btn-pill-sm text-danger border-danger" data-bs-toggle="collapse" data-bs-target="#rejectPanelEmp<?= $u['id'] ?>" aria-expanded="false" aria-controls="rejectPanelEmp<?= $u['id'] ?>">
                                     <i class="bi bi-x-circle"></i> Reject / Request Revision
                                 </button>
+                                <?php endif; ?>
                                 <form action="users.php" method="POST" class="d-inline">
                                     <input type="hidden" name="action" value="approve_employer">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">
@@ -994,6 +998,7 @@ require_once __DIR__ . '/../header.php';
                             </div>
                         </div>
 
+                        <?php if ($ver_status !== 'rejected'): ?>
                         <div class="collapse mt-3" id="rejectPanelStudent<?= $u['id'] ?>">
                             <div class="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
                                 <form action="users.php" method="POST">
@@ -1013,6 +1018,7 @@ require_once __DIR__ . '/../header.php';
                                 </form>
                             </div>
                         </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="modal-footer bg-cream border-top border-line py-3 px-4 d-flex justify-content-between">
@@ -1027,9 +1033,11 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <?php if ($ver_status !== 'verified'): ?>
+                                <?php if ($ver_status !== 'rejected'): ?>
                                 <button type="button" class="btn-pill-outline btn-pill-sm text-danger border-danger" data-bs-toggle="collapse" data-bs-target="#rejectPanelStudent<?= $u['id'] ?>" aria-expanded="false" aria-controls="rejectPanelStudent<?= $u['id'] ?>">
                                     <i class="bi bi-x-circle"></i> Reject / Request Revision
                                 </button>
+                                <?php endif; ?>
                                 <form action="users.php" method="POST" class="d-inline">
                                     <input type="hidden" name="action" value="approve_user">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">
