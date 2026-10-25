@@ -499,6 +499,11 @@ function update_user_verification(int|string $id, string $status, string $notes 
         $id = (int)$id;
         $role = $target_user['role'] ?? 'student';
 
+        // A cleared decision must not leave an empty-string reason behind:
+        // pending_approval.php and settings.php both use !empty() to decide
+        // whether to render the administrator's feedback panel.
+        $notes_value = trim($notes) !== '' ? trim($notes) : null;
+
         // 1. Update subtype profile table
         if ($role === 'student') {
             $stmt = $pdo->prepare("
@@ -508,7 +513,7 @@ function update_user_verification(int|string $id, string $status, string $notes 
             ");
             $stmt->execute([
                 ':status' => $status,
-                ':notes'  => $notes,
+                ':notes'  => $notes_value,
                 ':id'     => $id
             ]);
         } else {
@@ -519,7 +524,7 @@ function update_user_verification(int|string $id, string $status, string $notes 
             ");
             $stmt->execute([
                 ':status' => $status,
-                ':notes'  => $notes,
+                ':notes'  => $notes_value,
                 ':id'     => $id
             ]);
         }
@@ -583,22 +588,51 @@ function update_user_verification(int|string $id, string $status, string $notes 
                     'verification',
                     'Verification Revoked',
                     $msg,
-                    'settings.php',
+                    'pending-approval.php',
                     'bi-arrow-counterclockwise',
                     'danger'
                 );
+
+                if (!empty($target_user['email'])) {
+                    require_once dirname(__DIR__) . '/mailer.php';
+                    if (function_exists('send_account_rejected_email')) {
+                        send_account_rejected_email(
+                            $target_user['email'],
+                            $target_user['name'] ?? 'User',
+                            $target_user['role'] ?? 'student',
+                            $notes,
+                            'revoked'
+                        );
+                    }
+                }
             } elseif ($status === 'rejected') {
                 $reason_snippet = !empty($notes) ? " Note: {$notes}" : "";
-                $msg = "Your verification request requires attention or was declined.{$reason_snippet} Please check your profile credentials.";
+                $msg = "Your registration was not approved.{$reason_snippet} Please review the administrator's feedback and resubmit your credentials through the account review page.";
                 create_notification(
                     $id,
                     'verification',
-                    'Verification Status Update',
+                    'Registration Not Approved - Action Required',
                     $msg,
-                    'settings.php',
-                    'bi-exclamation-triangle-fill',
+                    'pending-approval.php',
+                    'bi-exclamation-octagon-fill',
                     'danger'
                 );
+
+                // Email the decision so the applicant is informed even if they
+                // never sign in again. send_campus_email() honours the QA mail
+                // gate, so this is a no-op on test servers.
+                if (!empty($target_user['email'])) {
+                    require_once dirname(__DIR__) . '/mailer.php';
+                    if (function_exists('send_account_rejected_email')) {
+                        send_account_rejected_email(
+                            $target_user['email'],
+                            $target_user['name'] ?? 'User',
+                            $target_user['role'] ?? 'student',
+                            $notes,
+                            'rejected'
+                        );
+                    }
+                }
             }
         }
 
@@ -1420,7 +1454,22 @@ function resubmit_employer_accreditation(int $user_id, array $data, ?string $per
         $stmt_ep = $pdo->prepare("UPDATE `employer_profiles` SET " . implode(', ', $emp_updates) . " WHERE `user_id` = :id");
         $stmt_ep->execute($emp_params);
 
-        // 3. Notify administrators of resubmitted accreditation
+        // 3. Synchronise the authoritative status on the users supertype row.
+        // Without this, get_user_base_query()'s COALESCE would keep returning
+        // the stale 'rejected' value and the applicant would remain quarantined
+        // even after a successful resubmission.
+        $stmt_verify = $pdo->prepare("
+            UPDATE `users`
+            SET `verification_status` = 'pending_approval',
+                `is_revoked` = 0,
+                `revoked_at` = NULL,
+                `revocation_reason` = NULL,
+                `updated_at` = NOW()
+            WHERE `id` = :id
+        ");
+        $stmt_verify->execute([':id' => $user_id]);
+
+        // 4. Notify administrators of resubmitted accreditation
         $stmt_admins = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'");
         $admin_ids = $stmt_admins->fetchAll(PDO::FETCH_COLUMN);
         $display_org = !empty($req_org) ? $req_org : ($emp['organization_name'] ?? 'Employer');
@@ -1446,6 +1495,95 @@ function resubmit_employer_accreditation(int $user_id, array $data, ?string $per
         }
         error_log("resubmit_employer_accreditation error: " . $e->getMessage());
         return ['success' => false, 'message' => 'Failed to submit accreditation: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Resubmit a rejected student registration for administrative review.
+ *
+ * The student is quarantined out of the portal, so this is their only path
+ * back into the verification queue. It intentionally does not allow edits to
+ * locked identity fields (student number, name, email); those are handled by
+ * the Registrar profile-change request workflow once the account is active.
+ *
+ * @param int         $user_id    Student user id.
+ * @param string|null $proof_path Newly stored COR / Student ID path, or null.
+ * @param string      $note       Optional message to the reviewing administrator.
+ * @return array{success: bool, message: string}
+ */
+function resubmit_student_registration(int $user_id, ?string $proof_path = null, string $note = ''): array {
+    try {
+        $pdo = get_db_connection();
+        $pdo->beginTransaction();
+
+        $student = get_user_by_id($user_id);
+        if (!$student || ($student['role'] ?? '') !== 'student') {
+            $pdo->rollBack();
+            return ['success' => false, 'message' => 'Invalid student account.'];
+        }
+
+        $stmt_doc = $pdo->prepare("SELECT `registration_proof` FROM `student_profiles` WHERE `user_id` = :id LIMIT 1");
+        $stmt_doc->execute([':id' => $user_id]);
+        $existing_proof = (string)($stmt_doc->fetchColumn() ?: '');
+
+        if ($existing_proof === '' && empty($proof_path)) {
+            $pdo->rollBack();
+            return [
+                'success' => false,
+                'message' => 'Please attach an updated Certificate of Registration (COR) or Student ID before resubmitting.'
+            ];
+        }
+
+        $sp_updates = [
+            "`verification_status` = 'pending_approval'",
+            "`rejection_reason` = NULL",
+            "`updated_at` = NOW()"
+        ];
+        $sp_params = [':id' => $user_id];
+
+        if (!empty($proof_path)) {
+            $sp_updates[] = "`registration_proof` = :proof";
+            $sp_params[':proof'] = $proof_path;
+        }
+
+        $stmt_sp = $pdo->prepare("UPDATE `student_profiles` SET " . implode(', ', $sp_updates) . " WHERE `user_id` = :id");
+        $stmt_sp->execute($sp_params);
+
+        // Keep the users supertype row in lockstep with the profile table.
+        $stmt_verify = $pdo->prepare("
+            UPDATE `users`
+            SET `verification_status` = 'pending_approval',
+                `is_revoked` = 0,
+                `revoked_at` = NULL,
+                `revocation_reason` = NULL,
+                `updated_at` = NOW()
+            WHERE `id` = :id
+        ");
+        $stmt_verify->execute([':id' => $user_id]);
+
+        $display_name = $student['name'] ?? 'Student';
+        $note_text = trim($note) !== '' ? " Note: " . trim($note) : '';
+        $admin_ids = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'")->fetchAll(PDO::FETCH_COLUMN);
+        foreach ($admin_ids as $adm_id) {
+            create_notification(
+                (int)$adm_id,
+                'system',
+                "Student Registration Resubmitted: {$display_name}",
+                "Student '{$display_name}' resubmitted updated registration proof for verification.{$note_text}",
+                "admin/users.php?ver_status=pending_approval#filter-results-container",
+                "bi-patch-check",
+                "warning"
+            );
+        }
+
+        $pdo->commit();
+        return ['success' => true, 'message' => 'Your updated registration proof has been submitted for administrative review.'];
+    } catch (Throwable $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log("resubmit_student_registration error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to submit registration proof: ' . $e->getMessage()];
     }
 }
 

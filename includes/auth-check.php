@@ -196,13 +196,37 @@ class SessionGuard {
         if (($user['verification_status'] ?? 'pending_approval') === 'pending_approval' && ($user['role'] ?? '') !== 'admin') {
             $prefix = self::getDirectoryPrefix();
             $_SESSION['pending_approval_notice'] = [
-                'user_id' => (int)($user['id'] ?? 0),
-                'name'    => $user['name'] ?? 'User',
-                'email'   => $user['email'] ?? '',
-                'role'    => $user['role'] ?? 'student',
+                'user_id'             => (int)($user['id'] ?? 0),
+                'name'                => $user['name'] ?? 'User',
+                'email'               => $user['email'] ?? '',
+                'role'                => $user['role'] ?? 'student',
+                'verification_status' => 'pending_approval',
+                'rejection_reason'    => $user['rejection_reason'] ?? '',
             ];
             unset($_SESSION['user']);
             self::redirect($prefix . 'pending-approval.php', 'pending_approval');
+            return [];
+        }
+
+
+        // Rejected / Revoked Quarantine: the administrator has declined this
+        // registration or revoked a previously granted verification. Neither
+        // state is allowed to reach any protected page. They are sent to the
+        // review page so they can read the feedback (and, when rejected, ask
+        // for a revision by resubmitting their documents).
+        $verStatus = $user['verification_status'] ?? '';
+        if (in_array($verStatus, ['rejected', 'revoked'], true) && ($user['role'] ?? '') !== 'admin') {
+            $prefix = self::getDirectoryPrefix();
+            $_SESSION['pending_approval_notice'] = [
+                'user_id'             => (int)($user['id'] ?? 0),
+                'name'                => $user['name'] ?? 'User',
+                'email'               => $user['email'] ?? '',
+                'role'                => $user['role'] ?? 'student',
+                'verification_status' => $verStatus,
+                'rejection_reason'    => $user['rejection_reason'] ?? '',
+            ];
+            unset($_SESSION['user']);
+            self::redirect($prefix . 'pending-approval.php', $verStatus);
             return [];
         }
 

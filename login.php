@@ -67,19 +67,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($res['success']) {
             unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
             $u = $res['user'];
-            // Block portal access if account is pending admin approval
-            if (($u['verification_status'] ?? 'pending_approval') === 'pending_approval' && ($u['role'] ?? '') !== 'admin') {
+            $role = $u['role'] ?? 'student';
+            $ver_status = $u['verification_status'] ?? 'pending_approval';
+
+            // Block portal access for every non-verified, non-admin state.
+            // Rejected/revoked users must be able to sign in ONLY to read the
+            // administrator's decision and (for rejections) resubmit documents.
+            if ($role !== 'admin' && in_array($ver_status, ['pending_approval', 'rejected', 'revoked'], true)) {
                 $_SESSION['pending_approval_notice'] = [
-                    'user_id' => (int)($u['id'] ?? 0),
-                    'name'    => $u['name'] ?? 'User',
-                    'email'   => $u['email'] ?? '',
-                    'role'    => $u['role'] ?? 'student',
+                    'user_id'             => (int)($u['id'] ?? 0),
+                    'name'                => $u['name'] ?? 'User',
+                    'email'               => $u['email'] ?? '',
+                    'role'                => $role,
+                    'verification_status' => $ver_status,
+                    'rejection_reason'    => $u['rejection_reason'] ?? '',
                 ];
                 unset($_SESSION['user']);
-                set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
+
+                if ($ver_status === 'rejected') {
+                    set_flash('danger', 'Your registration was not approved. Review the administrator\'s feedback below and resubmit your credentials.');
+                } elseif ($ver_status === 'revoked') {
+                    set_flash('danger', 'Your account verification has been revoked by institutional administration. Please contact the Career Services Office.');
+                } else {
+                    set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
+                }
+
                 header('Location: pending-approval.php');
                 exit;
             }
+
             set_flash('success', "Welcome, {$u['name']}!");
             if ($safe_next !== '') {
                 header('Location: ' . $safe_next);

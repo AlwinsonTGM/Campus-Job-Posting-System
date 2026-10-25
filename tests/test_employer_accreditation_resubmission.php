@@ -15,7 +15,7 @@ $test_email = 'test_accred_employer@partner.kld.edu.ph';
 $pdo->prepare("DELETE FROM users WHERE email = :email")->execute([':email' => $test_email]);
 
 $pass_hash = password_hash('SecretPassword123!', PASSWORD_BCRYPT);
-$stmt = $pdo->prepare("INSERT INTO users (email, password, role, name, phone, status, is_email_verified, created_at) VALUES (:email, :pass, 'employer', 'Original Representative', '09171234567', 'active', 1, NOW())");
+$stmt = $pdo->prepare("INSERT INTO users (email, password, role, name, phone, status, is_email_verified, verification_status, created_at) VALUES (:email, :pass, 'employer', 'Original Representative', '09171234567', 'active', 1, 'rejected', NOW())");
 $stmt->execute([':email' => $test_email, ':pass' => $pass_hash]);
 $emp_id = (int)$pdo->lastInsertId();
 

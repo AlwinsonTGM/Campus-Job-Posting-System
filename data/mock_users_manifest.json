@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-10-22 19:06:48",
-    "total_users": 1020,
-    "students_count": 854,
-    "employers_count": 165,
+    "generated_at": "2026-10-25 09:28:54",
+    "total_users": 1000,
+    "students_count": 839,
+    "employers_count": 160,
     "admins_count": 1,
     "jobs_count": 160,
-    "applications_count": 1720,
+    "applications_count": 1708,
     "notifications_count": 122,
     "sample_admins": [
         {
@@ -48,7 +48,7 @@
             "student_id": "2026-1-000001",
             "email": "maria.ramos.2026.164@kld.edu.ph",
             "password": "Student2026!",
-            "course": "BS Life Sciences (BSLS)",
+            "course": "BS Information Systems (BSIS)",
             "year": "1st Year",
             "gwa": "1.10",
             "status": "Star Scholar"
@@ -58,7 +58,7 @@
             "student_id": "2026-1-000002",
             "email": "mark.lopez.2026.165@kld.edu.ph",
             "password": "Student2026!",
-            "course": "BS Computer Science (BSCS)",
+            "course": "BS Psychology (BSP)",
             "year": "1st Year",
             "gwa": "1.12",
             "status": "Star Scholar"
@@ -68,7 +68,7 @@
             "student_id": "2026-1-000003",
             "email": "nicole.villanueva.2026.166@kld.edu.ph",
             "password": "Student2026!",
-            "course": "BS Midwifery (BSM)",
+            "course": "BS Information Systems (BSIS)",
             "year": "1st Year",
             "gwa": "1.13",
             "status": "Star Scholar"
@@ -78,7 +78,7 @@
             "student_id": "2026-1-000004",
             "email": "christian.corpuz.2026.167@kld.edu.ph",
             "password": "Student2026!",
-            "course": "BS Nursing (BSN)",
+            "course": "BS Computer Science (BSCS)",
             "year": "1st Year",
             "gwa": "1.15",
             "status": "Star Scholar"
@@ -88,7 +88,7 @@
             "student_id": "2026-1-000005",
             "email": "kimberly.valdez.2026.168@kld.edu.ph",
             "password": "Student2026!",
-            "course": "BS Information Systems (BSIS)",
+            "course": "BS Social Work (BSSW)",
             "year": "1st Year",
             "gwa": "1.16",
             "status": "Star Scholar"

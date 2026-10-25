@@ -201,3 +201,37 @@ function send_account_approved_email(string $email, string $name, string $role =
 
     return send_campus_email($email, $name, $subject, $body);
 }
+
+/**
+ * Notify an applicant that their registration was rejected or their
+ * verification was revoked, including the administrator's feedback.
+ *
+ * @param string $status 'rejected' (revision possible) or 'revoked' (contact admin).
+ */
+function send_account_rejected_email(string $email, string $name, string $role = 'student', string $reason = '', string $status = 'rejected'): bool {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    $site = defined('SITE_NAME') ? SITE_NAME : 'KLD Campus Job Portal';
+    $is_revoked = ($status === 'revoked');
+    $subject = ($is_revoked ? 'Account Verification Revoked' : 'Action Required: Registration Not Approved') . ' - ' . $site;
+
+    // Rejected applicants are still allowed to sign in to read the decision and
+    // resubmit, so the CTA always points at the sign-in gateway.
+    $action_url = get_app_base_url() . '/login.php';
+
+    $body = render_email_template('account-rejected-email', [
+        'recipient_name' => $name,
+        'role'           => $role,
+        'reason'         => trim($reason),
+        'status'         => $is_revoked ? 'revoked' : 'rejected',
+        'action_url'     => $action_url
+    ]);
+
+    if ($body === '') {
+        return false;
+    }
+
+    return send_campus_email($email, $name, $subject, $body);
+}
