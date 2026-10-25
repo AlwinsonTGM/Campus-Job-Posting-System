@@ -51,9 +51,16 @@ test.describe('Admin Workflow & Management Suite', () => {
     expect(await userRows.count()).toBeGreaterThan(0);
 
     // Filter by Student Role
-    const roleSelect = page.locator('#role-select, select[name="role"]');
+    const roleSelect = page.locator('select[name="role"]');
     if (await roleSelect.isVisible()) {
       await roleSelect.selectOption('student');
+      await page.waitForTimeout(500);
+      await expect(page.locator('body')).toContainText(/Student/i);
+    } else {
+      // Use Roblox search category dropdown
+      const searchInput = page.locator('#search-user');
+      await searchInput.focus();
+      await page.locator('#robloxSearchDropdown .roblox-search-item:has-text("Students")').click();
       await page.waitForTimeout(500);
       await expect(page.locator('body')).toContainText(/Student/i);
     }
@@ -61,6 +68,12 @@ test.describe('Admin Workflow & Management Suite', () => {
     // Filter by Employer Role
     if (await roleSelect.isVisible()) {
       await roleSelect.selectOption('employer');
+      await page.waitForTimeout(500);
+      await expect(page.locator('body')).toContainText(/Partner|Office|Employer/i);
+    } else {
+      const searchInput = page.locator('#search-user');
+      await searchInput.focus();
+      await page.locator('#robloxSearchDropdown .roblox-search-item:has-text("Employers")').click();
       await page.waitForTimeout(500);
       await expect(page.locator('body')).toContainText(/Partner|Office|Employer/i);
     }

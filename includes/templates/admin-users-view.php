@@ -174,7 +174,9 @@ require_once __DIR__ . '/../header.php';
 
                 <!-- Filter & Search Bar -->
                 <?php
-                $active_filters_count = (!empty($search) ? 1 : 0) + (!empty($role_filter) ? 1 : 0) + (!empty($emp_type_filter) ? 1 : 0) + (!empty($ver_filter) ? 1 : 0);
+                $sort_filter = $_GET['sort'] ?? 'newest';
+                $search_field = $_GET['search_field'] ?? null;
+                $active_filters_count = (!empty($search) ? 1 : 0) + (!empty($role_filter) ? 1 : 0) + (!empty($emp_type_filter) ? 1 : 0) + (!empty($ver_filter) ? 1 : 0) + (!empty($search_field) ? 1 : 0) + (($sort_filter !== 'newest' && !empty($sort_filter)) ? 1 : 0);
                 $has_active_filters = $active_filters_count > 0;
                 ?>
                 <div class="card-paper p-3 p-md-4 mb-4">
@@ -183,80 +185,90 @@ require_once __DIR__ . '/../header.php';
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom border-line" id="directoryFilterBadges">
                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                 <span class="fw-bold text-ink small text-uppercase d-inline-flex align-items-center gap-1" style="font-size: 11px; letter-spacing: 0.08em;">
-                                    <i class="bi bi-funnel-fill text-accent"></i> Directory Filters
+                                    <i class="bi bi-funnel-fill text-accent"></i> Directory Search & Filters
                                 </span>
-                                <?php if ($has_active_filters): ?>
-                                    <span class="badge bg-accent-soft text-ink border border-line rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 11px;">
-                                        <?= $active_filters_count ?> active filter<?= $active_filters_count > 1 ? 's' : '' ?>
-                                    </span>
-                                <?php endif; ?>
                             </div>
                             <?php if ($has_active_filters): ?>
                                 <a href="users.php" class="small text-muted-custom text-decoration-none d-inline-flex align-items-center gap-1 hover-ink fw-semibold" style="font-size: 11.5px;">
-                                    <i class="bi bi-arrow-counterclockwise"></i> Clear all filters
+                                    <i class="bi bi-arrow-counterclockwise text-accent"></i> Clear all filters
                                 </a>
                             <?php endif; ?>
                         </div>
 
-                        <!-- Row 1: Primary Search & Role -->
-                        <div class="row g-3 mb-3">
+                        <!-- Primary Search & Sort By -->
+                        <div class="row g-3">
                             <div class="col-12 col-lg-8">
                                 <label class="form-label" for="search-user">
-                                    <i class="bi bi-search text-muted-custom me-1"></i>Search User Directory
+                                    <i class="bi bi-search text-accent me-1"></i>Search User Directory
                                 </label>
-                                <div class="search-input-wrap">
-                                    <i class="bi bi-search text-muted-custom"></i>
-                                    <input type="text" name="q" id="search-user" class="form-control <?= !empty($search) ? 'filter-applied' : '' ?>" placeholder="Search name, email, MOA, student ID, department..." value="<?= htmlspecialchars($search ?? '') ?>">
+                                <div class="search-input-wrap roblox-search-container" id="robloxSearchWrap">
+                                    <i class="bi bi-search text-accent search-leading-icon"></i>
+                                    <input 
+                                        type="text" 
+                                        name="q" 
+                                        id="search-user" 
+                                        class="form-control <?= !empty($search) ? 'filter-applied' : '' ?>" 
+                                        placeholder="Search name, email, ID / code, organization, program..." 
+                                        value="<?= htmlspecialchars($search ?? '') ?>"
+                                        autocomplete="off"
+                                        spellcheck="false"
+                                        role="combobox"
+                                        aria-autocomplete="list"
+                                        aria-expanded="false"
+                                        aria-controls="robloxSearchDropdown"
+                                        aria-haspopup="listbox"
+                                    >
+                                    <button 
+                                        type="button" 
+                                        id="searchUserClearBtn" 
+                                        class="btn-clear-search <?= empty($search) ? 'd-none' : '' ?>" 
+                                        aria-label="Clear search input" 
+                                        title="Clear search"
+                                    >
+                                        <i class="bi bi-x-circle-fill text-accent"></i>
+                                    </button>
+
+                                    <!-- Roblox-Style Category Dropdown -->
+                                    <div id="robloxSearchDropdown" class="roblox-search-dropdown shadow-lg" role="listbox" aria-label="Search categories">
+                                        <div class="roblox-search-list" id="robloxSearchList"></div>
+                                        <div class="roblox-search-footer">
+                                            <span class="d-inline-flex align-items-center gap-1">
+                                                <kbd class="roblox-kbd">↑</kbd><kbd class="roblox-kbd">↓</kbd> <span>navigate</span>
+                                                <span class="mx-1 text-muted-custom">&bull;</span>
+                                                <kbd class="roblox-kbd">Enter</kbd> <span>select</span>
+                                            </span>
+                                            <span class="d-inline-flex align-items-center gap-1">
+                                                <kbd class="roblox-kbd">Esc</kbd> <span>close</span>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-12 col-lg-4">
-                                <label class="form-label" for="role-select">
-                                    <i class="bi bi-people text-muted-custom me-1"></i>Role
+                                <label class="form-label" for="sort-select">
+                                    <i class="bi bi-arrow-down-up text-accent me-1"></i>Sort By
                                 </label>
-                                <select name="role" id="role-select" class="form-select <?= !empty($role_filter) ? 'filter-applied' : '' ?>">
-                                    <option value="">All Roles</option>
-                                    <option value="student" <?= ($role_filter === 'student') ? 'selected' : '' ?>>Students</option>
-                                    <option value="employer" <?= ($role_filter === 'employer') ? 'selected' : '' ?>>Employers / Offices</option>
-                                    <option value="admin" <?= ($role_filter === 'admin') ? 'selected' : '' ?>>Administrators</option>
+                                <select name="sort" id="sort-select" class="form-select <?= ($sort_filter !== 'newest') ? 'filter-applied' : '' ?>">
+                                    <option value="newest" <?= ($sort_filter === 'newest') ? 'selected' : '' ?>>Recently Registered (Newest)</option>
+                                    <option value="oldest" <?= ($sort_filter === 'oldest') ? 'selected' : '' ?>>Earliest Registered (Oldest)</option>
+                                    <option value="name_asc" <?= ($sort_filter === 'name_asc') ? 'selected' : '' ?>>Name: A → Z (Alphabetical)</option>
+                                    <option value="name_desc" <?= ($sort_filter === 'name_desc') ? 'selected' : '' ?>>Name: Z → A (Reverse Alphabetical)</option>
+                                    <option value="email_asc" <?= ($sort_filter === 'email_asc') ? 'selected' : '' ?>>Email: A → Z</option>
+                                    <option value="pending_first" <?= ($sort_filter === 'pending_first') ? 'selected' : '' ?>>Pending Verification First</option>
+                                    <option value="verified_first" <?= ($sort_filter === 'verified_first') ? 'selected' : '' ?>>Verified Accounts First</option>
+                                    <option value="role_student" <?= ($sort_filter === 'role_student') ? 'selected' : '' ?>>Role: Students First</option>
+                                    <option value="role_employer" <?= ($sort_filter === 'role_employer') ? 'selected' : '' ?>>Role: Employers First</option>
+                                    <option value="role_admin" <?= ($sort_filter === 'role_admin') ? 'selected' : '' ?>>Role: Administrators First</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Row 2: Secondary Attributes & Reset Action -->
-                        <div class="row g-3 align-items-end">
-                            <div class="col-12 col-sm-6 col-lg-4">
-                                <label class="form-label" for="emp-select">
-                                    <i class="bi bi-building text-muted-custom me-1"></i>Employer Type
-                                </label>
-                                <select name="emp_type" id="emp-select" class="form-select <?= !empty($emp_type_filter) ? 'filter-applied' : '' ?>">
-                                    <option value="">All Types</option>
-                                    <option value="university_office" <?= ($emp_type_filter === 'university_office') ? 'selected' : '' ?>>University Offices</option>
-                                    <option value="approved_partner" <?= ($emp_type_filter === 'approved_partner') ? 'selected' : '' ?>>Approved Partners</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-sm-6 col-lg-4">
-                                <label class="form-label" for="ver-select">
-                                    <i class="bi bi-patch-check text-muted-custom me-1"></i>Accreditation
-                                </label>
-                                <select name="ver_status" id="ver-select" class="form-select <?= !empty($ver_filter) ? 'filter-applied' : '' ?>">
-                                    <option value="">All Statuses</option>
-                                    <option value="pending_approval" <?= ($ver_filter === 'pending_approval') ? 'selected' : '' ?>>Pending Review</option>
-                                    <option value="verified" <?= ($ver_filter === 'verified') ? 'selected' : '' ?>>Verified</option>
-                                    <option value="rejected" <?= ($ver_filter === 'rejected') ? 'selected' : '' ?>>Rejected</option>
-                                    <option value="revoked" <?= ($ver_filter === 'revoked') ? 'selected' : '' ?>>Revoked <?= isset($revoked_users_count) && $revoked_users_count > 0 ? "({$revoked_users_count})" : '' ?></option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-sm-12 col-lg-4" id="filterResetBtnWrap">
-                                <label class="form-label d-none d-lg-block text-muted-custom" style="opacity: 0.7;">Quick Action</label>
-                                <a href="users.php" class="btn-filter-reset-wide <?= $has_active_filters ? 'btn-filter-reset-active' : '' ?>" title="Reset all filters" aria-label="Reset all filters">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                    <span>Reset Filters</span>
-                                </a>
-                            </div>
-                        </div>
+                        <!-- Scoped category state inputs managed by Roblox Search -->
+                        <input type="hidden" name="role" id="role-select" value="<?= htmlspecialchars($role_filter ?? '') ?>">
+                        <input type="hidden" name="emp_type" id="emp-select" value="<?= htmlspecialchars($emp_type_filter ?? '') ?>">
+                        <input type="hidden" name="ver_status" id="ver-select" value="<?= htmlspecialchars($ver_filter ?? '') ?>">
+                        <input type="hidden" name="search_field" id="search-field" value="<?= htmlspecialchars($search_field ?? '') ?>">
                     </form>
                 </div>
 
@@ -1114,7 +1126,9 @@ require_once __DIR__ . '/../header.php';
         <?php endforeach; ?>
         </div><!-- /#user-modals-container -->
 
-        <?php require_once __DIR__ . '/../footer.php'; ?>
+        
+<script src="<?= $base_url ?>assets/js/roblox-search.js?v=<?= time() ?>"></script>
+<?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
 </div>
 

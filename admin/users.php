@@ -116,6 +116,8 @@ $role_filter = $_GET['role'] ?? null;
 $emp_type_filter = $_GET['emp_type'] ?? null;
 $ver_filter = $_GET['ver_status'] ?? null;
 $search = $_GET['q'] ?? null;
+$search_field = $_GET['search_field'] ?? null;
+$sort = $_GET['sort'] ?? 'newest';
 
 // Count pending verifications & student requests across active un-archived roles
 $all_users = get_all_users();
@@ -151,7 +153,113 @@ if ($ver_filter) {
 
 if ($search) {
     $q = strtolower(trim($search));
-    $users = array_filter($users, fn($u) => stripos($u['name'] ?? '', $q) !== false || stripos($u['email'] ?? '', $q) !== false || stripos($u['student_id'] ?? '', $q) !== false || stripos($u['organization_name'] ?? '', $q) !== false || stripos($u['accreditation_number'] ?? '', $q) !== false);
+    if ($search_field === 'org_program') {
+        // Targeted search: Organization / Company / Department / Program / Course
+        $users = array_filter($users, fn($u) => 
+            stripos($u['organization_name'] ?? '', $q) !== false || 
+            stripos($u['department'] ?? '', $q) !== false || 
+            stripos($u['course'] ?? '', $q) !== false || 
+            stripos($u['student_department'] ?? '', $q) !== false
+        );
+    } elseif ($search_field === 'id_code') {
+        // Targeted search: Student ID, Accreditation / MOA Number, or System Account ID
+        $users = array_filter($users, function($u) use ($q) {
+            $sid = (string)($u['student_id'] ?? '');
+            $acc = (string)($u['accreditation_number'] ?? '');
+            $uid = (string)($u['id'] ?? '');
+            $reqId = 'req-' . str_pad($uid, 4, '0', STR_PAD_LEFT);
+            return stripos($sid, $q) !== false || 
+                   stripos($acc, $q) !== false || 
+                   $uid === $q || 
+                   stripos($reqId, $q) !== false;
+        });
+    } else {
+        // Universal search: Name, Email, Student ID, Organization, MOA Number, Course, Department
+        $users = array_filter($users, fn($u) => 
+            stripos($u['name'] ?? '', $q) !== false || 
+            stripos($u['email'] ?? '', $q) !== false || 
+            stripos($u['student_id'] ?? '', $q) !== false || 
+            stripos($u['organization_name'] ?? '', $q) !== false || 
+            stripos($u['accreditation_number'] ?? '', $q) !== false ||
+            stripos($u['course'] ?? '', $q) !== false ||
+            stripos($u['department'] ?? '', $q) !== false
+        );
+    }
+}
+
+// Apply user directory sorting
+switch ($sort) {
+    case 'name_asc':
+        usort($users, fn($a, $b) => strcasecmp($a['name'] ?? '', $b['name'] ?? ''));
+        break;
+    case 'name_desc':
+        usort($users, fn($a, $b) => strcasecmp($b['name'] ?? '', $a['name'] ?? ''));
+        break;
+    case 'oldest':
+        usort($users, function($a, $b) {
+            $tA = strtotime($a['created_at'] ?? '') ?: ($a['id'] ?? 0);
+            $tB = strtotime($b['created_at'] ?? '') ?: ($b['id'] ?? 0);
+            return $tA <=> $tB;
+        });
+        break;
+    case 'email_asc':
+        usort($users, fn($a, $b) => strcasecmp($a['email'] ?? '', $b['email'] ?? ''));
+        break;
+    case 'role_student':
+        $roleOrder = ['student' => 1, 'employer' => 2, 'admin' => 3];
+        usort($users, function($a, $b) use ($roleOrder) {
+            $rA = $roleOrder[$a['role'] ?? ''] ?? 99;
+            $rB = $roleOrder[$b['role'] ?? ''] ?? 99;
+            if ($rA === $rB) return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
+            return $rA <=> $rB;
+        });
+        break;
+    case 'role_employer':
+        $roleOrder = ['employer' => 1, 'student' => 2, 'admin' => 3];
+        usort($users, function($a, $b) use ($roleOrder) {
+            $rA = $roleOrder[$a['role'] ?? ''] ?? 99;
+            $rB = $roleOrder[$b['role'] ?? ''] ?? 99;
+            if ($rA === $rB) return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
+            return $rA <=> $rB;
+        });
+        break;
+    case 'role_admin':
+        $roleOrder = ['admin' => 1, 'employer' => 2, 'student' => 3];
+        usort($users, function($a, $b) use ($roleOrder) {
+            $rA = $roleOrder[$a['role'] ?? ''] ?? 99;
+            $rB = $roleOrder[$b['role'] ?? ''] ?? 99;
+            if ($rA === $rB) return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
+            return $rA <=> $rB;
+        });
+        break;
+    case 'pending_first':
+        usort($users, function($a, $b) {
+            $isPendingA = (($a['verification_status'] ?? '') === 'pending_approval') ? 0 : 1;
+            $isPendingB = (($b['verification_status'] ?? '') === 'pending_approval') ? 0 : 1;
+            if ($isPendingA === $isPendingB) {
+                return (strtotime($b['created_at'] ?? '') ?: ($b['id'] ?? 0)) <=> (strtotime($a['created_at'] ?? '') ?: ($a['id'] ?? 0));
+            }
+            return $isPendingA <=> $isPendingB;
+        });
+        break;
+    case 'verified_first':
+        usort($users, function($a, $b) {
+            $isVerA = (($a['verification_status'] ?? '') === 'verified') ? 0 : 1;
+            $isVerB = (($b['verification_status'] ?? '') === 'verified') ? 0 : 1;
+            if ($isVerA === $isVerB) {
+                return (strtotime($b['created_at'] ?? '') ?: ($b['id'] ?? 0)) <=> (strtotime($a['created_at'] ?? '') ?: ($a['id'] ?? 0));
+            }
+            return $isVerA <=> $isVerB;
+        });
+        break;
+    case 'newest':
+    default:
+        usort($users, function($a, $b) {
+            $tA = strtotime($a['created_at'] ?? '') ?: ($a['id'] ?? 0);
+            $tB = strtotime($b['created_at'] ?? '') ?: ($b['id'] ?? 0);
+            return $tB <=> $tA;
+        });
+        break;
 }
 
 $total_filtered_users = count($users);
