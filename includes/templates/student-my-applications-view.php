@@ -31,7 +31,7 @@ require_once __DIR__ . '/../header.php';
 
                 <!-- Filter Tabs -->
                 <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-line">
-                    <a href="my-applications.php" class="chip chip-selectable <?= empty($filter_status) ? 'active' : '' ?>">
+                    <a href="my-applications.php" class="chip chip-selectable text-decoration-none <?= empty($filter_status) ? 'active' : '' ?>">
                         All Submissions
                     </a>
                     <a href="my-applications.php?status=pending" class="chip chip-selectable text-decoration-none <?= ($filter_status === 'pending') ? 'active' : '' ?>">
