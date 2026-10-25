@@ -112,6 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!is_numeric($pay_amount) || (float)$pay_amount <= 0) {
             $error = 'Please provide a valid positive stipend rate.';
             $initial_step = 3;
+        } elseif ($deadline < date('Y-m-d')) {
+            $error = 'Application deadline cannot be set to a past date. Please choose today or a future date.';
+            $initial_step = 3;
         } elseif ($vacancies < 1) {
             $error = 'Vacancy quota must be at least 1 position.';
             $initial_step = 3;

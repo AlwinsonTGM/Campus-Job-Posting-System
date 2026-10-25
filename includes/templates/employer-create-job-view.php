@@ -585,6 +585,13 @@ function validateCurrentStep() {
             if (deadline) deadline.focus();
             return false;
         }
+        const today = new Date(); today.setHours(0,0,0,0);
+        const chosen = new Date(deadline.value + 'T00:00:00');
+        if (chosen < today) {
+            showStepError('Application deadline cannot be set to a past date. Please choose today or a future date.');
+            if (deadline) deadline.focus();
+            return false;
+        }
         return true;
     }
 

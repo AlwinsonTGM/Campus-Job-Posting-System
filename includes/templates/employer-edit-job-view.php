@@ -278,7 +278,7 @@ require_once __DIR__ . '/../header.php';
 
                                 <div class="mb-4">
                                     <label class="form-label" for="edit-deadline">Application Deadline</label>
-                                    <input type="date" name="deadline" id="edit-deadline" class="form-control" value="<?= htmlspecialchars($job['deadline']) ?>" required>
+                                    <input type="date" name="deadline" id="edit-deadline" class="form-control" min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($job['deadline']) ?>" required>
                                 </div>
 
                                 <button type="submit" class="btn-pill w-100 mb-2">
@@ -424,7 +424,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const editForm = document.getElementById('edit-job-form');
     if (editForm) {
-        editForm.addEventListener('submit', function() {
+        editForm.addEventListener('submit', function(e) {
+            const deadlineInput = document.getElementById('edit-deadline');
+            if (deadlineInput && deadlineInput.value) {
+                const today = new Date(); today.setHours(0,0,0,0);
+                const chosen = new Date(deadlineInput.value + 'T00:00:00');
+                if (chosen < today) {
+                    e.preventDefault();
+                    alert('Application deadline cannot be set to a past date. Please choose today or a future date.');
+                    deadlineInput.focus();
+                    return;
+                }
+            }
             const submitBtn = editForm.querySelector('button[type="submit"]');
             if (submitBtn) {
                 setTimeout(() => {

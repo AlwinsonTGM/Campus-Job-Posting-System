@@ -92,6 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($title) || empty($description)) {
             $error = 'Please provide the vacancy title and detailed description.';
+        } elseif (!empty($deadline) && $deadline < date('Y-m-d')) {
+            $error = 'Application deadline cannot be set to a past date. Please choose today or a future date.';
         } elseif ($vacancies < 1) {
             $error = 'Vacancy quota must be at least 1 position.';
         } else {
