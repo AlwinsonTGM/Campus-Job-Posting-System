@@ -1272,7 +1272,7 @@ require_once __DIR__ . '/../header.php';
                                     <label class="form-label fw-bold text-ink" for="contact_phone">Contact Phone Number <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                        <input type="text" name="phone" id="contact_phone" class="form-control" placeholder="09171234567 or +63 917 123 4567" required>
+                                        <input type="tel" name="phone" id="contact_phone" class="form-control" placeholder="09171234567 or +63 917 123 4567" pattern="[\+]?[0-9\s\-()]{7,20}" inputmode="tel" title="Please enter numbers only (e.g. 09171234567 or +63 917 123 4567)." required>
                                     </div>
                                 </div>
 
@@ -1418,6 +1418,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 10);
         }
     });
+});
+
+// Restrict contact phone input to numbers and valid phone characters
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'contact_phone') {
+        e.target.value = e.target.value.replace(/[^0-9+\s\-()]/g, '');
+    }
 });
 
 function generateStrongTempPassword() {
