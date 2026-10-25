@@ -1826,6 +1826,12 @@ function update_user_password(int|string $user_id, string $hashed_password): boo
             $_SESSION['user']['password'] = $hashed_password;
             $_SESSION['user']['must_change_password'] = 0;
         }
+
+        // Clean up temporary password notifications and issue welcome notification
+        if (function_exists('resolve_temporary_password_notification')) {
+            resolve_temporary_password_notification($user_id);
+        }
+
         return true;
     } catch (Exception $e) {
         error_log("update_user_password error: " . $e->getMessage());
@@ -1890,6 +1896,11 @@ function consume_password_reset(int|string $reset_id, int|string $user_id, strin
         $pdo->prepare("UPDATE `password_resets` SET `used_at` = NOW() WHERE `id` = :i")
             ->execute([':i' => (int)$reset_id]);
         $pdo->commit();
+
+        if (function_exists('resolve_temporary_password_notification')) {
+            resolve_temporary_password_notification($user_id);
+        }
+
         return true;
     } catch (Exception $e) {
         if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();

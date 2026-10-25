@@ -514,6 +514,13 @@
   color: #ffffff !important;
 }
 
+[data-theme="dark"] .bg-ink,
+[data-theme="dark"] .badge.bg-ink {
+  background-color: #121215 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
 #devblog-modal-sprint-badge {
   background-color: var(--ink) !important;
   color: #ffffff !important;

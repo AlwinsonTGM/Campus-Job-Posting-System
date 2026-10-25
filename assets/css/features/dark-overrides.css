@@ -498,6 +498,12 @@
   color: #FFFFFF !important;
   border: 1px solid var(--line) !important;
 }
+[data-theme="dark"] .badge.bg-ink,
+[data-theme="dark"] .bg-ink {
+  background-color: #121215 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
 [data-theme="dark"] .badge.bg-dark i,
 [data-theme="dark"] .badge.bg-dark .text-white {
   color: var(--accent) !important;
@@ -1693,7 +1699,9 @@
 }
 
 [data-theme="dark"] #devblog-modal-sprint-badge,
-[data-theme="dark"] #devblogModal .badge.bg-ink {
+[data-theme="dark"] #devblogModal .badge.bg-ink,
+[data-theme="dark"] .badge.bg-ink,
+[data-theme="dark"] .bg-ink {
   background-color: #121215 !important;
   color: #FFFFFF !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;

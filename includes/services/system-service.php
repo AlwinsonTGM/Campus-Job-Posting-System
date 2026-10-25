@@ -473,6 +473,44 @@ function delete_notification(int|string $notification_id, int|string|null $user_
     }
 }
 
+/**
+ * Resolve temporary password notification upon permanent password change.
+ * Removes the temporary password change action prompt and creates
+ * a clean welcoming notification with no password change requirement.
+ */
+function resolve_temporary_password_notification(int|string $user_id): bool {
+    try {
+        $pdo = get_db_connection();
+        if (!$pdo) {
+            return false;
+        }
+
+        // Delete any notifications prompting the user to change temporary password
+        $stmt = $pdo->prepare("
+            DELETE FROM `notifications` 
+            WHERE `user_id` = :user_id 
+              AND (`link` LIKE '%setup_password%' OR `title` LIKE '%Temporary Password%')
+        ");
+        $stmt->execute([':user_id' => (int)$user_id]);
+
+        // Create welcome notification
+        create_notification(
+            (int)$user_id,
+            'welcome',
+            'Welcome to KLD Career Portal! 🎉',
+            'Your personal password has been successfully established. Welcome to your campus employment portal workspace!',
+            null,
+            'bi-stars',
+            'success'
+        );
+
+        return true;
+    } catch (\Throwable $e) {
+        error_log("resolve_temporary_password_notification error: " . $e->getMessage());
+        return false;
+    }
+}
+
 function get_notification_by_id(int|string|null $notification_id, int|string|null $user_id = null): ?array {
     try {
         $pdo = get_db_connection();

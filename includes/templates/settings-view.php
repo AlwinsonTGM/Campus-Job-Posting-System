@@ -24,7 +24,7 @@ require_once __DIR__ . '/../header.php';
                 ?>
 
 
-                <?php if (!empty($user['must_change_password']) || !empty($_GET['setup_password'])): ?>
+                <?php if (!empty($user['must_change_password'])): ?>
                     <div class="alert-paper alert-paper--warning mb-4 reveal-fade-rise border border-warning" role="alert">
                         <div class="d-flex align-items-start gap-3">
                             <div class="icon-circle icon-circle-sm icon-circle-warning flex-shrink-0 mt-1">
@@ -530,7 +530,7 @@ require_once __DIR__ . '/../header.php';
                                 </h3>
                             </div>
 
-                            <?php if (!empty($user['must_change_password']) || !empty($_GET['setup_password'])): ?>
+                            <?php if (!empty($user['must_change_password'])): ?>
                                 <div class="alert alert-warning d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill fs-6 text-warning flex-shrink-0"></i>
                                     <div class="small fw-semibold">
