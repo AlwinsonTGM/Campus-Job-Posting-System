@@ -165,6 +165,12 @@ class DatastoreManager {
                     ");
                 }
 
+                // Ensure users has must_change_password
+                $mustChangeCheck = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'must_change_password'")->fetch();
+                if (!$mustChangeCheck) {
+                    $pdo->exec("ALTER TABLE `users` ADD COLUMN `must_change_password` TINYINT(1) NOT NULL DEFAULT 0 AFTER `verification_status`");
+                }
+
                 // Ensure student_profiles.verification_status ENUM includes 'revoked'
                 $spVerCheck = $pdo->query("SHOW COLUMNS FROM `student_profiles` LIKE 'verification_status'")->fetch();
                 if ($spVerCheck && strpos($spVerCheck['Type'] ?? '', 'revoked') === false) {

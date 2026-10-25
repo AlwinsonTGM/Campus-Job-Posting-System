@@ -109,6 +109,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: users.php');
             exit;
         }
+    } elseif ($action === 'provision_employer') {
+        $employer_type = ($_POST['employer_type'] ?? 'university_office') === 'approved_partner' ? 'approved_partner' : 'university_office';
+        $org_name = trim($_POST['organization_name'] ?? '');
+        if ($employer_type === 'university_office' && empty($org_name)) {
+            $org_name = trim($_POST['office_department'] ?? '');
+        }
+        $name = trim($_POST['name'] ?? '');
+        $email = strtolower(trim($_POST['email'] ?? ''));
+        $phone = trim($_POST['phone'] ?? '');
+        $office_location = trim($_POST['office_location'] ?? '');
+        $accreditation_number = trim($_POST['accreditation_number'] ?? '');
+        $temp_password = (string)($_POST['temporary_password'] ?? '');
+
+        // Validation
+        $digits_only = preg_replace('/[^0-9]/', '', $phone);
+        if ($org_name === '' || $name === '' || $email === '' || $temp_password === '') {
+            set_flash('danger', 'Please fill in all mandatory fields (Organization / Office Name, Representative Name, Email, and Temporary Password).');
+            header('Location: users.php');
+            exit;
+        }
+
+        if (empty($phone)) {
+            set_flash('danger', 'Please provide a valid contact phone number.');
+            header('Location: users.php');
+            exit;
+        }
+
+        if (preg_match('/[a-zA-Z]/', $phone) || !preg_match('/^[\+]?[0-9\s\-()]{7,20}$/', $phone) || strlen($digits_only) < 7 || strlen($digits_only) > 15) {
+            set_flash('danger', 'Contact phone number must contain valid numbers only (7 to 15 digits). Alphabetic characters are not allowed.');
+            header('Location: users.php');
+            exit;
+        }
+
+        if (strlen($temp_password) < 8) {
+            set_flash('danger', 'Temporary password must be at least 8 characters long.');
+            header('Location: users.php');
+            exit;
+        }
+
+        $permit_path = null;
+        if (isset($_FILES['permit_photo']) && $_FILES['permit_photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $permitRes = AttachmentStore::storePermit($_FILES['permit_photo']);
+            if ($permitRes->isOk()) {
+                $permit_path = $permitRes->path();
+            } else {
+                set_flash('danger', 'Business Permit upload failed: ' . $permitRes->errorMessage());
+                header('Location: users.php');
+                exit;
+            }
+        }
+
+        $provision_data = [
+            'employer_type'        => $employer_type,
+            'organization_name'    => $org_name,
+            'name'                 => $name,
+            'email'                => $email,
+            'phone'                => $phone,
+            'office_location'      => $office_location !== '' ? $office_location : ($employer_type === 'university_office' ? 'KLD Campus Building' : 'Commercial Business Address'),
+            'accreditation_number' => $accreditation_number,
+            'password'             => $temp_password
+        ];
+
+        $res = provision_employer_account($provision_data, $permit_path);
+        if ($res['success']) {
+            $_SESSION['provisioned_account_notice'] = $res;
+            set_flash('success', "Employer account for '{$res['organization_name']}' has been provisioned and verified!");
+            header('Location: users.php');
+            exit;
+        } else {
+            set_flash('danger', $res['message'] ?? 'Failed to provision employer account.');
+            header('Location: users.php');
+            exit;
+        }
     }
 }
 
@@ -271,6 +344,8 @@ if ($page > $total_pages) {
 }
 $paged_users = array_slice(array_values($users), ($page - 1) * $per_page, $per_page);
 $users = $paged_users;
+
+$kld_offices = function_exists('get_kld_offices') ? get_kld_offices() : [];
 
 // Last line: view template
 require __DIR__ . '/../includes/templates/admin-users-view.php';

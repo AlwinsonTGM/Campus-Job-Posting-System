@@ -54,7 +54,8 @@ if (!defined('SITE_NAME')) {
                     <li><a href="<?= $base_url ?>updates.php">Career Updates</a></li>
                     <li><a href="<?= $base_url ?>faqs.php">FAQs</a></li>
                     <li><a href="<?= $base_url ?>about-us.php">About Us</a></li>
-                    <li><a href="<?= $base_url ?>login.php">Login / Portal</a></li>
+                    <li><a href="<?= $base_url ?>login.php">Student Login</a></li>
+                    <li><a href="<?= $base_url ?>portal-login.php">Partner &amp; Staff Portal</a></li>
                 </ul>
             </div>
 

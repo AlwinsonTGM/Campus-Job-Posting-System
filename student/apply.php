@@ -33,6 +33,10 @@ if (!$eligibility->isAllowed()) {
     exit;
 }
 
+$is_kld_email = (bool)preg_match('/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i', (string)($user['email'] ?? ''));
+$requires_diploma = (($user['year_level'] ?? '') === 'Alumnus / Graduated') || !$is_kld_email;
+$credential_label = $requires_diploma ? 'Official KLD Diploma' : 'Official Certificate of Registration (e-COR)';
+
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -67,6 +71,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $resume_name = ($user['name'] ?? 'Student') . '_Resume.pdf';
         }
 
+        $study_load_path = null;
+        if (!$error && isset($_FILES['credential_proof']) && $_FILES['credential_proof']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $proofRes = AttachmentStore::storeProof($_FILES['credential_proof']);
+            if (!$proofRes->isOk()) {
+                $error = $proofRes->errorMessage();
+            } else {
+                $study_load_path = $proofRes->path();
+                if (empty($user['registration_proof'])) {
+                    try {
+                        $pdo = get_db_connection();
+                        $stmtProof = $pdo->prepare("UPDATE `student_profiles` SET `registration_proof` = :proof, `updated_at` = NOW() WHERE `user_id` = :uid");
+                        $stmtProof->execute([':proof' => $study_load_path, ':uid' => (int)$user['id']]);
+                        $user['registration_proof'] = $study_load_path;
+                    } catch (Exception $e) {
+                        error_log("Failed to sync registration_proof to student_profile: " . $e->getMessage());
+                    }
+                }
+            }
+        } elseif (!empty($user['registration_proof'])) {
+            $study_load_path = $user['registration_proof'];
+        } else {
+            $study_load_path = null;
+        }
+
         if (!$error) {
             if (empty($cover_letter)) {
                 $error = 'Please provide a brief statement of intent / cover letter.';
@@ -80,7 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'cover_letter' => $cover_letter,
                     'phone' => $phone,
                     'availability' => $availability,
-                    'resume_file' => $resume_name
+                    'resume_file' => $resume_name,
+                    'study_load_file' => $study_load_path
                 ]);
 
                 if ($res['success']) {

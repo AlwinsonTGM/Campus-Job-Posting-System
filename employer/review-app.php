@@ -73,7 +73,24 @@ $placement_summary = ApplicationService::getStudentPlacementSummary(
     (int)($target_app['job_id'] ?? 0)
 );
 
+// Academic Credential Proof resolution (e-COR vs KLD Diploma)
+$student_email = strtolower(trim((string)($target_app['student_email'] ?? '')));
+$is_kld_student_email = ($student_email === '') || (bool)preg_match('/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i', $student_email);
+$is_diploma_required = (($target_app['year_level'] ?? '') === 'Alumnus / Graduated') || !$is_kld_student_email;
+$credential_title = $is_diploma_required ? 'Official KLD Diploma (Proof of KLD Graduation)' : 'Official Certificate of Registration (e-COR)';
+$credential_short_btn = $is_diploma_required ? 'View Diploma' : 'View e-COR';
+$credential_subtitle = $is_diploma_required ? 'Required KLD graduation proof for Alumni / Personal (@gmail.com) student accounts' : 'Required semester enrollment & study load verification for active KLD students';
+
+$study_load = trim((string)($target_app['study_load_file'] ?? ''));
+$reg_proof = trim((string)($target_app['registration_proof'] ?? ''));
+if ($study_load !== '' && !preg_match('/^Study_Load_\d+\.pdf$/i', $study_load)) {
+    $raw_cred_file = basename($study_load);
+} elseif ($reg_proof !== '') {
+    $raw_cred_file = basename($reg_proof);
+} else {
+    $raw_cred_file = $is_diploma_required ? ('KLD_Diploma_' . ($target_app['student_number'] ?? $target_app['student_id'] ?? 'Alumni') . '.pdf') : ('KLD_eCOR_' . ($target_app['student_number'] ?? $target_app['student_id'] ?? 'Student') . '.pdf');
+}
+$credential_filename = $raw_cred_file;
+
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-review-app-view.php';
-
-

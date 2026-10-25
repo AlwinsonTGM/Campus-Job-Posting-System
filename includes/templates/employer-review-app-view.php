@@ -51,8 +51,19 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                                 <div class="col-md-6">
                                     <span class="small text-muted-custom d-block mb-1">Degree Program & Standing</span>
-                                    <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?></span>
-                                    <span class="text-muted-custom">&bull; <?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?></span>
+                                        <span class="text-muted-custom">&bull; <?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span>
+                                        <?php if ($is_diploma_required): ?>
+                                            <span class="badge bg-warning-subtle text-ink border border-warning-subtle" style="font-size: 10px;">
+                                                <i class="bi bi-award-fill text-accent me-1"></i>Alumni / KLD Diploma Verified
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 10px;">
+                                                <i class="bi bi-check-circle-fill text-success me-1"></i>Active Student &bull; e-COR Verified
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <span class="small text-muted-custom d-block mb-1">Demographics (Sex & Age)</span>
@@ -60,9 +71,11 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                                 <div class="col-md-12">
                                     <span class="small text-muted-custom d-block mb-1">Contact Details</span>
-                                    <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['phone'] ?? '+63 917 555 0192') ?></span>
-                                    <span class="text-muted-custom mx-2">&bull;</span>
-                                    <span class="small text-muted-custom"><?= htmlspecialchars($target_app['student_email']) ?></span>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['phone'] ?? '+63 917 555 0192') ?></span>
+                                        <span class="text-muted-custom">&bull;</span>
+                                        <span class="small text-muted-custom"><?= htmlspecialchars($target_app['student_email']) ?></span>
+                                    </div>
                                 </div>
                                 <?php if (!empty($placement_summary['is_employed'])): 
                                     $curJob = $placement_summary['active_placement'];
@@ -149,20 +162,44 @@ require_once __DIR__ . '/../header.php';
                             <h3 class="card-paper-title fs-5 mb-3 pb-2 border-bottom border-line">
                                 <i class="bi bi-paperclip text-accent me-2"></i> 4. Attached Resume & Credentials
                             </h3>
-                            <div class="p-3 bg-surface rounded-4 border border-line d-flex align-items-center justify-content-between gap-3">
+
+                            <!-- Card 1: Curriculum Vitae / Student Resume -->
+                            <div class="p-3 bg-surface rounded-4 border border-line d-flex align-items-center justify-content-between gap-3 flex-wrap flex-sm-nowrap">
                                 <div class="d-flex align-items-center gap-3 overflow-hidden">
                                     <i class="bi bi-file-earmark-pdf-fill text-danger fs-2 flex-shrink-0"></i>
                                     <div class="text-truncate">
                                         <div class="fw-bold text-ink small text-truncate"><?= htmlspecialchars($target_app['resume_file'] ?? 'Student_Resume.pdf') ?></div>
-                                        <span class="small text-muted-custom d-block text-truncate">Official Student Resume & Credentials</span>
+                                        <span class="small text-muted-custom d-block text-truncate">Official Student Resume & Curriculum Vitae</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center flex-nowrap gap-2 flex-shrink-0">
                                     <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#resumeModal" style="font-size: 12px;">
-                                        <i class="bi bi-eye-fill"></i> View PDF
+                                        <i class="bi bi-eye-fill"></i> View Resume
                                     </button>
                                     <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" style="font-size: 12px;" title="Open PDF in new tab">
                                         <i class="bi bi-box-arrow-up-right"></i> Open Tab
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Academic Credential Proof -->
+                            <div class="p-3 bg-surface rounded-4 border border-line d-flex align-items-center justify-content-between gap-3 flex-wrap flex-sm-nowrap mt-3" id="applicant-academic-credential-card">
+                                <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                    <i class="bi <?= $is_diploma_required ? 'bi-award-fill text-accent' : 'bi-file-earmark-check-fill text-success' ?> fs-2 flex-shrink-0"></i>
+                                    <div class="text-truncate">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="fw-bold text-ink small text-truncate"><?= htmlspecialchars($credential_filename) ?></span>
+                                            <span class="badge <?= $is_diploma_required ? 'bg-warning-subtle text-ink border border-warning-subtle' : 'bg-success-subtle text-success border border-success-subtle' ?>" style="font-size: 10px;"><?= htmlspecialchars($credential_title) ?></span>
+                                        </div>
+                                        <span class="small text-muted-custom d-block text-truncate"><?= htmlspecialchars($credential_subtitle) ?></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center flex-nowrap gap-2 flex-shrink-0">
+                                    <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#credentialProofModal" style="font-size: 12px;">
+                                        <i class="bi bi-eye-fill"></i> <?= htmlspecialchars($credential_short_btn) ?>
+                                    </button>
+                                    <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>&amp;doc=proof" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" style="font-size: 12px;" title="Open <?= htmlspecialchars($credential_title) ?> in new tab">
+                                        <i class="bi bi-box-arrow-up-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -353,7 +390,33 @@ require_once __DIR__ . '/../header.php';
             </div>
         </div>
 
-
+        <!-- Academic Credential Proof Modal -->
+        <div class="modal fade" id="credentialProofModal" tabindex="-1" aria-labelledby="credentialProofModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content rounded-4 border-line shadow-lg overflow-hidden">
+                    <div class="modal-header bg-cream border-bottom border-line py-3 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2 me-auto">
+                            <div class="icon-circle icon-circle-sm <?= $is_diploma_required ? 'bg-warning-subtle' : 'icon-circle-success' ?>">
+                                <i class="bi <?= $is_diploma_required ? 'bi-award-fill text-accent' : 'bi-file-earmark-check-fill text-success' ?>"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-ink mb-0 fs-6" id="credentialProofModalLabel"><?= htmlspecialchars($credential_title) ?>: <?= htmlspecialchars($target_app['student_name']) ?></h5>
+                                <span class="small text-muted-custom" style="font-size: 11.5px;">Applicant: <?= htmlspecialchars($target_app['student_name']) ?> &bull; <?= htmlspecialchars($credential_filename) ?></span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 ms-auto">
+                            <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>&amp;doc=proof" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-3 text-nowrap d-inline-flex align-items-center gap-1" style="font-size: 12px;">
+                                <i class="bi bi-box-arrow-up-right"></i> Open / Download
+                            </a>
+                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="modal-body p-0 bg-dark position-relative" style="min-height: 580px; height: 600px;">
+                        <iframe src="../view-resume.php?app_id=<?= $target_app['id'] ?>&amp;doc=proof&amp;render_html=1" style="width: 100%; height: 100%; border: none;" title="<?= htmlspecialchars($credential_title) ?> Preview"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
@@ -404,4 +467,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-

@@ -235,3 +235,125 @@ function send_account_rejected_email(string $email, string $name, string $role =
 
     return send_campus_email($email, $name, $subject, $body);
 }
+
+
+/**
+ * Dispatch welcome email with login credentials for administratively provisioned employer accounts.
+ */
+function send_provisioned_account_email(
+    string $email,
+    string $name,
+    string $org_name,
+    string $employer_type,
+    string $temp_password
+): bool {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    $site_name = defined('SITE_NAME') ? SITE_NAME : 'KLD Campus Job Portal';
+    $type_label = ($employer_type === 'university_office') ? 'University Office' : 'Accredited Industry Partner';
+    $subject = 'Your ' . $site_name . ' Employer Account Has Been Provisioned';
+
+    $base_url = function_exists('get_app_base_url') ? get_app_base_url() : 'http://localhost/Final-Campus-Job-Posting-System';
+    $login_url = rtrim($base_url, '/') . '/portal-login.php';
+
+    $safe_name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+    $safe_org = htmlspecialchars($org_name, ENT_QUOTES, 'UTF-8');
+    $safe_type = htmlspecialchars($type_label, ENT_QUOTES, 'UTF-8');
+    $safe_email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+    $safe_pass = htmlspecialchars($temp_password, ENT_QUOTES, 'UTF-8');
+    $safe_site = htmlspecialchars($site_name, ENT_QUOTES, 'UTF-8');
+    $safe_login_url = htmlspecialchars($login_url, ENT_QUOTES, 'UTF-8');
+    $current_year = date('Y');
+
+    $html_body = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Account Provisioned</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <div style="background-color: #f1f5f9; padding: 32px 12px;">
+        <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+            
+            <!-- Brand Header -->
+            <div style="background: #0f172a; padding: 24px 28px;">
+                <h1 style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">
+                    {$safe_site}
+                </h1>
+                <p style="margin: 4px 0 0; color: #38bdf8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                    Employer Account Provisioned &amp; Verified
+                </p>
+            </div>
+
+            <!-- Email Body Content -->
+            <div style="padding: 28px 28px 20px 28px; color: #1e293b; font-size: 15px; line-height: 1.6;">
+                <p style="margin-top: 0; margin-bottom: 12px;">Hello <strong>{$safe_name}</strong>,</p>
+                
+                <p style="margin-top: 0; margin-bottom: 20px; color: #475569;">
+                    An official employer account has been provisioned for <strong>{$safe_org}</strong> ({$safe_type}) by the Career Services Administrator. Your organization has been verified and granted posting access on the campus hiring platform.
+                </p>
+
+                <!-- Credentials Card -->
+                <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 20px; margin: 24px 0;">
+                    <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 12px; letter-spacing: 0.05em;">
+                        Your Sign-in Credentials
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b; width: 140px; font-weight: 600;">Account Type:</td>
+                            <td style="padding: 6px 0; color: #0f172a; font-weight: 600;">{$safe_type}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Organization:</td>
+                            <td style="padding: 6px 0; color: #0f172a;">{$safe_org}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Login Email:</td>
+                            <td style="padding: 6px 0; color: #0f172a; font-family: monospace; font-size: 14px;">{$safe_email}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Temporary Password:</td>
+                            <td style="padding: 6px 0;">
+                                <code style="background-color: #e2e8f0; color: #0f172a; padding: 4px 8px; border-radius: 6px; font-size: 15px; font-weight: 700; letter-spacing: 0.05em;">{$safe_pass}</code>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Security Notice -->
+                <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 20px 0; border-radius: 4px;">
+                    <strong style="color: #92400e; font-size: 13px; display: block; margin-bottom: 4px;">Important Security Requirement:</strong>
+                    <span style="color: #78350f; font-size: 13px;">
+                        You are required to replace your temporary password with a new personal password immediately upon your first sign-in before accessing portal features.
+                    </span>
+                </div>
+
+                <!-- Call to Action -->
+                <div style="text-align: center; margin: 28px 0 20px 0;">
+                    <a href="{$safe_login_url}" style="display: inline-block; background-color: #0284c7; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);">
+                        Sign In via Portal Gateway &rarr;
+                    </a>
+                </div>
+
+                <p style="margin-top: 24px; margin-bottom: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+                    Direct Portal URL: <a href="{$safe_login_url}" style="color: #0284c7; word-break: break-all;">{$safe_login_url}</a>
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px 28px; text-align: center; font-size: 12px; color: #64748b;">
+                &copy; {$current_year} {$safe_site}. All rights reserved.<br>
+                Colegio de Montalban / KLD Career Placement Services
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+HTML;
+
+    return send_campus_email($email, $name, $subject, $html_body);
+}

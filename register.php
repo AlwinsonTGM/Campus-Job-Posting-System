@@ -16,11 +16,7 @@ $error = null;
 purge_expired_unverified_users();
 $preselected_role = $_GET['role'] ?? 'student';
 $initial_step = 1;
-$selected_persona = 'student';
-if ($preselected_role === 'employer') {
-    $emp_t_get = $_GET['type'] ?? ($_GET['employer_type'] ?? 'university_office');
-    $selected_persona = ($emp_t_get === 'approved_partner') ? 'approved_partner' : 'university_office';
-}
+$selected_persona = ($preselected_role === 'employer') ? 'approved_partner' : 'student';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name'] ?? '');
@@ -41,21 +37,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     $raw_role = $_POST['role'] ?? 'student';
-    $employer_type = $_POST['employer_type'] ?? '';
+    $raw_employer_type = $_POST['employer_type'] ?? '';
     if (!in_array($raw_role, ['student', 'employer'], true)) {
-        $role = (!empty($employer_type) || !empty($_POST['office_department']) || !empty($_POST['organization_name'])) ? 'employer' : 'student';
+        $role = (!empty($raw_employer_type) || !empty($_POST['office_department']) || !empty($_POST['organization_name'])) ? 'employer' : 'student';
     } else {
         $role = $raw_role;
     }
-    if (empty($employer_type)) {
-        $employer_type = 'university_office';
-    }
-    $preselected_role = $role;
     if ($role === 'employer') {
-        $selected_persona = ($employer_type === 'approved_partner') ? 'approved_partner' : 'university_office';
+        if ($raw_employer_type === 'university_office') {
+            $error = 'University Office accounts are provisioned directly by the Career Services Administrator. External companies should register as an Industry Partner.';
+            $initial_step = 1;
+        }
+        $employer_type = 'approved_partner';
+        $selected_persona = 'approved_partner';
     } else {
+        $employer_type = '';
         $selected_persona = 'student';
     }
+    $preselected_role = $role;
     $organization_name = trim($_POST['organization_name'] ?? '');
     $student_id = trim($_POST['student_id'] ?? '');
     $department = trim($_POST['department'] ?? '');
@@ -65,14 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $department = trim($_POST['other_institute']);
         }
     } elseif ($role === 'employer') {
-        if ($employer_type === 'university_office') {
-            $office_dept = trim($_POST['office_department'] ?? '');
-            if (!empty($office_dept)) {
-                $department = $office_dept;
-                $organization_name = $office_dept;
-            }
-            $office_location = trim($_POST['office_location'] ?? '');
-            $accreditation_number = trim($_POST['office_accreditation_number'] ?? '');
+        if (empty($department) && !empty($organization_name)) {
+            $department = $organization_name;
         }
     }
     
@@ -86,7 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accreditation_number = trim($_POST['accreditation_number'] ?? '');
 
     // Server-side validation
-    if ((empty($first_name) && empty($raw_name)) || empty($email) || empty($password)) {
+    if (!empty($error)) {
+        // Validation error already flagged (e.g. university_office tampering)
+    } elseif ((empty($first_name) && empty($raw_name)) || empty($email) || empty($password)) {
         $error = 'Please fill in all mandatory fields (Name, Email, Password).';
         $initial_step = empty($email) || (empty($first_name) && empty($raw_name)) ? 1 : 3;
     } elseif (empty($phone)) {
@@ -104,8 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (is_email_registered($email)) {
         $error = 'This KLD account / email address is already registered. Please sign in or use another email.';
         $initial_step = 1;
-    } elseif ($role === 'employer' && $employer_type === 'university_office' && !preg_match('/@kld\.edu\.ph$/i', $email)) {
-        $error = 'University Office accounts must use an official @kld.edu.ph institutional email address. External partners must select "Industry Partner".';
+    } elseif ($role === 'employer' && preg_match('/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i', $email)) {
+        $error = 'Institutional @kld.edu.ph email addresses cannot be used for external Industry Partner registration. Please use your official company or organization email address. (KLD Department Offices are provisioned by the Administrator.)';
         $initial_step = 1;
     } elseif (strlen($password) < 8) {
         $error = 'Password must contain at least 8 characters.';
@@ -134,14 +129,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $proof_file_path = null;
         if ($role === 'student') {
             $is_kld_email = (bool)preg_match('/@kld\.edu\.ph$/i', $email);
+            $needs_diploma = !$is_kld_email || ($year_level === 'Alumnus / Graduated');
             $proofRes = AttachmentStore::storeProof($_FILES['student_proof'] ?? null);
             if ($proofRes->isOk()) {
                 $proof_file_path = $proofRes->path();
             } elseif ($proofRes->errorCode() === 'no_file') {
-                if (!$is_kld_email) {
-                    $error = 'Students using personal email addresses (Gmail, Yahoo, etc.) must upload a Certificate of Registration (COR), Diploma, or Student ID for verification.';
-                    $initial_step = 3;
+                if ($needs_diploma) {
+                    $error = 'Graduated alumni and students registering with personal email addresses (e.g., Gmail) must upload their Official KLD Diploma as proof that they graduated from KLD.';
+                } else {
+                    $error = 'Please upload your Official Certificate of Registration (e-COR) to verify your current semester enrollment and study load.';
                 }
+                $initial_step = 3;
             } else {
                 $error = $proofRes->errorMessage();
                 $initial_step = 3;
@@ -173,9 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($res['success']) {
                 $new_u = $res['user'];
                 $role_msg = ($role === 'employer')
-                    ? (($employer_type === 'approved_partner')
-                        ? 'Your business permit and partner profile will be reviewed by Career Services.'
-                        : 'Your organization credentials have been submitted for administrative verification.')
+                    ? 'Your business permit and partner profile will be reviewed by Career Services.'
                     : 'Your student registration and attached credentials are under review by the Administrator.';
 
                 SessionGuard::quarantineForVerification($new_u, $role_msg);

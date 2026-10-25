@@ -54,6 +54,7 @@ if (is_logged_in()) {
 }
 
 $error = null;
+$portal_redirect_hint = false;
 $email = trim((string)($_POST['email'] ?? ($_GET['email'] ?? '')));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
@@ -64,48 +65,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Too many failed login attempts. Please wait {$remaining}s before trying again.";
     } else {
         $res = login_user($email, $password);
-        if ($res['success']) {
-            unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
-            $u = $res['user'];
-            $role = $u['role'] ?? 'student';
-            $ver_status = $u['verification_status'] ?? 'pending_approval';
+        if ($res['success'] || !empty($res['unverified'])) {
+            $role = $res['user']['role'] ?? 'student';
 
-            // Block portal access for every non-verified, non-admin state.
-            // Rejected/revoked users must be able to sign in ONLY to read the
-            // administrator's decision and (for rejections) resubmit documents.
-            if ($role !== 'admin' && in_array($ver_status, ['pending_approval', 'rejected', 'revoked'], true)) {
-                $_SESSION['pending_approval_notice'] = [
-                    'user_id'             => (int)($u['id'] ?? 0),
-                    'name'                => $u['name'] ?? 'User',
-                    'email'               => $u['email'] ?? '',
-                    'role'                => $role,
-                    'verification_status' => $ver_status,
-                    'rejection_reason'    => $u['rejection_reason'] ?? '',
-                ];
+            // Non-students (employers, admins) must sign in through the Partner & Staff Portal
+            if ($role !== 'student') {
                 unset($_SESSION['user']);
+                $error = 'Department Offices, Industry Partners, and Administrators must sign in through the dedicated Partner & Staff Portal.';
+                $portal_redirect_hint = true;
+            } elseif ($res['success']) {
+                unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
+                $u = $res['user'];
+                $ver_status = $u['verification_status'] ?? 'pending_approval';
 
-                if ($ver_status === 'rejected') {
-                    set_flash('danger', 'Your registration was not approved. Review the administrator\'s feedback below and resubmit your credentials.');
-                } elseif ($ver_status === 'revoked') {
-                    set_flash('danger', 'Your account verification has been revoked by institutional administration. Please contact the Career Services Office.');
-                } else {
-                    set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
+                // Block portal access for every non-verified, non-admin state.
+                // Rejected/revoked users must be able to sign in ONLY to read the
+                // administrator's decision and (for rejections) resubmit documents.
+                if ($role !== 'admin' && in_array($ver_status, ['pending_approval', 'rejected', 'revoked'], true)) {
+                    $_SESSION['pending_approval_notice'] = [
+                        'user_id'             => (int)($u['id'] ?? 0),
+                        'name'                => $u['name'] ?? 'User',
+                        'email'               => $u['email'] ?? '',
+                        'role'                => $role,
+                        'verification_status' => $ver_status,
+                        'rejection_reason'    => $u['rejection_reason'] ?? '',
+                    ];
+                    unset($_SESSION['user']);
+
+                    if ($ver_status === 'rejected') {
+                        set_flash('danger', 'Your registration was not approved. Review the administrator\'s feedback below and resubmit your credentials.');
+                    } elseif ($ver_status === 'revoked') {
+                        set_flash('danger', 'Your account verification has been revoked by institutional administration. Please contact the Career Services Office.');
+                    } else {
+                        set_flash('warning', 'Your account is awaiting administrator approval. Please check back later or contact the admin.');
+                    }
+
+                    header('Location: pending-approval.php');
+                    exit;
                 }
 
-                header('Location: pending-approval.php');
+                set_flash('success', "Welcome, {$u['name']}!");
+                if ($safe_next !== '') {
+                    header('Location: ' . $safe_next);
+                    exit;
+                }
+                redirect_by_role($u['role'] ?? null);
+            } else {
+                // Student with unverified email
+                unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
+                SessionGuard::quarantineForVerification($res['user']);
                 exit;
             }
-
-            set_flash('success', "Welcome, {$u['name']}!");
-            if ($safe_next !== '') {
-                header('Location: ' . $safe_next);
-                exit;
-            }
-            redirect_by_role($u['role'] ?? null);
-        } elseif (!empty($res['unverified'])) {
-            unset($_SESSION['login_failed_attempts'], $_SESSION['login_lockout_until']);
-            SessionGuard::quarantineForVerification($res['user']);
-            exit;
         } else {
             $attempts = (int)($_SESSION['login_failed_attempts'] ?? 0) + 1;
             $_SESSION['login_failed_attempts'] = $attempts;
@@ -120,7 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = 'Sign In to Campus Hire';
+$page_title = 'Student Sign In - Campus Hire';
 // Last line: view template
 require __DIR__ . '/includes/templates/login-view.php';
-

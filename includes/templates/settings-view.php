@@ -23,6 +23,23 @@ require_once __DIR__ . '/../header.php';
                 );
                 ?>
 
+
+                <?php if (!empty($user['must_change_password']) || !empty($_GET['setup_password'])): ?>
+                    <div class="alert-paper alert-paper--warning mb-4 reveal-fade-rise border border-warning" role="alert">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="icon-circle icon-circle-sm icon-circle-warning flex-shrink-0 mt-1">
+                                <i class="bi bi-shield-lock-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="text-ink fs-6 d-block mb-1">Temporary Password Active</strong>
+                                <span class="small text-muted-custom">
+                                    Your account was provisioned by the Career Services Administrator with a temporary password. Please set a new personal password below to unlock full portal access.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($error): ?>
                     <div class="alert-paper alert-paper--danger mb-4">
                         <div class="d-flex align-items-center gap-2">
@@ -506,12 +523,21 @@ require_once __DIR__ . '/../header.php';
                         <?php endif; ?>
 
                         <!-- Security & Password Card -->
-                        <div class="card-paper p-4 reveal-fade-rise">
+                        <div class="card-paper p-4 reveal-fade-rise" id="password-section">
                             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
                                 <h3 class="card-paper-title fs-5 mb-0">
                                     <i class="bi bi-shield-lock text-accent me-2"></i> Security &amp; Password
                                 </h3>
                             </div>
+
+                            <?php if (!empty($user['must_change_password']) || !empty($_GET['setup_password'])): ?>
+                                <div class="alert alert-warning d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill fs-6 text-warning flex-shrink-0"></i>
+                                    <div class="small fw-semibold">
+                                        Temporary password active. Enter your temporary password as the current password, then specify your new personal password.
+                                    </div>
+                                </div>
+                            <?php endif; ?>
 
                             <form action="settings.php" method="POST" class="form-paper" id="register-form">
                                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">

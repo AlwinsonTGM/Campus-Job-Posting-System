@@ -39,10 +39,7 @@ require_once __DIR__ . '/../header.php';
 
                             <div class="mb-3">
                                 <span class="auth-role-badge" id="brand-role-badge">
-                                    <?php if ($selected_persona === 'university_office'): ?>
-                                        <i class="bi bi-bank text-accent"></i>
-                                        <span>University Office Registration</span>
-                                    <?php elseif ($selected_persona === 'approved_partner'): ?>
+                                    <?php if ($selected_persona === 'approved_partner'): ?>
                                         <i class="bi bi-patch-check-fill text-accent"></i>
                                         <span>Industry Partner Registration</span>
                                     <?php else: ?>
@@ -95,7 +92,7 @@ require_once __DIR__ . '/../header.php';
                                             <span>Security & Verification</span>
                                             <i class="bi bi-check-circle-fill text-accent d-none" id="step-check-3"></i>
                                         </div>
-                                        <div class="reg-step-desc">COR / permit upload & secure password</div>
+                                        <div class="reg-step-desc">e-COR / Diploma / permit & secure password</div>
                                     </div>
                                 </div>
                             </div>
@@ -106,7 +103,9 @@ require_once __DIR__ . '/../header.php';
                                     <i class="bi bi-lightbulb-fill"></i> <span id="reg-hint-step-label">Step 1 Tip</span>
                                 </div>
                                 <p class="reg-hint-text" id="reg-hint-text">
-                                    Use your official <strong>@kld.edu.ph</strong> email address for rapid institutional status verification and automatic departmental routing.
+                                    <?= $selected_persona === 'approved_partner'
+                                        ? 'Enterprise and corporate partners should use official business domain emails. Accounts are reviewed by Career Services.'
+                                        : 'Use your official <strong>@kld.edu.ph</strong> email address for rapid institutional status verification and automatic departmental routing.' ?>
                                 </p>
                             </div>
                         </div>
@@ -154,10 +153,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
                                 <div>
                                     <span class="auth-role-badge" id="form-role-badge">
-                                        <?php if ($selected_persona === 'university_office'): ?>
-                                            <i class="bi bi-bank text-accent"></i>
-                                            <span>University Office</span>
-                                        <?php elseif ($selected_persona === 'approved_partner'): ?>
+                                        <?php if ($selected_persona === 'approved_partner'): ?>
                                             <i class="bi bi-patch-check-fill text-accent"></i>
                                             <span>Industry Partner</span>
                                         <?php else: ?>
@@ -205,9 +201,9 @@ require_once __DIR__ . '/../header.php';
 
                                     <!-- Hidden Inputs synchronized with persona choice -->
                                     <input type="hidden" name="role" id="reg-role-input" value="<?= htmlspecialchars($preselected_role === 'employer' ? 'employer' : 'student') ?>">
-                                    <input type="hidden" name="employer_type" id="reg-employer-type-input" value="<?= htmlspecialchars($employer_type ?? ($selected_persona === 'approved_partner' ? 'approved_partner' : 'university_office')) ?>">
+                                    <input type="hidden" name="employer_type" id="reg-employer-type-input" value="<?= htmlspecialchars($employer_type ?? ($selected_persona === 'approved_partner' ? 'approved_partner' : '')) ?>">
 
-                                    <div class="reg-persona-grid" id="reg-persona-grid" role="radiogroup" aria-label="Registration Persona">
+                                    <div class="reg-persona-grid reg-persona-grid-2col" id="reg-persona-grid" role="radiogroup" aria-label="Registration Persona">
                                         <!-- Persona 1: Student Applicant -->
                                         <div class="reg-persona-card <?= $selected_persona === 'student' ? 'is-selected' : '' ?>" 
                                              id="persona-card-student" 
@@ -227,26 +223,7 @@ require_once __DIR__ . '/../header.php';
                                             </div>
                                         </div>
 
-                                        <!-- Persona 2: University Office / Lab -->
-                                        <div class="reg-persona-card <?= $selected_persona === 'university_office' ? 'is-selected' : '' ?>" 
-                                             id="persona-card-office" 
-                                             onclick="selectPersona('university_office')"
-                                             role="radio" 
-                                             aria-checked="<?= $selected_persona === 'university_office' ? 'true' : 'false' ?>"
-                                             tabindex="0">
-                                            <div class="reg-persona-card-header">
-                                                <div class="reg-persona-icon">
-                                                    <i class="bi bi-bank"></i>
-                                                </div>
-                                                <span class="reg-persona-tag">Campus Unit</span>
-                                            </div>
-                                            <div>
-                                                <div class="reg-persona-title" id="lbl-role-employer">University Office</div>
-                                                <div class="reg-persona-desc">Academic divisions, labs & student services</div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Persona 3: Industry Partner -->
+                                        <!-- Persona 2: Industry Partner -->
                                         <div class="reg-persona-card <?= $selected_persona === 'approved_partner' ? 'is-selected' : '' ?>" 
                                              id="persona-card-partner" 
                                              onclick="selectPersona('approved_partner')"
@@ -265,6 +242,8 @@ require_once __DIR__ . '/../header.php';
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="small text-muted-custom mt-2"><i class="bi bi-info-circle text-accent me-1"></i><strong>KLD Department or University Office?</strong> Internal campus office accounts are provisioned directly by the Career Services Administrator. Already have credentials? <a href="portal-login.php" class="text-accent fw-semibold text-decoration-none">Sign in to Partner &amp; Staff Portal</a>.</div>
                                 </div>
 
                                 <!-- Student Name Fields (First, Middle, Last) -->
@@ -294,14 +273,14 @@ require_once __DIR__ . '/../header.php';
                                 <!-- Email & Phone -->
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-7">
-                                        <label class="form-label" for="reg-email" id="lbl-reg-email">Institutional Email Address <span class="text-danger">*</span></label>
+                                        <label class="form-label" for="reg-email" id="lbl-reg-email"><?= $selected_persona === 'approved_partner' ? 'Official Company / Business Email' : 'Institutional Email Address' ?> <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-envelope-at"></i></span>
-                                            <input type="email" name="email" id="reg-email" class="form-control" placeholder="username@kld.edu.ph" value="<?= htmlspecialchars($email ?? '') ?>" required>
+                                            <input type="email" name="email" id="reg-email" class="form-control" placeholder="<?= $selected_persona === 'approved_partner' ? 'recruitment@company.com' : 'username@kld.edu.ph' ?>" value="<?= htmlspecialchars($email ?? '') ?>" required>
                                         </div>
                                         <div id="email-duplicate-feedback" class="mt-1 small" style="display: none;"></div>
                                         <span class="small text-muted-custom mt-1 d-block" id="email-hint" style="font-size: 11px;">
-                                            Use your official <strong>@kld.edu.ph</strong> email for automatic verification.
+                                            <?= $selected_persona === 'approved_partner' ? 'Corporate or registered business domain email address (institutional @kld.edu.ph not accepted).' : 'Use your official <strong>@kld.edu.ph</strong> email for automatic verification.' ?>
                                         </span>
                                     </div>
                                     <div class="col-md-5">
@@ -330,7 +309,7 @@ require_once __DIR__ . '/../header.php';
                             <div class="reg-step-pane" id="step-pane-2">
                                 
                                 <!-- Student Specific Fields -->
-                                <div class="row g-3 mb-3" id="student-fields">
+                                <div class="row g-3 mb-3" id="student-fields" style="display: <?= $selected_persona !== 'approved_partner' ? 'flex' : 'none' ?>;">
                                     <div class="col-md-6">
                                         <label class="form-label" for="student_id">Student ID Number <span class="text-danger">*</span></label>
                                         <input type="text" name="student_id" id="student_id" class="form-control" placeholder="2025-2-000065" value="<?= htmlspecialchars($student_id ?? '') ?>">
@@ -422,7 +401,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
 
                                 <!-- Partner Employer Specific Fields -->
-                                <div class="row g-3 mb-3" id="partner-fields" style="display: none;">
+                                <div class="row g-3 mb-3" id="partner-fields" style="display: <?= $selected_persona === 'approved_partner' ? 'flex' : 'none' ?>;">
                                     <div class="col-md-6">
                                         <label class="form-label" for="organization_name">Company / Organization Name <span class="text-danger">*</span></label>
                                         <input type="text" name="organization_name" id="organization_name" class="form-control" placeholder="e.g. TechVanguard Solutions Inc." value="<?= htmlspecialchars($organization_name ?? '') ?>">
@@ -453,25 +432,29 @@ require_once __DIR__ . '/../header.php';
                                  ========================================== -->
                             <div class="reg-step-pane" id="step-pane-3">
                                 
+                                <?php
+                                $is_kld_email_initial = (bool)preg_match('/@kld\.edu\.ph$/i', $email ?? '');
+                                $needs_diploma_initial = (!empty($email) && !$is_kld_email_initial) || (($year_level ?? '') === 'Alumnus / Graduated');
+                                ?>
                                 <!-- Document Upload Dropzones -->
-                                <div class="mb-4" id="student-upload-section">
-                                    <label class="form-label fw-bold" for="reg-student-proof">
-                                        Certificate of Registration (COR) or Student ID <span class="text-danger">*</span>
+                                <div class="mb-4" id="student-upload-section" style="display: <?= $selected_persona !== 'approved_partner' ? 'block' : 'none' ?>;">
+                                    <label class="form-label fw-bold" for="reg-student-proof" id="student-proof-label">
+                                        <?= $needs_diploma_initial ? 'Official KLD Diploma (Proof of KLD Graduation) <span class="text-danger">*</span>' : 'Official Certificate of Registration (e-COR) <span class="text-danger">*</span>' ?>
                                     </label>
                                     <div class="reg-upload-dropzone" id="student-dropzone" onclick="document.getElementById('reg-student-proof').click()">
                                         <i class="bi bi-file-earmark-arrow-up text-accent fs-2 mb-1 d-block"></i>
-                                        <div class="fw-bold text-ink small mb-1" id="student-proof-title">Click to select official COR or School ID file</div>
+                                        <div class="fw-bold text-ink small mb-1" id="student-proof-title"><?= $needs_diploma_initial ? 'Click to upload Official KLD Diploma (PDF, JPG, PNG)' : 'Click to select Official KLD e-COR file (PDF, JPG, PNG)' ?></div>
                                         <div class="small text-muted-custom" id="student-file-chosen" style="font-size: 11.5px;">
                                             Supports PDF, JPG, PNG &bull; Maximum file size: 5MB
                                         </div>
                                     </div>
                                     <input type="file" name="student_proof" id="reg-student-proof" class="d-none" accept="image/*,application/pdf" onchange="handleFileSelected(this, 'student-proof-title', 'student-dropzone')">
-                                    <span class="small text-muted-custom mt-1 d-block" style="font-size: 11px;">
-                                        <i class="bi bi-shield-lock text-accent me-1"></i> Your official institutional profile will be verified against this attached document.
+                                    <span class="small text-muted-custom mt-1 d-block" id="student-proof-desc" style="font-size: 11px;">
+                                        <?= $needs_diploma_initial ? 'Graduated alumni and students using a personal email (e.g. Gmail) must attach their Official KLD Diploma as proof of prior KLD enrollment. This credential is also shared with employers when you apply.' : 'Required for all enrolled KLD students. Your verified e-COR will be attached alongside your Resume PDF for employer review when you apply for campus jobs.' ?>
                                     </span>
                                 </div>
 
-                                <div class="mb-4" id="employer-upload-section" style="display: none;">
+                                <div class="mb-4" id="employer-upload-section" style="display: <?= $selected_persona === 'approved_partner' ? 'block' : 'none' ?>;">
                                     <label class="form-label fw-bold" for="reg-permit-photo" id="employer-upload-label">
                                         Department Memo / MOA Attachment
                                     </label>
@@ -579,10 +562,19 @@ require_once __DIR__ . '/../header.php';
 
                         <!-- Alternate Links -->
                         <div class="border-top border-line pt-3 mt-4 text-center">
-                            <span class="text-muted-custom small">Already have an account?</span>
-                            <a href="login.php" class="text-ink fw-bold small ms-1 text-decoration-none">
-                                Sign In Here <i class="bi bi-arrow-right"></i>
-                            </a>
+                            <div class="small text-muted-custom mb-1">
+                                Already have an account? 
+                                <a href="<?= $selected_persona === 'approved_partner' ? 'portal-login.php' : 'login.php' ?>" id="link-signin-primary" class="text-ink fw-bold text-decoration-none">
+                                    <?= $selected_persona === 'approved_partner' ? 'Sign in to Partner &amp; Staff Portal' : 'Sign In Here' ?> <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                            <div class="small text-muted-custom" id="link-signin-secondary">
+                                <?php if ($selected_persona === 'approved_partner'): ?>
+                                    Are you an enrolled student? <a href="login.php" class="text-accent fw-semibold text-decoration-none">Student Sign In</a>
+                                <?php else: ?>
+                                    Are you an Industry Partner or Campus Staff? <a href="portal-login.php" class="text-accent fw-semibold text-decoration-none">Sign in to Partner &amp; Staff Portal</a>
+                                <?php endif; ?>
+                            </div>
                         </div>
 
                     </div>
@@ -604,7 +596,7 @@ let currentStep = 1;
 let maxVisitedStep = 1;
 let currentPersona = '<?= $selected_persona ?>';
 let currentRole = (currentPersona === 'student') ? 'student' : 'employer';
-let currentEmployerType = (currentPersona === 'approved_partner') ? 'approved_partner' : (currentPersona === 'university_office' ? 'university_office' : '');
+let currentEmployerType = (currentPersona === 'approved_partner') ? 'approved_partner' : '';
 
 const stepHints = {
     1: {
@@ -638,7 +630,7 @@ const stepHints = {
     3: {
         student: {
             label: "Step 3 Tip",
-            text: "Upload a legible scan or photo of your official <strong>Certificate of Registration (COR)</strong> or valid School ID. Files are encrypted under RA 10173."
+            text: "Upload a legible scan or copy of your official <strong>Certificate of Registration (e-COR)</strong> or <strong>Official KLD Diploma</strong>. Files are encrypted under RA 10173."
         },
         university_office: {
             label: "Step 3 Tip",
@@ -710,15 +702,71 @@ function hideStepError() {
     }
 }
 
+function updateStudentCredentialRequirements() {
+    if (currentPersona !== 'student' && currentRole !== 'student') {
+        return;
+    }
+
+    const emailInput = document.getElementById('reg-email');
+    const emailVal = (emailInput?.value || '').trim();
+    const isKldEmail = /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal);
+    const yearLevelSelect = document.getElementById('year_level');
+    const yearLevel = yearLevelSelect?.value || '';
+
+    // Check if current email is non-@kld.edu.ph (e.g. @gmail.com) OR if #year_level value is 'Alumnus / Graduated'
+    const needsDiploma = (emailVal !== '' && !isKldEmail) || (yearLevel === 'Alumnus / Graduated');
+
+    const proofLabel = document.getElementById('student-proof-label');
+    const proofTitle = document.getElementById('student-proof-title');
+    const proofDesc = document.getElementById('student-proof-desc');
+    const proofInput = document.getElementById('reg-student-proof');
+    const hasSelectedFile = proofInput && proofInput.files && proofInput.files.length > 0;
+
+    if (needsDiploma) {
+        if (proofLabel) {
+            proofLabel.innerHTML = 'Official KLD Diploma (Proof of KLD Graduation) <span class="text-danger">*</span>';
+        }
+        if (proofTitle && !hasSelectedFile) {
+            proofTitle.textContent = 'Click to upload Official KLD Diploma (PDF, JPG, PNG)';
+        }
+        if (proofDesc) {
+            proofDesc.innerHTML = 'Graduated alumni and students using a personal email (e.g. Gmail) must attach their Official KLD Diploma as proof of prior KLD enrollment. This credential is also shared with employers when you apply.';
+        }
+    } else {
+        if (proofLabel) {
+            proofLabel.innerHTML = 'Official Certificate of Registration (e-COR) <span class="text-danger">*</span>';
+        }
+        if (proofTitle && !hasSelectedFile) {
+            proofTitle.textContent = 'Click to select Official KLD e-COR file (PDF, JPG, PNG)';
+        }
+        if (proofDesc) {
+            proofDesc.innerHTML = 'Required for all enrolled KLD students. Your verified e-COR will be attached alongside your Resume PDF for employer review when you apply for campus jobs.';
+        }
+    }
+}
+
+function preselectAlumniIfPersonalEmail() {
+    if (currentPersona === 'student' || currentRole === 'student') {
+        const emailInput = document.getElementById('reg-email');
+        const emailVal = (emailInput?.value || '').trim();
+        const isKldEmail = /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal);
+        const yearLevelSelect = document.getElementById('year_level');
+        if (!isKldEmail && emailVal.includes('@') && yearLevelSelect && !yearLevelSelect.value) {
+            yearLevelSelect.value = 'Alumnus / Graduated';
+            updateStudentCredentialRequirements();
+        }
+    }
+}
+
 function selectPersona(personaKey) {
+    if (personaKey !== 'approved_partner') {
+        personaKey = 'student';
+    }
     currentPersona = personaKey;
     if (personaKey === 'student') {
         currentRole = 'student';
         currentEmployerType = '';
-    } else if (personaKey === 'university_office') {
-        currentRole = 'employer';
-        currentEmployerType = 'university_office';
-    } else if (personaKey === 'approved_partner') {
+    } else {
         currentRole = 'employer';
         currentEmployerType = 'approved_partner';
     }
@@ -744,9 +792,6 @@ function selectPersona(personaKey) {
     if (personaKey === 'student' && cardStudent) {
         cardStudent.classList.add('is-selected');
         cardStudent.setAttribute('aria-checked', 'true');
-    } else if (personaKey === 'university_office' && cardOffice) {
-        cardOffice.classList.add('is-selected');
-        cardOffice.setAttribute('aria-checked', 'true');
     } else if (personaKey === 'approved_partner' && cardPartner) {
         cardPartner.classList.add('is-selected');
         cardPartner.setAttribute('aria-checked', 'true');
@@ -769,6 +814,7 @@ function selectPersona(personaKey) {
     const employerUploadSec = document.getElementById('employer-upload-section');
     const lblRegEmail = document.getElementById('lbl-reg-email');
     const emailHint = document.getElementById('email-hint');
+    const regEmailInput = document.getElementById('reg-email');
     const employerUploadLabel = document.getElementById('employer-upload-label');
     const employerUploadDesc = document.getElementById('employer-upload-desc');
 
@@ -781,6 +827,7 @@ function selectPersona(personaKey) {
 
         if (lblRegEmail) lblRegEmail.innerHTML = 'Institutional Email Address <span class="text-danger">*</span>';
         if (emailHint) emailHint.innerHTML = 'Use your official <strong>@kld.edu.ph</strong> email for automatic verification.';
+        if (regEmailInput && !regEmailInput.value) regEmailInput.placeholder = 'username@kld.edu.ph';
 
         if (studentNameFields) studentNameFields.style.display = 'flex';
         if (employerNameFields) employerNameFields.style.display = 'none';
@@ -789,27 +836,7 @@ function selectPersona(personaKey) {
         if (partnerFields) partnerFields.style.display = 'none';
         if (studentUploadSec) studentUploadSec.style.display = 'block';
         if (employerUploadSec) employerUploadSec.style.display = 'none';
-    } else if (personaKey === 'university_office') {
-        if (brandRoleBadge) brandRoleBadge.innerHTML = '<i class="bi bi-bank text-accent"></i> <span>University Office Registration</span>';
-        if (formRoleBadge) formRoleBadge.innerHTML = '<i class="bi bi-bank text-accent"></i> <span>University Office</span>';
-        if (stepTitleText2) stepTitleText2.textContent = 'Department & Office Details';
-        if (stepDescText2) stepDescText2.textContent = 'Campus office location & unit code';
-        if (mobLabel2) mobLabel2.textContent = 'Department';
-
-        if (lblRegEmail) lblRegEmail.innerHTML = 'Official University Office Email <span class="text-danger">*</span>';
-        if (emailHint) emailHint.innerHTML = 'Must be an official <strong>@kld.edu.ph</strong> university division address.';
-
-        if (studentNameFields) studentNameFields.style.display = 'none';
-        if (employerNameFields) employerNameFields.style.display = 'flex';
-        if (studentFields) studentFields.style.display = 'none';
-        if (officeFields) officeFields.style.display = 'flex';
-        if (partnerFields) partnerFields.style.display = 'none';
-        if (studentUploadSec) studentUploadSec.style.display = 'none';
-        if (employerUploadSec) employerUploadSec.style.display = 'block';
-
-        if (employerUploadLabel) employerUploadLabel.innerHTML = 'Department Endorsement / Request Memo <span class="text-danger">*</span>';
-        if (employerUploadDesc) employerUploadDesc.innerHTML = 'Official university letterhead or administrative authorization document.';
-    } else if (personaKey === 'approved_partner') {
+    } else {
         if (brandRoleBadge) brandRoleBadge.innerHTML = '<i class="bi bi-patch-check-fill text-accent"></i> <span>Industry Partner Registration</span>';
         if (formRoleBadge) formRoleBadge.innerHTML = '<i class="bi bi-patch-check-fill text-accent"></i> <span>Industry Partner</span>';
         if (stepTitleText2) stepTitleText2.textContent = 'Company & Partnership Details';
@@ -817,7 +844,8 @@ function selectPersona(personaKey) {
         if (mobLabel2) mobLabel2.textContent = 'Enterprise';
 
         if (lblRegEmail) lblRegEmail.innerHTML = 'Official Company / Business Email <span class="text-danger">*</span>';
-        if (emailHint) emailHint.innerHTML = 'Corporate or registered business domain email address.';
+        if (emailHint) emailHint.innerHTML = 'Corporate or registered business domain email address (institutional @kld.edu.ph not accepted).';
+        if (regEmailInput && !regEmailInput.value) regEmailInput.placeholder = 'recruitment@company.com';
 
         if (studentNameFields) studentNameFields.style.display = 'none';
         if (employerNameFields) employerNameFields.style.display = 'flex';
@@ -831,7 +859,47 @@ function selectPersona(personaKey) {
         if (employerUploadDesc) employerUploadDesc.innerHTML = 'SEC/DTI Registration, Mayor\'s Permit, or KLD MOA Partnership document.';
     }
 
+    // Dynamic alternate sign-in links
+    const linkPrimary = document.getElementById('link-signin-primary');
+    const linkSecondary = document.getElementById('link-signin-secondary');
+    if (personaKey === 'approved_partner') {
+        if (linkPrimary) {
+            linkPrimary.href = 'portal-login.php';
+            linkPrimary.innerHTML = 'Sign in to Partner &amp; Staff Portal <i class="bi bi-arrow-right"></i>';
+        }
+        if (linkSecondary) {
+            linkSecondary.innerHTML = 'Are you an enrolled student? <a href="login.php" class="text-accent fw-semibold text-decoration-none">Student Sign In</a>';
+        }
+    } else {
+        if (linkPrimary) {
+            linkPrimary.href = 'login.php';
+            linkPrimary.innerHTML = 'Sign In Here <i class="bi bi-arrow-right"></i>';
+        }
+        if (linkSecondary) {
+            linkSecondary.innerHTML = 'Are you an Industry Partner or Campus Staff? <a href="portal-login.php" class="text-accent fw-semibold text-decoration-none">Sign in to Partner &amp; Staff Portal</a>';
+        }
+    }
+
+    // Re-check email validity if already entered
+    if (regEmailInput && regEmailInput.value.trim()) {
+        const val = regEmailInput.value.trim();
+        const feedback = document.getElementById('email-duplicate-feedback');
+        if (currentPersona === 'approved_partner' && /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(val)) {
+            regEmailInput.classList.add('is-invalid');
+            if (feedback) {
+                feedback.innerHTML = '<div class="text-danger fw-semibold mt-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Institutional @kld.edu.ph emails cannot be used for Industry Partner registration. Please use your company email.</div>';
+                feedback.style.display = 'block';
+            }
+        } else if (currentPersona === 'student' && feedback && feedback.textContent.includes('Institutional @kld.edu.ph emails cannot be used')) {
+            feedback.innerHTML = '';
+            feedback.style.display = 'none';
+            regEmailInput.classList.remove('is-invalid');
+            verifyEmailAvailability(val);
+        }
+    }
+
     updateWizardUI();
+    updateStudentCredentialRequirements();
 }
 
 // Account availability check cache and pending requests
@@ -852,6 +920,16 @@ async function verifyEmailAvailability(emailVal) {
         if (emailInput) emailInput.classList.remove('is-invalid');
         accountCheckCache.email = { value: '', exists: false, checked: false };
         return true;
+    }
+
+    if ((currentPersona === 'approved_partner' || currentRole === 'employer') && /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal)) {
+        if (emailInput) emailInput.classList.add('is-invalid');
+        if (feedback) {
+            feedback.innerHTML = '<div class="text-danger fw-semibold mt-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Institutional @kld.edu.ph emails cannot be used for Industry Partner registration. Please use your company email.</div>';
+            feedback.style.display = 'block';
+        }
+        accountCheckCache.email = { value: emailVal, exists: false, checked: true };
+        return false;
     }
 
     if (accountCheckCache.email.checked && accountCheckCache.email.value === emailVal) {
@@ -1027,9 +1105,9 @@ async function validateCurrentStep() {
             return false;
         }
 
-        if (currentPersona === 'university_office') {
-            if (!/@kld\.edu\.ph$/i.test(email.value.trim())) {
-                showStepError('University Office accounts must use an official @kld.edu.ph institutional email address. External partners must select "Industry Partner".');
+        if (currentPersona === 'approved_partner' || currentRole === 'employer') {
+            if (/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(email.value.trim())) {
+                showStepError('Institutional @kld.edu.ph emails cannot be used for Industry Partner registration. Please use your company email.');
                 email.focus();
                 return false;
             }
@@ -1141,22 +1219,53 @@ async function validateCurrentStep() {
         return true;
     }
 
+    if (currentStep === 3) {
+        if (currentPersona === 'student' || currentRole === 'student') {
+            const proofInput = document.getElementById('reg-student-proof');
+            if (!proofInput || !proofInput.files || proofInput.files.length === 0) {
+                const emailVal = (document.getElementById('reg-email')?.value || '').trim();
+                const isKldEmail = /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal);
+                const yearLevel = document.getElementById('year_level')?.value || '';
+                const needsDiploma = !isKldEmail || (yearLevel === 'Alumnus / Graduated');
+
+                if (needsDiploma) {
+                    showStepError('Please upload your Official KLD Diploma as proof that you graduated from KLD.');
+                } else {
+                    showStepError('Please upload your Official Certificate of Registration (e-COR) to complete your student registration.');
+                }
+                const dropzone = document.getElementById('student-dropzone');
+                if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+        }
+        return true;
+    }
+
     return true;
 }
 
 function goToStep(targetStep) {
     if (targetStep < 1 || targetStep > 3) return;
+    if (currentStep === 1 && targetStep >= 2) {
+        preselectAlumniIfPersonalEmail();
+    }
     currentStep = targetStep;
     if (currentStep > maxVisitedStep) {
         maxVisitedStep = currentStep;
     }
     updateWizardUI();
     hideStepError();
+    if (currentStep === 3) {
+        updateStudentCredentialRequirements();
+    }
 }
 
 async function nextStep() {
     const isValid = await validateCurrentStep();
     if (isValid) {
+        if (currentStep === 1) {
+            preselectAlumniIfPersonalEmail();
+        }
         goToStep(currentStep + 1);
     }
 }
@@ -1168,6 +1277,9 @@ function prevStep() {
 
 async function handleStepNavClick(step) {
     if (step <= maxVisitedStep || step === currentStep) {
+        if (currentStep === 1 && step >= 2) {
+            preselectAlumniIfPersonalEmail();
+        }
         goToStep(step);
     } else if (step === currentStep + 1) {
         await nextStep();
@@ -1253,7 +1365,25 @@ function updateWizardUI() {
     const hintLabel = document.getElementById('reg-hint-step-label');
     const hintText = document.getElementById('reg-hint-text');
     if (hintLabel) hintLabel.textContent = hint.label;
-    if (hintText) hintText.innerHTML = hint.text;
+    if (hintText) {
+        if (currentStep === 3 && (currentPersona === 'student' || currentRole === 'student')) {
+            const emailVal = (document.getElementById('reg-email')?.value || '').trim();
+            const isKldEmail = /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal);
+            const yearLevel = document.getElementById('year_level')?.value || '';
+            const needsDiploma = (emailVal !== '' && !isKldEmail) || (yearLevel === 'Alumnus / Graduated');
+            if (needsDiploma) {
+                hintText.innerHTML = "Graduated alumni and students using a personal email must attach their <strong>Official KLD Diploma</strong> for graduation verification.";
+            } else {
+                hintText.innerHTML = "Upload your official <strong>Certificate of Registration (e-COR)</strong> to verify current semester enrollment and study load.";
+            }
+        } else {
+            hintText.innerHTML = hint.text;
+        }
+    }
+
+    if (currentStep === 3) {
+        updateStudentCredentialRequirements();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1284,6 +1414,7 @@ document.addEventListener('DOMContentLoaded', function() {
         regEmailInput.addEventListener('input', function() {
             clearTimeout(emailTimer);
             accountCheckCache.email.checked = false;
+            updateStudentCredentialRequirements();
             const val = this.value.trim();
             if (val.length >= 5 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
                 emailTimer = setTimeout(() => {
@@ -1295,13 +1426,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 regEmailInput.classList.remove('is-invalid');
             }
         });
+        regEmailInput.addEventListener('change', updateStudentCredentialRequirements);
         regEmailInput.addEventListener('blur', function() {
             clearTimeout(emailTimer);
+            updateStudentCredentialRequirements();
             const val = this.value.trim();
             if (val.length >= 5 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
                 verifyEmailAvailability(val);
             }
         });
+    }
+
+    const regYearLevelSelect = document.getElementById('year_level');
+    if (regYearLevelSelect) {
+        regYearLevelSelect.addEventListener('change', updateStudentCredentialRequirements);
     }
 
     function autoDetectYearLevelFromStudentId(val) {
@@ -1328,7 +1466,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (targetLevel) {
+            const emailVal = (document.getElementById('reg-email')?.value || '').trim();
+            const isKldEmail = /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal);
+            if (!isKldEmail && emailVal.includes('@') && yearSelect.value === 'Alumnus / Graduated') {
+                return;
+            }
             yearSelect.value = targetLevel;
+            updateStudentCredentialRequirements();
             if (hint) {
                 hint.innerHTML = `<i class="bi bi-magic me-1"></i>Batch <strong>${year}</strong> detected &mdash; Academic standing set to <strong>${targetLevel}</strong>`;
                 hint.style.display = 'block';
@@ -1375,6 +1519,7 @@ document.addEventListener('DOMContentLoaded', function() {
     maxVisitedStep = Math.max(initialStepAttr, 1);
 
     selectPersona(currentPersona);
+    updateStudentCredentialRequirements();
 
     // Client-side validation before form submission on Step 3
     if (registerForm) {
@@ -1384,11 +1529,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
-            if (currentRole === 'student') {
+            if (currentPersona === 'student' || currentRole === 'student') {
                 const proofInput = document.getElementById('reg-student-proof');
                 if (!proofInput || !proofInput.files || proofInput.files.length === 0) {
                     e.preventDefault();
-                    showStepError("Please attach your Certificate of Registration (COR) or Student ID document.");
+                    const emailVal = (document.getElementById('reg-email')?.value || '').trim();
+                    const isKldEmail = /@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i.test(emailVal);
+                    const yearLevel = document.getElementById('year_level')?.value || '';
+                    const needsDiploma = !isKldEmail || (yearLevel === 'Alumnus / Graduated');
+
+                    if (needsDiploma) {
+                        showStepError('Please upload your Official KLD Diploma as proof that you graduated from KLD.');
+                    } else {
+                        showStepError('Please upload your Official Certificate of Registration (e-COR) to complete your student registration.');
+                    }
+                    const dropzone = document.getElementById('student-dropzone');
+                    if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return false;
                 }
             }

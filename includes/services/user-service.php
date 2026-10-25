@@ -55,7 +55,16 @@ if (!function_exists('require_auth')) {
 
         if (!is_logged_in()) {
             set_flash('warning', 'Please sign in to access this page.');
-            header('Location: ' . $prefix . 'login.php');
+            $isStaffRoute = (strpos($script, '/admin/') !== false || strpos($script, '/employer/') !== false);
+            if (!$isStaffRoute && !empty($allowed_roles)) {
+                $hasStudent = in_array('student', $allowed_roles, true);
+                $hasStaff = in_array('admin', $allowed_roles, true) || in_array('employer', $allowed_roles, true);
+                if ($hasStaff && !$hasStudent) {
+                    $isStaffRoute = true;
+                }
+            }
+            $targetLogin = $isStaffRoute ? 'portal-login.php' : 'login.php';
+            header('Location: ' . $prefix . $targetLogin);
             exit;
         }
 
@@ -258,7 +267,7 @@ function get_user_base_query(): string {
         SELECT 
             u.`id`, u.`email`, u.`password`, u.`role`, u.`name`, u.`phone`, u.`status`, 
             u.`is_archived`, u.`archived_at`, u.`is_revoked`, u.`revoked_at`, u.`revocation_reason`,
-            u.`is_email_verified`, u.`created_at`, u.`updated_at`,
+            u.`is_email_verified`, u.`must_change_password`, u.`created_at`, u.`updated_at`,
             sp.`student_id`,
             sp.`department` AS `student_department`,
             COALESCE(sp.`department`, ep.`organization_name`, 'General Academics') AS `department`,
@@ -1068,6 +1077,162 @@ function register_user(array $data, ?string $permit_file = null, ?string $proof_
 }
 
 // ============================================================================
+if (!function_exists('get_kld_offices')) {
+    function get_kld_offices(): array {
+        return [
+            'Career Services & Placement Office',
+            'Office of Student Affairs & Services (OSAS)',
+            'University Registrar',
+            'Institute of Computing and Digital Innovation (ICDI)',
+            'Institute of Engineering and Technology (IET)',
+            'Institute of Business and Management (IBM)',
+            'Institute of Education, Arts and Sciences (IEAS)',
+            'Management Information Systems (MIS)',
+            'Library and Learning Resource Center',
+            'Human Resource Development Office (HRDO)',
+            'Office of the University President',
+            'Office of the Vice President for Academic Affairs (OVPAA)',
+            'Accounting & Finance Office',
+            'Campus Facilities & General Services'
+        ];
+    }
+}
+
+/**
+ * Provision an employer account administratively with verified status and a temporary password gate.
+ *
+ * @param array $data Account parameters
+ * @param string|null $permit_path Stored relative path to permit file if uploaded
+ * @return array Result array with status, message or account details
+ */
+function provision_employer_account(array $data, ?string $permit_path = null): array {
+    ensure_email_verifications_table();
+
+    $email = strtolower(trim($data['email'] ?? ''));
+    $name = trim($data['name'] ?? '');
+    $org_name = trim($data['organization_name'] ?? '');
+    $phone = trim($data['phone'] ?? '');
+    $employer_type = ($data['employer_type'] ?? 'university_office') === 'approved_partner' ? 'approved_partner' : 'university_office';
+    $temp_password = (string)($data['password'] ?? '');
+
+    if ($org_name === '') {
+        return ['success' => false, 'message' => 'Organization or Office name is required.'];
+    }
+    if ($name === '') {
+        return ['success' => false, 'message' => 'Authorized representative name is required.'];
+    }
+    if ($email === '') {
+        return ['success' => false, 'message' => 'Email address is required.'];
+    }
+    if (strlen($temp_password) < 8) {
+        return ['success' => false, 'message' => 'Temporary password must be at least 8 characters long.'];
+    }
+
+    // Validate email format and DNS
+    $dns_res = validate_email_domain_dns($email);
+    if (!$dns_res['valid']) {
+        return ['success' => false, 'message' => $dns_res['error'] ?? 'Please provide a valid email address.'];
+    }
+
+    if (is_email_registered($email)) {
+        return ['success' => false, 'message' => 'This email address is already registered to an existing account.'];
+    }
+
+    // Domain rules based on employer type
+    if ($employer_type === 'university_office') {
+        if (!preg_match('/@kld\.edu\.ph$/i', $email)) {
+            return ['success' => false, 'message' => 'University Office accounts must use an official @kld.edu.ph email address.'];
+        }
+    } else {
+        if (preg_match('/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i', $email)) {
+            return ['success' => false, 'message' => 'External Industry Partner accounts cannot use an @kld.edu.ph institutional email address.'];
+        }
+    }
+
+    // Validate phone number format if provided
+    if ($phone !== '') {
+        $digits_only = preg_replace('/[^0-9]/', '', $phone);
+        if (preg_match('/[a-zA-Z]/', $phone) || !preg_match('/^[\+]?[0-9\s\-()]{7,20}$/', $phone) || strlen($digits_only) < 7 || strlen($digits_only) > 15) {
+            return ['success' => false, 'message' => 'Contact phone number must contain valid numbers only (7 to 15 digits). Alphabetic characters are not allowed.'];
+        }
+    }
+
+    try {
+        $pdo = get_db_connection();
+        $pdo->beginTransaction();
+
+        $hashed_password = password_hash($temp_password, PASSWORD_DEFAULT);
+        $stmt_user = $pdo->prepare("
+            INSERT INTO `users` (
+                `name`, `email`, `password`, `role`, `phone`, `status`,
+                `is_email_verified`, `verification_status`, `must_change_password`, `created_at`
+            ) VALUES (
+                :name, :email, :password, 'employer', :phone, 'active',
+                1, 'verified', 1, NOW()
+            )
+        ");
+        $stmt_user->execute([
+            ':name'     => $name,
+            ':email'    => $email,
+            ':password' => $hashed_password,
+            ':phone'    => $phone !== '' ? $phone : null
+        ]);
+        $user_id = (int)$pdo->lastInsertId();
+
+        $year = date('Y');
+        $accreditation = trim($data['accreditation_number'] ?? '');
+        if ($accreditation === '') {
+            $prefix = ($employer_type === 'university_office') ? 'KLD-OFF-' : 'KLD-MOA-';
+            $accreditation = $prefix . $year . '-' . str_pad((string)$user_id, 4, '0', STR_PAD_LEFT);
+        }
+
+        insert_employer_profile($pdo, $user_id, $data, $org_name, $employer_type, 'verified', $accreditation, $permit_path);
+
+        $pdo->commit();
+
+        // Create welcome notification prompting temporary password change
+        if (function_exists('create_notification')) {
+            try {
+                create_notification(
+                    $user_id,
+                    'account_security',
+                    'Welcome to KLD Career Portal - Temporary Password Active',
+                    'Your employer account has been provisioned by the Career Services Administrator. Please navigate to Account Settings to set your permanent personal password.',
+                    'settings.php?setup_password=1#password-section',
+                    'bi-shield-lock',
+                    'warning'
+                );
+            } catch (\Throwable $e) {
+                error_log("create_notification error during provisioning: " . $e->getMessage());
+            }
+        }
+
+        // Dispatch welcome/credentials email via send_provisioned_account_email if available
+        if (function_exists('send_provisioned_account_email')) {
+            try {
+                send_provisioned_account_email($email, $name, $org_name, $employer_type, $temp_password);
+            } catch (\Throwable $e) {
+                error_log("send_provisioned_account_email error: " . $e->getMessage());
+            }
+        }
+
+        return [
+            'success'           => true,
+            'user_id'           => $user_id,
+            'email'             => $email,
+            'temp_password'     => $temp_password,
+            'organization_name' => $org_name,
+            'employer_type'     => $employer_type
+        ];
+    } catch (\Throwable $e) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log("provision_employer_account error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Provisioning failed: ' . $e->getMessage()];
+    }
+}
+
 // STUDENT PROFILE CHANGE REQUESTS
 // ============================================================================
 
@@ -1655,10 +1820,11 @@ function update_user_profile(int $user_id, string $role, array $data): bool {
 function update_user_password(int|string $user_id, string $hashed_password): bool {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->prepare("UPDATE `users` SET `password` = :pass, `updated_at` = NOW() WHERE `id` = :id");
+        $stmt = $pdo->prepare("UPDATE `users` SET `password` = :pass, `must_change_password` = 0, `updated_at` = NOW() WHERE `id` = :id");
         $stmt->execute([':pass' => $hashed_password, ':id' => (int)$user_id]);
         if (isset($_SESSION['user']['id']) && (int)$_SESSION['user']['id'] === (int)$user_id) {
             $_SESSION['user']['password'] = $hashed_password;
+            $_SESSION['user']['must_change_password'] = 0;
         }
         return true;
     } catch (Exception $e) {
@@ -1669,6 +1835,21 @@ function update_user_password(int|string $user_id, string $hashed_password): boo
 
 function ensure_password_resets_table(): void {
     DatastoreManager::ensureSchema();
+    static $ensuredMustChange = false;
+    if (!$ensuredMustChange) {
+        try {
+            $pdo = get_db_connection();
+            if ($pdo) {
+                $col = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'must_change_password'")->fetch();
+                if (!$col) {
+                    $pdo->exec("ALTER TABLE `users` ADD COLUMN `must_change_password` TINYINT(1) NOT NULL DEFAULT 0");
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log("ensure must_change_password error: " . $e->getMessage());
+        }
+        $ensuredMustChange = true;
+    }
 }
 
 function create_password_reset(int|string $user_id): ?string {
@@ -1704,7 +1885,7 @@ function consume_password_reset(int|string $reset_id, int|string $user_id, strin
     try {
         $pdo = get_db_connection();
         $pdo->beginTransaction();
-        $stmt = $pdo->prepare("UPDATE `users` SET `password` = :pass, `updated_at` = NOW() WHERE `id` = :id");
+        $stmt = $pdo->prepare("UPDATE `users` SET `password` = :pass, `must_change_password` = 0, `updated_at` = NOW() WHERE `id` = :id");
         $stmt->execute([':pass' => password_hash($new_password, PASSWORD_DEFAULT), ':id' => (int)$user_id]);
         $pdo->prepare("UPDATE `password_resets` SET `used_at` = NOW() WHERE `id` = :i")
             ->execute([':i' => (int)$reset_id]);
@@ -1753,6 +1934,21 @@ function validate_password_strength(string $password): array {
 
 function ensure_email_verifications_table(): void {
     DatastoreManager::ensureSchema();
+    static $ensuredMustChange = false;
+    if (!$ensuredMustChange) {
+        try {
+            $pdo = get_db_connection();
+            if ($pdo) {
+                $col = $pdo->query("SHOW COLUMNS FROM `users` LIKE 'must_change_password'")->fetch();
+                if (!$col) {
+                    $pdo->exec("ALTER TABLE `users` ADD COLUMN `must_change_password` TINYINT(1) NOT NULL DEFAULT 0");
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log("ensure must_change_password error: " . $e->getMessage());
+        }
+        $ensuredMustChange = true;
+    }
 }
 
 function create_email_verification_code(int $user_id): string {
