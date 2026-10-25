@@ -29,7 +29,7 @@ require_once __DIR__ . '/../header.php';
                     ?>
                 </div>
 
-                <div class="row g-4 mb-5">
+                <div id="app-<?= (int)$target_app['id'] ?>" data-highlight-id="app-<?= (int)$target_app['id'] ?>" class="row g-4 mb-5">
                     
                     <!-- Left 7-col: Candidate Profile, Statement & Availability Matrix -->
                     <div class="col-lg-7">

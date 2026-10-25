@@ -98,7 +98,7 @@ class SessionGuard {
             return null;
         }
         $target = ltrim($target, '/');
-        if (preg_match('#^(student|employer|admin|index\.php|jobs\.php|faqs\.php|about-us\.php|updates\.php|update-detail\.php)\b#i', $target)) {
+        if (preg_match('#^(student|employer|admin|index\.php|jobs\.php|faqs\.php|about-us\.php|updates\.php|update-detail\.php|settings\.php|notifications\.php)\b#i', $target)) {
             return $target;
         }
         return null;

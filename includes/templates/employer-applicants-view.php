@@ -160,7 +160,7 @@ require_once __DIR__ . '/../header.php';
                                     <?php foreach ($all_dept_apps as $app): 
                                         $sched_fit = $app['schedule_summary'] ?? get_schedule_summary($app);
                                     ?>
-                                        <tr>
+                                        <tr id="app-<?= (int)$app['id'] ?>" data-highlight-id="app-<?= (int)$app['id'] ?>">
                                             <td class="ps-4" data-label="Candidate Profile">
                                                 <div class="fw-bold text-ink"><?= htmlspecialchars($app['student_name']) ?></div>
                                                 <div class="small text-muted-custom">

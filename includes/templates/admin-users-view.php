@@ -113,7 +113,7 @@ require_once __DIR__ . '/../header.php';
                                         $req_status = $req['status'] ?? 'pending';
                                         $proof = $req['proof_file'] ?? '';
                                     ?>
-                                        <tr>
+                                        <tr id="profile-req-<?= (int)$req['id'] ?>" data-highlight-id="profile-req-<?= (int)$req['id'] ?>">
                                             <td class="ps-4 text-start text-nowrap" data-label="Request Ref">
                                                 <span class="font-monospace fw-bold text-ink small">#REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?></span>
                                                 <div class="small text-muted-custom" style="font-size: 11px;"><?= format_display_date($req['created_at']) ?></div>
@@ -302,7 +302,7 @@ require_once __DIR__ . '/../header.php';
                                         $ver_status = $u['verification_status'] ?? 'verified';
                                         $org = $u['organization_name'] ?? ($u['department'] ?? 'Campus Organization');
                                     ?>
-                                        <tr>
+                                        <tr id="user-row-<?= (int)$u['id'] ?>" data-highlight-id="user-row-<?= (int)$u['id'] ?>">
                                             <td class="ps-4" data-label="User Details" style="max-width: 220px;">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0" style="width: 32px; height: 32px; font-size: 13px;">

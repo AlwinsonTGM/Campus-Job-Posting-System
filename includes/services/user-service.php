@@ -1173,7 +1173,7 @@ function dispatch_profile_request_notification(string $user_name): void {
         'profile_request',
         'Profile Correction Request',
         "{$user_name} submitted a profile change request for administrative review.",
-        'admin/users.php#student-requests-section',
+        'admin/users.php?highlight=student-requests-section#student-requests-section',
         'bi-person-gear',
         'info'
     );
@@ -1322,7 +1322,7 @@ function dispatch_profile_approval_notification(int $user_id): void {
         'profile_request',
         'Profile Update Approved! 🎉',
         'Your institutional record change request has been verified and updated by the administrator.',
-        'settings.php',
+        'settings.php?highlight=profile-form#profile-form',
         'bi-person-check-fill',
         'success'
     );
@@ -1397,7 +1397,7 @@ function reject_profile_request(int|string $request_id, string $admin_notes = ''
                 'profile_request',
                 'Profile Update Request Declined',
                 "Your profile change request was declined by the administrator.{$notes_snip}",
-                'settings.php',
+                'settings.php?highlight=profile-form#profile-form',
                 'bi-person-x-fill',
                 'warning'
             );
@@ -1481,7 +1481,7 @@ function resubmit_employer_accreditation(int $user_id, array $data, ?string $per
                 'system',
                 "Employer Accreditation Resubmitted: {$display_org}",
                 "Employer '{$display_org}' (Rep: {$display_name}) resubmitted updated accreditation documents for verification.{$note_text}",
-                "admin/users.php?ver_status=pending_approval#filter-results-container",
+                "admin/users.php?ver_status=pending_approval&highlight=user-row-{$user_id}#user-row-{$user_id}",
                 "bi-patch-check",
                 "warning"
             );
@@ -1570,7 +1570,7 @@ function resubmit_student_registration(int $user_id, ?string $proof_path = null,
                 'system',
                 "Student Registration Resubmitted: {$display_name}",
                 "Student '{$display_name}' resubmitted updated registration proof for verification.{$note_text}",
-                "admin/users.php?ver_status=pending_approval#filter-results-container",
+                "admin/users.php?ver_status=pending_approval&highlight=user-row-{$user_id}#user-row-{$user_id}",
                 "bi-patch-check",
                 "warning"
             );
