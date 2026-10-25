@@ -16,20 +16,10 @@ require_once __DIR__ . '/../header.php';
                 
                 <!-- Page Head -->
                 <?php
-                $ver_btn_class = $pending_count > 0 ? 'btn-pill me-2' : 'btn-pill-outline me-2';
-                $head_actions = '
-                    <a href="verification-deck.php" class="' . $ver_btn_class . '">
-                        <i class="bi bi-shield-check me-1"></i> Verification Queue (' . $pending_count . ')
-                    </a>
-                    <a href="reports.php" class="btn-pill">
-                        <i class="bi bi-bar-chart-fill"></i> System Reports
-                    </a>
-                ';
                 render_page_head(
                     '',
                     'Campus User Directory & Roles',
-                    'Manage student accounts, academic departments, and approve accredited external partner organizations.',
-                    $head_actions
+                    'Manage student accounts, academic departments, and approve accredited external partner organizations.'
                 );
                 ?>
 
