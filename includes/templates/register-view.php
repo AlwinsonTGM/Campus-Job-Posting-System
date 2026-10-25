@@ -192,59 +192,28 @@ require_once __DIR__ . '/../header.php';
                                  ========================================== -->
                             <div class="reg-step-pane is-visible" id="step-pane-1">
                                 
-                                <!-- Unified 3-Persona Selection Grid (Eliminates repetitive 2-tier toggles) -->
-                                <div class="mb-4">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <label class="form-label fw-bold mb-0">Select Registration Persona <span class="text-danger">*</span></label>
-                                        <span class="small text-muted-custom" style="font-size: 11.5px;">1-Click Role Selection</span>
+                                <!-- Hidden Inputs (persona locked by URL param) -->
+                                <input type="hidden" name="role" id="reg-role-input" value="<?= htmlspecialchars($preselected_role === 'employer' ? 'employer' : 'student') ?>">
+                                <input type="hidden" name="employer_type" id="reg-employer-type-input" value="<?= htmlspecialchars($employer_type ?? ($selected_persona === 'approved_partner' ? 'approved_partner' : '')) ?>">
+
+                                <!-- Persona locked indicator (no switcher shown; user arrived from the correct entry point) -->
+                                <?php if ($selected_persona === 'approved_partner'): ?>
+                                <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3 border border-line bg-surface">
+                                    <i class="bi bi-patch-check-fill text-accent" style="font-size: 2rem;"></i>
+                                    <div>
+                                        <div class="fw-bold text-ink" style="font-size: 15px;">Industry Partner Registration</div>
+                                        <div class="text-muted-custom" style="font-size: 12.5px;">Corporate recruiters &amp; accredited MOA firms</div>
                                     </div>
-
-                                    <!-- Hidden Inputs synchronized with persona choice -->
-                                    <input type="hidden" name="role" id="reg-role-input" value="<?= htmlspecialchars($preselected_role === 'employer' ? 'employer' : 'student') ?>">
-                                    <input type="hidden" name="employer_type" id="reg-employer-type-input" value="<?= htmlspecialchars($employer_type ?? ($selected_persona === 'approved_partner' ? 'approved_partner' : '')) ?>">
-
-                                    <div class="reg-persona-grid reg-persona-grid-2col" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important;" id="reg-persona-grid" role="radiogroup" aria-label="Registration Persona">
-                                        <!-- Persona 1: Student Applicant -->
-                                        <div class="reg-persona-card <?= $selected_persona === 'student' ? 'is-selected' : '' ?>" 
-                                             id="persona-card-student" 
-                                             onclick="selectPersona('student')"
-                                             role="radio" 
-                                             aria-checked="<?= $selected_persona === 'student' ? 'true' : 'false' ?>"
-                                             tabindex="0">
-                                            <div class="reg-persona-card-header">
-                                                <div class="reg-persona-icon">
-                                                    <i class="bi bi-mortarboard-fill"></i>
-                                                </div>
-                                                <span class="reg-persona-tag">Enrolled</span>
-                                            </div>
-                                            <div>
-                                                <div class="reg-persona-title" id="lbl-role-student">Student Applicant</div>
-                                                <div class="reg-persona-desc">Apply for student assistantships & campus jobs</div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Persona 2: Industry Partner -->
-                                        <div class="reg-persona-card <?= $selected_persona === 'approved_partner' ? 'is-selected' : '' ?>" 
-                                             id="persona-card-partner" 
-                                             onclick="selectPersona('approved_partner')"
-                                             role="radio" 
-                                             aria-checked="<?= $selected_persona === 'approved_partner' ? 'true' : 'false' ?>"
-                                             tabindex="0">
-                                            <div class="reg-persona-card-header">
-                                                <div class="reg-persona-icon">
-                                                    <i class="bi bi-patch-check-fill"></i>
-                                                </div>
-                                                <span class="reg-persona-tag">Enterprise</span>
-                                            </div>
-                                            <div>
-                                                <div class="reg-persona-title" id="lbl-type-partner">Industry Partner</div>
-                                                <div class="reg-persona-desc">Corporate recruiters & accredited MOA firms</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    
                                 </div>
+                                <?php else: ?>
+                                <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3 border border-line bg-surface">
+                                    <i class="bi bi-mortarboard-fill text-accent" style="font-size: 2rem;"></i>
+                                    <div>
+                                        <div class="fw-bold text-ink" style="font-size: 15px;">Student Applicant Registration</div>
+                                        <div class="text-muted-custom" style="font-size: 12.5px;">Apply for student assistantships &amp; campus jobs</div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
 
                                 <!-- Student Name Fields (First, Middle, Last) -->
                                 <div class="row g-3 mb-3" id="student-name-fields" style="display: <?= $preselected_role !== 'employer' ? 'flex' : 'none' ?>;">
@@ -563,7 +532,7 @@ require_once __DIR__ . '/../header.php';
                         <!-- Alternate Links -->
                         <div class="border-top border-line pt-3 mt-4 text-center">
                             <div class="small text-muted-custom mb-1">
-                                Already have an account? 
+                                Already have an account?
                                 <a href="<?= $selected_persona === 'approved_partner' ? 'portal-login.php' : 'login.php' ?>" id="link-signin-primary" class="text-ink fw-bold text-decoration-none">
                                     <?= $selected_persona === 'approved_partner' ? 'Sign in to Partner &amp; Staff Portal' : 'Sign In Here' ?> <i class="bi bi-arrow-right"></i>
                                 </a>
@@ -572,7 +541,7 @@ require_once __DIR__ . '/../header.php';
                                 <?php if ($selected_persona === 'approved_partner'): ?>
                                     Are you an enrolled student? <a href="login.php" class="text-accent fw-semibold text-decoration-none">Student Sign In</a>
                                 <?php else: ?>
-                                    Are you an Industry Partner or Campus Staff? <a href="portal-login.php" class="text-accent fw-semibold text-decoration-none">Sign in to Partner &amp; Staff Portal</a>
+                                    External company looking to hire KLD students? <a href="register.php?role=employer" class="text-accent fw-semibold text-decoration-none">Apply for Partner Accreditation &rarr;</a>
                                 <?php endif; ?>
                             </div>
                         </div>

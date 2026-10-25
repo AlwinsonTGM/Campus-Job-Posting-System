@@ -143,7 +143,7 @@ require_once __DIR__ . '/../header.php';
                         <!-- Alternate Links -->
                         <div class="border-top border-line pt-3 text-center">
                             <span class="text-muted-custom small">Don't have an account yet?</span>
-                            <a href="register.php" class="text-ink fw-bold small ms-1 text-decoration-none">
+                            <a href="register.php?role=student" class="text-ink fw-bold small ms-1 text-decoration-none">
                                 Create an Account <i class="bi bi-arrow-right"></i>
                             </a>
                         </div>

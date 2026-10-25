@@ -876,7 +876,7 @@ require_once __DIR__ . '/../header.php';
                                 university network today.
                             </p>
                             <div class="d-flex flex-wrap justify-content-center gap-3">
-                                <a href="register.php" class="btn-accent-pill">
+                                <a href="register.php?role=student" class="btn-accent-pill">
                                     <i class="bi bi-person-plus-fill"></i> CREATE FREE ACCOUNT
                                 </a>
                                 <a href="about-us.php" class="btn-outline-pill">

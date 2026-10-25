@@ -17,6 +17,8 @@ purge_expired_unverified_users();
 $preselected_role = $_GET['role'] ?? 'student';
 $initial_step = 1;
 $selected_persona = ($preselected_role === 'employer') ? 'approved_partner' : 'student';
+// Persona is always locked: the URL role param determines the form type
+$persona_locked = true;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name'] ?? '');
