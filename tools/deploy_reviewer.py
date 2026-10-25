@@ -36,7 +36,7 @@ def should_exclude(rel_path, is_dir=False):
     for part in parts:
         if part in EXCLUDE_DIRS:
             return True
-        if part.startswith('.') and part not in ('.htaccess',):
+        if part.startswith('.') and part not in ('.htaccess', '.env'):
             return True
     filename = parts[-1]
     if not is_dir and (filename in EXCLUDE_FILES or filename.endswith('.bak') or filename.endswith('.tmp')):
