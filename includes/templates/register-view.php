@@ -203,7 +203,7 @@ require_once __DIR__ . '/../header.php';
                                     <input type="hidden" name="role" id="reg-role-input" value="<?= htmlspecialchars($preselected_role === 'employer' ? 'employer' : 'student') ?>">
                                     <input type="hidden" name="employer_type" id="reg-employer-type-input" value="<?= htmlspecialchars($employer_type ?? ($selected_persona === 'approved_partner' ? 'approved_partner' : '')) ?>">
 
-                                    <div class="reg-persona-grid reg-persona-grid-2col" id="reg-persona-grid" role="radiogroup" aria-label="Registration Persona">
+                                    <div class="reg-persona-grid reg-persona-grid-2col" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important;" id="reg-persona-grid" role="radiogroup" aria-label="Registration Persona">
                                         <!-- Persona 1: Student Applicant -->
                                         <div class="reg-persona-card <?= $selected_persona === 'student' ? 'is-selected' : '' ?>" 
                                              id="persona-card-student" 
