@@ -185,8 +185,6 @@ require_once __DIR__ . '/../header.php';
                         <div id="fullscreen-robot-stage-slot" class="fullscreen-robot-stage-slot">
                             <?php render_hero_robot_stage($base_url, true); ?>
                         </div>
-                            </div>
-                        </div>
                         <div class="fs-robot-hint">
                             <i class="bi bi-cursor-fill me-1 text-accent"></i>
                             <span>Move cursor to look around &bull; Click robot for animations</span>
