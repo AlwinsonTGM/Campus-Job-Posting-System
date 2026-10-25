@@ -3,6 +3,27 @@
  * Signature 3D Tilt Scroll Physics & Paper Sheet Interactions (COAL101)
  */
 
+// Global Toggle Password Visibility Helper
+window.togglePasswordVisibility = function (inputId, iconId) {
+  var input = document.getElementById(inputId);
+  var icon = document.getElementById(iconId);
+  if (input) {
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (icon) {
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+      }
+    } else {
+      input.type = 'password';
+      if (icon) {
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+      }
+    }
+  }
+};
+
 // Global Print Report Trigger Helper
 window.triggerPrintReport = function () {
   window.print();

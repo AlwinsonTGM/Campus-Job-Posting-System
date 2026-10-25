@@ -1325,7 +1325,7 @@ require_once __DIR__ . '/../header.php';
                                                 <i class="bi bi-arrow-clockwise me-1"></i> Regenerate
                                             </button>
                                         </div>
-                                        <div class="input-group">
+                                        <div class="input-group input-group-integrated">
                                             <input type="password" name="temporary_password" id="temporary_password" class="form-control font-monospace" required minlength="8">
                                             <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('temporary_password', 'toggle-prov-pw')" aria-label="Toggle password visibility">
                                                 <i class="bi bi-eye" id="toggle-prov-pw"></i>
@@ -1424,6 +1424,26 @@ function generateStrongTempPassword() {
     const randomDigits = Math.floor(1000 + Math.random() * 9000);
     return "KldHire@" + randomDigits + "!";
 }
+
+window.togglePasswordVisibility = window.togglePasswordVisibility || function (inputId, iconId) {
+    var input = document.getElementById(inputId);
+    var icon = document.getElementById(iconId);
+    if (input) {
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (icon) {
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        } else {
+            input.type = 'password';
+            if (icon) {
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    }
+};
 
 function regenerateProvisionPassword() {
     const input = document.getElementById("temporary_password");
