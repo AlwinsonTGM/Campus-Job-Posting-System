@@ -70,7 +70,7 @@ $jobs = array_slice($all_jobs, ($page - 1) * $per_page, $per_page);
 
 // Preserve active filters in pagination links (page is appended per link)
 $pagination_query = $_GET;
-unset($pagination_query['page']);
+unset($pagination_query['page'], $pagination_query['highlight'], $pagination_query['from_notification']);
 
 $categories = get_categories();
 $all_job_types = get_job_types();

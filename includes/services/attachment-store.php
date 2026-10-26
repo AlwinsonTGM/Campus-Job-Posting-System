@@ -141,6 +141,14 @@ class AttachmentStore {
             'max_size'   => 5242880, // 5MB
             'label'      => 'Requisition Opportunity Photo'
         ],
+        'dispatch_photos' => [
+            'prefix'     => 'dispatch_',
+            'dir'        => 'uploads/updates',
+            'extensions' => ['jpg', 'jpeg', 'png', 'webp'],
+            'mimes'      => ['image/jpeg', 'image/png', 'image/webp'],
+            'max_size'   => 5242880, // 5MB
+            'label'      => 'Dispatch Featured Photo'
+        ],
         'category_photos' => [
             'prefix'     => 'cat_',
             'dir'        => 'uploads/categories',

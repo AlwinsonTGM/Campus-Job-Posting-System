@@ -341,8 +341,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
             $stmt_req->execute([
                 ':id'                => $r['id'],
                 ':user_id'           => (int)$r['user_id'],
-                ':current_profile'   => isset($r['current_profile']) ? json_encode($r['current_profile']) : null,
-                ':requested_profile' => isset($r['requested_profile']) ? json_encode($r['requested_profile']) : null,
+                ':current_profile'   => isset($r['current_profile']) ? (is_array($r['current_profile']) ? json_encode($r['current_profile']) : $r['current_profile']) : null,
+                ':requested_profile' => isset($r['requested_profile']) ? (is_array($r['requested_profile']) ? json_encode($r['requested_profile']) : $r['requested_profile']) : null,
                 ':proof_file'        => $r['proof_file'] ?? null,
                 ':reason'            => $r['reason'] ?? '',
                 ':status'            => $r['status'] ?? 'pending',

@@ -93,6 +93,8 @@
 }
 
 .notif-icon-circle {
+  color: var(--ink);
+  background-color: var(--cream);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -177,7 +179,6 @@
 /* ==========================================================================
    Deep Link Section Highlight & Glow Pulse (Light & Dark Theme)
    ========================================================================== */
-:target,
 .section-highlight-active {
   scroll-margin-top: 100px;
   animation: sectionHighlightPulse 2.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
@@ -207,7 +208,6 @@
   }
 }
 
-[data-theme="dark"] :target,
 [data-theme="dark"] .section-highlight-active {
   animation-name: sectionHighlightPulseDark;
 }
@@ -236,13 +236,11 @@
 }
 
 /* Row-level soft background wash for targeted table items */
-tr:target,
 tr.section-highlight-active {
   background-color: var(--accent-soft) !important;
   transition: background-color 2.6s ease;
 }
 
-[data-theme="dark"] tr:target,
 [data-theme="dark"] tr.section-highlight-active {
   background-color: rgba(52, 216, 101, 0.18) !important;
 }

@@ -72,7 +72,9 @@ uploads/permits/permit_*
 !uploads/permits/permit_sample_*
 !uploads/permits/sample_permit_*
 uploads/categories/cat_*
+uploads/updates/dispatch_*
 screenshots/
+design-previews/
 
 # Runtime & Schema Locks
 data/*.lock

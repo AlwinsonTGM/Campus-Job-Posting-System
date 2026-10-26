@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let debounceTimer = null;
     let currentAbortController = null;
 
-    function executeLiveFilter(usePushState, smoothScrollToSection, preservePage) {
+    function executeLiveFilter(usePushState, smoothScrollToSection, preservePage, paginationUrl) {
       if (typeof usePushState === 'undefined') usePushState = false;
       if (typeof smoothScrollToSection === 'undefined') smoothScrollToSection = false;
       if (typeof preservePage === 'undefined') preservePage = false;
@@ -672,10 +672,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const actionUrl = form.getAttribute('action') || window.location.pathname;
       const queryString = params.toString();
-      const targetUrl = actionUrl + (queryString ? '?' + queryString : '');
+      const pageUrl = paginationUrl ? new URL(paginationUrl, window.location.href) : null;
+      if (pageUrl) {
+        pageUrl.hash = '';
+        pageUrl.searchParams.delete('highlight');
+        pageUrl.searchParams.delete('from_notification');
+      }
+      const targetUrl = pageUrl ? pageUrl.pathname + pageUrl.search : actionUrl + (queryString ? '?' + queryString : '');
 
       // Seamlessly sync browser address bar URL without refreshing page
-      if (window.history) {
+      if (window.history && !paginationUrl) {
         if (usePushState && window.history.pushState) {
           window.history.pushState(null, '', targetUrl);
         } else if (window.history.replaceState) {
@@ -690,6 +696,8 @@ document.addEventListener('DOMContentLoaded', function () {
       currentAbortController = new AbortController();
 
       const resultsContainer = document.getElementById('filter-results-container');
+      const paginationContent = resultsContainer && resultsContainer.querySelector('[data-pagination-content]');
+      const paginationHeight = paginationUrl && paginationContent ? paginationContent.getBoundingClientRect().height : 0;
       if (resultsContainer) {
         resultsContainer.style.transition = 'opacity 0.15s ease';
         resultsContainer.style.opacity = '0.45';
@@ -714,7 +722,11 @@ document.addEventListener('DOMContentLoaded', function () {
           if (newTargetEl && currentTargetEl) {
             currentTargetEl.innerHTML = newTargetEl.innerHTML;
             currentTargetEl.className = newTargetEl.className;
+            currentTargetEl.classList.add('is-revealed');
             currentTargetEl.style.opacity = '1';
+            const nextContent = currentTargetEl.querySelector('[data-pagination-content]');
+            if (paginationHeight && nextContent) nextContent.style.minHeight = paginationHeight + 'px';
+            if (paginationUrl && usePushState) window.history.pushState(null, '', targetUrl);
 
             // Also update any count badges outside or in table headers
             const newCountEl = doc.querySelector('.card-paper-title + .text-muted-custom');
@@ -879,6 +891,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 3. Category tile and filter chip click delegation (Zero-Reload)
     document.addEventListener('click', function (e) {
+      // Page through the current results without moving the viewport or carrying a notification highlight.
+      const pageLink = e.target.closest('#filter-results-container .pagination a.page-link[href]');
+      if (pageLink) {
+        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        if (pageLink.closest('.disabled, .active') || pageLink.getAttribute('aria-disabled') === 'true') return;
+        clearTimeout(debounceTimer);
+        executeLiveFilter(true, false, false, pageLink.href);
+        return;
+      }
+
       // Category visual tile
       const catTile = e.target.closest('.category-visual-tile');
       if (catTile) {
@@ -962,7 +985,7 @@ document.addEventListener('DOMContentLoaded', function () {
       form.querySelectorAll('select, input[type="text"], input[type="search"], input[type="hidden"]').forEach(function (el) {
         el.value = urlParams.get(el.name) || '';
       });
-      executeLiveFilter(false /* skip pushState on popstate */, false, true /* preservePage */);
+      executeLiveFilter(false /* skip pushState on popstate */, false, true /* preservePage */, window.location.href);
     });
   });
 
@@ -1466,6 +1489,7 @@ window.addEventListener('pageshow', function (event) {
   function handleDeepLinkHighlight() {
     try {
       var params = new URLSearchParams(window.location.search);
+      if (params.get('from_notification') !== '1') return;
       var highlightId = params.get('highlight') || (window.location.hash ? window.location.hash.replace(/^#/, '') : null);
       if (!highlightId) return;
 
@@ -1476,6 +1500,12 @@ window.addEventListener('pageshow', function (event) {
         } catch (e) {}
       }
       if (!targetEl) return;
+
+      // Consume notification navigation once so later pagination and refreshes stay quiet.
+      params.delete('from_notification');
+      params.delete('highlight');
+      var cleanQuery = params.toString() ? ('?' + params.toString()) : '';
+      window.history.replaceState(null, '', window.location.pathname + cleanQuery);
 
       // Auto-switch tab if target is inside an inactive Bootstrap tab
       var tabPane = targetEl.closest('.tab-pane');
@@ -1503,14 +1533,8 @@ window.addEventListener('pageshow', function (event) {
         targetEl.classList.add('section-highlight-active');
       }, 150);
 
-      // Clean animation class and optional ?highlight= param after 3.2s
       setTimeout(function () {
         targetEl.classList.remove('section-highlight-active');
-        if (params.has('highlight') && window.history && window.history.replaceState) {
-          params.delete('highlight');
-          var newQuery = params.toString() ? ('?' + params.toString()) : '';
-          window.history.replaceState(null, '', window.location.pathname + newQuery + window.location.hash);
-        }
       }, 3200);
     } catch (err) {
       console.debug('Deep-link highlight skipped:', err);

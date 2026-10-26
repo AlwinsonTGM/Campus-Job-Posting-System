@@ -85,15 +85,14 @@ require_once __DIR__ . '/../header.php';
                     <div class="d-flex flex-column gap-3 mb-5">
                         <?php foreach ($display_notifications as $notif): 
                             $is_unread = empty($notif['is_read']);
-                            $badge_color = $notif['badge_color'] ?? 'primary';
                             $icon_class = $notif['icon'] ?? 'bi-bell';
                             $target_link = !empty($notif['link']) ? ('api/notifications.php?action=click&id=' . $notif['id']) : null;
                         ?>
                             <div class="paper-card p-3 p-md-4 position-relative transition-all <?= $is_unread ? 'bg-cream-tint' : '' ?>">
                                 <div class="d-flex align-items-start gap-3">
                                     <!-- Leading Status Icon -->
-                                    <div class="notif-icon-circle bg-<?= htmlspecialchars($badge_color) ?>-subtle text-<?= htmlspecialchars($badge_color) ?> flex-shrink-0 mt-1" style="width: 44px; height: 44px; font-size: 1.25rem;">
-                                        <i class="bi <?= htmlspecialchars($icon_class) ?>"></i>
+                                    <div class="notif-icon-circle flex-shrink-0 mt-1" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                                        <i class="bi <?= htmlspecialchars($icon_class) ?>" aria-hidden="true"></i>
                                     </div>
 
                                     <!-- Content Column -->

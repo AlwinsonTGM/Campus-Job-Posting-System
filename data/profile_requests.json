@@ -2,9 +2,17 @@
     {
         "id": 1,
         "user_id": 164,
-        "current_profile": "{\"name\":\"Maria Ramos\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Maria Ramos\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000001.pdf",
+        "current_profile": {
+            "name": "Maria Ramos",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "1st Year"
+        },
+        "requested_profile": {
+            "name": "Maria Ramos",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2026-1-000001.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -14,23 +22,49 @@
     },
     {
         "id": 2,
-        "user_id": 181,
-        "current_profile": "{\"name\":\"Vincent Pascual\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Vincent Pascual\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000018.pdf",
-        "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
+        "user_id": 1026,
+        "current_profile": {
+            "name": "Alwinson Bustamante",
+            "email": "abustamante@kld.edu.ph",
+            "department": "Institute of Computing and Digital Innovation (ICDI)",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "2nd Year",
+            "sex": "Male",
+            "birthdate": "2007-04-10",
+            "age": 19
+        },
+        "requested_profile": {
+            "name": "Alwinson T. Bustamante",
+            "email": "abustamante@kld.edu.ph",
+            "department": "Institute of Computing and Digital Innovation (ICDI)",
+            "course": "BS Computer Science (BSCS)",
+            "year_level": "2nd Year",
+            "sex": "Male",
+            "birthdate": "2007-04-10",
+            "age": 19
+        },
+        "proof_file": "uploads/proofs/proof_1789903369_190c86d6.jpg",
+        "reason": "Approved internal program shifting to BSCS and updating legal middle initial per PSA Birth Certificate.",
         "status": "pending",
         "admin_notes": "",
         "dismissed_by_user": 0,
-        "created_at": "2026-10-20 09:28:38",
+        "created_at": "2026-10-26 12:00:00",
         "resolved_at": null
     },
     {
         "id": 3,
         "user_id": 198,
-        "current_profile": "{\"name\":\"Nicole Reyes\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Nicole Reyes\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000035.pdf",
+        "current_profile": {
+            "name": "Nicole Reyes",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "1st Year"
+        },
+        "requested_profile": {
+            "name": "Nicole Reyes",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2026-1-000035.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -41,9 +75,17 @@
     {
         "id": 4,
         "user_id": 215,
-        "current_profile": "{\"name\":\"Carl Corpuz\",\"course\":\"BS Computer Science (BSCS)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Carl Corpuz\",\"course\":\"BS Computer Science (BSCS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000052.pdf",
+        "current_profile": {
+            "name": "Carl Corpuz",
+            "course": "BS Computer Science (BSCS)",
+            "year_level": "1st Year"
+        },
+        "requested_profile": {
+            "name": "Carl Corpuz",
+            "course": "BS Computer Science (BSCS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2026-1-000052.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -54,9 +96,17 @@
     {
         "id": 5,
         "user_id": 232,
-        "current_profile": "{\"name\":\"Kimberly Manalo\",\"course\":\"BS Nursing (BSN)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Kimberly Manalo\",\"course\":\"BS Nursing (BSN)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000069.pdf",
+        "current_profile": {
+            "name": "Kimberly Manalo",
+            "course": "BS Nursing (BSN)",
+            "year_level": "1st Year"
+        },
+        "requested_profile": {
+            "name": "Kimberly Manalo",
+            "course": "BS Nursing (BSN)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2026-1-000069.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -67,9 +117,17 @@
     {
         "id": 6,
         "user_id": 249,
-        "current_profile": "{\"name\":\"Dominic Lopez\",\"course\":\"BS Medical Laboratory Science (BSMLS)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Dominic Lopez\",\"course\":\"BS Medical Laboratory Science (BSMLS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000086.pdf",
+        "current_profile": {
+            "name": "Dominic Lopez",
+            "course": "BS Medical Laboratory Science (BSMLS)",
+            "year_level": "1st Year"
+        },
+        "requested_profile": {
+            "name": "Dominic Lopez",
+            "course": "BS Medical Laboratory Science (BSMLS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2026-1-000086.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -80,9 +138,17 @@
     {
         "id": 7,
         "user_id": 266,
-        "current_profile": "{\"name\":\"Bea Evangelista\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"1st Year\"}",
-        "requested_profile": "{\"name\":\"Bea Evangelista\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2026-1-000103.pdf",
+        "current_profile": {
+            "name": "Bea Evangelista",
+            "course": "BS Civil Engineering (BSCE)",
+            "year_level": "1st Year"
+        },
+        "requested_profile": {
+            "name": "Bea Evangelista",
+            "course": "BS Civil Engineering (BSCE)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2026-1-000103.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -93,9 +159,17 @@
     {
         "id": 8,
         "user_id": 403,
-        "current_profile": "{\"name\":\"Patrick Ocampo\",\"course\":\"BS Medical Laboratory Science (BSMLS)\",\"year_level\":\"2nd Year\"}",
-        "requested_profile": "{\"name\":\"Patrick Ocampo\",\"course\":\"BS Medical Laboratory Science (BSMLS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2025-1-000135.pdf",
+        "current_profile": {
+            "name": "Patrick Ocampo",
+            "course": "BS Medical Laboratory Science (BSMLS)",
+            "year_level": "2nd Year"
+        },
+        "requested_profile": {
+            "name": "Patrick Ocampo",
+            "course": "BS Medical Laboratory Science (BSMLS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2025-1-000135.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "pending",
         "admin_notes": "",
@@ -106,9 +180,17 @@
     {
         "id": 9,
         "user_id": 420,
-        "current_profile": "{\"name\":\"Maria Valdez\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"2nd Year\"}",
-        "requested_profile": "{\"name\":\"Maria Valdez\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2025-2-000152.pdf",
+        "current_profile": {
+            "name": "Maria Valdez",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "2nd Year"
+        },
+        "requested_profile": {
+            "name": "Maria Valdez",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2025-2-000152.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "approved",
         "admin_notes": "Approved by Registrar Records Unit.",
@@ -119,9 +201,17 @@
     {
         "id": 10,
         "user_id": 437,
-        "current_profile": "{\"name\":\"Vincent Ferrer\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"2nd Year\"}",
-        "requested_profile": "{\"name\":\"Vincent Ferrer\",\"course\":\"BS Information Systems (BSIS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2025-1-000169.pdf",
+        "current_profile": {
+            "name": "Vincent Ferrer",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "2nd Year"
+        },
+        "requested_profile": {
+            "name": "Vincent Ferrer",
+            "course": "BS Information Systems (BSIS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2025-1-000169.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "approved",
         "admin_notes": "Approved by Registrar Records Unit.",
@@ -132,9 +222,17 @@
     {
         "id": 11,
         "user_id": 454,
-        "current_profile": "{\"name\":\"Nicole Villanueva\",\"course\":\"BS Nursing (BSN)\",\"year_level\":\"2nd Year\"}",
-        "requested_profile": "{\"name\":\"Nicole Villanueva\",\"course\":\"BS Nursing (BSN)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2025-2-000186.pdf",
+        "current_profile": {
+            "name": "Nicole Villanueva",
+            "course": "BS Nursing (BSN)",
+            "year_level": "2nd Year"
+        },
+        "requested_profile": {
+            "name": "Nicole Villanueva",
+            "course": "BS Nursing (BSN)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2025-2-000186.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "approved",
         "admin_notes": "Approved by Registrar Records Unit.",
@@ -145,9 +243,17 @@
     {
         "id": 12,
         "user_id": 471,
-        "current_profile": "{\"name\":\"Carl Padilla\",\"course\":\"BS Social Work (BSSW)\",\"year_level\":\"2nd Year\"}",
-        "requested_profile": "{\"name\":\"Carl Padilla\",\"course\":\"BS Social Work (BSSW)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2025-1-000203.pdf",
+        "current_profile": {
+            "name": "Carl Padilla",
+            "course": "BS Social Work (BSSW)",
+            "year_level": "2nd Year"
+        },
+        "requested_profile": {
+            "name": "Carl Padilla",
+            "course": "BS Social Work (BSSW)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2025-1-000203.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "approved",
         "admin_notes": "Approved by Registrar Records Unit.",
@@ -158,9 +264,17 @@
     {
         "id": 13,
         "user_id": 488,
-        "current_profile": "{\"name\":\"Kimberly Ramos\",\"course\":\"BS Medical Laboratory Science (BSMLS)\",\"year_level\":\"2nd Year\"}",
-        "requested_profile": "{\"name\":\"Kimberly Ramos\",\"course\":\"BS Medical Laboratory Science (BSMLS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2025-2-000220.pdf",
+        "current_profile": {
+            "name": "Kimberly Ramos",
+            "course": "BS Medical Laboratory Science (BSMLS)",
+            "year_level": "2nd Year"
+        },
+        "requested_profile": {
+            "name": "Kimberly Ramos",
+            "course": "BS Medical Laboratory Science (BSMLS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2025-2-000220.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "approved",
         "admin_notes": "Approved by Registrar Records Unit.",
@@ -171,9 +285,17 @@
     {
         "id": 14,
         "user_id": 505,
-        "current_profile": "{\"name\":\"Dominic Pascual\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"3rd Year\"}",
-        "requested_profile": "{\"name\":\"Dominic Pascual\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2024-1-001011.pdf",
+        "current_profile": {
+            "name": "Dominic Pascual",
+            "course": "BS Civil Engineering (BSCE)",
+            "year_level": "3rd Year"
+        },
+        "requested_profile": {
+            "name": "Dominic Pascual",
+            "course": "BS Civil Engineering (BSCE)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2024-1-001011.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "approved",
         "admin_notes": "Approved by Registrar Records Unit.",
@@ -184,9 +306,17 @@
     {
         "id": 15,
         "user_id": 522,
-        "current_profile": "{\"name\":\"Bea Reyes\",\"course\":\"BS Life Sciences (BSLS)\",\"year_level\":\"3rd Year\"}",
-        "requested_profile": "{\"name\":\"Bea Reyes\",\"course\":\"BS Life Sciences (BSLS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2024-1-001028.pdf",
+        "current_profile": {
+            "name": "Bea Reyes",
+            "course": "BS Life Sciences (BSLS)",
+            "year_level": "3rd Year"
+        },
+        "requested_profile": {
+            "name": "Bea Reyes",
+            "course": "BS Life Sciences (BSLS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2024-1-001028.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "rejected",
         "admin_notes": "Missing endorsement signature from Institute Dean.",
@@ -197,9 +327,17 @@
     {
         "id": 16,
         "user_id": 539,
-        "current_profile": "{\"name\":\"Bryan Corpuz\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"3rd Year\"}",
-        "requested_profile": "{\"name\":\"Bryan Corpuz\",\"course\":\"BS Civil Engineering (BSCE)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2024-1-001045.pdf",
+        "current_profile": {
+            "name": "Bryan Corpuz",
+            "course": "BS Civil Engineering (BSCE)",
+            "year_level": "3rd Year"
+        },
+        "requested_profile": {
+            "name": "Bryan Corpuz",
+            "course": "BS Civil Engineering (BSCE)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2024-1-001045.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "rejected",
         "admin_notes": "Missing endorsement signature from Institute Dean.",
@@ -210,9 +348,17 @@
     {
         "id": 17,
         "user_id": 556,
-        "current_profile": "{\"name\":\"Samantha Manalo\",\"course\":\"BS Data Science (BSDS)\",\"year_level\":\"3rd Year\"}",
-        "requested_profile": "{\"name\":\"Samantha Manalo\",\"course\":\"BS Data Science (BSDS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2024-1-001062.pdf",
+        "current_profile": {
+            "name": "Samantha Manalo",
+            "course": "BS Data Science (BSDS)",
+            "year_level": "3rd Year"
+        },
+        "requested_profile": {
+            "name": "Samantha Manalo",
+            "course": "BS Data Science (BSDS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2024-1-001062.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "rejected",
         "admin_notes": "Missing endorsement signature from Institute Dean.",
@@ -223,9 +369,17 @@
     {
         "id": 18,
         "user_id": 573,
-        "current_profile": "{\"name\":\"Adrian Lopez\",\"course\":\"BS Data Science (BSDS)\",\"year_level\":\"3rd Year\"}",
-        "requested_profile": "{\"name\":\"Adrian Lopez\",\"course\":\"BS Data Science (BSDS)\",\"year_level\":\"3rd Year\"}",
-        "proof_file": "uploads\/proofs\/cor_2024-1-001079.pdf",
+        "current_profile": {
+            "name": "Adrian Lopez",
+            "course": "BS Data Science (BSDS)",
+            "year_level": "3rd Year"
+        },
+        "requested_profile": {
+            "name": "Adrian Lopez",
+            "course": "BS Data Science (BSDS)",
+            "year_level": "3rd Year"
+        },
+        "proof_file": "uploads/proofs/cor_2024-1-001079.pdf",
         "reason": "Completed all prerequisite units as validated by my Dean's office evaluation sheet.",
         "status": "rejected",
         "admin_notes": "Missing endorsement signature from Institute Dean.",

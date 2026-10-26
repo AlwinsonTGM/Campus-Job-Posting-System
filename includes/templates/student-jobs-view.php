@@ -8,27 +8,53 @@ require_once __DIR__ . '/../header.php';
 ?>
 
 <style>
+#category-tiles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+#category-tiles-grid > div {
+    flex: 0 1 240px;
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+}
 .category-visual-tile {
+    width: 100%;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--white);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+    transition: border-color 0.15s ease;
 }
-.category-visual-tile:hover {
-    transform: translateY(-4px);
-    border-color: rgba(13, 59, 46, 0.4);
-    box-shadow: 0 12px 28px rgba(13, 59, 46, 0.1) !important;
-}
-.category-visual-tile:hover .cat-tile-img {
-    transform: scale(1.08);
-}
+.category-visual-tile:hover,
 .category-visual-tile--active {
-    border: 2px solid var(--accent) !important;
-    box-shadow: 0 10px 26px rgba(13, 59, 46, 0.14) !important;
-    background: var(--surface) !important;
+    border-color: var(--ink);
 }
-.cat-tile-img {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.category-visual-tile:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+}
+.category-tile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--ink);
+    font-size: 18px;
+}
+.category-tile-label {
+    min-height: 2.5em;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 575.98px) {
+    #category-tiles-grid > div { flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .category-visual-tile { transition: none; }
 }
 </style>
 
@@ -39,55 +65,36 @@ require_once __DIR__ . '/../header.php';
         <main class="py-5">
             <div class="container-paper">
                 
-                <!-- Student Opportunity Discovery Banner -->
-                <div class="card-paper p-0 overflow-hidden mb-4 reveal-fade-rise border-line position-relative shadow-sm" style="background: linear-gradient(135deg, #0d3b2e 0%, #175343 55%, #1e6955 100%); color: #ffffff;">
-                    <div style="position: absolute; right: -25px; bottom: -25px; opacity: 0.08; pointer-events: none;">
-                        <i class="bi bi-compass-fill" style="font-size: 220px; line-height: 1;"></i>
-                    </div>
-                    <div class="p-4 p-md-5 position-relative">
-                        <div class="row align-items-center g-4">
-                            <div class="col-lg-8">
-                                <h1 class="display-6 fw-bold mb-2 text-white" style="letter-spacing: -0.02em;">Find Your On-Campus Opportunity</h1>
-                                <p class="mb-3 text-white-50" style="max-width: 620px; font-size: 14.5px; line-height: 1.6;">
-                                    Explore verified student assistantships, academic laboratory assignments, library roles, and peer tutoring opportunities designed to work smoothly around your class schedule.
-                                </p>
-                                <div class="d-flex flex-wrap align-items-center gap-2 pt-1">
-                                    <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
-                                        <i class="bi bi-briefcase-fill text-warning me-1"></i> <?= $total_jobs ?> Positions Live
-                                    </span>
-                                    <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
-                                        <i class="bi bi-clock-history text-accent me-1"></i> Max 20 hrs/week Safe Cap
-                                    </span>
-                                    <span class="badge rounded-2" style="background: rgba(255,255,255,0.15); font-weight: 500; font-size: 12px; padding: 6px 12px;">
-                                        <i class="bi bi-cash-stack text-warning me-1"></i> ₱80 – ₱120 / hr Verified Pay
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 text-lg-end d-none d-lg-block" id="hero-active-filter-card">
-                                <div class="p-3 rounded-3 text-start d-inline-block shadow-sm" style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); min-width: 220px;">
-                                    <div class="small text-white-50 text-uppercase fw-bold mb-1" style="font-size: 11px;">Active Discipline</div>
-                                    <div class="fw-bold text-white fs-6 mb-0 d-flex align-items-center gap-1">
-                                        <i class="bi bi-funnel-fill text-accent"></i>
-                                        <span><?= !empty($category) ? htmlspecialchars($category) : 'All Job Families' ?></span>
-                                    </div>
-                                </div>
+                <section class="campus-page-header campus-page-header--jobs mb-4" aria-labelledby="jobs-page-title">
+                    <div class="campus-page-header__main">
+                        <div>
+                            <h1 id="jobs-page-title">Find Your On-Campus Opportunity</h1>
+                            <p class="campus-page-header__description">Explore verified student assistantships, academic laboratory assignments, library roles, and peer tutoring opportunities designed to work smoothly around your class schedule.</p>
+                            <div class="campus-page-header__facts">
+                                <span><i class="bi bi-briefcase" aria-hidden="true"></i> <?= $total_jobs ?> Positions Live</span>
+                                <span><i class="bi bi-clock" aria-hidden="true"></i> Max 20 hrs/week Safe Cap</span>
+                                <span><i class="bi bi-cash-stack" aria-hidden="true"></i> ₱80 – ₱120 / hr Verified Pay</span>
                             </div>
                         </div>
+                        <div class="campus-page-header__discipline" id="hero-active-filter-card">
+                            <div class="campus-page-header__label">Active discipline</div>
+                            <div class="campus-page-header__filter"><i class="bi bi-funnel" aria-hidden="true"></i><span><?= !empty($category) ? htmlspecialchars($category) : 'All Job Families' ?></span></div>
+                        </div>
                     </div>
-                </div>
+                </section>
 
                 <!-- Visual Category Discovery Section -->
                 <div class="mb-4" id="category-discovery-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <h2 class="h6 fw-bold text-ink mb-0 d-flex align-items-center gap-2">
-                                <i class="bi bi-grid-3x3-gap-fill text-accent"></i> Explore by Job Family
+                                <i class="bi bi-grid-3x3-gap-fill text-ink"></i> Explore by Job Family
                             </h2>
                             <span class="small text-muted-custom">Select a discipline family to filter verified openings</span>
                         </div>
                     </div>
 
-                    <div class="row g-3" id="category-tiles-grid">
+                    <div id="category-tiles-grid">
                         <?php foreach ($categories as $cat): 
                             $is_active_cat = (strcasecmp($category, $cat['name']) === 0 || strcasecmp($category, (string)$cat['id']) === 0);
                             $cat_raw_img = !empty($cat['image']) ? $cat['image'] : 'assets/img/categories/cat-general.jpg';
@@ -96,7 +103,7 @@ require_once __DIR__ . '/../header.php';
                                 : $base_url . ltrim($cat_raw_img, '/');
                             $cat_job_count = (int)($cat['job_count'] ?? 0);
                         ?>
-                            <div class="col-6 col-md-4 col-lg-2">
+                            <div>
                                 <a href="jobs.php?category=<?= urlencode($cat['name']) ?>" 
                                    class="card-paper p-0 overflow-hidden d-flex flex-column text-decoration-none h-100 position-relative category-visual-tile <?= $is_active_cat ? 'category-visual-tile--active' : '' ?>"
                                    data-category="<?= htmlspecialchars($cat['name']) ?>"
@@ -116,14 +123,14 @@ require_once __DIR__ . '/../header.php';
                                         
                                         <!-- Tile Icon Badge -->
                                         <div class="position-absolute bottom-0 start-0 m-2">
-                                            <div class="icon-circle icon-circle-sm bg-white shadow-sm" style="width: 28px; height: 28px; font-size: 13px;">
-                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?> text-accent"></i>
+                                            <div class="category-tile-icon" aria-hidden="true">
+                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?>"></i>
                                             </div>
                                         </div>
 
                                         <?php if ($is_active_cat): ?>
                                             <div class="position-absolute top-0 end-0 m-2">
-                                                <span class="badge rounded-pill bg-success text-white shadow-sm" style="font-size: 10px;">
+                                                <span class="badge rounded-2 text-ink" style="background: var(--white); font-size: 10px;">
                                                     <i class="bi bi-check-lg"></i> Active
                                                 </span>
                                             </div>
@@ -131,11 +138,11 @@ require_once __DIR__ . '/../header.php';
                                     </div>
 
                                     <!-- Tile Text -->
-                                    <div class="p-2 text-center d-flex flex-column flex-grow-1 bg-white">
-                                        <span class="fw-bold text-ink line-clamp-1 small mb-1" style="font-size: 12px; line-height: 1.25;" title="<?= htmlspecialchars($cat['name']) ?>">
+                                    <div class="p-3 text-start d-flex flex-column flex-grow-1">
+                                        <span class="fw-bold text-ink category-tile-label mb-2" style="font-size: 14px; line-height: 1.25;" title="<?= htmlspecialchars($cat['name']) ?>">
                                             <?= htmlspecialchars($cat['name']) ?>
                                         </span>
-                                        <span class="text-muted-custom small mt-auto" style="font-size: 11px;">
+                                        <span class="text-muted-custom small mt-auto" style="font-size: 13px;">
                                             <?= $cat_job_count ?> <?= $cat_job_count === 1 ? 'Opening' : 'Openings' ?>
                                         </span>
                                     </div>
@@ -329,9 +336,6 @@ require_once __DIR__ . '/../header.php';
                                 Showing <strong><?= $total_jobs ?></strong> verified campus opportunities
                             <?php endif; ?>
                         </span>
-                        <span class="badge rounded-pill d-inline-flex align-items-center gap-1 border bg-success-subtle text-success-emphasis border-success-subtle" style="font-size: 11px;">
-                            <i class="bi bi-clock-history text-accent"></i> Max 20 hrs/week
-                        </span>
                     </div>
 
                     <!-- Job Listings Grid -->
@@ -346,7 +350,7 @@ require_once __DIR__ . '/../header.php';
                         );
                         ?>
                     <?php else: ?>
-                        <div class="row g-4 mb-4">
+                        <div class="row g-4 mb-4 align-content-start" data-pagination-content>
                             <?php foreach ($jobs as $job): ?>
                                 <div class="col-md-6 col-lg-4">
                                     <?php render_job_card($job, '../'); ?>
@@ -362,14 +366,14 @@ require_once __DIR__ . '/../header.php';
                                 <nav aria-label="Campus opportunities pagination">
                                     <ul class="pagination pagination-sm mb-0 flex-wrap justify-content-center">
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => max(1, $page - 1)]))) ?>#filter-results-container" aria-label="Previous page" <?= ($page <= 1) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>
+                                            <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => max(1, $page - 1)]))) ?>" aria-label="Previous page" <?= ($page <= 1) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
                                         <?php for ($p = 1; $p <= $total_pages; $p++): ?>
                                             <?php if ($p === 1 || $p === $total_pages || ($p >= $page - 2 && $p <= $page + 2)): ?>
                                                 <li class="page-item <?= ($p === $page) ? 'active' : '' ?>">
-                                                    <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => $p]))) ?>#filter-results-container" <?= ($p === $page) ? 'aria-current="page"' : '' ?>>
+                                                    <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => $p]))) ?>" <?= ($p === $page) ? 'aria-current="page"' : '' ?>>
                                                         <?= $p ?>
                                                     </a>
                                                 </li>
@@ -378,7 +382,7 @@ require_once __DIR__ . '/../header.php';
                                             <?php endif; ?>
                                         <?php endfor; ?>
                                         <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => min($total_pages, $page + 1)]))) ?>#filter-results-container" aria-label="Next page" <?= ($page >= $total_pages) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>
+                                            <a class="page-link" href="jobs.php?<?= htmlspecialchars(http_build_query(array_merge($pagination_query, ['page' => min($total_pages, $page + 1)]))) ?>" aria-label="Next page" <?= ($page >= $total_pages) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>

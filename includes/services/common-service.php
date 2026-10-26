@@ -169,11 +169,21 @@ function hydrate_profile_request(mixed $row): ?array {
     $row['id'] = (int)$row['id'];
     $row['user_id'] = (int)$row['user_id'];
     $row['dismissed_by_user'] = !empty($row['dismissed_by_user']);
-    if (isset($row['current_profile']) && is_string($row['current_profile'])) {
-        $row['current_profile'] = json_decode($row['current_profile'], true) ?: [];
+    while (isset($row['current_profile']) && is_string($row['current_profile'])) {
+        $decoded = json_decode($row['current_profile'], true);
+        if (!is_array($decoded) && !is_string($decoded)) break;
+        $row['current_profile'] = $decoded;
     }
-    if (isset($row['requested_profile']) && is_string($row['requested_profile'])) {
-        $row['requested_profile'] = json_decode($row['requested_profile'], true) ?: [];
+    if (!is_array($row['current_profile'] ?? null)) {
+        $row['current_profile'] = [];
+    }
+    while (isset($row['requested_profile']) && is_string($row['requested_profile'])) {
+        $decoded = json_decode($row['requested_profile'], true);
+        if (!is_array($decoded) && !is_string($decoded)) break;
+        $row['requested_profile'] = $decoded;
+    }
+    if (!is_array($row['requested_profile'] ?? null)) {
+        $row['requested_profile'] = [];
     }
     return $row;
 }

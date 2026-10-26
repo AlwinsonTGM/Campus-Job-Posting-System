@@ -76,10 +76,17 @@ if ($script_dir && strpos($script_dir, $project_root) === 0) {
     <!-- Self-Hosted Fonts (Inter, Plus Jakarta Sans, Outfit - 100% Offline) -->
     <link rel="stylesheet" href="<?= $base_url ?>assets/vendor/fonts/fonts.css">
     
+    <?php if (!empty($auth_page)): ?>
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/tokens.css">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/features/auth-pages.css?v=<?= filemtime(__DIR__ . '/../assets/css/features/auth-pages.css') ?>">
+    <?php else: ?>
     <!-- Custom Theme & Paper Sheet CSS -->
     <link rel="stylesheet" href="<?= $base_url ?>assets/css/style.css?v=<?= file_exists(__DIR__ . '/../assets/css/style.css') ? filemtime(__DIR__ . '/../assets/css/style.css') : '1.0' ?>">
     <link rel="stylesheet" href="<?= $base_url ?>assets/css/custom.css?v=<?= file_exists(__DIR__ . '/../assets/css/custom.css') ? filemtime(__DIR__ . '/../assets/css/custom.css') : '1.0' ?>">
     <link rel="stylesheet" href="<?= $base_url ?>assets/css/features/companion.css?v=<?= file_exists(__DIR__ . '/../assets/css/features/companion.css') ? filemtime(__DIR__ . '/../assets/css/features/companion.css') : '2.0' ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/features/employer-workspace.css?v=<?= filemtime(__DIR__ . '/../assets/css/features/employer-workspace.css') ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>assets/css/components/page-header.css?v=<?= file_exists(__DIR__ . '/../assets/css/components/page-header.css') ? filemtime(__DIR__ . '/../assets/css/components/page-header.css') : '1.0' ?>">
+    <?php endif; ?>
 </head>
 <body>
 

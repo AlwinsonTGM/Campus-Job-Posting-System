@@ -54,15 +54,6 @@ require_once __DIR__ . '/../header.php';
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <span class="text-ink fw-semibold"><?= htmlspecialchars($target_app['course'] ?? 'BS Information Systems') ?></span>
                                         <span class="text-muted-custom">&bull; <?= htmlspecialchars($target_app['year_level'] ?? '2nd Year') ?></span>
-                                        <?php if ($is_diploma_required): ?>
-                                            <span class="badge bg-warning-subtle text-ink border border-warning-subtle" style="font-size: 10px;">
-                                                <i class="bi bi-award-fill text-accent me-1"></i>Alumni / KLD Diploma Verified
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 10px;">
-                                                <i class="bi bi-check-circle-fill text-success me-1"></i>Active Student &bull; e-COR Verified
-                                            </span>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -173,10 +164,10 @@ require_once __DIR__ . '/../header.php';
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center flex-nowrap gap-2 flex-shrink-0">
-                                    <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#resumeModal" style="font-size: 12px;">
+                                    <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center justify-content-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#resumeModal" style="font-size: 12px; min-width: 120px;">
                                         <i class="bi bi-eye-fill"></i> View Resume
                                     </button>
-                                    <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" style="font-size: 12px;" title="Open PDF in new tab">
+                                    <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center justify-content-center gap-1 py-1 px-3" style="font-size: 12px; min-width: 98px;" title="Open PDF in new tab">
                                         <i class="bi bi-box-arrow-up-right"></i> Open Tab
                                     </a>
                                 </div>
@@ -187,19 +178,16 @@ require_once __DIR__ . '/../header.php';
                                 <div class="d-flex align-items-center gap-3 overflow-hidden">
                                     <i class="bi <?= $is_diploma_required ? 'bi-award-fill text-accent' : 'bi-file-earmark-check-fill text-success' ?> fs-2 flex-shrink-0"></i>
                                     <div class="text-truncate">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                                            <span class="fw-bold text-ink small text-truncate"><?= htmlspecialchars($credential_filename) ?></span>
-                                            <span class="badge <?= $is_diploma_required ? 'bg-warning-subtle text-ink border border-warning-subtle' : 'bg-success-subtle text-success border border-success-subtle' ?>" style="font-size: 10px;"><?= htmlspecialchars($credential_title) ?></span>
-                                        </div>
+                                        <div class="fw-bold text-ink small text-truncate"><?= htmlspecialchars($credential_filename) ?></div>
                                         <span class="small text-muted-custom d-block text-truncate"><?= htmlspecialchars($credential_subtitle) ?></span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center flex-nowrap gap-2 flex-shrink-0">
-                                    <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#credentialProofModal" style="font-size: 12px;">
+                                    <button type="button" class="btn-pill btn-pill-sm text-nowrap d-inline-flex align-items-center justify-content-center gap-1 py-1 px-3" data-bs-toggle="modal" data-bs-target="#credentialProofModal" style="font-size: 12px; min-width: 120px;">
                                         <i class="bi bi-eye-fill"></i> <?= htmlspecialchars($credential_short_btn) ?>
                                     </button>
-                                    <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>&amp;doc=proof" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center gap-1 py-1 px-3" style="font-size: 12px;" title="Open <?= htmlspecialchars($credential_title) ?> in new tab">
-                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>&amp;doc=proof" target="_blank" class="btn-pill-outline btn-pill-sm text-nowrap d-inline-flex align-items-center justify-content-center gap-1 py-1 px-3" style="font-size: 12px; min-width: 98px;" title="Open <?= htmlspecialchars($credential_title) ?> in new tab">
+                                        <i class="bi bi-box-arrow-up-right"></i> Open Tab
                                     </a>
                                 </div>
                             </div>
@@ -406,7 +394,7 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div class="d-flex align-items-center gap-3 ms-auto">
                             <a href="../view-resume.php?app_id=<?= $target_app['id'] ?>&amp;doc=proof" target="_blank" class="btn-pill-outline btn-pill-sm py-1 px-3 text-nowrap d-inline-flex align-items-center gap-1" style="font-size: 12px;">
-                                <i class="bi bi-box-arrow-up-right"></i> Open / Download
+                                <i class="bi bi-box-arrow-up-right"></i> Open in New Tab
                             </a>
                             <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>

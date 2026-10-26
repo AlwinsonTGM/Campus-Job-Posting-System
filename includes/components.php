@@ -127,6 +127,39 @@ if (!function_exists('render_status_badge')) {
     }
 }
 
+if (!function_exists('render_status_text')) {
+    function render_status_text($status): string {
+        $raw = trim((string)$status);
+        $key = strtolower(str_replace('_', ' ', $raw));
+        $states = [
+            'pending' => ['Pending Review', 'clock', ''],
+            'pending review' => ['Pending Review', 'clock', ''],
+            'under review' => ['Under Evaluation', 'clipboard2-check', ''],
+            'under evaluation' => ['Under Evaluation', 'clipboard2-check', ''],
+            'interview' => ['Interview Scheduled', 'calendar-event', ''],
+            'interview scheduled' => ['Interview Scheduled', 'calendar-event', ''],
+            'accepted' => ['Accepted / Hired', 'check-circle', 'positive'],
+            'hired' => ['Accepted / Hired', 'check-circle', 'positive'],
+            'accepted / hired' => ['Accepted / Hired', 'check-circle', 'positive'],
+            'active' => ['Active', 'check-circle', 'positive'],
+            'open' => ['Active', 'check-circle', 'positive'],
+            'declined' => ['Declined / Filled', 'x-circle', ''],
+            'rejected' => ['Declined / Filled', 'x-circle', ''],
+            'declined / position filled' => ['Declined / Filled', 'x-circle', ''],
+            'withdrawn' => ['Withdrawn', 'dash-circle', ''],
+            'archived' => ['Archived', 'archive', ''],
+            'closed' => ['Closed', 'slash-circle', ''],
+            'closed / position filled' => ['Closed', 'slash-circle', ''],
+            'position filled' => ['Closed', 'slash-circle', ''],
+            'filled' => ['Filled', 'check-circle', ''],
+            'paused' => ['Paused', 'pause-circle', ''],
+            'suspended' => ['Suspended', 'slash-circle', ''],
+        ];
+        [$label, $icon, $tone] = $states[$key] ?? [$raw, 'circle', ''];
+        return '<span class="employer-status ' . ($tone ? 'employer-status--' . $tone : '') . '"><i class="bi bi-' . $icon . '" aria-hidden="true"></i>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>';
+    }
+}
+
 if (!function_exists('render_metric')) {
     /**
      * Renders standard metric KPI card with optional subtext, badge, and interaction link
@@ -272,7 +305,6 @@ if (!function_exists('render_job_card')) {
                         </div>
                         <div class="d-flex align-items-center gap-2 mt-1">
                             <span class="d-inline-flex align-items-center gap-1 flex-shrink-0">
-                                <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i>
                                 <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
                             </span>
                             <span>&bull;</span>

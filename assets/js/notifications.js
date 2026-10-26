@@ -136,13 +136,12 @@
             const isUnread = !item.is_read;
             const clickUrl = baseUrl + 'api/notifications.php?action=click&id=' + item.id;
             const iconClass = item.icon || 'bi-bell';
-            const badgeColor = item.badge_color || 'primary';
             const unreadDot = isUnread ? `<span class="badge-dot-unread" title="Unread"></span>` : '';
 
             html += `
                 <a href="${clickUrl}" class="notification-item d-flex align-items-start gap-3 p-3 border-bottom border-line text-decoration-none ${isUnread ? 'bg-cream-tint' : ''}">
-                    <div class="notif-icon-circle bg-${badgeColor}-subtle text-${badgeColor} flex-shrink-0">
-                        <i class="bi ${iconClass}"></i>
+                    <div class="notif-icon-circle flex-shrink-0">
+                        <i class="bi ${iconClass}" aria-hidden="true"></i>
                     </div>
                     <div class="notification-item-content min-w-0">
                         <div class="notification-item-header">

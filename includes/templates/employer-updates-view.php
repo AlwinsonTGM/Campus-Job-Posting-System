@@ -1,109 +1,47 @@
 <?php
-/**
- * View template for employer/updates.php
- * Pure HTML/PHP echo. Controller sets variables before require.
- * Inline <script> blocks intentionally stay here (guardrail).
- */
+/** Employer announcements; controller retains publishing, editing, and archive handling. */
 require_once __DIR__ . '/../header.php';
 ?>
-
 <div class="sheet-perspective-wrapper">
     <div class="sheet flat-sheet">
         <?php require_once __DIR__ . '/../navbar.php'; ?>
-
-        <main class="py-5">
+        <main class="py-5 employer-workspace">
             <div class="container-paper">
-                <!-- Page Head -->
                 <?php
-                $head_actions = '
-                    <button type="button" class="btn-pill" data-bs-toggle="modal" data-bs-target="#newEmployerDispatchModal">
-                        <i class="bi bi-plus-circle-fill"></i> Post Department Announcement
-                    </button>
-                    <a href="../updates.php" class="btn-pill-outline" target="_blank">
-                        <i class="bi bi-eye-fill"></i> View Public Hub
-                    </a>
-                ';
-                render_page_head(
-                    '',
-                    'Department Dispatches & Announcements',
-                    htmlspecialchars($org_name) . ' • Publish hiring notices and official office bulletins to student assistants campus-wide.',
-                    $head_actions
-                );
+                $head_actions = '<button type="button" class="employer-button employer-button--primary" data-bs-toggle="modal" data-bs-target="#newEmployerDispatchModal"><i class="bi bi-plus-lg" aria-hidden="true"></i> Post Announcement</button><a href="../updates.php" class="employer-button" target="_blank" rel="noopener"><i class="bi bi-eye" aria-hidden="true"></i> View Public Hub</a>';
+                render_page_head('', 'Department announcements', $org_name . ' • Publish hiring notices and office bulletins.', $head_actions);
                 ?>
-
                 <?php if ($error): ?>
-                    <div class="alert-paper alert-paper--danger mb-4">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
-                            <div class="small fw-semibold text-ink"><?= htmlspecialchars($error) ?></div>
-                        </div>
-                    </div>
+                    <div class="alert-paper alert-paper--danger mb-4" role="alert"><i class="bi bi-exclamation-octagon" aria-hidden="true"></i> <?= htmlspecialchars($error) ?></div>
                 <?php endif; ?>
-
-                <!-- Dispatches Table Card -->
-                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
-                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="card-paper-title h6 mb-1">Campus Bulletins (<?= count($dept_updates) ?>)</h3>
-                            <p class="text-muted-custom small mb-0">Live dispatches published from your department office.</p>
+                <section class="employer-panel" aria-labelledby="bulletins-title">
+                    <div class="employer-panel-heading"><div><h2 id="bulletins-title">Campus bulletins (<?= count($dept_updates) ?>)</h2><p>Announcements published by your department.</p></div></div>
+                    <?php if (empty($dept_updates)): ?>
+                        <div class="employer-empty">
+                            <i class="bi bi-megaphone" aria-hidden="true"></i>
+                            <h3>Your first announcement starts here</h3>
+                            <p>Share a hiring notice or an office update with the campus community.</p>
+                            <button type="button" class="employer-text-button" data-bs-toggle="modal" data-bs-target="#newEmployerDispatchModal">Create an announcement <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
                         </div>
-                        <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle">
-                            <i class="bi bi-check-circle-fill text-accent me-1"></i> Auto-Approved &amp; Live
-                        </span>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table-paper table-paper-responsive mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="ps-4" style="width: 80px;">Thumbnail</th>
-                                    <th>Title &amp; Summary</th>
-                                    <th>Author / Office</th>
-                                    <th>Published</th>
-                                    <th class="text-end pe-4" style="width: 120px;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($dept_updates)): ?>
-                                    <tr>
-                                        <td colspan="5" class="text-center py-5 text-muted-custom">
-                                            <i class="bi bi-megaphone display-6 d-block mb-2 text-muted-custom"></i>
-                                            Your department hasn't published any bulletins yet. Click "Post Department Announcement" above.
-                                        </td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($dept_updates as $item): ?>
+                    <?php else: ?>
+                        <div class="employer-table-scroll">
+                            <table class="employer-table">
+                                <caption class="visually-hidden">Published department announcements</caption>
+                                <thead><tr><th scope="col">Announcement</th><th scope="col">Title &amp; summary</th><th scope="col">Author / office</th><th scope="col">Published</th><th scope="col" class="employer-actions-cell">Actions</th></tr></thead>
+                                <tbody>
+                                    <?php foreach ($dept_updates as $item):
+                                        $upd_img = $item['image'] ?? 'assets/img/hero-office.jpg';
+                                        $upd_src = (str_starts_with($upd_img, 'http://') || str_starts_with($upd_img, 'https://') || str_starts_with($upd_img, '/')) ? $upd_img : '../' . ltrim($upd_img, '/');
+                                    ?>
                                         <tr>
-                                            <td class="ps-4" data-label="Thumbnail">
-                                                <?php
-                                                $upd_img = $item['image'] ?? 'assets/img/hero-office.jpg';
-                                                $upd_src = (str_starts_with($upd_img, 'http://') || str_starts_with($upd_img, 'https://') || str_starts_with($upd_img, '/'))
-                                                    ? $upd_img
-                                                    : '../' . ltrim($upd_img, '/');
-                                                ?>
-                                                <img src="<?= htmlspecialchars($upd_src) ?>" class="rounded-3 border border-line" style="width: 54px; height: 42px; object-fit: cover;" alt="" onerror="this.src='../assets/img/hero-office.jpg';">
-                                            </td>
-                                            <td data-label="Title &amp; Summary">
-                                                <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="fw-bold text-ink text-decoration-none d-block">
-                                                    <?= htmlspecialchars($item['title']) ?>
-                                                </a>
-                                                <span class="text-muted-custom small line-clamp-1" style="max-width: 480px;">
-                                                    <?= htmlspecialchars($item['summary']) ?>
-                                                </span>
-                                            </td>
-                                            <td data-label="Author / Office">
-                                                <span class="d-block fw-semibold text-ink small"><?= htmlspecialchars($item['author']['name'] ?? $user['name']) ?></span>
-                                                <span class="text-muted-custom small" style="font-size: 0.75rem;"><?= htmlspecialchars($item['author']['office'] ?? $org_name) ?></span>
-                                            </td>
-                                            <td class="text-muted-custom small" data-label="Published">
-                                                <?= format_display_date($item['published_at'] ?? 'now', true) ?>
-                                            </td>
-                                            <td class="text-end pe-4" data-label="Actions">
-                                                <div class="d-inline-flex gap-2">
-                                                    <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" class="btn-circle-icon" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="View Public Post">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
-                                                    <button type="button" class="btn-circle-icon edit-emp-dispatch-btn" 
+                                            <td data-label="Announcement"><img src="<?= htmlspecialchars($upd_src) ?>" class="employer-bulletin-image" alt="" onerror="this.src='../assets/img/hero-office.jpg';this.onerror=null;"></td>
+                                            <td data-label="Title &amp; summary"><a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" rel="noopener" class="text-ink text-decoration-none"><strong><?= htmlspecialchars($item['title']) ?></strong></a><small class="employer-bulletin-summary"><?= htmlspecialchars($item['summary']) ?></small></td>
+                                            <td data-label="Author / office"><strong><?= htmlspecialchars($item['author']['name'] ?? $user['name']) ?></strong><small><?= htmlspecialchars($item['author']['office'] ?? $org_name) ?></small></td>
+                                            <td data-label="Published" class="employer-date"><?= format_display_date($item['published_at'] ?? 'now', true) ?></td>
+                                            <td data-label="Actions" class="employer-actions-cell">
+                                                <div class="employer-actions employer-actions--bulletins">
+                                                    <a href="../update-detail.php?id=<?= urlencode($item['id']) ?>" target="_blank" rel="noopener" class="employer-button employer-button--icon" title="View public post" aria-label="View <?= htmlspecialchars($item['title'], ENT_QUOTES) ?> (opens in new tab)"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                                                    <button type="button" class="employer-button employer-button--icon edit-emp-dispatch-btn"
                                                         data-id="<?= htmlspecialchars($item['id']) ?>"
                                                         data-title="<?= htmlspecialchars($item['title']) ?>"
                                                         data-summary="<?= htmlspecialchars($item['summary']) ?>"
@@ -112,40 +50,35 @@ require_once __DIR__ . '/../header.php';
                                                         data-author-name="<?= htmlspecialchars($item['author']['name'] ?? $user['name']) ?>"
                                                         data-author-role="<?= htmlspecialchars($item['author']['role'] ?? 'Department Supervisor') ?>"
                                                         data-author-office="<?= htmlspecialchars($item['author']['office'] ?? $org_name) ?>"
-                                                        style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Edit Dispatch">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                    <form method="POST" action="updates.php" class="d-inline" onsubmit="return confirm('Archive this dispatch? It will be safely archived while preserving campus records.');">
+                                                        title="Edit announcement" aria-label="Edit <?= htmlspecialchars($item['title'], ENT_QUOTES) ?>"><i class="bi bi-pencil" aria-hidden="true"></i></button>
+                                                    <form method="POST" action="updates.php" onsubmit="return confirm('Archive this announcement? Campus records will be preserved.');">
                                                         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                                         <input type="hidden" name="action" value="archive">
                                                         <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
-                                                        <button type="submit" class="btn-circle-icon text-muted" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 14px;" title="Archive Dispatch">
-                                                            <i class="bi bi-archive"></i>
-                                                        </button>
+                                                        <button type="submit" class="employer-button employer-button--icon" title="Archive announcement" aria-label="Archive <?= htmlspecialchars($item['title'], ENT_QUOTES) ?>"><i class="bi bi-archive" aria-hidden="true"></i></button>
                                                     </form>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </section>
             </div>
         </main>
-
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
 </div>
 
 <!-- Modal: Post Department Dispatch -->
-<div class="modal fade" id="newEmployerDispatchModal" tabindex="-1" aria-labelledby="newEmployerDispatchModalLabel" aria-hidden="true">
+<div class="modal fade employer-workspace" id="newEmployerDispatchModal" tabindex="-1" aria-labelledby="newEmployerDispatchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-line rounded-4 shadow-lg">
             <div class="modal-header border-line bg-surface p-4">
                 <h5 class="modal-title fw-bold text-ink" id="newEmployerDispatchModalLabel">
-                    <i class="bi bi-megaphone-fill text-accent me-2"></i> Post Department Announcement
+                    <i class="bi bi-megaphone me-2"></i> Post Department Announcement
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -190,9 +123,9 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 </div>
                 <div class="modal-footer bg-cream border-top border-line py-3 px-4">
-                    <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-pill btn-pill-sm">
-                        <i class="bi bi-send-fill"></i> Publish Live Immediately
+                    <button type="button" class="employer-button employer-button--compact" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="employer-button employer-button--primary employer-button--compact">
+                        <i class="bi bi-send"></i> Publish Announcement
                     </button>
                 </div>
             </form>
@@ -201,7 +134,7 @@ require_once __DIR__ . '/../header.php';
 </div>
 
 <!-- Modal: Edit Department Dispatch -->
-<div class="modal fade" id="editEmployerDispatchModal" tabindex="-1" aria-labelledby="editEmployerDispatchModalLabel" aria-hidden="true">
+<div class="modal fade employer-workspace" id="editEmployerDispatchModal" tabindex="-1" aria-labelledby="editEmployerDispatchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-line rounded-4 shadow-lg">
             <div class="modal-header border-line bg-surface p-4">
@@ -251,9 +184,9 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 </div>
                 <div class="modal-footer bg-cream border-top border-line py-3 px-4">
-                    <button type="button" class="btn-pill-outline btn-pill-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-pill btn-pill-sm">
-                        <i class="bi bi-check-circle-fill"></i> Save Changes
+                    <button type="button" class="employer-button employer-button--compact" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="employer-button employer-button--primary employer-button--compact">
+                        <i class="bi bi-check2"></i> Save Changes
                     </button>
                 </div>
             </form>

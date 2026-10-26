@@ -7,6 +7,7 @@
 @import url('tokens.css?v=1.5');
 @import url('base.css?v=1.6');
 @import url('components/notifications.css?v=1.5');
+@import url('components/page-header.css?v=1.0');
 @import url('features/auth.css?v=1792914940');
 @import url('features/devblog.css?v=2.5');
 @import url('features/companion.css?v=2.0');
@@ -2118,8 +2119,8 @@
 .container-paper {
   width: 100%;
   max-width: 100%;
-  margin-left: 0;
-  margin-right: 0;
+  margin-left: auto;
+  margin-right: auto;
   padding-left: clamp(1rem, 2.5vw, 2.5rem);
   padding-right: clamp(1rem, 2.5vw, 2.5rem);
 }

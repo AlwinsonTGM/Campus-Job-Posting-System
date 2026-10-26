@@ -85,76 +85,27 @@ $bootstrap_badge_icons = [
                     </div>
                 <?php endif; ?>
 
-                <!-- Visual Hero Showcase Banner -->
-                <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise border-line position-relative shadow-sm" style="background: linear-gradient(135deg, #0d3b2e 0%, #175343 55%, #1e6955 100%); color: #ffffff;">
-                    <!-- Decorative Background Icon Accent -->
-                    <div style="position: absolute; right: -30px; bottom: -30px; opacity: 0.08; pointer-events: none; overflow: hidden; max-width: 100%; max-height: 100%;">
-                        <i class="bi bi-diagram-3-fill" style="font-size: 240px; line-height: 1;"></i>
-                    </div>
-
-                    <div class="p-4 p-md-5 position-relative">
-                        <div class="row align-items-center g-4">
-                            <div class="col-lg-7">
-                                <h1 class="display-6 fw-bold mb-2 text-white" style="letter-spacing: -0.02em;">Job Family Categories</h1>
-                                <p class="mb-4 text-white-50 small" style="max-width: 580px; font-size: 14.5px; line-height: 1.6;">
-                                    Organize student assistantship requisitions across university departments, academic laboratories, and accredited institutional partners with high-fidelity visual profiles and curated photography.
-                                </p>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn-pill" data-bs-toggle="modal" data-bs-target="#newCatModal" style="background: #ffffff; color: #0d3b2e; border: none; font-weight: 600;">
-                                        <i class="bi bi-plus-circle-fill text-success"></i> Add Category with Picture
-                                    </button>
-                                    <a href="reports.php" class="btn-pill-outline" style="color: #ffffff; border-color: rgba(255, 255, 255, 0.4);">
-                                        <i class="bi bi-bar-chart-fill"></i> Taxonomy Analytics
-                                    </a>
-                                    <a href="../student/jobs.php" target="_blank" class="btn-pill-outline" style="color: #ffffff; border-color: rgba(255, 255, 255, 0.4);">
-                                        <i class="bi bi-box-arrow-up-right"></i> Student Portal View
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-5">
-                                <div class="row g-3">
-                                    <div class="col-6">
-                                        <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <i class="bi bi-folder2-open text-warning fs-5"></i>
-                                                <span class="small text-white-50 text-uppercase fw-semibold" style="font-size: 11px;">Active Families</span>
-                                            </div>
-                                            <div class="h3 fw-bold mb-0 text-white"><?= count($categories) ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <i class="bi bi-briefcase-fill text-info fs-5"></i>
-                                                <span class="small text-white-50 text-uppercase fw-semibold" style="font-size: 11px;">Total Vacancies</span>
-                                            </div>
-                                            <div class="h3 fw-bold mb-0 text-white"><?= count($all_jobs) ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <i class="bi bi-image-fill text-success fs-5"></i>
-                                                <span class="small text-white-50 text-uppercase fw-semibold" style="font-size: 11px;">Photo Profiles</span>
-                                            </div>
-                                            <div class="h3 fw-bold mb-0 text-white"><?= count(array_filter($categories, fn($c) => !empty($c['image']))) ?> / <?= count($categories) ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                <i class="bi bi-cash-stack text-warning fs-5"></i>
-                                                <span class="small text-white-50 text-uppercase fw-semibold" style="font-size: 11px;">Avg Hourly Pay</span>
-                                            </div>
-                                            <div class="h3 fw-bold mb-0 text-white">₱85.00</div>
-                                        </div>
-                                    </div>
-                                </div>
+                <section class="campus-page-header mb-5" aria-labelledby="category-page-title">
+                    <div class="campus-page-header__main">
+                        <div>
+                            <h1 id="category-page-title">Job Family Categories</h1>
+                            <p class="campus-page-header__description">Organize student assistantship requisitions across university departments, academic laboratories, and accredited institutional partners with high-fidelity visual profiles and curated photography.</p>
+                            <div class="campus-page-header__actions">
+                                <button type="button" class="campus-page-header__button campus-page-header__button--primary" data-bs-toggle="modal" data-bs-target="#newCatModal">
+                                    <i class="bi bi-plus-circle" aria-hidden="true"></i> Add Category with Picture
+                                </button>
+                                <a href="reports.php" class="campus-page-header__button"><i class="bi bi-bar-chart" aria-hidden="true"></i> Taxonomy Analytics</a>
+                                <a href="../student/jobs.php" target="_blank" rel="noopener" class="campus-page-header__button"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> Student Portal View</a>
                             </div>
                         </div>
+                        <dl class="campus-page-header__stats">
+                            <div class="campus-page-header__stat"><i class="bi bi-folder2-open" aria-hidden="true"></i><div><dt>Active families</dt><dd><?= count($active_categories) ?></dd></div></div>
+                            <div class="campus-page-header__stat"><i class="bi bi-briefcase" aria-hidden="true"></i><div><dt>Active postings</dt><dd><?= get_metrics_total_active_jobs() ?></dd></div></div>
+                            <div class="campus-page-header__stat"><i class="bi bi-image" aria-hidden="true"></i><div><dt>Photo profiles</dt><dd><?= count(array_filter($active_categories, fn($c) => get_category_cover($c) !== '')) ?> / <?= count($active_categories) ?></dd></div></div>
+                            <div class="campus-page-header__stat"><i class="bi bi-cash-stack" aria-hidden="true"></i><div><dt>Avg hourly pay</dt><dd><?= htmlspecialchars(get_metrics_avg_hourly_pay()) ?></dd></div></div>
+                        </dl>
                     </div>
-                </div>
+                </section>
 
                 <!-- Section Subheading -->
                 <div class="mb-4">
@@ -164,14 +115,14 @@ $bootstrap_badge_icons = [
 
                 <!-- Taxonomy View Tabs -->
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom border-line">
-                    <div class="d-flex gap-2">
-                        <a href="categories.php" class="chip chip-selectable text-decoration-none <?= ($tab !== 'archived') ? 'active' : '' ?>">
-                            <i class="bi bi-folder2-open text-accent"></i> <span class="chip-text">Active Categories (<?= count($active_categories) ?>)</span>
-                                </a>
-                        <a href="categories.php?tab=archived" class="chip chip-selectable text-decoration-none <?= ($tab === 'archived') ? 'active' : '' ?>">
-                            <i class="bi bi-archive text-warning"></i> <span class="chip-text">Archived (<?= count($archived_categories) ?>)</span>
-                                </a>
-                    </div>
+                    <nav class="d-flex flex-wrap gap-2" aria-label="Filter categories">
+                        <a href="categories.php" class="status-filter <?= ($tab !== 'archived') ? 'active' : '' ?>" <?= ($tab !== 'archived') ? 'aria-current="page"' : '' ?>>
+                            <i class="bi bi-folder2-open" aria-hidden="true"></i> <span>Active Categories (<?= count($active_categories) ?>)</span>
+                        </a>
+                        <a href="categories.php?tab=archived" class="status-filter <?= ($tab === 'archived') ? 'active' : '' ?>" <?= ($tab === 'archived') ? 'aria-current="page"' : '' ?>>
+                            <i class="bi bi-archive" aria-hidden="true"></i> <span>Archived (<?= count($archived_categories) ?>)</span>
+                        </a>
+                    </nav>
                     <?php if ($tab === 'archived'): ?>
                         <div class="small text-muted-custom">
                             <i class="bi bi-info-circle me-1"></i> Archived categories are safely preserved. Only Admins can restore them.
@@ -214,8 +165,8 @@ $bootstrap_badge_icons = [
                                     <!-- Content Body -->
                                     <div class="p-4 d-flex flex-column flex-grow-1">
                                         <div class="d-flex align-items-center gap-2 mb-2">
-                                            <div class="icon-circle icon-circle-success flex-shrink-0" style="width: 36px; height: 36px; font-size: 16px;">
-                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?> text-accent"></i>
+<div class="icon-circle admin-icon admin-icon--neutral-circle flex-shrink-0" style="width: 36px; height: 36px; font-size: 16px;">
+                                                <i class="bi <?= htmlspecialchars($cat['icon'] ?? 'bi-briefcase') ?>"></i>
                                             </div>
                                             <h3 class="card-paper-title fs-5 mb-0 fw-bold text-ink"><?= htmlspecialchars($cat['name']) ?></h3>
                                         </div>
@@ -315,7 +266,7 @@ $bootstrap_badge_icons = [
                 <div class="modal-content rounded-4 border-line shadow-lg">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-success">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--neutral-circle">
                                 <i class="bi bi-tag-fill"></i>
                             </div>
                             <div>
@@ -463,7 +414,7 @@ $bootstrap_badge_icons = [
                 <div class="modal-content rounded-4 border-line shadow-lg">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-success">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--neutral-circle">
                                 <i class="bi bi-pencil-fill"></i>
                             </div>
                             <div>

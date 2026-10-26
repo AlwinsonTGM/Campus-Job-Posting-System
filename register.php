@@ -6,6 +6,7 @@
 require_once __DIR__ . '/includes/data-helper.php';
 require_once __DIR__ . '/includes/auth-check.php';
 require_once __DIR__ . '/includes/mailer.php';
+require_once __DIR__ . '/includes/services/registration-validation.php';
 
 if (is_logged_in()) {
     header('Location: index.php');
@@ -80,9 +81,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $office_location = trim($_POST['office_location'] ?? '');
     $accreditation_number = trim($_POST['accreditation_number'] ?? '');
 
+    // Validate the public form before DNS, persistence, or document uploads.
+    $profile_error = validate_public_registration_fields(
+        array_merge($_POST, ['role' => $role]),
+        get_kld_institutes_and_courses(),
+        get_year_levels()
+    );
     // Server-side validation
     if (!empty($error)) {
         // Validation error already flagged (e.g. university_office tampering)
+    } elseif ($profile_error !== null) {
+        $error = $profile_error['message'];
+        $initial_step = $profile_error['step'];
     } elseif ((empty($first_name) && empty($raw_name)) || empty($email) || empty($password)) {
         $error = 'Please fill in all mandatory fields (Name, Email, Password).';
         $initial_step = empty($email) || (empty($first_name) && empty($raw_name)) ? 1 : 3;

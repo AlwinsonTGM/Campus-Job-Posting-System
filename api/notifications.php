@@ -19,6 +19,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'click') {
             if (!empty($target_link)) {
                 $safe_link = SessionGuard::sanitizeReturnTo($target_link);
                 if ($safe_link !== null) {
+                    if (str_contains($safe_link, '#') || preg_match('/[?&]highlight=/', $safe_link)) {
+                        $link_parts = explode('#', $safe_link, 2);
+                        $link_parts[0] .= (str_contains($link_parts[0], '?') ? '&' : '?') . 'from_notification=1';
+                        $safe_link = implode('#', $link_parts);
+                    }
                     header('Location: ../' . ltrim($safe_link, '/'));
                     exit;
                 }

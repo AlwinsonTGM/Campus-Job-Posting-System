@@ -3,9 +3,12 @@
  * View template for includes/navbar.php (partial)
  * Pure HTML/PHP echo. No controller redirects / session mutations here.
  */
+$employer_navigation = ($current_user['role'] ?? '') === 'employer';
+$admin_navigation = ($current_user['role'] ?? '') === 'admin';
+$workspace_navigation = $employer_navigation || $admin_navigation;
 ?>
 
-<nav class="navbar navbar-expand-lg paper-navbar sticky-top">
+<nav class="navbar navbar-expand-lg paper-navbar sticky-top <?= $workspace_navigation ? 'employer-navbar admin-navbar' : '' ?>">
     <div class="container-fluid px-2 px-xl-4">
         <!-- Left: SVG Mark + SITE_NAME -->
         <?php $brand_url = $current_user ? $dashboard_link : ($base_url . 'index.php'); ?>
@@ -59,36 +62,41 @@
                     $nav_pending_count = $pending_pr + $pending_emp + $pending_stu;
                 }
             ?>
-                <!-- Center/Left Navigation Links for Admin -->
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 gap-xl-2 align-items-lg-center">
-                    <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center gap-1 <?= ($current_script === 'users.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/users.php">
-                            <span class="d-inline d-lg-none d-xxl-inline">USERS &amp;&nbsp;</span>VERIFICATION
-                            <?php if ($nav_pending_count > 0): ?>
-                                <span class="badge bg-danger rounded-pill px-2" style="font-size: 10px;"><?= $nav_pending_count ?></span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($current_script === 'reports.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/reports.php">
-                            REPORTS
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($current_script === 'categories.php') ? 'active' : '' ?>" href="<?= $base_url ?>admin/categories.php">
-                            CATEGORIES
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($current_script === 'updates.php' && strpos($_SERVER['REQUEST_URI'] ?? '', 'admin') !== false) ? 'active' : '' ?>" href="<?= $base_url ?>admin/updates.php">
-                            DISPATCHES
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($current_script === 'jobs.php') ? 'active' : '' ?>" href="<?= $base_url ?>student/jobs.php">
-                            JOBS<span class="d-inline d-lg-none d-xxl-inline">&nbsp;DIRECTORY</span>
-                        </a>
-                    </li>
+                <!-- Center Navigation Links for Admin (Consistent with Employer Workspace) -->
+                <ul class="navbar-nav admin-workspace-nav mx-auto mb-2 mb-lg-0" aria-label="Admin workspace">
+                    <?php foreach ([
+                        ['admin/users.php', 'bi-people', '<span class="d-inline d-lg-none d-xl-inline">Users &amp; </span>Verification', ['users.php', 'verification-deck.php'], $nav_pending_count],
+                        ['admin/reports.php', 'bi-bar-chart', 'Reports', ['reports.php'], 0],
+                        ['admin/categories.php', 'bi-tags', 'Categories', ['categories.php'], 0],
+                        ['admin/updates.php', 'bi-megaphone', 'Dispatches', ['updates.php'], 0],
+                        ['student/jobs.php', 'bi-briefcase', 'Jobs<span class="d-inline d-lg-none d-xl-inline"> Directory</span>', ['jobs.php', 'job-details.php'], 0],
+                    ] as [$nav_route, $nav_icon, $nav_label, $nav_pages, $badge_count]):
+                        $is_student = str_contains($nav_route, 'student/');
+                        $nav_active = in_array($current_script, $nav_pages, true) && (
+                            $is_student ? str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/student/') : str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/admin/')
+                        );
+                    ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $nav_active ? 'active' : '' ?>" href="<?= $base_url . $nav_route ?>" <?= $nav_active ? 'aria-current="page"' : '' ?>>
+                                <i class="bi <?= $nav_icon ?>" aria-hidden="true"></i><span><?= $nav_label ?></span>
+                                <?php if ($badge_count > 0): ?>
+                                    <span class="badge bg-danger rounded-pill px-2" style="font-size: 10px;"><?= $badge_count ?></span>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php elseif ($employer_navigation): ?>
+                <ul class="navbar-nav employer-workspace-nav mx-auto mb-2 mb-lg-0" aria-label="Employer workspace">
+                    <?php foreach ([
+                        ['dashboard.php', 'bi-grid', 'Dashboard', ['dashboard.php', 'create-job.php', 'edit-job.php']],
+                        ['applicants.php', 'bi-people', 'Applicants', ['applicants.php', 'review-app.php']],
+                        ['updates.php', 'bi-megaphone', 'Announcements', ['updates.php']],
+                    ] as [$nav_page, $nav_icon, $nav_label, $nav_pages]):
+                        $nav_active = str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/employer/') && in_array($current_script, $nav_pages, true);
+                    ?>
+                        <li class="nav-item"><a class="nav-link <?= $nav_active ? 'active' : '' ?>" href="<?= $base_url ?>employer/<?= $nav_page ?>" <?= $nav_active ? 'aria-current="page"' : '' ?>><i class="bi <?= $nav_icon ?>" aria-hidden="true"></i><span><?= $nav_label ?></span></a></li>
+                    <?php endforeach; ?>
                 </ul>
             <?php elseif ($current_user): ?>
                 <!-- Center: Wide Google-Style Search Bar for Logged-In Users (Desktop only) -->
@@ -123,7 +131,7 @@
             <!-- Right Action Items -->
             <div class="paper-nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
 
-                <?php if (!$current_user || ($current_user['role'] ?? '') === 'admin'): ?>
+                <?php if (!$current_user || $employer_navigation || ($current_user['role'] ?? '') === 'admin'): ?>
                 <!-- Circular Search-Icon Button (Desktop only; mobile is in top bar beside hamburger) -->
                 <button type="button" class="btn-circle-icon d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Search Campus Jobs (Ctrl+K)" aria-label="Search Jobs">
                     <i class="bi bi-search"></i>
@@ -161,8 +169,8 @@
                                         $item_link = $base_url . 'api/notifications.php?action=click&id=' . $item['id'];
                                     ?>
                                         <a href="<?= $item_link ?>" class="notification-item d-flex align-items-start gap-3 p-3 border-bottom border-line text-decoration-none <?= $is_unread ? 'bg-cream-tint' : '' ?>">
-                                            <div class="notif-icon-circle bg-<?= htmlspecialchars($item['badge_color'] ?? 'primary') ?>-subtle text-<?= htmlspecialchars($item['badge_color'] ?? 'primary') ?> flex-shrink-0">
-                                                <i class="bi <?= htmlspecialchars($item['icon'] ?? 'bi-bell') ?>"></i>
+                                            <div class="notif-icon-circle flex-shrink-0">
+                                                <i class="bi <?= htmlspecialchars($item['icon'] ?? 'bi-bell') ?>" aria-hidden="true"></i>
                                             </div>
                                             <div class="notification-item-content min-w-0">
                                                 <div class="notification-item-header">

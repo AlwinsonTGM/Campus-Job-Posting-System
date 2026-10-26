@@ -593,7 +593,9 @@
   border-color: var(--accent);
   background-color: var(--accent-soft);
 }
-
+[data-theme="dark"] .admin-icon--neutral-circle {
+  background-color: var(--surface);
+}
 /* --------------------------------------------------------------------------
    14. PROGRESS BARS
    -------------------------------------------------------------------------- */
@@ -1064,10 +1066,6 @@
    ========================================================================== */
 
 /* Status badge text colors — hardcoded in custom.css, need dark override */
-[data-theme="dark"] .badge-status--pending {
-  color: var(--st-pending);
-  border-color: rgba(242, 179, 61, 0.35);
-}
 [data-theme="dark"] .badge-status--review {
   color: var(--st-review);
   border-color: rgba(94, 181, 255, 0.35);

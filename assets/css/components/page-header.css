@@ -1,0 +1,166 @@
+/* This dark surface keeps its own foreground colors in both site themes. */
+.campus-page-header {
+  --header-bg: #20231f;
+  --header-fg: #f5f4f0;
+  --header-muted: #c2c7bd;
+  --header-line: #596151;
+  --header-icon: #d4e5cc;
+  background: var(--header-bg);
+  color: var(--header-fg);
+  border: 1px solid var(--header-line);
+  border-radius: var(--radius-card, 24px);
+  overflow: hidden;
+}
+.campus-page-header__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
+  align-items: center;
+  gap: 42px;
+  padding: 38px 40px;
+}
+.campus-page-header h1 {
+  color: var(--header-fg);
+  font-size: 36px;
+  font-weight: 750;
+  letter-spacing: -.035em;
+  line-height: 1.15;
+  text-wrap: balance;
+  margin: 0 0 14px;
+}
+.campus-page-header__description {
+  color: var(--header-muted);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 630px;
+  margin: 0;
+}
+.campus-page-header__actions,
+.campus-page-header__facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+.campus-page-header__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 12px 18px;
+  border: 1px solid var(--header-line);
+  border-radius: var(--radius-pill, 999px);
+  background: transparent;
+  color: var(--header-fg);
+  font-family: var(--font-family, inherit);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.campus-page-header__button i { color: inherit; font-size: 15px; }
+.campus-page-header__button:hover {
+  background: #343b30;
+  color: var(--header-fg);
+  border-color: var(--header-muted);
+}
+.campus-page-header__button--primary {
+  background: var(--accent, #2ECC5E);
+  border-color: var(--accent, #2ECC5E);
+  color: var(--ink, #161616);
+}
+.campus-page-header__button--primary:hover {
+  background: var(--accent-hover, #26b150);
+  border-color: var(--accent-hover, #26b150);
+  color: var(--ink, #161616);
+}
+.campus-page-header__button:focus-visible {
+  outline: 2px solid var(--header-fg);
+  outline-offset: 4px;
+}
+.campus-page-header__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px 30px;
+  padding-left: 32px;
+  border-left: 1px solid var(--header-line);
+  margin: 0;
+}
+.campus-page-header__stat { display: flex; align-items: flex-start; gap: 12px; }
+.campus-page-header__stat > i { color: var(--header-icon); font-size: 21px; margin-top: 4px; }
+.campus-page-header__stat > div { display: flex; flex-direction: column; }
+.campus-page-header__stat dt,
+.campus-page-header__label { color: var(--header-muted); font-size: 11px; font-weight: 400; }
+.campus-page-header__stat dt { margin-top: 7px; margin-bottom: 0; }
+.campus-page-header__stat dd {
+  order: -1;
+  color: var(--header-fg);
+  font-size: 27px;
+  font-weight: 650;
+  letter-spacing: -.035em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.campus-page-header--jobs .campus-page-header__main { grid-template-columns: minmax(0, 1fr) 238px; }
+.campus-page-header__facts { gap: 10px 22px; font-size: 12px; }
+.campus-page-header__facts span,
+.campus-page-header__filter { display: flex; align-items: center; gap: 8px; }
+.campus-page-header__facts i,
+.campus-page-header__filter i { color: var(--header-icon); font-size: 16px; }
+.campus-page-header__discipline { border-left: 1px solid var(--header-line); padding: 12px 0 12px 28px; }
+.campus-page-header__label { margin-bottom: 10px; }
+.campus-page-header__filter { font-size: 15px; font-weight: 650; overflow-wrap: anywhere; }
+@media (min-width: 1600px) {
+  .campus-page-header__main { padding: 44px 40px; }
+  .campus-page-header h1 { font-size: 40px; }
+}
+@media (max-width: 1199.98px) {
+  .campus-page-header__main { gap: 28px; padding: 32px 30px; }
+  .campus-page-header h1 { font-size: 32px; }
+  .campus-page-header__stats { padding-left: 24px; gap: 20px 16px; }
+  .campus-page-header__stat { gap: 8px; }
+  .campus-page-header__stat dd { font-size: 24px; }
+}
+@media (max-width: 991.98px) {
+  .campus-page-header__main,
+  .campus-page-header--jobs .campus-page-header__main {
+    grid-template-columns: 1fr;
+    padding: 28px 24px;
+    gap: 24px;
+  }
+  .campus-page-header h1 { font-size: 28px; }
+  .campus-page-header__description { font-size: 13px; }
+  .campus-page-header__stats {
+    border-left: 0;
+    border-top: 1px solid var(--header-line);
+    padding: 20px 0 0;
+  }
+  .campus-page-header__discipline {
+    padding: 16px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--header-line);
+  }
+}
+@media (max-width: 575.98px) {
+  .campus-page-header__main,
+  .campus-page-header--jobs .campus-page-header__main {
+    padding: 22px 16px;
+    gap: 20px;
+  }
+  .campus-page-header h1 { font-size: 24px; }
+  .campus-page-header__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .campus-page-header__button {
+    width: 100%;
+    justify-content: center;
+  }
+  .campus-page-header__stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 12px;
+  }
+  .campus-page-header__stat dd { font-size: 22px; }
+}

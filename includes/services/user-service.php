@@ -19,6 +19,10 @@ function get_logged_user(): ?array {
     try {
         $fresh = get_user_by_id((int)$_SESSION['user']['id']);
         if ($fresh) {
+            if (($fresh['status'] ?? 'active') === 'suspended' || !empty($fresh['is_archived'])) {
+                unset($_SESSION['user']);
+                return null;
+            }
             unset($fresh['password']);
             $_SESSION['user'] = $fresh;
             return $fresh;
@@ -31,7 +35,7 @@ function get_logged_user(): ?array {
 }
 
 function is_logged_in(): bool {
-    return isset($_SESSION['user']);
+    return get_logged_user() !== null;
 }
 
 if (!function_exists('has_role')) {
@@ -445,7 +449,7 @@ function quick_login(string $role, int|string|null $user_id = null): ?array {
         $row = $stmt->fetch();
         if ($row) {
             $user = hydrate_user($row);
-            if (strtolower($user['status'] ?? 'active') === 'suspended') {
+            if (strtolower($user['status'] ?? 'active') === 'suspended' || !empty($user['is_archived'])) {
                 return null;
             }
             $user['_last_db_sync'] = time();
@@ -1261,7 +1265,7 @@ function get_profile_requests(int|string|null $user_id = null, ?string $status =
             $params[':status'] = $status;
         }
 
-        $sql .= " ORDER BY pr.`created_at` DESC";
+        $sql .= " ORDER BY CASE WHEN pr.`status` = 'pending' THEN 0 ELSE 1 END ASC, pr.`created_at` DESC, pr.`id` DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();

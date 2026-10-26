@@ -9,229 +9,101 @@ require_once __DIR__ . '/../header.php';
 
 <div class="sheet-perspective-wrapper">
     <div class="sheet flat-sheet">
-        <?php
-        ob_start();
-        require_once __DIR__ . '/../navbar.php';
-        $navbar_html = ob_get_clean();
-        echo str_replace('<input type="text" class="paper-search-input"', '<input type="search" class="paper-search-input"', $navbar_html);
-        ?>
+        <?php require_once __DIR__ . '/../navbar.php'; ?>
 
-        <main class="py-5">
+        <main class="py-5 employer-workspace">
             <div class="container-paper">
                 
                 <!-- Page Head -->
                 <?php
-                $head_actions = '
-                    <a href="create-job.php" class="btn-pill">
-                        <i class="bi bi-plus-circle-fill"></i> Post Vacancy
-                    </a>
-                    <a href="dashboard.php" class="btn-pill-outline">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                ';
-                render_page_head(
-                    '',
-                    'Student Applicant Evaluation Roster',
-                    'Review candidate profiles, inspect weekly class schedule availability, and coordinate interview appointments.',
-                    $head_actions
-                );
+                $head_actions = '<a href="create-job.php" class="employer-button employer-button--primary"><i class="bi bi-plus-lg" aria-hidden="true"></i> Post Vacancy</a>';
+                render_page_head('', 'Student applicants', 'Review profiles, compare availability, and coordinate your next hiring decision.', $head_actions);
                 ?>
 
-                <!-- Filter Bar -->
-                <div class="card-paper p-4 mb-4">
-                    <form action="applicants.php" method="GET" class="form-paper auto-filter-form">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-12 col-md-6 col-lg-6">
-                                <label class="form-label" for="search-candidate">Search Candidates</label>
-                                <div class="search-input-wrap">
-                                    <i class="bi bi-search text-muted-custom"></i>
-                                    <input type="text" name="q" id="search-candidate" data-alias="search-applicant" class="form-control" placeholder="Candidate, email, degree..." value="<?= htmlspecialchars($search ?? '') ?>">
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-6 col-lg-6">
-                                <label class="form-label" for="filter-job">Filter by Job Requisition</label>
-                                <select name="job_id" id="filter-job" class="form-select">
-                                    <option value="">All Department Openings</option>
-                                    <?php foreach ($dept_jobs as $j): ?>
-                                        <option value="<?= $j['id'] ?>" <?= ($job_filter == $j['id']) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($j['title']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-md-4 col-lg-4">
-                                <label class="form-label" for="filter-status">Filter by Status</label>
-                                <select name="status" id="filter-status" class="form-select">
-                                    <option value="">All Application Stages</option>
-                                    <option value="pending" <?= ($status_filter === 'pending') ? 'selected' : '' ?>>Pending Review</option>
-                                    <option value="review" <?= ($status_filter === 'review') ? 'selected' : '' ?>>Under Evaluation</option>
-                                    <option value="interview" <?= ($status_filter === 'interview') ? 'selected' : '' ?>>Interview Scheduled</option>
-                                    <option value="accepted" <?= ($status_filter === 'accepted') ? 'selected' : '' ?>>Accepted / Hired</option>
-                                    <option value="declined" <?= ($status_filter === 'declined') ? 'selected' : '' ?>>Declined / Filled</option>
-                                    <option value="withdrawn" <?= ($status_filter === 'withdrawn') ? 'selected' : '' ?>>Candidate Withdrawn</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-md-4 col-lg-4">
-                                <label class="form-label" for="filter-fit">Filter by Schedule Availability</label>
-                                <select name="fit" id="filter-fit" class="form-select">
-                                    <option value="">All Availability Levels</option>
-                                    <option value="optimal" <?= ($fit_filter === 'optimal') ? 'selected' : '' ?>>Strong Fit (20h+ / Optimal)</option>
-                                    <option value="moderate" <?= ($fit_filter === 'moderate') ? 'selected' : '' ?>>Moderate Fit (12–16h / Balanced)</option>
-                                    <option value="limited" <?= ($fit_filter === 'limited') ? 'selected' : '' ?>>Limited Fit (4–8h / Limited Hours)</option>
-                                    <option value="conflict" <?= ($fit_filter === 'conflict') ? 'selected' : '' ?>>Conflict Risk (0h / No Shifts)</option>
-                                </select>
-                            </div>
-
-                            <div class="col-10 col-md-3 col-lg-3">
-                                <label class="form-label" for="filter-sort">Rank Candidates</label>
-                                <select name="sort" id="filter-sort" class="form-select">
-                                    <option value="">Default (Latest Submissions)</option>
-                                    <option value="sched_desc" <?= ($rank_sort === 'sched_desc') ? 'selected' : '' ?>>Availability: Highest Availability</option>
-                                    <option value="sched_asc" <?= ($rank_sort === 'sched_asc') ? 'selected' : '' ?>>Availability: Conflict Risk First</option>
-                                    <option value="name_asc" <?= ($rank_sort === 'name_asc') ? 'selected' : '' ?>>Candidate Name (A–Z)</option>
-                                    <option value="date_asc" <?= ($rank_sort === 'date_asc') ? 'selected' : '' ?>>Date Applied (Oldest First)</option>
-                                </select>
-                            </div>
-
-                            <div class="col-2 col-md-1 col-lg-1 d-flex justify-content-end align-items-end">
-                                <div>
-                                    <label class="form-label d-none d-md-block" style="visibility: hidden;">Reset</label>
-                                    <a href="applicants.php" class="btn-filter-reset" title="Reset all filters" aria-label="Reset all filters">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </a>
-                                </div>
-                            </div>
+                <div class="employer-panel">
+                    <form action="applicants.php" method="GET" class="auto-filter-form employer-filter-form" role="search" aria-label="Filter applicants">
+                        <div class="employer-filter-field">
+                            <label for="search-candidate">Search candidates</label>
+                            <div class="search-input-wrap"><i class="bi bi-search" aria-hidden="true"></i><input type="search" name="q" id="search-candidate" data-alias="search-applicant" class="form-control" placeholder="Name, email, or degree…" value="<?= htmlspecialchars($search ?? '') ?>"></div>
                         </div>
+                        <div class="employer-filter-field">
+                            <label for="filter-job">Vacancy</label>
+                            <select name="job_id" id="filter-job" class="form-select"><option value="">All department openings</option><?php foreach ($dept_jobs as $j): ?><option value="<?= (int)$j['id'] ?>" <?= ($job_filter == $j['id']) ? 'selected' : '' ?>><?= htmlspecialchars($j['title']) ?></option><?php endforeach; ?></select>
+                        </div>
+                        <div class="employer-filter-field">
+                            <label for="filter-status">Application stage</label>
+                            <select name="status" id="filter-status" class="form-select">
+                                <option value="">All application stages</option>
+                                <?php foreach (['pending' => 'Pending Review', 'review' => 'Under Evaluation', 'interview' => 'Interview Scheduled', 'accepted' => 'Accepted / Hired', 'declined' => 'Declined / Filled', 'withdrawn' => 'Candidate Withdrawn'] as $stage_value => $stage_label): ?>
+                                    <option value="<?= $stage_value ?>" <?= $status_filter === $stage_value ? 'selected' : '' ?>><?= $stage_label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <a href="applicants.php" class="employer-button employer-button--icon employer-filter-reset" title="Reset all filters" aria-label="Reset all filters"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i></a>
+                        <details class="employer-more-filters" <?= !empty($fit_filter) || !empty($rank_sort) ? 'open' : '' ?>>
+                            <summary><i class="bi bi-sliders2" aria-hidden="true"></i>Availability &amp; sorting</summary>
+                            <div class="employer-additional-filters">
+                                <div class="employer-filter-field">
+                                    <label for="filter-fit">Schedule availability</label>
+                                    <select name="fit" id="filter-fit" class="form-select"><option value="">All availability levels</option>
+                                        <?php foreach (['optimal' => 'Strong fit · 20+ hours', 'moderate' => 'Moderate fit · 12–16 hours', 'limited' => 'Limited fit · 4–8 hours', 'conflict' => 'Conflict risk · No shifts'] as $fit_value => $fit_label): ?><option value="<?= $fit_value ?>" <?= $fit_filter === $fit_value ? 'selected' : '' ?>><?= $fit_label ?></option><?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="employer-filter-field">
+                                    <label for="filter-sort">Sort candidates</label>
+                                    <select name="sort" id="filter-sort" class="form-select"><option value="">Latest submissions</option>
+                                        <?php foreach (['sched_desc' => 'Highest availability', 'sched_asc' => 'Conflict risk first', 'name_asc' => 'Candidate name (A–Z)', 'date_asc' => 'Oldest submissions'] as $sort_value => $sort_label): ?><option value="<?= $sort_value ?>" <?= $rank_sort === $sort_value ? 'selected' : '' ?>><?= $sort_label ?></option><?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </details>
+                        <noscript><button class="employer-button" type="submit">Apply filters</button></noscript>
                     </form>
                 </div>
 
-                <!-- Applicant Table -->
-                <div id="filter-results-container" class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise">
-                    <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface">
-                        <div>
-                            <h3 class="card-paper-title mb-1">Candidate Submissions</h3>
-                            <span class="small text-muted-custom">Total candidates matching criteria: <strong><?= count($all_dept_apps) ?></strong></span>
-                        </div>
-                    </div>
-
+                <section id="filter-results-container" class="employer-panel" aria-labelledby="submissions-title">
+                    <div class="employer-panel-heading"><div><h2 id="submissions-title">Candidate submissions</h2><p role="status" aria-live="polite"><?= (int)$total_apps ?> candidate<?= $total_apps === 1 ? '' : 's' ?> matching your filters</p></div></div>
                     <?php if (empty($all_dept_apps)): ?>
-                        <div class="p-4">
-                            <?php
-                            $empty_desc = !empty($job_filter)
-                                ? 'No student candidates have submitted applications for this specific vacancy yet. Check back once students apply, or reset filters to view all submissions across your department.'
-                                : 'No student candidates have submitted applications matching the selected criteria.';
-                            render_empty_state(
-                                'bi-people',
-                                'No Applicants Found',
-                                $empty_desc,
-                                'applicants.php',
-                                'Reset Roster Filters'
-                            );
-                            ?>
-                        </div>
-
+                        <div class="employer-empty"><i class="bi bi-people" aria-hidden="true"></i><h3>No applicants found</h3><p><?= !empty($job_filter) ? 'No candidates match this vacancy and the selected filters. Reset filters to view all department submissions.' : 'No candidates match the selected filters. Try another name or reset the filters.' ?></p><a href="applicants.php" class="employer-button employer-button--compact">Reset filters</a></div>
                     <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table-paper table-paper-responsive table-paper-roster mb-0">
-                                <colgroup>
-                                    <col style="width: 18%;">
-                                    <col style="width: 15%;">
-                                    <col style="width: 13%;">
-                                    <col style="width: 13%;">
-                                    <col style="width: 11%;">
-                                    <col style="width: 13%;">
-                                    <col style="width: 17%;">
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th class="ps-4">Candidate Profile</th>
-                                        <th>Target Vacancy</th>
-                                        <th>Degree Program</th>
-                                        <th>Schedule Availability</th>
-                                        <th>Applied Date</th>
-                                        <th>Status</th>
-                                        <th class="pe-4">Actions</th>
-                                    </tr>
-                                </thead>
+                        <div class="employer-table-scroll" data-pagination-content>
+                            <table class="employer-table">
+                                <caption class="visually-hidden">Department candidate submissions</caption>
+                                <thead><tr><th scope="col">Candidate</th><th scope="col">Target vacancy</th><th scope="col">Availability</th><th scope="col">Applied</th><th scope="col">Application stage</th><th scope="col" class="employer-actions-cell">Actions</th></tr></thead>
                                 <tbody>
-                                    <?php foreach ($all_dept_apps as $app): 
+                                    <?php foreach ($all_dept_apps as $app):
                                         $sched_fit = $app['schedule_summary'] ?? get_schedule_summary($app);
+                                        $pSummary = $app['placement_summary'] ?? ApplicationService::getStudentPlacementSummary((int)($app['student_id'] ?? 0), (int)($app['job_id'] ?? 0));
+                                        $fit_label = ['optimal' => 'Strong fit', 'moderate' => 'Moderate fit', 'limited' => 'Limited fit', 'conflict' => 'No shifts declared'][$sched_fit['tier']] ?? $sched_fit['label'];
                                     ?>
                                         <tr id="app-<?= (int)$app['id'] ?>" data-highlight-id="app-<?= (int)$app['id'] ?>">
-                                            <td class="ps-4" data-label="Candidate Profile">
-                                                <div class="fw-bold text-ink"><?= htmlspecialchars($app['student_name']) ?></div>
-                                                <div class="small text-muted-custom">
-                                                    <span><?= htmlspecialchars($app['student_email']) ?></span>
-                                                    <?php if (!empty($app['sex']) || !empty($app['age'])): ?>
-                                                        &bull; <span><?= htmlspecialchars($app['sex'] ?? 'Male') ?>, <?= htmlspecialchars((string)($app['age'] ?? 20)) ?> yrs</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <?php 
-                                                    $pSummary = $app['placement_summary'] ?? ApplicationService::getStudentPlacementSummary((int)($app['student_id'] ?? 0), (int)($app['job_id'] ?? 0));
-                                                ?>
-                                                <?php if (!empty($pSummary['is_employed'])): 
-                                                    $curJob = $pSummary['active_placement'];
-                                                ?>
-                                                    <div class="mt-1">
-                                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1" style="font-size: 10.5px;" title="Currently hired at <?= htmlspecialchars($curJob['department'] ?? 'another office') ?>">
-                                                            <i class="bi bi-briefcase-fill"></i> Employed (<?= htmlspecialchars($curJob['department'] ?? 'Campus') ?>)
-                                                        </span>
-                                                    </div>
+                                            <td data-label="Candidate">
+                                                <strong><?= htmlspecialchars($app['student_name']) ?></strong>
+                                                <small><?= htmlspecialchars($app['student_email']) ?></small>
+                                                <small><?= htmlspecialchars($app['course'] ?? 'Degree not provided') ?> · <?= htmlspecialchars($app['year_level'] ?? 'Year not provided') ?></small>
+                                                <?php if (!empty($app['sex']) || !empty($app['age'])): ?><small><?= htmlspecialchars(implode(' · ', array_filter([$app['sex'] ?? '', !empty($app['age']) ? $app['age'] . ' yrs' : '']))) ?></small><?php endif; ?>
+                                                <?php if (!empty($pSummary['is_employed'])): ?>
+                                                    <div class="employer-placement"><i class="bi bi-briefcase" aria-hidden="true"></i>Employed · <?= htmlspecialchars($pSummary['active_placement']['department'] ?? 'Campus') ?></div>
                                                 <?php elseif (!empty($pSummary['other_total_count'])): ?>
-                                                    <div class="mt-1">
-                                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle d-inline-flex align-items-center gap-1" style="font-size: 10px;" title="Applicant has other concurrent job submissions">
-                                                            <i class="bi bi-layers"></i> <?= (int)$pSummary['other_total_count'] ?> other app<?= $pSummary['other_total_count'] > 1 ? 's' : '' ?>
-                                                        </span>
-                                                    </div>
+                                                    <div class="employer-placement"><i class="bi bi-layers" aria-hidden="true"></i><?= (int)$pSummary['other_total_count'] ?> other application<?= $pSummary['other_total_count'] > 1 ? 's' : '' ?></div>
                                                 <?php endif; ?>
                                             </td>
-                                            <td data-label="Target Vacancy">
-                                                <span class="fw-semibold text-ink"><?= htmlspecialchars($app['job_title']) ?></span>
-                                            </td>
-                                            <td data-label="Degree Program">
-                                                <div class="small fw-semibold text-ink"><?= htmlspecialchars($app['course'] ?? 'BS Information Systems') ?></div>
-                                                <div class="small text-muted-custom"><?= htmlspecialchars($app['year_level'] ?? '2nd Year') ?></div>
-                                            </td>
-                                            <td data-label="Schedule Availability">
-                                                <div class="d-inline-flex flex-column align-items-start gap-1">
-                                                    <span class="badge <?= $sched_fit['badge_bg'] ?> border py-1 px-2 d-inline-flex align-items-center gap-1" style="font-size: 11.5px; font-weight: 600;">
-                                                        <i class="bi <?= $sched_fit['icon'] ?>"></i>
-                                                        <?= htmlspecialchars($sched_fit['label']) ?>
-                                                    </span>
-                                                    <span class="text-muted-custom" style="font-size: 11px;">
-                                                        <?= htmlspecialchars($sched_fit['hours_desc']) ?>
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td data-label="Applied Date" class="small text-muted-custom">
-                                                <?= format_display_date($app['applied_at']) ?>
-                                            </td>
-                                            <td data-label="Status">
-                                                <?= render_status_badge($app['status']) ?>
-                                            </td>
-                                            <td class="pe-4" data-label="Actions">
-                                                <div class="table-actions-wrap">
-                                                    <a href="../view-resume.php?app_id=<?= $app['id'] ?>" target="_blank" class="btn-pill-outline btn-pill-sm table-action-btn" title="View Attached PDF Resume">
-                                                        <i class="bi bi-file-earmark-pdf text-danger"></i> Resume
-                                                    </a>
-                                                    <a href="review-app.php?id=<?= $app['id'] ?>" class="btn-pill btn-pill-sm table-action-btn" title="Evaluate Application">
-                                                        <i class="bi bi-clipboard-check"></i> Evaluate
-                                                    </a>
+                                            <td data-label="Target vacancy"><strong><?= htmlspecialchars($app['job_title']) ?></strong></td>
+                                            <td data-label="Availability" class="employer-availability"><strong><?= (int)$sched_fit['hours'] ?> hrs / week</strong><small class="<?= in_array($sched_fit['tier'], ['limited', 'conflict'], true) ? 'employer-fit-warning' : '' ?>"><?= htmlspecialchars($fit_label) ?></small></td>
+                                            <td data-label="Applied" class="employer-date"><?= format_display_date($app['applied_at']) ?></td>
+                                            <td data-label="Application stage"><?= render_status_text($app['status']) ?></td>
+                                            <td data-label="Actions" class="employer-actions-cell">
+                                                <div class="employer-actions employer-actions--applicants">
+                                                    <a href="../view-resume.php?app_id=<?= (int)$app['id'] ?>" target="_blank" rel="noopener" class="employer-button" aria-label="View resume for <?= htmlspecialchars($app['student_name'], ENT_QUOTES) ?> (opens in new tab)"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> Resume</a>
+                                                    <a href="review-app.php?id=<?= (int)$app['id'] ?>" class="employer-button employer-button--primary" aria-label="Evaluate <?= htmlspecialchars($app['student_name'], ENT_QUOTES) ?>"><i class="bi bi-clipboard2-check" aria-hidden="true"></i> Evaluate</a>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
-
                                 </tbody>
                             </table>
                         </div>
-                        <div class="px-4 py-2 border-top border-line bg-surface d-flex align-items-center gap-2">
-                            <i class="bi bi-clock-history text-muted-custom flex-shrink-0"></i>
-                            <span class="small text-muted-custom" style="font-size: 11px;">Schedule availability is evaluated from student declared shift slots against the institutional 20-hour workload policy.</span>
-                        </div>
+                        <div class="employer-table-foot"><i class="bi bi-clock-history" aria-hidden="true"></i><p>Availability is based on declared shifts and the institutional 20-hour weekly workload policy.</p></div>
                         <?php if (isset($total_pages) && $total_pages > 1): ?>
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 px-4 py-3 border-top border-line bg-surface">
                                 <div class="small text-muted">
@@ -241,25 +113,26 @@ require_once __DIR__ . '/../header.php';
                                     <ul class="pagination pagination-sm mb-0">
                                         <?php
                                             $queryParams = $_GET;
+                                            unset($queryParams['highlight'], $queryParams['from_notification']);
                                             $prevPage = max(1, $page - 1);
                                             $nextPage = min($total_pages, $page + 1);
                                         ?>
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $prevPage])) ?>#filter-results-container" aria-label="Previous">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $prevPage])) ?>" aria-label="Previous">
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
                                         <?php for ($p = 1; $p <= $total_pages; $p++): ?>
                                             <?php if ($p === 1 || $p === $total_pages || ($p >= $page - 2 && $p <= $page + 2)): ?>
                                                 <li class="page-item <?= ($p === $page) ? 'active' : '' ?>">
-                                                    <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $p])) ?>#filter-results-container"><?= $p ?></a>
+                                                    <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $p])) ?>"><?= $p ?></a>
                                                 </li>
                                             <?php elseif ($p === $page - 3 || $p === $page + 3): ?>
                                                 <li class="page-item disabled"><span class="page-link">…</span></li>
                                             <?php endif; ?>
                                         <?php endfor; ?>
                                         <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $nextPage])) ?>#filter-results-container" aria-label="Next">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $nextPage])) ?>" aria-label="Next">
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
@@ -268,7 +141,7 @@ require_once __DIR__ . '/../header.php';
                             </div>
                         <?php endif; ?>
                     <?php endif; ?>
-                </div>
+                </section>
 
             </div>
         </main>
@@ -276,17 +149,3 @@ require_once __DIR__ . '/../header.php';
         <?php require_once __DIR__ . '/../footer.php'; ?>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.hash === '#filter-results-container' || window.location.search.includes('page=')) {
-        setTimeout(() => {
-            const target = document.getElementById('filter-results-container');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 100);
-    }
-});
-</script>
-

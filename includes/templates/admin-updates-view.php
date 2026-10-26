@@ -47,14 +47,14 @@ require_once __DIR__ . '/../header.php';
                             <h3 class="card-paper-title h6 mb-1"><?= ($tab === 'archived') ? 'Archived Bulletins' : 'Published Dispatches' ?> (<?= count($all_updates) ?>)</h3>
                             <p class="text-muted-custom small mb-0"><?= ($tab === 'archived') ? 'Archived dispatches hidden from public view. Only Admins can restore.' : 'Live on the homepage and public Career Center feed.' ?></p>
                         </div>
-                        <div class="d-flex gap-2">
-                            <a href="updates.php" class="chip chip-selectable text-decoration-none <?= ($tab !== 'archived') ? 'active' : '' ?>">
-                                <i class="bi bi-newspaper text-accent"></i> <span class="chip-text">Active (<?= count($active_updates) ?>)</span>
+                        <nav class="d-flex flex-wrap gap-2" aria-label="Filter dispatches">
+                            <a href="updates.php" class="status-filter <?= ($tab !== 'archived') ? 'active' : '' ?>" <?= ($tab !== 'archived') ? 'aria-current="page"' : '' ?>>
+                                <i class="bi bi-newspaper" aria-hidden="true"></i> <span>Active (<?= count($active_updates) ?>)</span>
                             </a>
-                            <a href="updates.php?tab=archived" class="chip chip-selectable text-decoration-none <?= ($tab === 'archived') ? 'active' : '' ?>">
-                                <i class="bi bi-archive text-warning"></i> <span class="chip-text">Archived (<?= count($archived_updates) ?>)</span>
+                            <a href="updates.php?tab=archived" class="status-filter <?= ($tab === 'archived') ? 'active' : '' ?>" <?= ($tab === 'archived') ? 'aria-current="page"' : '' ?>>
+                                <i class="bi bi-archive" aria-hidden="true"></i> <span>Archived (<?= count($archived_updates) ?>)</span>
                             </a>
-                        </div>
+                        </nav>
                     </div>
 
                     <div class="table-responsive">
@@ -166,7 +166,7 @@ require_once __DIR__ . '/../header.php';
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="updates.php">
+            <form method="POST" action="updates.php" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="create">
                 <div class="modal-body p-4">
@@ -187,9 +187,12 @@ require_once __DIR__ . '/../header.php';
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-ink">Featured Photo URL</label>
-                            <input type="text" name="image" class="form-control rounded-3" placeholder="assets/img/updates/... or photo URL">
-                            <span class="text-muted-custom small" style="font-size: 0.75rem;">Leave blank for default campus hero photo.</span>
+                            <label for="new_photo" class="form-label fw-bold small text-ink">Featured Photo</label>
+                            <input type="file" name="photo" id="new_photo" class="form-control rounded-3" accept=".jpg,.jpeg,.png,.webp" aria-describedby="new_photo_help">
+                            <div id="new_photo_help" class="form-text text-muted-custom">JPG, PNG or WebP, up to 5 MB. An upload takes priority over the link below.</div>
+                            <label for="new_image" class="form-label fw-bold small text-ink mt-2">Or use a photo link</label>
+                            <input type="text" name="image" id="new_image" class="form-control rounded-3" placeholder="assets/img/updates/... or photo URL" aria-describedby="new_image_help">
+                            <div id="new_image_help" class="form-text text-muted-custom">Leave both blank to use the default campus photo.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-ink">Topic / Category</label>
@@ -233,7 +236,7 @@ require_once __DIR__ . '/../header.php';
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="updates.php">
+            <form method="POST" action="updates.php" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="id" id="edit_id">
@@ -255,8 +258,12 @@ require_once __DIR__ . '/../header.php';
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-ink">Featured Photo URL</label>
-                            <input type="url" name="image" id="edit_image" class="form-control rounded-3">
+                            <label for="edit_photo" class="form-label fw-bold small text-ink">Replace Featured Photo</label>
+                            <input type="file" name="photo" id="edit_photo" class="form-control rounded-3" accept=".jpg,.jpeg,.png,.webp" aria-describedby="edit_photo_help">
+                            <div id="edit_photo_help" class="form-text text-muted-custom">JPG, PNG or WebP, up to 5 MB. Leave empty to keep the current photo.</div>
+                            <label for="edit_image" class="form-label fw-bold small text-ink mt-2">Photo link</label>
+                            <input type="text" name="image" id="edit_image" class="form-control rounded-3" aria-describedby="edit_image_help">
+                            <div id="edit_image_help" class="form-text text-muted-custom">An uploaded replacement takes priority over this link.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-ink">Topic / Category</label>
@@ -295,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editModal = new bootstrap.Modal(document.getElementById('editDispatchModal'));
     document.querySelectorAll('.edit-dispatch-btn').forEach(btn => {
         btn.addEventListener('click', function() {
+            document.getElementById('edit_photo').value = '';
             document.getElementById('edit_id').value = this.dataset.id;
             document.getElementById('edit_title').value = this.dataset.title;
             document.getElementById('edit_category').value = this.dataset.category || 'Campus Bulletin';
@@ -307,6 +315,20 @@ document.addEventListener('DOMContentLoaded', function() {
             editModal.show();
         });
     });
+    <?php if ($error && in_array($action, ['create', 'edit'], true)): ?>
+    const failedModal = document.getElementById(<?= json_encode($action === 'create' ? 'newDispatchModal' : 'editDispatchModal') ?>);
+    const submitted = <?= json_encode(array_intersect_key($_POST, array_flip(['id', 'title', 'summary', 'content', 'image', 'category', 'author_name', 'author_role', 'author_office'])), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    Object.entries(submitted).forEach(([name, value]) => {
+        const input = failedModal.querySelector('form').elements.namedItem(name);
+        if (input && typeof value === 'string') input.value = value;
+    });
+    const errorNotice = document.createElement('div');
+    errorNotice.className = 'alert alert-danger';
+    errorNotice.setAttribute('role', 'alert');
+    errorNotice.textContent = <?= json_encode($error . ' Please select your photo again if you were uploading one.', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    failedModal.querySelector('.modal-body').prepend(errorNotice);
+    bootstrap.Modal.getOrCreateInstance(failedModal).show();
+    <?php endif; ?>
 });
 </script>
 

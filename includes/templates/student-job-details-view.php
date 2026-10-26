@@ -17,7 +17,7 @@ require_once __DIR__ . '/../header.php';
                 <!-- Breadcrumb & Page Head -->
                 <div class="mb-4">
                     <a href="jobs.php" class="text-ink fw-bold small text-decoration-none d-inline-flex align-items-center gap-1 mb-3">
-                        <i class="bi bi-arrow-left"></i> Back to Open Vacancies
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Open Vacancies
                     </a>
                     
                     <?php
@@ -41,7 +41,7 @@ require_once __DIR__ . '/../header.php';
                                     <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($job['title']) ?>" style="width: 100%; height: 100%; max-height: 360px; object-fit: cover;" onerror="this.src='../assets/img/jobs/job-01.jpg';">
                                     <div class="position-absolute top-0 start-0 m-3">
                                         <span class="badge px-3 py-2 d-inline-flex align-items-center gap-1 shadow-sm" style="background-color: var(--ink); color: #fff; font-size: 0.78rem;">
-                                            <i class="bi bi-stars text-accent"></i> Featured Opportunity
+                                            <i class="bi bi-stars" aria-hidden="true"></i> Featured Opportunity
                                         </span>
                                     </div>
                                 </div>
@@ -50,16 +50,16 @@ require_once __DIR__ . '/../header.php';
                             <!-- Badges Header -->
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-3 border-bottom border-line">
                                 <span class="chip">
-                                    <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?>"></i> <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
+                                    <i class="bi <?= $is_partner ? 'bi-patch-check text-ink' : 'bi-bank text-ink' ?>" aria-hidden="true"></i> <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
                                 </span>
                                 <span class="chip active">
-                                    <i class="bi bi-tag-fill text-accent"></i> <?= htmlspecialchars($jtype) ?>
+                                    <i class="bi bi-tag text-ink" aria-hidden="true"></i> <?= htmlspecialchars($jtype) ?>
                                 </span>
                                 <span class="chip">
-                                    <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($wsetup) ?>
+                                    <i class="bi bi-geo-alt" aria-hidden="true"></i> <?= htmlspecialchars($wsetup) ?>
                                 </span>
                                 <span class="chip">
-                                    <i class="bi bi-clock"></i> <?= htmlspecialchars($job['hours_per_week'] ?? 'Max 20 hrs/week') ?>
+                                    <i class="bi bi-clock" aria-hidden="true"></i> <?= htmlspecialchars($job['hours_per_week'] ?? 'Max 20 hrs/week') ?>
                                 </span>
                                 <span class="badge-status--accepted ms-auto">
                                     <?= htmlspecialchars($job['pay_rate']) ?>
@@ -69,7 +69,7 @@ require_once __DIR__ . '/../header.php';
                             <!-- Role Overview -->
                             <div class="mb-4">
                                 <h3 class="card-paper-title mb-3">
-                                    <i class="bi bi-file-text text-accent me-2"></i> Role Description
+                                    <i class="bi bi-file-text text-ink me-2" aria-hidden="true"></i> Role Description
                                 </h3>
                                 <p class="text-ink lh-lg mb-0" style="font-size: 15px;">
                                     <?= nl2br(htmlspecialchars($job['description'])) ?>
@@ -80,7 +80,7 @@ require_once __DIR__ . '/../header.php';
                             <?php if (!empty($job['responsibilities'])): ?>
                                 <div class="mb-4 pt-3 border-top border-line">
                                     <h3 class="card-paper-title mb-3">
-                                        <i class="bi bi-list-check text-accent me-2"></i> Key Duties & Responsibilities
+                                        <i class="bi bi-list-check text-ink me-2" aria-hidden="true"></i> Key Duties & Responsibilities
                                     </h3>
                                     <ul class="d-flex flex-column gap-2 text-ink ps-3 mb-0" style="font-size: 14.5px;">
                                         <?php foreach ($job['responsibilities'] as $resp): ?>
@@ -94,7 +94,7 @@ require_once __DIR__ . '/../header.php';
                             <?php if (!empty($job['qualifications'])): ?>
                                 <div class="mb-4 pt-3 border-top border-line">
                                     <h3 class="card-paper-title mb-3">
-                                        <i class="bi bi-patch-check text-accent me-2"></i> Minimum Qualifications
+                                        <i class="bi bi-patch-check text-ink me-2" aria-hidden="true"></i> Minimum Qualifications
                                     </h3>
                                     <ul class="d-flex flex-column gap-2 text-ink ps-3 mb-0" style="font-size: 14.5px;">
                                         <?php foreach ($job['qualifications'] as $qual): ?>
@@ -107,8 +107,8 @@ require_once __DIR__ . '/../header.php';
                             <!-- Safety & Academic Safeguard Banner -->
                             <div class="card-paper bg-cream p-3 mt-4 border border-line">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="icon-circle icon-circle-sm icon-circle-success">
-                                        <i class="bi bi-shield-check"></i>
+                                    <div class="icon-circle icon-circle-sm admin-icon admin-icon--neutral-circle">
+                                        <i class="bi bi-shield-check" aria-hidden="true"></i>
                                     </div>
                                     <div class="small text-muted-custom">
                                         <strong class="text-ink">University Vetted & Protected:</strong> This assistantship complies with campus safety regulations, non-hazardous work standards, and strict 20 hrs/week academic term limits.
@@ -130,7 +130,7 @@ require_once __DIR__ . '/../header.php';
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Hiring Entity:</span>
                                     <span class="fw-semibold text-ink">
-                                        <i class="bi <?= $is_partner ? 'bi-patch-check-fill text-accent' : 'bi-bank text-accent' ?> me-1"></i>
+                                        <i class="bi <?= $is_partner ? 'bi-patch-check text-ink' : 'bi-bank text-ink' ?> me-1" aria-hidden="true"></i>
                                         <?= $is_partner ? 'Approved Partner' : 'University Office' ?>
                                     </span>
                                 </div>
@@ -184,14 +184,14 @@ require_once __DIR__ . '/../header.php';
                             $fit_expired = isset($eligibility) ? ($eligibility->reason() === 'deadline_passed') : (!empty($job['deadline']) && strtotime($job['deadline']) < strtotime(date('Y-m-d')));
                             $fit_filled = isset($eligibility) ? ($eligibility->reason() === 'slots_filled') : (((int)($job['slots_total'] ?? $job['vacancies'] ?? 1) > 0) && ((int)($job['slots_filled'] ?? 0) >= (int)($job['slots_total'] ?? $job['vacancies'] ?? 1)));
                             ?>
-                            <?php if (!empty($fit) && !$fit_closed && !$fit_expired && !$fit_filled): ?>
+                            <?php if (($user['role'] ?? '') !== 'admin' && !empty($fit) && !$fit_closed && !$fit_expired && !$fit_filled): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line mb-3" style="font-size: 12px;">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-calendar-check text-accent"></i> Schedule Compatibility
+                                            <i class="bi bi-calendar-check text-ink" aria-hidden="true"></i> Schedule Compatibility
                                         </span>
                                         <span class="badge <?= htmlspecialchars($fit['badge_bg'] ?? '') ?> border" style="font-size: 10.5px;">
-                                            <i class="bi <?= htmlspecialchars($fit['icon'] ?? 'bi-info-circle') ?>"></i>
+                                            <i class="bi <?= htmlspecialchars($fit['icon'] ?? 'bi-info-circle') ?>" aria-hidden="true"></i>
                                             <?= htmlspecialchars($fit['label'] ?? 'Assessed') ?>
                                         </span>
                                     </div>
@@ -202,7 +202,7 @@ require_once __DIR__ . '/../header.php';
                                         <div class="small text-muted-custom mb-1">Competition: <strong class="text-ink"><?= htmlspecialchars(ucfirst($fit['competition'] ?? 'low')) ?></strong> (<?= htmlspecialchars($fit['demand_desc'] ?? '') ?>, <?= (int)($fit['slots_filled'] ?? 0) ?> of <?= (int)($fit['slots_total'] ?? 1) ?> filled) &bull; Deadline: <strong class="<?= (($fit['deadline_risk'] ?? 'low') === 'high') ? 'text-danger' : 'text-ink' ?>"><?= $fit['days_left'] === null ? 'Open' : ((int)$fit['days_left'] . ' day(s) left') ?></strong></div>
                                         <?php if (!empty($fit['workload_warning'])): ?>
                                             <div class="alert alert-warning py-1 px-2 mb-2 small rounded-3 border-0" style="font-size: 11px;">
-                                                <i class="bi bi-exclamation-circle-fill me-1"></i><?= htmlspecialchars($fit['workload_warning']) ?>
+                                                <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i><?= htmlspecialchars($fit['workload_warning']) ?>
                                             </div>
                                         <?php endif; ?>
                                     <?php endif; ?>
@@ -218,7 +218,7 @@ require_once __DIR__ . '/../header.php';
                             <?php if (!empty($already_employed)): ?>
                                 <div class="p-3 bg-warning-subtle rounded-3 border border-warning text-center mb-3">
                                     <div class="small fw-bold text-warning-emphasis mb-1">
-                                        <i class="bi bi-briefcase-fill text-warning me-1"></i> Currently Appointed
+                                        <i class="bi bi-briefcase text-warning me-1" aria-hidden="true"></i> Currently Appointed
                                     </div>
                                     <div class="small text-ink mb-2" style="font-size: 12px; line-height: 1.4;">
                                         You are currently hired as a <strong><?= htmlspecialchars($active_placement['job_title'] ?? 'Student Assistant') ?></strong> at <strong><?= htmlspecialchars($active_placement['department'] ?? 'another campus office') ?></strong>.
@@ -233,7 +233,7 @@ require_once __DIR__ . '/../header.php';
                             <?php elseif ($already_applied): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
                                     <div class="small fw-bold text-ink mb-1">
-                                        <i class="bi bi-check-circle-fill text-accent me-1"></i> Application Active
+                                        <i class="bi bi-check-circle text-ink me-1" aria-hidden="true"></i> Application Active
                                     </div>
                                     <div class="small text-muted-custom mb-2">
                                         Status: <?= render_status_badge($app_status ?? 'pending') ?>
@@ -245,28 +245,28 @@ require_once __DIR__ . '/../header.php';
                             <?php elseif ($user && $user['role'] === 'employer'): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
                                     <div class="small fw-bold text-ink mb-1">
-                                        <i class="bi bi-building-check text-accent me-1"></i> Employer Preview Mode
+                                        <i class="bi bi-building-check text-ink me-1" aria-hidden="true"></i> Employer Preview Mode
                                     </div>
                                     <p class="small text-muted-custom mb-2" style="font-size: 12px;">
                                         Applications are reserved for students.
                                     </p>
                                     <?php if (($job['employer_id'] ?? 0) == $user['id']): ?>
                                         <a href="../employer/edit-job.php?id=<?= $job['id'] ?>" class="btn-pill btn-pill-sm w-100">
-                                            <i class="bi bi-pencil-square"></i> Edit Requisition
+                                            <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit Requisition
                                         </a>
                                     <?php else: ?>
                                         <a href="../employer/dashboard.php" class="btn-pill-outline btn-pill-sm w-100">
-                                            <i class="bi bi-speedometer2"></i> Employer Dashboard
+                                            <i class="bi bi-speedometer2" aria-hidden="true"></i> Employer Dashboard
                                         </a>
                                     <?php endif; ?>
                                 </div>
                             <?php elseif ($user && $user['role'] === 'admin'): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
                                     <div class="small fw-bold text-ink mb-1">
-                                        <i class="bi bi-shield-lock text-accent me-1"></i> Admin Preview Mode
+                                        <i class="bi bi-shield-lock text-ink me-1" aria-hidden="true"></i> Admin Preview Mode
                                     </div>
                                     <a href="../admin/reports.php" class="btn-pill-outline btn-pill-sm w-100">
-                                        <i class="bi bi-bar-chart"></i> View Reports
+                                        <i class="bi bi-bar-chart" aria-hidden="true"></i> View Reports
                                     </a>
                                 </div>
                             <?php else: ?>
@@ -280,22 +280,22 @@ require_once __DIR__ . '/../header.php';
 
                                 <?php if ($is_closed): ?>
                                     <div class="p-3 bg-secondary-subtle rounded-3 border border-secondary text-center mb-2">
-                                        <span class="text-secondary fw-bold small d-block"><i class="bi bi-slash-circle me-1"></i> Requisition Closed</span>
+                                        <span class="text-secondary fw-bold small d-block"><i class="bi bi-slash-circle me-1" aria-hidden="true"></i> Requisition Closed</span>
                                         <span class="small text-muted-custom" style="font-size: 11px;">This office is no longer accepting new submissions.</span>
                                     </div>
                                 <?php elseif ($is_expired): ?>
                                     <div class="p-3 bg-danger-subtle rounded-3 border border-danger text-center mb-2">
-                                        <span class="text-danger fw-bold small d-block"><i class="bi bi-clock-history me-1"></i> Deadline Passed</span>
+                                        <span class="text-danger fw-bold small d-block"><i class="bi bi-clock-history me-1" aria-hidden="true"></i> Deadline Passed</span>
                                         <span class="small text-muted-custom" style="font-size: 11px;">The cutoff date for applications has expired.</span>
                                     </div>
                                 <?php elseif ($is_filled): ?>
                                     <div class="p-3 bg-warning-subtle rounded-3 border border-warning text-center mb-2">
-                                        <span class="text-warning-emphasis fw-bold small d-block"><i class="bi bi-check2-all me-1"></i> All Vacancies Filled</span>
+                                        <span class="text-warning-emphasis fw-bold small d-block"><i class="bi bi-check2-all me-1" aria-hidden="true"></i> All Vacancies Filled</span>
                                         <span class="small text-muted-custom" style="font-size: 11px;">All available positions have been appointed.</span>
                                     </div>
                                 <?php else: ?>
                                     <a href="apply.php?id=<?= $job['id'] ?>&job_id=<?= $job['id'] ?>" class="btn-pill w-100 mb-2">
-                                        <i class="bi bi-send-fill"></i> APPLY FOR THIS POSITION
+                                        <i class="bi bi-send" aria-hidden="true"></i> APPLY FOR THIS POSITION
                                     </a>
                                 <?php endif; ?>
                             <?php endif; ?>

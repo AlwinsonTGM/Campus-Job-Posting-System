@@ -42,7 +42,7 @@ require_once __DIR__ . '/../header.php';
                     <div class="alert-paper alert-paper--success mb-4 reveal-fade-rise border-2 border-success shadow-sm" role="alert" id="provisioned-success-alert">
                         <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                             <div class="d-flex align-items-start gap-3">
-                                <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0 mt-1">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm flex-shrink-0 mt-1">
                                     <i class="bi bi-check2-circle fs-5"></i>
                                 </div>
                                 <div>
@@ -83,7 +83,7 @@ require_once __DIR__ . '/../header.php';
                 <?php if ($pending_profile_count > 0): ?>
                     <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3 reveal-fade-rise">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle icon-circle-sm icon-circle-warning">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                 <i class="bi bi-person-badge-fill fs-5"></i>
                             </div>
                             <div>
@@ -100,7 +100,7 @@ require_once __DIR__ . '/../header.php';
                 <?php if ($pending_count > 0): ?>
                     <div class="card-paper bg-cream p-3 mb-4 border border-line d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle icon-circle-sm icon-circle-success">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                 <i class="bi bi-person-check-fill"></i>
                             </div>
                             <div>
@@ -371,7 +371,7 @@ require_once __DIR__ . '/../header.php';
                             ?>
                         </div>
                     <?php else: ?>
-                        <div class="table-responsive">
+                        <div class="table-responsive" data-pagination-content>
                             <table class="table-paper table-paper-responsive mb-0">
                                 <thead>
                                     <tr>
@@ -392,7 +392,7 @@ require_once __DIR__ . '/../header.php';
                                         <tr id="user-row-<?= (int)$u['id'] ?>" data-highlight-id="user-row-<?= (int)$u['id'] ?>">
                                             <td class="ps-4" data-label="User Details" style="max-width: 220px;">
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <div class="icon-circle icon-circle-sm icon-circle-success flex-shrink-0" style="width: 32px; height: 32px; font-size: 13px;">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm flex-shrink-0" style="width: 32px; height: 32px; font-size: 13px;">
                                                         <?= strtoupper(substr($u['name'] ?? 'U', 0, 1)) ?>
                                                     </div>
                                                     <div class="min-w-0 flex-grow-1">
@@ -505,25 +505,26 @@ require_once __DIR__ . '/../header.php';
                                     <ul class="pagination pagination-sm mb-0">
                                         <?php
                                             $queryParams = $_GET;
+                                            unset($queryParams['highlight'], $queryParams['from_notification']);
                                             $prevPage = max(1, $page - 1);
                                             $nextPage = min($total_pages, $page + 1);
                                         ?>
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $prevPage])) ?>#filter-results-container" aria-label="Previous">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $prevPage])) ?>" aria-label="Previous">
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
                                         <?php for ($p = 1; $p <= $total_pages; $p++): ?>
                                             <?php if ($p === 1 || $p === $total_pages || ($p >= $page - 2 && $p <= $page + 2)): ?>
                                                 <li class="page-item <?= ($p === $page) ? 'active' : '' ?>">
-                                                    <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $p])) ?>#filter-results-container"><?= $p ?></a>
+                                                    <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $p])) ?>"><?= $p ?></a>
                                                 </li>
                                             <?php elseif ($p === $page - 3 || $p === $page + 3): ?>
                                                 <li class="page-item disabled"><span class="page-link">…</span></li>
                                             <?php endif; ?>
                                         <?php endfor; ?>
                                         <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $nextPage])) ?>#filter-results-container" aria-label="Next">
+                                            <a class="page-link" href="?<?= http_build_query(array_merge($queryParams, ['page' => $nextPage])) ?>" aria-label="Next">
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
@@ -537,6 +538,7 @@ require_once __DIR__ . '/../header.php';
             </div>
         </main>
 
+        <div id="user-modals-container">
         <!-- Modals for Student Profile Change Requests -->
         <?php foreach ($visible_profile_requests as $req): 
             $req_status = $req['status'] ?? 'pending';
@@ -572,7 +574,7 @@ require_once __DIR__ . '/../header.php';
                 <div class="modal-content rounded-4 border-line shadow-lg">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-warning">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                 <i class="bi bi-shield-lock-fill"></i>
                             </div>
                             <div>
@@ -759,7 +761,6 @@ require_once __DIR__ . '/../header.php';
         <?php endforeach; ?>
 
         <!-- Document Verification Modals for Employer Partners -->
-        <div id="user-modals-container">
         <?php foreach ($users as $u): 
             if ($u['role'] !== 'employer') continue;
             $is_partner = ($u['employer_type'] ?? '') === 'approved_partner';
@@ -776,7 +777,7 @@ require_once __DIR__ . '/../header.php';
                     
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-success">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                 <i class="bi bi-patch-check-fill"></i>
                             </div>
                             <div>
@@ -968,7 +969,7 @@ require_once __DIR__ . '/../header.php';
                     
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-success">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                 <i class="bi bi-mortarboard-fill"></i>
                             </div>
                             <div>
@@ -1162,7 +1163,7 @@ require_once __DIR__ . '/../header.php';
                 <div class="modal-content rounded-4 border-line shadow-lg">
                     <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="icon-circle icon-circle-sm icon-circle-dark">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                 <i class="bi bi-shield-lock-fill"></i>
                             </div>
                             <div>
@@ -1221,7 +1222,7 @@ require_once __DIR__ . '/../header.php';
 
                         <div class="modal-header bg-cream border-bottom border-line py-3 px-4">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="icon-circle icon-circle-sm icon-circle-dark">
+<div class="icon-circle icon-circle-sm admin-icon admin-icon--warm">
                                     <i class="bi bi-building-add fs-5"></i>
                                 </div>
                                 <div>
@@ -1428,17 +1429,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (window.location.hash === '#filter-results-container' || window.location.search.includes('page=')) {
-        setTimeout(() => {
-            const target = document.getElementById('filter-results-container');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 100);
-    }
 
     // Delegated submit handler so dynamically swapped modals also show loading indicator
     document.addEventListener('submit', function(e) {
+        if (e.defaultPrevented) return;
         const form = e.target.closest('form[action="users.php"][method="POST"]');
         if (!form) return;
         const btn = form.querySelector('button[type="submit"]');

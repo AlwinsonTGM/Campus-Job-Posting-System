@@ -100,6 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: users.php');
             exit;
         }
+        set_flash('danger', 'The account could not be archived. Please try again.');
+        header('Location: users.php');
+        exit;
     } elseif ($action === 'reactivate_user') {
         $reactivate_id = (int)($_POST['id'] ?? 0);
         $target_user = get_user_by_id($reactivate_id);

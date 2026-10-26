@@ -46,7 +46,7 @@ require_once __DIR__ . '/../header.php';
                     <!-- Verification Queue Summary (Institutional Design System) -->
                     <div class="card-paper p-3 mb-4 no-print d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center gap-2 min-w-0">
-                            <div class="icon-circle flex-shrink-0" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 16px; background-color: var(--surface); border: 1px solid var(--line); color: var(--ink);">
+                            <div class="icon-circle admin-icon flex-shrink-0" style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 16px;">
                                 <i class="bi bi-shield-exclamation"></i>
                             </div>
                             <div class="min-w-0">
