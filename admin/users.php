@@ -202,6 +202,19 @@ $revoked_users_count = count(array_filter($all_users, fn($u) => ($u['verificatio
 $all_profile_requests = get_profile_requests();
 $pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
 $pending_profile_count = count($pending_profile_requests);
+// Keep the request queue compact without changing directory filters or request ordering.
+$profile_request_count = count($all_profile_requests);
+$profile_requests_per_page = 5;
+$profile_request_pages = max(1, (int)ceil($profile_request_count / $profile_requests_per_page));
+$profile_request_page = filter_var($_GET['request_page'] ?? 1, FILTER_VALIDATE_INT) ?: 1;
+$profile_request_page = max(1, min($profile_request_pages, $profile_request_page));
+$profile_request_offset = ($profile_request_page - 1) * $profile_requests_per_page;
+$visible_profile_requests = array_slice($all_profile_requests, $profile_request_offset, $profile_requests_per_page);
+$profile_request_page_url = static function ($page) {
+    $params = array_intersect_key($_GET, array_flip(['role', 'emp_type', 'ver_status', 'q', 'search_field', 'sort']));
+    $params['request_page'] = $page;
+    return 'users.php?' . http_build_query($params);
+};
 
 // Archived accounts act as deleted on the website and are never shown in active directory views
 $users = $all_users;

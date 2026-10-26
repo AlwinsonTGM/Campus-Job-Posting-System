@@ -91,9 +91,9 @@ require_once __DIR__ . '/../header.php';
                                 <span class="small text-muted-custom d-block">Students have submitted COR / Student ID documents requesting updates to their verified academic records.</span>
                             </div>
                         </div>
-                        <a href="#student-requests-section" class="btn-pill btn-pill-sm">
+                        <button type="button" class="btn-pill btn-pill-sm" onclick="document.getElementById('student-requests-section').scrollIntoView({ behavior: 'smooth', block: 'start' });">
                             Review Student Requests (<?= $pending_profile_count ?>)
-                        </a>
+                        </button>
                     </div>
                 <?php endif; ?>
 
@@ -131,7 +131,7 @@ require_once __DIR__ . '/../header.php';
 
                 <!-- Student Profile Verification Requests Queue -->
                 <?php if (!empty($all_profile_requests)): ?>
-                    <div class="card-paper p-0 overflow-hidden mb-5 reveal-fade-rise" id="student-requests-section">
+                    <div class="card-paper p-0 overflow-hidden mb-5" id="student-requests-section">
                         <div class="p-4 border-bottom border-line d-flex justify-content-between align-items-center bg-surface flex-wrap gap-2">
                             <div>
                                 <h3 class="card-paper-title mb-1">
@@ -146,6 +146,14 @@ require_once __DIR__ . '/../header.php';
                             <?php endif; ?>
                         </div>
 
+                        <style>
+                            .profile-request-row, .profile-request-spacer { height: 76px; }
+                            .profile-request-spacer { visibility: hidden; }
+                            .profile-request-spacer td { padding: 0 !important; border: 0 !important; }
+                            @media (max-width: 1199.98px) {
+                                .profile-request-row, .profile-request-spacer { height: auto; min-height: 330px; }
+                            }
+                        </style>
                         <div class="table-responsive">
                             <table class="table-paper table-paper-responsive mb-0">
                                 <colgroup>
@@ -165,11 +173,11 @@ require_once __DIR__ . '/../header.php';
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($all_profile_requests as $req): 
+                                    <?php foreach ($visible_profile_requests as $req): 
                                         $req_status = $req['status'] ?? 'pending';
                                         $proof = $req['proof_file'] ?? '';
                                     ?>
-                                        <tr id="profile-req-<?= (int)$req['id'] ?>" data-highlight-id="profile-req-<?= (int)$req['id'] ?>">
+                                        <tr class="profile-request-row" id="profile-req-<?= (int)$req['id'] ?>" data-highlight-id="profile-req-<?= (int)$req['id'] ?>">
                                             <td class="ps-4 text-start text-nowrap" data-label="Request Ref">
                                                 <span class="font-monospace fw-bold text-ink small">#REQ-<?= str_pad((string)$req['id'], 4, '0', STR_PAD_LEFT) ?></span>
                                                 <div class="small text-muted-custom" style="font-size: 11px;"><?= format_display_date($req['created_at']) ?></div>
@@ -212,8 +220,31 @@ require_once __DIR__ . '/../header.php';
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
+                                    <?php for ($slot = count($visible_profile_requests); $slot < $profile_requests_per_page; $slot++): ?>
+                                        <tr class="profile-request-spacer" aria-hidden="true"><td colspan="5"></td></tr>
+                                    <?php endfor; ?>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="p-3 border-top border-line d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <span class="small text-muted-custom">
+                                Showing <?= $profile_request_offset + 1 ?>&ndash;<?= min($profile_request_offset + $profile_requests_per_page, $profile_request_count) ?> of <?= $profile_request_count ?> requests
+                            </span>
+                            <?php if ($profile_request_pages > 1): ?>
+                                <nav aria-label="Student profile request pages" class="d-flex align-items-center flex-wrap gap-2">
+                                    <?php if ($profile_request_page > 1): ?>
+                                        <a class="pagination-nav-btn text-decoration-none" href="<?= htmlspecialchars($profile_request_page_url($profile_request_page - 1)) ?>">Previous</a>
+                                    <?php else: ?>
+                                        <button type="button" class="pagination-nav-btn" disabled>Previous</button>
+                                    <?php endif; ?>
+                                    <span class="small text-muted-custom" aria-current="page">Page <?= $profile_request_page ?> of <?= $profile_request_pages ?></span>
+                                    <?php if ($profile_request_page < $profile_request_pages): ?>
+                                        <a class="pagination-nav-btn text-decoration-none" href="<?= htmlspecialchars($profile_request_page_url($profile_request_page + 1)) ?>">Next</a>
+                                    <?php else: ?>
+                                        <button type="button" class="pagination-nav-btn" disabled>Next</button>
+                                    <?php endif; ?>
+                                </nav>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -507,7 +538,7 @@ require_once __DIR__ . '/../header.php';
         </main>
 
         <!-- Modals for Student Profile Change Requests -->
-        <?php foreach ($all_profile_requests as $req): 
+        <?php foreach ($visible_profile_requests as $req): 
             $req_status = $req['status'] ?? 'pending';
             $curr = $req['current_profile'] ?? [];
             $next = $req['requested_profile'] ?? [];
@@ -1322,11 +1353,11 @@ require_once __DIR__ . '/../header.php';
                                                 <i class="bi bi-key-fill text-accent me-1"></i> Temporary Password <span class="text-danger">*</span>
                                             </label>
                                             <button type="button" class="btn-pill-outline btn-pill-sm py-1 px-2" onclick="regenerateProvisionPassword()">
-                                                <i class="bi bi-arrow-clockwise me-1"></i> Regenerate
+                                                <i class="bi bi-arrow-clockwise me-1"></i> Generate Password
                                             </button>
                                         </div>
                                         <div class="input-group input-group-integrated">
-                                            <input type="password" name="temporary_password" id="temporary_password" class="form-control font-monospace" required minlength="8">
+                                            <input type="password" name="temporary_password" id="temporary_password" class="form-control font-monospace" autocomplete="new-password" required minlength="8">
                                             <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('temporary_password', 'toggle-prov-pw')" aria-label="Toggle password visibility">
                                                 <i class="bi bi-eye" id="toggle-prov-pw"></i>
                                             </button>
@@ -1564,12 +1595,48 @@ function syncProvisionOrgName() {
     return true;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    const pwInput = document.getElementById("temporary_password");
-    if (pwInput && !pwInput.value) {
-        pwInput.value = generateStrongTempPassword();
-    }
-});
 
-</script>
+
+
+// Keep request pagination in place without reloading or jumping to the table anchor.
+(async function () {
+    const sectionSelector = '#student-requests-section';
+
+    async function showRequestPage(url, updateHistory) {
+        const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!response.ok) throw new Error('Could not load requests.');
+        const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const nextSection = page.querySelector(sectionSelector);
+        const currentSection = document.querySelector(sectionSelector);
+        const modalContainer = document.getElementById('user-modals-container');
+        const nextModalContainer = page.getElementById('user-modals-container');
+        if (!nextSection || !currentSection || !modalContainer || !nextModalContainer) throw new Error('Request table was not found.');
+
+        currentSection.replaceWith(nextSection);
+        modalContainer.querySelectorAll('[id^="inspectProfileReqModal"]').forEach(modal => modal.remove());
+        nextModalContainer.querySelectorAll('[id^="inspectProfileReqModal"]').forEach(modal => modalContainer.appendChild(modal));
+        if (updateHistory) {
+            const pageUrl = new URL(url, location.href);
+            history.pushState(null, '', pageUrl.pathname + pageUrl.search);
+        }
+    }
+
+    document.addEventListener('click', async function (event) {
+        const link = event.target.closest(sectionSelector + ' a.pagination-nav-btn[href]');
+        if (!link) return;
+        event.preventDefault();
+        const section = document.querySelector(sectionSelector);
+        if (section.dataset.loading) return;
+        section.dataset.loading = 'true';
+        try {
+            await showRequestPage(link.href, true);
+        } catch (_) {
+            location.assign(link.href);
+        }
+    });
+
+    window.addEventListener('popstate', function () {
+        showRequestPage(location.href, false).catch(() => location.reload());
+    });
+})();</script>
 
