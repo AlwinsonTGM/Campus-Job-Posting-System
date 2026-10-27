@@ -14,15 +14,8 @@ $page_title = 'Empowering Students, Supporting Campus Offices';
 
 // Data from helper
 $categories = get_categories();
-$all_active_jobs = array_values(array_filter(get_jobs(), fn($j) => in_array(strtolower($j['status'] ?? 'active'), ['active', 'open'])));
-// Qualified Featured Vacancies (Jobs with an attached photo/flyer)
-$featured_jobs = array_values(array_filter($all_active_jobs, fn($j) => !empty($j['image']) || !empty($j['is_featured'])));
-if (empty($featured_jobs)) {
-    // Graceful fallback to general active jobs if no photo-backed jobs exist yet
-    $featured_jobs = array_slice($all_active_jobs, 0, 5);
-} else {
-    $featured_jobs = array_slice($featured_jobs, 0, 8);
-}
+// Fetch featured active jobs directly using optimized SQL instead of in-memory array filtering
+$featured_jobs = get_featured_jobs(8);
 
 // Key Metrics
 $metric_active_jobs = get_metrics_total_active_jobs();
