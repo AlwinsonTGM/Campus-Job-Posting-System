@@ -36,7 +36,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'C:\\xampp\\php\\php.exe -c C:\\xampp\\php\\php.ini -S 127.0.0.1:8000',
+    command: 'php -S 127.0.0.1:8000',
     env: {
       PHP_CLI_SERVER_WORKERS: '4',
     },
