@@ -1,0 +1,4 @@
+## 2025-02-18 - Avoid Redundant Loops on Fetched Arrays
+**Learning:** In standard analytics or reporting pages, retrieving large datasets via functions like `get_jobs()`, `get_applications()`, and `get_users()` can lead to significant overhead if we iterate over these arrays multiple times using functions like `array_filter()`. Specifically, calculating counts inside a loop, or making multiple passes over the same array to calculate distinct metrics causes unnecessary performance drops (e.g. O(N²) when counting categories nested in category list, or traversing user list 5 times).
+
+**Action:** Whenever generating aggregate statistics from fetched collections in PHP, perform all groupings and summations in a single `foreach` block to maintain an O(N) complexity for dataset parsing, ensuring the application remains lightweight and scales efficiently under heavy load.
