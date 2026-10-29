@@ -30,19 +30,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($title) || empty($content)) {
             $error = 'Headline title and article content are required.';
         } else {
-            add_career_update([
-                'title' => $title,
-                'category' => 'Department Notice',
-                'summary' => $summary,
-                'content' => $content,
-                'image' => $image,
-                'author_name' => $author_name,
-                'author_role' => $author_role,
-                'author_office' => $author_office
-            ]);
-            set_flash('success', "Your department dispatch '{$title}' was published live immediately.");
-            header('Location: updates.php');
-            exit;
+            $upload = AttachmentStore::store('dispatch_photos', $_FILES['photo'] ?? null);
+            if ($upload->isOk()) {
+                $image = $upload->path();
+            } elseif ($upload->errorCode() !== 'no_file') {
+                $error = $upload->errorMessage();
+            }
+            if (!$error) {
+                $created = add_career_update([
+                    'title' => $title,
+                    'category' => 'Department Notice',
+                    'summary' => $summary,
+                    'content' => $content,
+                    'image' => $image,
+                    'author_name' => $author_name,
+                    'author_role' => $author_role,
+                    'author_office' => $author_office
+                ]);
+                if ($created) {
+                    set_flash('success', "Your department dispatch '{$title}' was published live immediately.");
+                    header('Location: updates.php');
+                    exit;
+                }
+                if ($upload->isOk()) AttachmentStore::delete($upload->path());
+                $error = 'The announcement could not be saved. Please try again.';
+            }
         }
     } elseif ($action === 'edit') {
         $id = (int)($_POST['id'] ?? 0);
@@ -76,18 +88,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            update_career_update($id, [
-                'title' => $title,
-                'summary' => $summary,
-                'content' => $content,
-                'image' => $image,
-                'author_name' => $author_name,
-                'author_role' => $author_role,
-                'author_office' => $author_office
-            ]);
-            set_flash('success', "Dispatch #{$id} was updated successfully.");
-            header('Location: updates.php');
-            exit;
+            $upload = AttachmentStore::store('dispatch_photos', $_FILES['photo'] ?? null);
+            if ($upload->isOk()) {
+                $image = $upload->path();
+            } elseif ($upload->errorCode() !== 'no_file') {
+                $error = $upload->errorMessage();
+            }
+            if (!$error) {
+                $updated = update_career_update($id, [
+                    'title' => $title,
+                    'summary' => $summary,
+                    'content' => $content,
+                    'image' => $image,
+                    'author_name' => $author_name,
+                    'author_role' => $author_role,
+                    'author_office' => $author_office
+                ]);
+                if ($updated) {
+                    set_flash('success', "Dispatch #{$id} was updated successfully.");
+                    header('Location: updates.php');
+                    exit;
+                }
+                if ($upload->isOk()) AttachmentStore::delete($upload->path());
+                $error = 'The announcement could not be updated. Please try again.';
+            }
         }
     } elseif ($action === 'archive' || $action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
@@ -126,5 +150,6 @@ $dept_updates = array_filter($all_updates, function($u) use ($org_name, $user) {
            stripos($u['author']['office'] ?? '', $org_name) !== false || 
            stripos($u['author']['name'] ?? '', $user['name']) !== false;
 });
+$dispatch_form = $error ? $_POST : [];
 // Last line: view template
 require __DIR__ . '/../includes/templates/employer-updates-view.php';

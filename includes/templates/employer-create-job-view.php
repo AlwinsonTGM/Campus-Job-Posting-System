@@ -206,12 +206,13 @@ require_once __DIR__ . '/../header.php';
 
                                         <div class="col-md-4">
                                             <label class="form-label" for="work-setup">Workplace Setup <span class="text-danger">*</span></label>
-                                            <select name="work_setup" id="work-setup" class="form-select" required>
+                                            <select name="work_setup" id="work-setup" class="form-select" aria-describedby="work-setup-help" required>
                                                 <option value="" disabled <?= empty($form['work_setup']) ? 'selected' : '' ?>>Select Workplace Setup...</option>
                                                 <?php foreach ($work_setups as $k => $label): ?>
                                                     <option value="<?= htmlspecialchars($k) ?>" <?= (isset($form['work_setup']) && $form['work_setup'] === $k) ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                                                 <?php endforeach; ?>
                                             </select>
+                                            <div id="work-setup-help" class="form-text text-muted-custom">Only setups compatible with your organization are available.</div>
                                         </div>
                                     </div>
 

@@ -25,7 +25,7 @@ if (!can_manage_job($job, $user)) {
 
 $categories = get_categories();
 $job_types = get_job_types();
-$work_setups = get_work_setups();
+$work_setups = get_work_setups($job['employer_type'] ?? 'university_office');
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -92,6 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($title) || empty($description)) {
             $error = 'Please provide the vacancy title and detailed description.';
+        } elseif (!isset($work_setups[$work_setup])) {
+            $error = 'Please select a workplace setup compatible with this employer. On-Campus is reserved for university offices.';
         } elseif (!empty($deadline) && $deadline < date('Y-m-d')) {
             $error = 'Application deadline cannot be set to a past date. Please choose today or a future date.';
         } elseif ($vacancies < 1) {
@@ -109,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $photo_file = $_FILES['job_photo'] ?? null;
             $remove_photo = !empty($_POST['remove_photo']);
 
-            update_job($job['id'], [
+            $updated = update_job($job['id'], [
                 'title' => $title,
                 'category' => $category,
                 'category_id' => $category_id,
@@ -128,9 +130,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'qualifications' => $qualifications
             ], $photo_file);
 
-            set_flash('success', "Vacancy '{$title}' updated successfully!");
-            header('Location: dashboard.php');
-            exit;
+            if ($updated) {
+                set_flash('success', "Vacancy '{$title}' updated successfully!");
+                header('Location: dashboard.php');
+                exit;
+            }
+            $error = 'Failed to update vacancy. Please try again.';
         }
     }
 }

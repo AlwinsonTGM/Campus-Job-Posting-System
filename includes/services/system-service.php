@@ -493,6 +493,11 @@ function resolve_temporary_password_notification(int|string $user_id): bool {
         ");
         $stmt->execute([':user_id' => (int)$user_id]);
 
+        // Only welcome users who had a temporary-password setup prompt.
+        if ($stmt->rowCount() === 0) {
+            return true;
+        }
+
         // Create welcome notification
         create_notification(
             (int)$user_id,

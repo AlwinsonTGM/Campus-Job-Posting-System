@@ -153,8 +153,15 @@
         message = 'Use Student ID format YYYY-T-XXXXXX, e.g. 2025-2-000065.';
       } else if (input.id === 'reg-birthdate' && (!input.validity.valid || input.value > input.max)) {
         message = 'You must be at least 18 years old. Enter a valid date of birth.';
-      } else if (input.id === 'password' && input.value.length < 8) {
-        message = 'Use a password with at least 8 characters.';
+      } else if (input.id === 'password') {
+        if (input.value.length < 8) {
+          message = 'Use a password with at least 8 characters.';
+        } else {
+          updatePasswordStrength();
+          if (Number(passwordMeter?.dataset?.strength || 0) < 2) {
+            message = 'Please choose a stronger password (include uppercase letters, numbers, or symbols).';
+          }
+        }
       } else if (input.id === 'confirm_password' && input.value !== document.getElementById('password').value) {
         message = 'Your passwords do not match.';
       } else if (input.type === 'file' && input.files.length) {

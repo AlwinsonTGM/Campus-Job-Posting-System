@@ -19,7 +19,7 @@ if ($user['role'] === 'employer' && $is_partner && $ver_status !== 'verified') {
 
 $categories = get_categories();
 $job_types = get_job_types();
-$work_setups = get_work_setups();
+$work_setups = get_work_setups($user['employer_type'] ?? 'university_office');
 
 $error = null;
 $initial_step = 1;
@@ -105,6 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Server-side step validation
         if (empty($title) || empty($category) || empty($job_type) || empty($work_setup) || empty($description)) {
             $error = 'Please complete all required fields in Step 1 (Vacancy Information).';
+            $initial_step = 1;
+        } elseif (!isset($work_setups[$work_setup])) {
+            $error = 'Please select a workplace setup compatible with your organization. On-Campus is reserved for university offices.';
             $initial_step = 1;
         } elseif (empty($department) || empty($location) || empty($pay_amount) || empty($deadline)) {
             $error = 'Please complete all required terms & quota fields in Step 3.';

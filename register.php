@@ -114,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($role === 'employer' && preg_match('/@(?:[a-z0-9-]+\.)*kld\.edu\.ph$/i', $email)) {
         $error = 'Institutional @kld.edu.ph email addresses cannot be used for external Industry Partner registration. Please use your official company or organization email address. (KLD Department Offices are provisioned by the Administrator.)';
         $initial_step = 1;
-    } elseif (strlen($password) < 8) {
-        $error = 'Password must contain at least 8 characters.';
+    } elseif (!($strength = validate_password_strength($password))['valid']) {
+        $error = $strength['error'];
         $initial_step = 3;
     } elseif ($password !== $confirm_password) {
         $error = 'Password and Confirm Password do not match.';

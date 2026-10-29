@@ -11,7 +11,7 @@ require_once __DIR__ . '/../header.php';
     <div class="sheet flat-sheet">
         <?php require_once __DIR__ . '/../navbar.php'; ?>
 
-        <main class="py-5">
+        <main class="py-5 student-dashboard">
             <div class="container-paper">
                 
                 <!-- Page Head with Quick Actions -->
@@ -25,7 +25,7 @@ require_once __DIR__ . '/../header.php';
                     </a>
                 ';
                 render_page_head(
-                    '<i class="bi bi-mortarboard-fill text-accent me-1"></i> Student Career Portal · ' . htmlspecialchars($user['course'] ?? 'BSIS'),
+                    '<i class="bi bi-mortarboard me-1" aria-hidden="true"></i> Student Career Portal · ' . htmlspecialchars($user['course'] ?? 'BSIS'),
                     'Welcome, ' . htmlspecialchars($user['name']),
                     'Track your assistantship evaluation status, review upcoming interview schedules, and explore vacancies matching your availability.',
                     $head_actions
@@ -69,19 +69,18 @@ require_once __DIR__ . '/../header.php';
                 <?php endif; ?>
 
                 <!-- 4 KPI Metrics -->
-                <div class="row g-3 mb-5">
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($total_applied, 'Applications Filed', 'bi-send-fill'); ?>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($pending_count, 'In Review', 'bi-hourglass-split'); ?>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($interview_count, 'Interviews Scheduled', 'bi-calendar-event-fill'); ?>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <?php render_metric($accepted_count, 'Accepted / Hired', 'bi-check-circle-fill'); ?>
-                    </div>
+                <div class="employer-metrics" aria-label="Student application overview">
+                    <?php foreach ([
+                        [$total_applied, 'Applications Filed', 'send'],
+                        [$pending_count, 'In Review', 'hourglass-split'],
+                        [$interview_count, 'Interviews Scheduled', 'calendar-event'],
+                        [$accepted_count, 'Accepted / Hired', 'person-check'],
+                    ] as [$metric_value, $metric_label, $metric_icon]): ?>
+                        <div class="employer-metric">
+                            <div class="employer-icon"><i class="bi bi-<?= $metric_icon ?>" aria-hidden="true"></i></div>
+                            <div><strong><?= (int)$metric_value ?></strong><p><?= $metric_label ?></p></div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <div class="row g-4 mb-5">
@@ -89,8 +88,8 @@ require_once __DIR__ . '/../header.php';
                     <div class="col-lg-7">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line gap-2">
-                                <h3 class="card-paper-title mb-0 fs-5 text-truncate">
-                                    <i class="bi bi-clock-history text-accent me-2"></i>Active Application Status
+                                <h3 class="card-paper-title student-dashboard-heading mb-0 fs-5">
+                                    <span class="student-dashboard-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span>Active Application Status
                                 </h3>
                                 <a href="my-applications.php" class="text-ink fw-bold small text-decoration-none text-nowrap ms-auto flex-shrink-0">
                                     View All <i class="bi bi-arrow-right"></i>
@@ -153,8 +152,8 @@ require_once __DIR__ . '/../header.php';
                     <div class="col-lg-5">
                         <div class="card-paper h-100 reveal-fade-rise">
                             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
-                                <h3 class="card-paper-title mb-0">
-                                    <i class="bi bi-person-badge text-accent me-2"></i> Student Profile
+                                <h3 class="card-paper-title student-dashboard-heading mb-0">
+                                    <span class="student-dashboard-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span> Student Profile
                                 </h3>
                                 <a href="../settings.php" class="text-ink fw-bold small text-decoration-none">
                                     Edit Profile <i class="bi bi-gear"></i>
@@ -225,8 +224,8 @@ require_once __DIR__ . '/../header.php';
                 <div class="mb-5">
                     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-line">
                         <div>
-                            <h3 class="card-paper-title mb-1">
-                                <i class="bi bi-stars text-accent me-2"></i> Recommended Campus Opportunities
+                            <h3 class="card-paper-title student-dashboard-heading mb-1">
+                                <span class="student-dashboard-icon"><i class="bi bi-stars" aria-hidden="true"></i></span> Recommended Campus Opportunities
                             </h3>
                             <p class="text-muted-custom small mb-0">Verified assistantships and lab roles aligned with your course and student profile</p>
                         </div>

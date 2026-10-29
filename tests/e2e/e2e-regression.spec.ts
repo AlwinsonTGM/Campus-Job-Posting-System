@@ -174,9 +174,9 @@ test.describe('Tier 4 Full Cross-Role Lifecycle E2E Regression Suite', () => {
       await intTimeSelect.selectOption('10:00 AM');
     }
 
-    const intVenueSelect = page.locator('#int-venue, select[name="interview_venue"]');
-    if (await intVenueSelect.isVisible()) {
-      await intVenueSelect.selectOption({ index: 1 });
+    const intVenueInput = page.locator('#int-venue');
+    if (await intVenueInput.isVisible()) {
+      await intVenueInput.fill('Technology Annex, Interview Room 405');
     }
 
     const supervisorNotes = page.locator('#supervisor_notes, textarea[name="supervisor_notes"]');

@@ -1,0 +1,103 @@
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { unlink } from 'node:fs/promises';
+import { chromium } from '@playwright/test';
+
+// Isolated records only: no fixture resets and no edits to existing vacancies or applications.
+const base = process.env.CAMPUS_TEST_URL || 'http://localhost/Final-Campus-Job-Posting-System';
+const marker = `Employer form check ${Date.now()}`;
+const php = source => execFileSync('C:/xampp/php/php.exe', ['-r', `require 'includes/data-helper.php'; ${source}`], { encoding: 'utf8' }).trim();
+const literal = value => `json_decode(base64_decode('${Buffer.from(JSON.stringify(value)).toString('base64')}'), true)`;
+const fixtures = JSON.parse(php(`
+    $office = quick_login('employer');
+    $partner = get_db_connection()->query("SELECT user_id FROM employer_profiles WHERE employer_type = 'approved_partner' AND verification_status = 'verified' LIMIT 1")->fetchColumn();
+    $student = get_db_connection()->query("SELECT id FROM users WHERE role = 'student' LIMIT 1")->fetchColumn();
+    $job = create_job(['title' => ${literal(marker)}, 'description' => 'Temporary workflow check', 'work_setup' => 'On-Campus']);
+    $partnerJob = create_job(['title' => ${literal(marker + ' partner')}, 'description' => 'Temporary workflow check', 'employer_id' => $partner, 'work_setup' => 'Near-Campus']);
+    $stmt = get_db_connection()->prepare('INSERT INTO applications (job_id, student_id) VALUES (?, ?)');
+    $stmt->execute([$job, $student]);
+    echo json_encode(['office' => $office['id'], 'partner' => (int)$partner, 'student' => (int)$student, 'job' => $job, 'partnerJob' => $partnerJob, 'app' => (int)get_db_connection()->lastInsertId()]);
+`));
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const paths = new Set();
+const contextFor = async (role, id) => {
+  const session = php(`quick_login('${role}', ${id}); echo session_id();`);
+  const context = await browser.newContext();
+  await context.addCookies([{ name: 'PHPSESSID', value: session, url: base }]);
+  return context;
+};
+const currentUpdate = () => JSON.parse(php(`$s = get_db_connection()->prepare('SELECT id, image FROM updates WHERE title = ?'); $s->execute([${literal(marker)}]); echo json_encode($s->fetch() ?: null);`));
+const photo = { name: 'office.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64') };
+try {
+  const office = await contextFor('employer', fixtures.office);
+  const page = await office.newPage();
+  await page.goto(`${base}/employer/updates.php`);
+  const token = await page.locator('#newEmployerDispatchModal [name=csrf_token]').inputValue();
+  const fields = { csrf_token: token, action: 'create', title: marker, summary: 'Temporary check', content: '<p>Temporary workflow check</p>', image: 'assets/img/hero-office.jpg' };
+  let response = await office.request.post(`${base}/employer/updates.php`, { multipart: { ...fields, photo }, maxRedirects: 0 });
+  assert.equal(response.status(), 302, 'Multipart create succeeds');
+  let update = currentUpdate();
+  assert.ok(update && update.image.startsWith('uploads/updates/dispatch_'), 'Local upload overrides the URL and persists');
+  paths.add(update.image);
+  assert.equal((await office.request.get(`${base}/${update.image}`)).status(), 200, 'Saved photo can be viewed');
+  const firstImage = update.image;
+  response = await office.request.post(`${base}/employer/updates.php`, { form: { ...fields, action: 'edit', id: String(update.id), image: firstImage }, maxRedirects: 0 });
+  assert.equal(response.status(), 302);
+  assert.equal(currentUpdate().image, firstImage, 'Edit without an upload keeps the current photo');
+  response = await office.request.post(`${base}/employer/updates.php`, { multipart: { ...fields, action: 'edit', id: String(update.id), photo }, maxRedirects: 0 });
+  assert.equal(response.status(), 302);
+  update = currentUpdate();
+  paths.add(update.image);
+  assert.notEqual(update.image, firstImage, 'Edit replaces the featured photo');
+  await page.goto(`${base}/employer/updates.php`);
+  await page.locator(`.edit-emp-dispatch-btn[data-id="${update.id}"]`).click();
+  assert.equal(await page.locator('#edit_emp_image').inputValue(), update.image, 'Edit modal accepts the saved relative image path');
+  response = await office.request.post(`${base}/employer/updates.php`, { multipart: { ...fields, action: 'edit', id: String(update.id), photo: { name: 'fake.png', mimeType: 'image/png', buffer: Buffer.from('<?php echo "invalid";') } } });
+  assert.equal(response.status(), 200);
+  assert.equal(currentUpdate().image, update.image, 'Invalid upload preserves the saved photo');
+  await page.goto(`${base}/employer/updates.php`);
+  await page.locator('[data-bs-target="#newEmployerDispatchModal"]').first().click();
+  await page.locator('#newEmployerDispatchModal [name=title]').fill(`${marker} invalid`);
+  await page.locator('#newEmployerDispatchModal [name=summary]').fill('Keep these entered details');
+  await page.locator('#newEmployerDispatchModal [name=content]').fill('Keep this article');
+  await page.locator('#dispatch-photo').setInputFiles({ name: 'fake.png', mimeType: 'image/png', buffer: Buffer.from('invalid image') });
+  await page.locator('#newEmployerDispatchModal button[type=submit]').click();
+  await page.locator('#newEmployerDispatchModal.show [role=alert]').waitFor();
+  assert.equal(await page.locator('#newEmployerDispatchModal [name=title]').inputValue(), `${marker} invalid`, 'Upload failure retains entered fields and reopens the form');
+
+  await page.goto(`${base}/employer/review-app.php?id=${fixtures.app}`);
+  await page.locator('#eval-status').selectOption('interview_scheduled');
+  const venue = 'Training Annex, Room 405 / https://meet.example.test/interview';
+  await page.locator('#int-venue').fill(venue);
+  await page.locator('#btn-save-decision').click();
+  await page.waitForURL(`**/review-app.php?id=${fixtures.app}`);
+  await page.reload();
+  assert.equal(await page.locator('#int-venue').inputValue(), venue, 'Custom venue persists after saving and reloading');
+  const student = await contextFor('student', fixtures.student);
+  const studentResponse = await student.request.get(`${base}/student/my-applications.php`);
+  assert.ok((await studentResponse.text()).includes(venue), 'Student can see the saved custom venue');
+
+  const partner = await contextFor('employer', fixtures.partner);
+  const partnerPage = await partner.newPage();
+  await partnerPage.goto(`${base}/employer/edit-job.php?id=${fixtures.partnerJob}`);
+  assert.equal(await partnerPage.locator('#edit-setup option[value="On-Campus"]').count(), 0, 'Partner edit form excludes campus workplaces');
+  const editToken = await partnerPage.locator('#edit-job-form [name=csrf_token]').inputValue();
+  response = await partner.request.post(`${base}/employer/edit-job.php?id=${fixtures.partnerJob}`, { form: { csrf_token: editToken, title: marker, work_setup: 'On-Campus', description: 'Temporary workflow check' }, maxRedirects: 0 });
+  assert.equal(response.status(), 200);
+  assert.ok((await response.text()).includes('compatible with this employer'), 'Forged edit is rejected by the controller');
+  await partnerPage.goto(`${base}/employer/create-job.php`);
+  const createToken = await partnerPage.locator('#create-job-form [name=csrf_token], form [name=csrf_token]').first().inputValue();
+  response = await partner.request.post(`${base}/employer/create-job.php`, { form: { csrf_token: createToken, title: marker, category: 'Administrative & Clerical', job_type: 'Part-Time', work_setup: 'On-Campus', description: 'Temporary workflow check' }, maxRedirects: 0 });
+  assert.equal(response.status(), 200);
+  assert.ok((await response.text()).includes('compatible with your organization'), 'Forged create is rejected by the controller');
+  console.log('PASS: Real multipart create/replacement/preservation, public photo rendering, invalid-upload recovery, custom venue save and student display, and forged workplace submissions.');
+} finally {
+  await browser.close();
+  php(`$pdo = get_db_connection(); $pdo->beginTransaction();
+    $s = $pdo->prepare('DELETE FROM notifications WHERE link = ?'); $s->execute(['student/my-applications.php?highlight=app-${fixtures.app}#app-${fixtures.app}']);
+    $s = $pdo->prepare('DELETE FROM applications WHERE id = ? AND job_id = ?'); $s->execute([${fixtures.app}, ${fixtures.job}]);
+    $s = $pdo->prepare('DELETE FROM jobs WHERE id IN (?, ?)'); $s->execute([${fixtures.job}, ${fixtures.partnerJob}]);
+    $s = $pdo->prepare('DELETE FROM updates WHERE title = ? AND author_id = ?'); $s->execute([${literal(marker)}, ${fixtures.office}]);
+    $pdo->commit();`);
+  for (const path of paths) await unlink(new URL(`../${path}`, import.meta.url));
+}

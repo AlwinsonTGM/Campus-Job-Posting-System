@@ -136,6 +136,18 @@ try {
   await page.screenshot({path: 'design-previews/auth-live-alumni-verification.png', fullPage: true});
   await page.locator('#btn-submit-registration').click();
   assert.match(await page.locator('#step-error-alert').innerText(), /diploma/);
+  await page.locator('#reg-student-proof').setInputFiles({name: 'diploma.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4')});
+  await page.locator('#password').fill('abcdefgh');
+  await page.locator('#confirm_password').fill('abcdefgh');
+  await page.locator('#termsCheck').check();
+  await page.locator('#btn-submit-registration').click();
+  assert.match(await page.locator('#step-error-alert').innerText(), /stronger password/i);
+  assert.equal(await page.locator('#password').getAttribute('aria-invalid'), 'true');
+  assert.equal(await page.locator('#step-pane-3').isVisible(), true);
+  await page.locator('#termsCheck').uncheck();
+  await page.locator('#password').fill('');
+  await page.locator('#confirm_password').fill('');
+  await page.locator('#reg-student-proof').setInputFiles([]);
   assert.equal(await page.locator('#student_id').inputValue(), '2025-2-000065');
   await page.locator('#step-pane-3 [data-back]').click();
   await page.locator('#step-pane-2 [data-back]').click();

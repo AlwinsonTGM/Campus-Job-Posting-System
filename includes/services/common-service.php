@@ -275,13 +275,20 @@ function get_employer_types(): array {
     ];
 }
 
-function get_work_setups(): array {
-    return [
+function get_work_setups(?string $employer_type = null): array {
+    $setups = [
         'On-Campus' => 'On-Campus (University Premises)',
         'Near-Campus' => 'Near-Campus (Partner Office)',
         'Hybrid' => 'Hybrid (Campus + Remote)',
         'Remote' => 'Remote / Online'
     ];
+    if ($employer_type === 'approved_partner') {
+        unset($setups['On-Campus']);
+        $setups['Hybrid'] = 'Hybrid (Partner Office + Remote)';
+    } elseif ($employer_type !== null) {
+        unset($setups['Near-Campus']);
+    }
+    return $setups;
 }
 
 // ============================================================================

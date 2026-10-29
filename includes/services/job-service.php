@@ -154,6 +154,16 @@ function get_job_by_id(mixed $id): ?array {
 }
 
 function prepare_job_attributes(PDO $pdo, array $data, ?array $photo_file = null, ?array $existing = null): array {
+    // Resolve compatibility from the saved owner, never the submitted employer type.
+    $owner_id = $existing['employer_id'] ?? ($data['employer_id'] ?? (get_logged_user()['id'] ?? null));
+    $owner = $owner_id ? get_user_by_id($owner_id) : null;
+    $employer_type = $owner['employer_type'] ?? ($existing['employer_type'] ?? 'university_office');
+    $work_setups = get_work_setups($employer_type);
+    $work_setup = $data['work_setup'] ?? ($existing['work_setup'] ?? array_key_first($work_setups));
+    if (!isset($work_setups[$work_setup])) {
+        throw new InvalidArgumentException('Please select a workplace setup compatible with the employer.');
+    }
+
     $image_path = $existing['image'] ?? null;
     if ($photo_file !== null && is_array($photo_file) && ($photo_file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
         $new_img = save_uploaded_job_photo($photo_file);
@@ -186,8 +196,6 @@ function prepare_job_attributes(PDO $pdo, array $data, ?array $photo_file = null
     }
 
     $job_type = $data['job_type'] ?? ($existing['job_type'] ?? 'Student Assistant');
-    $work_setup = $data['work_setup'] ?? ($existing['work_setup'] ?? 'On-Campus');
-    $employer_type = $data['employer_type'] ?? ($existing['employer_type'] ?? 'university_office');
 
     $tags = !empty($data['tags'])
         ? (is_array($data['tags']) ? $data['tags'] : explode(',', (string)$data['tags']))

@@ -169,9 +169,9 @@ test.describe('Employer Workflow & Candidate Management Suite', () => {
       await timeSelect.selectOption('10:00 AM');
     }
 
-    const venueSelect = page.locator('#int-venue, select[name="interview_venue"]');
-    if (await venueSelect.isVisible()) {
-      await venueSelect.selectOption({ index: 0 });
+    const venueInput = page.locator('#int-venue');
+    if (await venueInput.isVisible()) {
+      await venueInput.fill('Admin Annex, Interview Room 405');
     }
 
     const notesTextarea = page.locator('#supervisor_notes, textarea[name="supervisor_notes"]');

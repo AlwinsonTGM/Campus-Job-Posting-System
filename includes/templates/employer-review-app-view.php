@@ -301,7 +301,6 @@ require_once __DIR__ . '/../header.php';
 
                                     <div>
                                         <label class="form-label small mb-1" for="int-venue">Venue / Room</label>
-                                        <select name="interview_venue" id="int-venue" class="form-select" <?= !$is_interview_selected ? 'disabled' : '' ?>>
                                             <?php
                                             $dept_office = $user['office_location'] ?? ($user['department'] ?? 'Campus Main Office');
                                             $standard_venues = [
@@ -319,11 +318,14 @@ require_once __DIR__ . '/../header.php';
                                             if (!in_array($cur_venue, $standard_venues) && !empty($cur_venue)) {
                                                 array_unshift($standard_venues, $cur_venue);
                                             }
-                                            foreach ($standard_venues as $v):
                                             ?>
-                                                <option value="<?= htmlspecialchars($v) ?>" <?= ($cur_venue === $v) ? 'selected' : '' ?>><?= htmlspecialchars($v) ?></option>
+                                        <input type="text" name="interview_venue" id="int-venue" class="form-control" list="interview-venues" value="<?= htmlspecialchars($cur_venue) ?>" maxlength="255" aria-describedby="int-venue-help" placeholder="Type a venue or choose a suggestion" <?= !$is_interview_selected ? 'disabled' : '' ?>>
+                                        <datalist id="interview-venues">
+                                            <?php foreach ($standard_venues as $v): ?>
+                                                <option value="<?= htmlspecialchars($v) ?>"></option>
                                             <?php endforeach; ?>
-                                        </select>
+                                        </datalist>
+                                        <div id="int-venue-help" class="form-text text-muted-custom">Choose a suggested room or enter any venue, address, or online meeting link.</div>
                                     </div>
                                 </div>
 

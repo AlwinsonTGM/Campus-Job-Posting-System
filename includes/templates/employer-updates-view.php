@@ -82,10 +82,13 @@ require_once __DIR__ . '/../header.php';
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="updates.php">
+            <form method="POST" action="updates.php" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="create">
                 <div class="modal-body p-4">
+                    <?php if ($error && $action === 'create'): ?>
+                        <div class="alert-paper alert-paper--danger mb-3" role="alert"><?= htmlspecialchars($error) ?></div>
+                    <?php endif; ?>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-ink">Headline Title *</label>
                         <input type="text" name="title" class="form-control rounded-3" placeholder="e.g. <?= htmlspecialchars($org_name) ?> Announces SA Openings" required>
@@ -102,9 +105,14 @@ require_once __DIR__ . '/../header.php';
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small text-ink">Featured Photo URL</label>
-                        <input type="text" name="image" class="form-control rounded-3" placeholder="assets/img/updates/... or photo URL">
-                        <span class="text-muted-custom small" style="font-size: 0.75rem;">Leave blank for default campus hero photo.</span>
+                        <label class="form-label fw-bold small text-ink" for="dispatch-photo">Upload Featured Photo</label>
+                        <input type="file" name="photo" id="dispatch-photo" class="form-control rounded-3" accept="image/jpeg,image/png,image/webp" aria-describedby="dispatch-photo-help">
+                        <div id="dispatch-photo-help" class="form-text text-muted-custom">JPG, PNG, or WebP, up to 5 MB. An uploaded photo takes priority over the URL below.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-ink" for="dispatch-image">Featured Photo URL (optional)</label>
+                        <input type="text" name="image" id="dispatch-image" class="form-control rounded-3" placeholder="assets/img/updates/... or photo URL">
+                        <div class="form-text text-muted-custom">Leave both blank for the default campus photo.</div>
                     </div>
 
                     <div class="row g-3">
@@ -143,11 +151,14 @@ require_once __DIR__ . '/../header.php';
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="updates.php">
+            <form method="POST" action="updates.php" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="id" id="edit_emp_id">
                 <div class="modal-body p-4">
+                    <?php if ($error && $action === 'edit'): ?>
+                        <div class="alert-paper alert-paper--danger mb-3" role="alert"><?= htmlspecialchars($error) ?></div>
+                    <?php endif; ?>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-ink">Headline Title *</label>
                         <input type="text" name="title" id="edit_emp_title" class="form-control rounded-3" required>
@@ -164,8 +175,13 @@ require_once __DIR__ . '/../header.php';
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small text-ink">Featured Photo URL</label>
-                        <input type="url" name="image" id="edit_emp_image" class="form-control rounded-3">
+                        <label class="form-label fw-bold small text-ink" for="edit-dispatch-photo">Replace Featured Photo</label>
+                        <input type="file" name="photo" id="edit-dispatch-photo" class="form-control rounded-3" accept="image/jpeg,image/png,image/webp" aria-describedby="edit-dispatch-photo-help">
+                        <div id="edit-dispatch-photo-help" class="form-text text-muted-custom">JPG, PNG, or WebP, up to 5 MB. Leave blank to keep the current photo.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-ink" for="edit_emp_image">Featured Photo URL (optional)</label>
+                        <input type="text" name="image" id="edit_emp_image" class="form-control rounded-3">
                     </div>
 
                     <div class="row g-3">
@@ -199,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editModal = new bootstrap.Modal(document.getElementById('editEmployerDispatchModal'));
     document.querySelectorAll('.edit-emp-dispatch-btn').forEach(btn => {
         btn.addEventListener('click', function() {
+            document.querySelector('#editEmployerDispatchModal form').reset();
             document.getElementById('edit_emp_id').value = this.dataset.id;
             document.getElementById('edit_emp_title').value = this.dataset.title;
             document.getElementById('edit_emp_summary').value = this.dataset.summary;
@@ -210,6 +227,16 @@ document.addEventListener('DOMContentLoaded', function() {
             editModal.show();
         });
     });
+    <?php if ($error && in_array($action ?? '', ['create', 'edit'], true)): ?>
+    const failedModal = document.getElementById(<?= json_encode($action === 'edit' ? 'editEmployerDispatchModal' : 'newEmployerDispatchModal') ?>);
+    const failedForm = failedModal.querySelector('form');
+    const values = <?= json_encode($dispatch_form ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    Object.entries(values).forEach(([name, value]) => {
+        const field = failedForm.elements.namedItem(name);
+        if (field && field.type !== 'file' && name !== 'csrf_token') field.value = value;
+    });
+    bootstrap.Modal.getOrCreateInstance(failedModal).show();
+    <?php endif; ?>
 });
 </script>
 

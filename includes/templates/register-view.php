@@ -94,7 +94,7 @@ require __DIR__ . '/auth-start.php';
             <div class="password-guidance">
                 <div class="password-strength-heading"><span>Password strength</span><strong id="password-strength-text" role="status" aria-live="polite">Not entered</strong></div>
                 <div class="password-meter" id="password-strength-meter" role="meter" aria-label="Password strength" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" aria-valuetext="No password entered"><span id="password-meter-fill"></span></div>
-                <p class="hint" id="password-minimum">Minimum: 8 characters. The other checks help make it stronger.</p>
+                <p class="hint" id="password-minimum">Minimum: 8 characters. Add uppercase, numbers, or symbols to exceed weak strength.</p>
                 <ul class="password-requirements" id="password-requirements">
                     <?php foreach (['length' => '8+ characters (minimum)', 'upper' => 'One uppercase letter', 'lower' => 'One lowercase letter', 'number' => 'One number', 'special' => 'One symbol'] as $key => $label): ?>
                         <li data-requirement="<?= $key ?>" data-met="false"><i class="bi bi-circle" aria-hidden="true"></i><span class="requirement-state sr-only">Not yet met: </span><span><?= $label ?></span></li>
