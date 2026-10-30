@@ -49,7 +49,10 @@ if (!empty($job_type)) $active_filters_count++;
 if (!empty($work_setup)) $active_filters_count++;
 if (!empty($employer_type)) $active_filters_count++;
 
-$all_jobs = get_jobs(
+// Pagination — 9 cards per page (3 rows on desktop)
+$per_page = 9;
+
+$total_jobs = get_jobs_count(
     $category ?: null,
     $keyword ?: null,
     $department ?: null,
@@ -59,14 +62,26 @@ $all_jobs = get_jobs(
     $work_setup ?: null
 );
 
-// Pagination — 9 cards per page (3 rows on desktop)
-$per_page = 9;
-$total_jobs = count($all_jobs);
 $total_pages = max(1, (int)ceil($total_jobs / $per_page));
 $page = min(max(1, query_int('page', 1) ?? 1), $total_pages);
 $range_start = $total_jobs > 0 ? (($page - 1) * $per_page) + 1 : 0;
 $range_end = min($total_jobs, $page * $per_page);
-$jobs = array_slice($all_jobs, ($page - 1) * $per_page, $per_page);
+$offset = ($page - 1) * $per_page;
+
+$jobs = get_jobs(
+    $category ?: null,
+    $keyword ?: null,
+    $department ?: null,
+    $pay_type ?: null,
+    $job_type ?: null,
+    $employer_type ?: null,
+    $work_setup ?: null,
+    null,
+    false,
+    false,
+    $per_page,
+    $offset
+);
 
 // Preserve active filters in pagination links (page is appended per link)
 $pagination_query = $_GET;

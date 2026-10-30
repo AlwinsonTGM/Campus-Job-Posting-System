@@ -126,6 +126,115 @@ function get_jobs(string|array|null $category = null, ?string $keyword = null, ?
     }
 }
 
+function get_jobs_count(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false): int {
+    try {
+        $pdo = get_db_connection();
+        $sql = "
+            SELECT COUNT(*) AS total
+            FROM `jobs` j
+            LEFT JOIN `categories` c ON j.`category_id` = c.`id`
+            LEFT JOIN `users` u ON j.`employer_id` = u.`id`
+            LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+            WHERE 1=1
+        ";
+        $params = [];
+
+        if ($only_archived) {
+            $sql .= " AND j.`is_archived` = 1";
+        } elseif (!$include_archived) {
+            $sql .= " AND (j.`is_archived` = 0 OR j.`is_archived` IS NULL)";
+        }
+
+        if ($employer_id !== null) {
+            $sql .= " AND j.`employer_id` = :emp_owner_id";
+            $params[':emp_owner_id'] = (int)$employer_id;
+        }
+
+        if ($category) {
+            if (is_array($category)) {
+                $cat_clauses = [];
+                $i = 0;
+                foreach ($category as $cat_val) {
+                    if (empty($cat_val) || !is_scalar($cat_val)) continue;
+                    $p_name = ":cat_" . ($i++);
+                    $cat_clauses[] = "(c.`name` LIKE $p_name OR j.`category_id` = $p_name)";
+                    $params[$p_name] = '%' . trim((string)$cat_val) . '%';
+                }
+                if (!empty($cat_clauses)) {
+                    $sql .= " AND (" . implode(' OR ', $cat_clauses) . ")";
+                }
+            } else {
+                $sql .= " AND (c.`name` LIKE :cat OR j.`category_id` = :cat_exact)";
+                $params[':cat'] = '%' . trim($category) . '%';
+                $params[':cat_exact'] = trim($category);
+            }
+        }
+
+        if ($job_type) {
+            if (is_array($job_type)) {
+                $jt_clauses = [];
+                $j = 0;
+                foreach ($job_type as $jt_val) {
+                    if (empty($jt_val) || !is_scalar($jt_val)) continue;
+                    $p_name = ":jt_" . ($j++);
+                    $jt_clauses[] = "j.`job_type` LIKE $p_name";
+                    $params[$p_name] = '%' . trim((string)$jt_val) . '%';
+                }
+                if (!empty($jt_clauses)) {
+                    $sql .= " AND (" . implode(' OR ', $jt_clauses) . ")";
+                }
+            } else {
+                $sql .= " AND j.`job_type` LIKE :jt";
+                $params[':jt'] = '%' . trim($job_type) . '%';
+            }
+        }
+
+        if ($employer_type) {
+            $sql .= " AND ep.`employer_type` = :employer_type";
+            $params[':employer_type'] = $employer_type;
+        }
+
+        if ($work_setup) {
+            $sql .= " AND j.`work_setup` = :work_setup";
+            $params[':work_setup'] = $work_setup;
+        }
+
+        if ($department) {
+            $dept_val = '%' . trim($department) . '%';
+            $sql .= " AND (j.`department` LIKE :dept1 OR ep.`organization_name` LIKE :dept2)";
+            $params[':dept1'] = $dept_val;
+            $params[':dept2'] = $dept_val;
+        }
+
+        if ($pay_type) {
+            $pt_val = '%' . trim($pay_type) . '%';
+            $sql .= " AND (j.`pay_type` LIKE :pt1 OR j.`pay_rate` LIKE :pt2)";
+            $params[':pt1'] = $pt_val;
+            $params[':pt2'] = $pt_val;
+        }
+
+        if ($keyword) {
+            $kw = '%' . trim($keyword) . '%';
+            $sql .= " AND (j.`title` LIKE :kw1 OR j.`department` LIKE :kw2 OR ep.`organization_name` LIKE :kw3 OR j.`description` LIKE :kw4 OR j.`location` LIKE :kw5 OR j.`tags` LIKE :kw6 OR c.`name` LIKE :kw7)";
+            $params[':kw1'] = $kw;
+            $params[':kw2'] = $kw;
+            $params[':kw3'] = $kw;
+            $params[':kw4'] = $kw;
+            $params[':kw5'] = $kw;
+            $params[':kw6'] = $kw;
+            $params[':kw7'] = $kw;
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $row = $stmt->fetch();
+        return (int)($row['total'] ?? 0);
+    } catch (Exception $e) {
+        error_log("get_jobs_count error: " . $e->getMessage());
+        return 0;
+    }
+}
+
 function get_job_by_id(mixed $id): ?array {
     if (!is_scalar($id) || $id === null || $id === '' || (int)$id <= 0) { return null; }
     try {
