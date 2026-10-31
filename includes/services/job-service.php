@@ -6,9 +6,137 @@ declare(strict_types=1);
  * Extracted from includes/data-helper.php — 100% function contract preserved.
  */
 
+function _build_jobs_where_clause(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false): array {
+    $where = "WHERE 1=1";
+    $params = [];
+
+    if ($only_archived) {
+        $where .= " AND j.`is_archived` = 1";
+    } elseif (!$include_archived) {
+        $where .= " AND (j.`is_archived` = 0 OR j.`is_archived` IS NULL)";
+    }
+
+    if ($employer_id !== null) {
+        $where .= " AND j.`employer_id` = :emp_owner_id";
+        $params[':emp_owner_id'] = (int)$employer_id;
+    }
+
+    if ($category) {
+        if (is_array($category)) {
+            $cat_clauses = [];
+            $i = 0;
+            foreach ($category as $cat_val) {
+                if (empty($cat_val) || !is_scalar($cat_val)) continue;
+                $p_name = ":cat_" . ($i++);
+                $cat_clauses[] = "(c.`name` LIKE $p_name OR j.`category_id` = $p_name)";
+                $params[$p_name] = '%' . trim((string)$cat_val) . '%';
+            }
+            if (!empty($cat_clauses)) {
+                $where .= " AND (" . implode(' OR ', $cat_clauses) . ")";
+            }
+        } else {
+            $where .= " AND (c.`name` LIKE :cat OR j.`category_id` = :cat_exact)";
+            $params[':cat'] = '%' . trim($category) . '%';
+            $params[':cat_exact'] = trim($category);
+        }
+    }
+
+    if ($job_type) {
+        if (is_array($job_type)) {
+            $jt_clauses = [];
+            $j = 0;
+            foreach ($job_type as $jt_val) {
+                if (empty($jt_val) || !is_scalar($jt_val)) continue;
+                $p_name = ":jt_" . ($j++);
+                $jt_clauses[] = "j.`job_type` LIKE $p_name";
+                $params[$p_name] = '%' . trim((string)$jt_val) . '%';
+            }
+            if (!empty($jt_clauses)) {
+                $where .= " AND (" . implode(' OR ', $jt_clauses) . ")";
+            }
+        } else {
+            $where .= " AND j.`job_type` LIKE :jt";
+            $params[':jt'] = '%' . trim($job_type) . '%';
+        }
+    }
+
+    if ($employer_type) {
+        $where .= " AND ep.`employer_type` = :employer_type";
+        $params[':employer_type'] = $employer_type;
+    }
+
+    if ($work_setup) {
+        $where .= " AND j.`work_setup` = :work_setup";
+        $params[':work_setup'] = $work_setup;
+    }
+
+    if ($department) {
+        $dept_val = '%' . trim($department) . '%';
+        $where .= " AND (j.`department` LIKE :dept1 OR ep.`organization_name` LIKE :dept2)";
+        $params[':dept1'] = $dept_val;
+        $params[':dept2'] = $dept_val;
+    }
+
+    if ($pay_type) {
+        $pt_val = '%' . trim($pay_type) . '%';
+        $where .= " AND (j.`pay_type` LIKE :pt1 OR j.`pay_rate` LIKE :pt2)";
+        $params[':pt1'] = $pt_val;
+        $params[':pt2'] = $pt_val;
+    }
+
+    if ($keyword) {
+        $kw = '%' . trim($keyword) . '%';
+        $where .= " AND (j.`title` LIKE :kw1 OR j.`department` LIKE :kw2 OR ep.`organization_name` LIKE :kw3 OR j.`description` LIKE :kw4 OR j.`location` LIKE :kw5 OR j.`tags` LIKE :kw6 OR c.`name` LIKE :kw7)";
+        $params[':kw1'] = $kw;
+        $params[':kw2'] = $kw;
+        $params[':kw3'] = $kw;
+        $params[':kw4'] = $kw;
+        $params[':kw5'] = $kw;
+        $params[':kw6'] = $kw;
+        $params[':kw7'] = $kw;
+    }
+
+    return [$where, $params];
+}
+
+function get_jobs_count(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false): int {
+    try {
+        $pdo = get_db_connection();
+
+        [$where_sql, $params] = _build_jobs_where_clause(
+            $category, $keyword, $department, $pay_type, $job_type,
+            $employer_type, $work_setup, $employer_id,
+            $include_archived, $only_archived
+        );
+
+        $sql = "
+            SELECT COUNT(*)
+            FROM `jobs` j
+            LEFT JOIN `categories` c ON j.`category_id` = c.`id`
+            LEFT JOIN `users` u ON j.`employer_id` = u.`id`
+            LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+            $where_sql
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    } catch (Exception $e) {
+        error_log("get_jobs_count error: " . $e->getMessage());
+        return 0;
+    }
+}
+
 function get_jobs(string|array|null $category = null, ?string $keyword = null, ?string $department = null, ?string $pay_type = null, ?string $job_type = null, ?string $employer_type = null, ?string $work_setup = null, int|string|null $employer_id = null, bool $include_archived = false, bool $only_archived = false, ?int $limit = null, int $offset = 0): array {
     try {
         $pdo = get_db_connection();
+
+        [$where_sql, $params] = _build_jobs_where_clause(
+            $category, $keyword, $department, $pay_type, $job_type,
+            $employer_type, $work_setup, $employer_id,
+            $include_archived, $only_archived
+        );
+
         $sql = "
             SELECT 
                 j.*,
@@ -21,100 +149,14 @@ function get_jobs(string|array|null $category = null, ?string $keyword = null, ?
             LEFT JOIN `categories` c ON j.`category_id` = c.`id`
             LEFT JOIN `users` u ON j.`employer_id` = u.`id`
             LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
-            WHERE 1=1
+            $where_sql
+            ORDER BY j.`id` DESC
         ";
-        $params = [];
 
-        if ($only_archived) {
-            $sql .= " AND j.`is_archived` = 1";
-        } elseif (!$include_archived) {
-            $sql .= " AND (j.`is_archived` = 0 OR j.`is_archived` IS NULL)";
-        }
-
-        if ($employer_id !== null) {
-            $sql .= " AND j.`employer_id` = :emp_owner_id";
-            $params[':emp_owner_id'] = (int)$employer_id;
-        }
-
-        if ($category) {
-            if (is_array($category)) {
-                $cat_clauses = [];
-                $i = 0;
-                foreach ($category as $cat_val) {
-                    if (empty($cat_val) || !is_scalar($cat_val)) continue;
-                    $p_name = ":cat_" . ($i++);
-                    $cat_clauses[] = "(c.`name` LIKE $p_name OR j.`category_id` = $p_name)";
-                    $params[$p_name] = '%' . trim((string)$cat_val) . '%';
-                }
-                if (!empty($cat_clauses)) {
-                    $sql .= " AND (" . implode(' OR ', $cat_clauses) . ")";
-                }
-            } else {
-                $sql .= " AND (c.`name` LIKE :cat OR j.`category_id` = :cat_exact)";
-                $params[':cat'] = '%' . trim($category) . '%';
-                $params[':cat_exact'] = trim($category);
-            }
-        }
-
-        if ($job_type) {
-            if (is_array($job_type)) {
-                $jt_clauses = [];
-                $j = 0;
-                foreach ($job_type as $jt_val) {
-                    if (empty($jt_val) || !is_scalar($jt_val)) continue;
-                    $p_name = ":jt_" . ($j++);
-                    $jt_clauses[] = "j.`job_type` LIKE $p_name";
-                    $params[$p_name] = '%' . trim((string)$jt_val) . '%';
-                }
-                if (!empty($jt_clauses)) {
-                    $sql .= " AND (" . implode(' OR ', $jt_clauses) . ")";
-                }
-            } else {
-                $sql .= " AND j.`job_type` LIKE :jt";
-                $params[':jt'] = '%' . trim($job_type) . '%';
-            }
-        }
-
-        if ($employer_type) {
-            $sql .= " AND ep.`employer_type` = :employer_type";
-            $params[':employer_type'] = $employer_type;
-        }
-
-        if ($work_setup) {
-            $sql .= " AND j.`work_setup` = :work_setup";
-            $params[':work_setup'] = $work_setup;
-        }
-
-        if ($department) {
-            $dept_val = '%' . trim($department) . '%';
-            $sql .= " AND (j.`department` LIKE :dept1 OR ep.`organization_name` LIKE :dept2)";
-            $params[':dept1'] = $dept_val;
-            $params[':dept2'] = $dept_val;
-        }
-
-        if ($pay_type) {
-            $pt_val = '%' . trim($pay_type) . '%';
-            $sql .= " AND (j.`pay_type` LIKE :pt1 OR j.`pay_rate` LIKE :pt2)";
-            $params[':pt1'] = $pt_val;
-            $params[':pt2'] = $pt_val;
-        }
-
-        if ($keyword) {
-            $kw = '%' . trim($keyword) . '%';
-            $sql .= " AND (j.`title` LIKE :kw1 OR j.`department` LIKE :kw2 OR ep.`organization_name` LIKE :kw3 OR j.`description` LIKE :kw4 OR j.`location` LIKE :kw5 OR j.`tags` LIKE :kw6 OR c.`name` LIKE :kw7)";
-            $params[':kw1'] = $kw;
-            $params[':kw2'] = $kw;
-            $params[':kw3'] = $kw;
-            $params[':kw4'] = $kw;
-            $params[':kw5'] = $kw;
-            $params[':kw6'] = $kw;
-            $params[':kw7'] = $kw;
-        }
-
-        $sql .= " ORDER BY j.`id` DESC";
         if ($limit !== null) {
             $sql .= " LIMIT " . max(1, (int)$limit) . " OFFSET " . max(0, (int)$offset);
         }
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
