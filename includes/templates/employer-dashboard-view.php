@@ -19,7 +19,7 @@ require_once __DIR__ . '/../header.php';
                 $head_actions = '<a href="create-job.php" class="employer-button employer-button--primary"><i class="bi bi-plus-lg" aria-hidden="true"></i> Post Vacancy</a>';
                 render_page_head(
                     '',
-                    'Your department at a glance',
+                    'Dashboard',
                     ($org_name ?? 'Campus Organization') . ' • Manage openings, applications, and appointments.',
                     $head_actions
                 );

@@ -112,7 +112,7 @@ require_once __DIR__ . '/../header.php';
                                             </div>
                                             <div>
                                                 <span class="d-block small fw-bold text-ink lh-1 mb-1"><?= htmlspecialchars($featured_story['author']['name']) ?></span>
-                                                <span class="d-block text-muted-custom small lh-1" style="font-size: 0.75rem;"><?= htmlspecialchars($featured_story['author']['role']) ?></span>
+                                                <span class="d-block text-muted-custom small lh-1"><?= htmlspecialchars($featured_story['author']['role'] ?? '') ?><?= !empty($featured_story['author']['office']) ? ' &bull; ' . htmlspecialchars($featured_story['author']['office']) : '' ?></span>
                                             </div>
                                         </div>
                                         <span class="btn-paper-primary btn-sm d-inline-flex align-items-center gap-2">
@@ -176,7 +176,7 @@ require_once __DIR__ . '/../header.php';
                                                         </div>
                                                         <div>
                                                             <span class="d-block small fw-bold text-ink lh-1 mb-1"><?= htmlspecialchars($article['author']['name']) ?></span>
-                                                            <span class="d-block text-muted-custom small lh-1" style="font-size: 0.7rem;"><?= htmlspecialchars($article['author']['office']) ?></span>
+                                                            <span class="d-block text-muted-custom small lh-1"><?= htmlspecialchars($article['author']['role'] ?? '') ?><?= !empty($article['author']['office']) ? ' &bull; ' . htmlspecialchars($article['author']['office']) : '' ?></span>
                                                         </div>
                                                     </div>
                                                     <span class="btn-circle-arrow-accent flex-shrink-0"><i class="bi bi-arrow-up-right"></i></span>

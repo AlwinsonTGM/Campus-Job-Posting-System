@@ -61,7 +61,7 @@ require_once __DIR__ . '/../header.php';
                                 <span class="chip">
                                     <i class="bi bi-clock" aria-hidden="true"></i> <?= htmlspecialchars($job['hours_per_week'] ?? 'Max 20 hrs/week') ?>
                                 </span>
-                                <span class="badge-status--accepted ms-auto">
+                                <span class="badge-status--accepted">
                                     <?= htmlspecialchars($job['pay_rate']) ?>
                                 </span>
                             </div>
@@ -72,7 +72,7 @@ require_once __DIR__ . '/../header.php';
                                     <i class="bi bi-file-text text-ink me-2" aria-hidden="true"></i> Role Description
                                 </h3>
                                 <p class="text-ink lh-lg mb-0" style="font-size: 15px;">
-                                    <?= nl2br(htmlspecialchars($job['description'])) ?>
+                                    <?= format_job_description($job['description']) ?>
                                 </p>
                             </div>
 
@@ -126,7 +126,7 @@ require_once __DIR__ . '/../header.php';
                                 Requisition Summary
                             </h3>
 
-                            <div class="d-flex flex-column gap-3 mb-4 small">
+                            <div class="job-summary d-flex flex-column gap-3 mb-4 small">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Hiring Entity:</span>
                                     <span class="fw-semibold text-ink">
@@ -147,12 +147,12 @@ require_once __DIR__ . '/../header.php';
 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Weekly Duty Limit:</span>
-                                    <span class="chip" style="font-size: 10px;">&le; 20 hrs/week</span>
+                                    <span class="chip"><?= htmlspecialchars($job['hours_per_week'] ?? 'Max 20 hrs/week') ?></span>
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted-custom">Office Location:</span>
-                                    <span class="fw-semibold text-ink text-end"><?= htmlspecialchars($job['location']) ?></span>
+                                    <span class="fw-semibold text-ink"><?= htmlspecialchars($job['location']) ?></span>
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center">
@@ -167,6 +167,7 @@ require_once __DIR__ . '/../header.php';
 
                                 <!-- Slots Progress -->
                                 <div class="pt-2 border-top border-line">
+                                    <div class="job-openings mb-2"><i class="bi bi-person-plus" aria-hidden="true"></i> <strong><?= max(0, $slots_total - $slots_filled) ?> <?= max(0, $slots_total - $slots_filled) === 1 ? 'opening' : 'openings' ?> available</strong></div>
                                     <div class="d-flex justify-content-between small text-muted-custom mb-1">
                                         <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
                                         <span class="fw-bold text-ink"><?= $pct ?>%</span>
@@ -216,6 +217,7 @@ require_once __DIR__ . '/../header.php';
 
                             <!-- Action CTA -->
                             <?php if (!empty($already_employed)): ?>
+                                <button type="button" class="btn-pill w-100 mb-2" disabled>APPLY FOR THIS POSITION</button>
                                 <div class="p-3 bg-warning-subtle rounded-3 border border-warning text-center mb-3">
                                     <div class="small fw-bold text-warning-emphasis mb-1">
                                         <i class="bi bi-briefcase text-warning me-1" aria-hidden="true"></i> Currently Appointed
@@ -231,9 +233,10 @@ require_once __DIR__ . '/../header.php';
                                     </a>
                                 </div>
                             <?php elseif ($already_applied): ?>
+                                <button type="button" class="btn-pill w-100 mb-2" disabled>ALREADY APPLIED</button>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
                                     <div class="small fw-bold text-ink mb-1">
-                                        <i class="bi bi-check-circle text-ink me-1" aria-hidden="true"></i> Application Active
+                                        <i class="bi bi-check-circle text-ink me-1" aria-hidden="true"></i> Application on File
                                     </div>
                                     <div class="small text-muted-custom mb-2">
                                         Status: <?= render_status_badge($app_status ?? 'pending') ?>
@@ -242,6 +245,9 @@ require_once __DIR__ . '/../header.php';
                                         Track Application
                                     </a>
                                 </div>
+                            <?php elseif ($eligibility->reason() === 'unverified_student'): ?>
+                                <button type="button" class="btn-pill w-100 mb-2" disabled>APPLY FOR THIS POSITION</button>
+                                <p class="small text-muted-custom">Your account must be verified before you can apply.</p>
                             <?php elseif ($user && $user['role'] === 'employer'): ?>
                                 <div class="p-3 bg-cream rounded-3 border border-line text-center mb-3">
                                     <div class="small fw-bold text-ink mb-1">
@@ -279,16 +285,19 @@ require_once __DIR__ . '/../header.php';
                                 ?>
 
                                 <?php if ($is_closed): ?>
+                                    <button type="button" class="btn-pill w-100 mb-2" disabled>APPLY FOR THIS POSITION</button>
                                     <div class="p-3 bg-secondary-subtle rounded-3 border border-secondary text-center mb-2">
                                         <span class="text-secondary fw-bold small d-block"><i class="bi bi-slash-circle me-1" aria-hidden="true"></i> Requisition Closed</span>
                                         <span class="small text-muted-custom" style="font-size: 11px;">This office is no longer accepting new submissions.</span>
                                     </div>
                                 <?php elseif ($is_expired): ?>
+                                    <button type="button" class="btn-pill w-100 mb-2" disabled>APPLY FOR THIS POSITION</button>
                                     <div class="p-3 bg-danger-subtle rounded-3 border border-danger text-center mb-2">
                                         <span class="text-danger fw-bold small d-block"><i class="bi bi-clock-history me-1" aria-hidden="true"></i> Deadline Passed</span>
                                         <span class="small text-muted-custom" style="font-size: 11px;">The cutoff date for applications has expired.</span>
                                     </div>
                                 <?php elseif ($is_filled): ?>
+                                    <button type="button" class="btn-pill w-100 mb-2" disabled>APPLY FOR THIS POSITION</button>
                                     <div class="p-3 bg-warning-subtle rounded-3 border border-warning text-center mb-2">
                                         <span class="text-warning-emphasis fw-bold small d-block"><i class="bi bi-check2-all me-1" aria-hidden="true"></i> All Vacancies Filled</span>
                                         <span class="small text-muted-custom" style="font-size: 11px;">All available positions have been appointed.</span>

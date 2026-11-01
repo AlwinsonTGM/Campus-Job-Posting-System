@@ -9,10 +9,10 @@
 @import url('components/notifications.css?v=1.5');
 @import url('components/page-header.css?v=1.0');
 @import url('features/auth.css?v=1792914940');
-@import url('features/devblog.css?v=2.5');
+@import url('features/devblog.css?v=2.1');
 @import url('features/companion.css?v=2.0');
 @import url('features/print.css?v=1.5');
-@import url('features/dark-overrides.css?v=1.7');
+@import url('features/dark-overrides.css?v=1.9');
 @import url('features/tech-graph.css?v=1.2');
 @import url('features/roblox-search.css?v=1.0');
 
@@ -312,6 +312,29 @@
   background-color: var(--cream);
 }
 
+.nav-theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.nav-theme-toggle:hover {
+  background: var(--cream);
+}
+
+.nav-theme-toggle:focus-visible {
+  outline: 3px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
 .user-avatar-chip {
   display: inline-flex;
   align-items: center;
@@ -400,7 +423,6 @@
   text-decoration: none;
   white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(46, 204, 94, 0.28);
   line-height: 1.2;
 }
 
@@ -410,7 +432,6 @@
   border-color: var(--accent-hover);
   color: var(--ink);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(46, 204, 94, 0.38);
 }
 
 /* Mobile Search Icon Button in Header */
@@ -922,6 +943,30 @@
   opacity: 0.88;
   pointer-events: none;
   z-index: 0;
+}
+
+[data-theme="dark"] .hero-backdrop-content .lead.text-muted-custom {
+  color: #c7c4be !important;
+}
+
+/* Keep the hero action and supporting copy readable over its photograph. */
+.cta-section-wrap .btn-accent-pill,
+.cta-section-wrap .btn-accent-pill:hover,
+.cta-section-wrap .btn-accent-pill:focus-visible {
+  box-shadow: none;
+}
+
+.hero-backdrop-wrapper .btn-accent-pill {
+  box-shadow: none;
+}
+
+.hero-backdrop-wrapper .btn-accent-pill:hover,
+.hero-backdrop-wrapper .btn-accent-pill:focus-visible {
+  box-shadow: none;
+}
+
+#how-it-works > .container-fluid > .text-center > p {
+  max-width: 65ch;
 }
 
 .hero-backdrop-content {
@@ -1465,7 +1510,7 @@
   opacity: 0;
   pointer-events: none;
   z-index: 5;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
 }
 
 .map-step-card {
@@ -1763,9 +1808,7 @@
    11. KEY METRICS SECTION (Cycling counters with ambient arc)
    -------------------------------------------------------------------------- */
 .metrics-section {
-  background: radial-gradient(circle at 80% 20%, rgba(46, 204, 94, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 10% 90%, rgba(221, 243, 226, 0.08) 0%, transparent 60%),
-              var(--ink);
+  background: var(--ink);
   color: var(--white);
   border-radius: var(--radius-widget);
   padding: 5rem 3.5rem;
@@ -1860,7 +1903,7 @@
   filter: grayscale(0%);
   opacity: 1;
   border-color: var(--ink);
-  box-shadow: 0 20px 50px rgba(22, 22, 22, 0.12);
+  box-shadow: none;
 }
 
 /* Carousel Control Arrows */
@@ -1948,6 +1991,12 @@
   border-radius: var(--radius-pill);
 }
 
+.featured-card-apply-overlay .btn-accent-pill,
+.featured-card-apply-overlay .btn-accent-pill:hover,
+.featured-card-apply-overlay .btn-accent-pill:focus-visible {
+  box-shadow: none;
+}
+
 .featured-card-apply-overlay {
   position: absolute;
   bottom: 14px;
@@ -1974,7 +2023,6 @@
   height: 100%;
   background-color: var(--accent);
   border-radius: var(--radius-pill);
-  transition: width 0.6s ease;
 }
 
 /* --------------------------------------------------------------------------
@@ -2761,6 +2809,42 @@ a.chip-selectable.is-selected:hover {
   transform: translateY(-2px);
   border-color: var(--ink);
   box-shadow: 0 8px 24px rgba(22, 22, 22, 0.05);
+}
+
+.report-metric-link {
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem;
+  border-color: var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.report-metric-link:hover {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.report-metric-link:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.report-metric-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-top: .75rem;
+  padding-top: .7rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.report-metric-action i {
+  color: var(--accent);
 }
 
 .metric-val {

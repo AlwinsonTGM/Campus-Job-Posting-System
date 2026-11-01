@@ -6,11 +6,12 @@
  */
 require_once __DIR__ . '/../header.php';
 ?>
+<link rel="stylesheet" href="<?= $base_url ?>assets/css/features/ai-settings.css?v=<?= filemtime(__DIR__ . '/../../assets/css/features/ai-settings.css') ?>">
 
 <div class="site-wrapper d-flex flex-column min-vh-100 bg-light">
     <?php require_once __DIR__ . '/../navbar.php'; ?>
 
-    <main class="flex-grow-1 py-4">
+    <main class="flex-grow-1 py-4 ai-settings">
         <div class="container-paper">
             
             <!-- Breadcrumbs -->
@@ -18,7 +19,7 @@ require_once __DIR__ . '/../header.php';
                 <ol class="breadcrumb small">
                     <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
                     <li class="breadcrumb-item"><a href="users.php">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">NVIDIA AI &amp; Robot Settings</li>
+                    <li class="breadcrumb-item active" aria-current="page">AI &amp; Robot Settings</li>
                 </ol>
             </nav>
 
@@ -26,15 +27,15 @@ require_once __DIR__ . '/../header.php';
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 pb-3 border-bottom">
                 <div>
                     <h1 class="h3 fw-bold text-ink mb-1">
-                        <i class="bi bi-cpu-fill text-success me-2"></i>NVIDIA NIM &amp; 3D Robot Settings
+                        <i class="bi bi-cpu-fill text-success me-2"></i>AI &amp; Robot Settings
                     </h1>
                     <p class="text-muted-custom mb-0 small">
-                        Manage your NVIDIA account API key, configure all chat endpoints, rate limits, and test model responses live.
+                        Manage the assistant’s connection, models, and usage limits in one place.
                     </p>
                 </div>
                 <div>
                     <a href="../index.php" class="btn btn-outline-secondary btn-sm rounded-pill">
-                        <i class="bi bi-eye me-1"></i> View 3D Robot on Homepage
+                        <i class="bi bi-eye me-1"></i> View assistant
                     </a>
                 </div>
             </div>
@@ -48,37 +49,32 @@ require_once __DIR__ . '/../header.php';
 
             <!-- Status Banner -->
             <?php if ($is_configured): ?>
-                <div class="card border-success bg-success-subtle shadow-sm rounded-4 mb-4">
+                <div class="card ai-status ai-status--configured rounded-4 mb-4">
                     <div class="card-body d-flex align-items-center justify-content-between p-3 flex-wrap gap-2">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                            <div class="ai-status-icon rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                                 <i class="bi bi-check-circle-fill fs-5"></i>
                             </div>
                             <div>
-                                <h6 class="fw-bold mb-0 text-success-emphasis">NVIDIA NIM AI Gateway Configured &amp; Active</h6>
+                                <h6 class="fw-bold mb-0 text-ink">API key saved</h6>
                                 <small class="text-secondary">Key: <code><?= htmlspecialchars($masked_key) ?></code> • Primary: <strong><?= htmlspecialchars(get_model_display_name($current_model)) ?></strong> • Fallback: <strong><?= htmlspecialchars(get_model_display_name($current_fallback)) ?></strong></small>
                             </div>
                         </div>
-                        <span class="badge bg-success px-3 py-2 rounded-pill">Status: Online</span>
+                        <span class="badge ai-badge-accent px-3 py-2 rounded-pill">Configured</span>
                     </div>
                 </div>
             <?php else: ?>
-                <div class="card border-warning bg-warning-subtle shadow-sm rounded-4 mb-4">
+                <div class="card ai-status rounded-4 mb-4">
                     <div class="card-body p-3">
                         <div class="d-flex align-items-start gap-3">
-                            <div class="bg-warning text-dark rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
+                            <div class="ai-status-icon rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
                                 <i class="bi bi-key-fill fs-5"></i>
                             </div>
                             <div>
-                                <h6 class="fw-bold mb-1 text-warning-emphasis">Local Guided Mode Active (Awaiting NVIDIA API Key)</h6>
-                                <p class="small text-secondary mb-2">
-                                    The 3D robot on the homepage is currently operating in <strong>Local Guided Mode</strong> using verified campus advice. To enable real-time generative AI across all models:
+                                <h6 class="fw-bold mb-1 text-ink">Local guided mode</h6>
+                                <p class="small text-secondary mb-0">
+                                    The assistant is using local campus guidance. Add an API key below to enable responses from the current cloud integration.
                                 </p>
-                                <ol class="small text-secondary mb-2 ps-3">
-                                    <li>Log into your account at <a href="https://build.nvidia.com" target="_blank" class="fw-bold text-dark text-decoration-underline">build.nvidia.com <i class="bi bi-box-arrow-up-right"></i></a> (comes with 1,000 credits).</li>
-                                    <li>Click any model and tap <strong>"Get API Key"</strong>. Copy your key starting with <code>nvapi-...</code>.</li>
-                                    <li>Paste it below and click <strong>Save Configuration</strong>. All models unlock instantly with automated multi-tier failover!</li>
-                                </ol>
                             </div>
                         </div>
                     </div>
@@ -130,6 +126,8 @@ require_once __DIR__ . '/../header.php';
                 </div>
             <?php endif; ?>
 
+            <p class="ai-settings-compatibility"><i class="bi bi-info-circle" aria-hidden="true"></i> This installation uses a fixed API integration and model catalog. Connecting another provider may require changes to the integration.</p>
+
             <div class="row g-4">
                 <!-- Left Column: Core Configuration Form -->
                 <div class="col-12 col-lg-6">
@@ -148,13 +146,8 @@ require_once __DIR__ . '/../header.php';
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label for="nvidia_api_key" class="form-label fw-bold text-ink small mb-0">
-                                            NVIDIA API Key <?php if (!$is_configured): ?><span class="text-danger">*</span><?php endif; ?>
+                                            API key <?php if (!$is_configured): ?><span class="text-danger">*</span><?php endif; ?>
                                         </label>
-                                        <?php if ($is_configured): ?>
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle small py-1 px-2">
-                                                <i class="bi bi-shield-lock-fill me-1"></i>Active &amp; Masked
-                                            </span>
-                                        <?php endif; ?>
                                     </div>
 
                                     <?php if ($is_configured): ?>
@@ -176,16 +169,16 @@ require_once __DIR__ . '/../header.php';
                                                id="nvidia_api_key" 
                                                name="nvidia_api_key" 
                                                class="form-control font-monospace text-dark" 
-                                               placeholder="<?= $is_configured ? 'Enter new key to replace, or leave blank to keep current' : 'nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' ?>"
+                                               placeholder="<?= $is_configured ? 'Enter new key to replace, or leave blank to keep current' : 'Enter your API key' ?>"
                                                value="" 
                                                autocomplete="new-password" 
                                                spellcheck="false">
-                                        <button class="btn btn-outline-secondary" type="button" id="toggleKeyBtn" title="Show/Hide Input">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleKeyBtn" aria-label="Show API key" aria-pressed="false">
                                             <i class="bi bi-eye" id="toggleKeyIcon"></i>
                                         </button>
                                     </div>
                                     <div class="form-text small text-muted mt-1">
-                                        <i class="bi bi-shield-check text-success me-1"></i>Protected write-only mode: Stored in <code>.env</code>. The plain text key is never sent to the browser DOM or Inspect Element.
+                                        <i class="bi bi-shield-check text-success me-1"></i>Stored in the server environment. Leave blank to keep the current key.
                                     </div>
                                 </div>
 
@@ -255,7 +248,7 @@ require_once __DIR__ . '/../header.php';
                                 </div>
 
                                 <div class="d-grid mt-4">
-                                    <button type="submit" class="btn btn-success py-2 rounded-3 fw-bold">
+                                    <button type="submit" class="btn ai-btn-primary py-2 rounded-pill fw-bold">
                                         <i class="bi bi-shield-check me-1"></i> Save Configuration
                                     </button>
                                 </div>
@@ -269,20 +262,20 @@ require_once __DIR__ . '/../header.php';
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-header bg-white py-3 border-bottom">
                             <h5 class="card-title mb-0 fw-bold text-ink">
-                                <i class="bi bi-lightning-charge text-warning me-2"></i>Test Model Connectivity
+                                <i class="bi bi-lightning-charge text-accent me-2"></i>Test Model Connectivity
                             </h5>
                         </div>
                         <div class="card-body p-4 d-flex flex-column justify-content-between">
                             <div>
                                 <p class="text-secondary small mb-3">
-                                    Send a live test ping directly to NVIDIA's cloud inference microservices to verify your API credentials and latency for any chosen model:
+                                    Send a test message to check the saved credentials and selected model. Save any changes before testing.
                                 </p>
                                 <form method="POST" action="ai-settings.php" class="mb-3">
                                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                     <input type="hidden" name="action" value="test_connection">
 
                                     <div class="mb-3">
-                                        <label for="test_model" class="form-label fw-bold text-ink small">Select Model to Probe</label>
+                                        <label for="test_model" class="form-label fw-bold text-ink small">Model to test</label>
                                         <select name="test_model" id="test_model" class="form-select">
                                             <?php foreach ($models as $mid => $m): ?>
                                                 <option value="<?= htmlspecialchars($mid) ?>">
@@ -292,8 +285,8 @@ require_once __DIR__ . '/../header.php';
                                         </select>
                                     </div>
 
-                                    <button type="submit" class="btn btn-outline-primary w-100 py-2 rounded-3 fw-bold">
-                                        <i class="bi bi-send-fill me-1"></i> Run Live Probe Ping
+                                    <button type="submit" class="btn ai-btn-outline w-100 py-2 rounded-pill fw-bold">
+                                        <i class="bi bi-send-fill me-1"></i> Test connection
                                     </button>
                                 </form>
 
@@ -301,22 +294,22 @@ require_once __DIR__ . '/../header.php';
                                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                                     <input type="hidden" name="action" value="test_fallback">
 
-                                    <button type="submit" class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-semibold small">
-                                        <i class="bi bi-arrow-repeat me-1"></i> Test Primary-to-Fallback Cascade
+                                    <button type="submit" class="btn ai-btn-outline w-100 py-2 rounded-pill fw-semibold small">
+                                        <i class="bi bi-arrow-repeat me-1"></i> Test fallback
                                     </button>
                                     <div class="form-text small text-muted text-center mt-1">
-                                        Proves that an unresponsive primary smoothly routes to the secondary model before local fallback.
+                                        Attempts a short-timeout request to exercise the fallback path; results depend on the connection.
                                     </div>
                                 </form>
                             </div>
 
                             <div class="mt-4 p-3 bg-light rounded-3 border">
-                                <h6 class="small fw-bold text-ink mb-1"><i class="bi bi-shield-lock-fill text-success me-1"></i> Security Perimeters Active</h6>
+                                <h6 class="small fw-bold text-ink mb-1"><i class="bi bi-shield-lock-fill text-success me-1"></i> How the assistant responds</h6>
                                 <ul class="small text-secondary mb-0 ps-3">
-                                    <li>Direct browser access to <code>.env</code> blocked via Apache <code>403</code>.</li>
-                                    <li>Session sliding-window rate limiting active (<?= $current_rate_limit ?> req/min).</li>
+                                    <li>The API key is stored in the server environment.</li>
+                                    <li>Session rate limit (<?= $current_rate_limit ?> req/min).</li>
                                     <li>Tiered failover: Primary failover to <code><?= htmlspecialchars(get_model_display_name($current_fallback)) ?></code> before Local Guided Mode.</li>
-                                    <li>Input prompt cap strictly enforced at 800 characters.</li>
+                                    <li>If cloud models are unavailable, local guidance can respond.</li>
                                 </ul>
                             </div>
                         </div>
@@ -328,7 +321,7 @@ require_once __DIR__ . '/../header.php';
             <div class="card border-0 shadow-sm rounded-4 mt-4">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h5 class="card-title mb-0 fw-bold text-ink">
-                        <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>NVIDIA Chat Models Catalog
+                        <i class="bi bi-grid-3x3-gap-fill text-accent me-2"></i>Available models
                     </h5>
                     <span class="badge bg-secondary rounded-pill"><?= count($models) ?> Models Loaded</span>
                 </div>
@@ -354,7 +347,7 @@ require_once __DIR__ . '/../header.php';
                                         </td>
                                         <td><span class="badge bg-light text-dark border"><?= htmlspecialchars($m['provider']) ?></span></td>
                                         <td><?= htmlspecialchars(ucfirst($m['category'])) ?></td>
-                                        <td><span class="badge bg-<?= htmlspecialchars($m['badge_color']) ?>"><?= htmlspecialchars($m['badge']) ?></span></td>
+                                        <td><span class="badge ai-badge-neutral"><?= htmlspecialchars($m['badge']) ?></span></td>
                                         <td><?= (int)$m['max_tokens'] ?> tokens</td>
                                         <td class="text-secondary"><?= htmlspecialchars($m['description']) ?></td>
                                     </tr>
@@ -382,9 +375,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (keyInput.type === 'password') {
                 keyInput.type = 'text';
                 keyIcon.className = 'bi bi-eye-slash';
+                toggleBtn.setAttribute('aria-label', 'Hide API key');
+                toggleBtn.setAttribute('aria-pressed', 'true');
             } else {
                 keyInput.type = 'password';
                 keyIcon.className = 'bi bi-eye';
+                toggleBtn.setAttribute('aria-label', 'Show API key');
+                toggleBtn.setAttribute('aria-pressed', 'false');
             }
         });
     }

@@ -67,100 +67,100 @@ require_once __DIR__ . '/../header.php';
                 <?php endif; ?>
 
                 <!-- Executive Institutional Scorecard (Open Design Balanced Metric Ribbon) -->
-                <div class="row g-3 mb-4">
-                    <!-- 1. Total Users -->
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <div class="metric h-100 reveal-fade-rise">
-                            <div class="d-flex flex-column justify-content-between h-100 w-100">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="metric-lbl">Total Users</span>
-                                    <i class="bi bi-people-fill text-muted-custom fs-6"></i>
+                    <div class="row g-3 mb-4">
+                        <!-- 1. Total Users -->
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                            <a href="users.php" class="metric report-metric-link h-100">
+                                <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="metric-lbl">Total Users</span>
+                                        <i class="bi bi-people-fill text-muted-custom fs-6"></i>
+                                    </div>
+                                    <div class="my-1">
+                                        <span class="metric-val"><?= (int)$total_users ?></span>
+                                    </div>
+                                    <div class="metric-sub small text-muted-custom mt-auto">
+                                        <span class="fw-semibold text-ink"><?= (int)$total_students ?></span> Students &bull; <span class="fw-semibold text-ink"><?= (int)$total_employers ?></span> Partners
+                                    </div>
                                 </div>
-                                <div class="my-1">
-                                    <span class="metric-val"><?= (int)$total_users ?></span>
-                                </div>
-                                <div class="metric-sub small text-muted-custom mt-auto">
-                                    <span class="fw-semibold text-ink"><?= (int)$total_students ?></span> Students &bull; <span class="fw-semibold text-ink"><?= (int)$total_employers ?></span> Partners
-                                </div>
-                            </div>
+                            <span class="report-metric-action">View details <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
                         </div>
-                    </div>
 
-                    <!-- 2. Total Vacancies -->
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <div class="metric h-100 reveal-fade-rise">
-                            <div class="d-flex flex-column justify-content-between h-100 w-100">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="metric-lbl">Total Vacancies</span>
-                                    <i class="bi bi-briefcase-fill text-muted-custom fs-6"></i>
+                        <!-- 2. Total Vacancies -->
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                            <a href="report-details.php?metric=vacancies" class="metric report-metric-link h-100">
+                                <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="metric-lbl">Total Vacancies</span>
+                                        <i class="bi bi-briefcase-fill text-muted-custom fs-6"></i>
+                                    </div>
+                                    <div class="my-1">
+                                        <span class="metric-val"><?= (int)$total_jobs ?></span>
+                                    </div>
+                                    <div class="metric-sub small text-muted-custom mt-auto">
+                                        <span class="fw-semibold text-ink"><?= count($categories) ?></span> Job Categories
+                                    </div>
                                 </div>
-                                <div class="my-1">
-                                    <span class="metric-val"><?= (int)$total_jobs ?></span>
-                                </div>
-                                <div class="metric-sub small text-muted-custom mt-auto">
-                                    <span class="fw-semibold text-ink"><?= count($categories) ?></span> Job Categories
-                                </div>
-                            </div>
+                            <span class="report-metric-action">View details <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
                         </div>
-                    </div>
 
-                    <!-- 3. Applications Filed -->
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <div class="metric h-100 reveal-fade-rise">
-                            <div class="d-flex flex-column justify-content-between h-100 w-100">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="metric-lbl">Applications Filed</span>
-                                    <i class="bi bi-send-fill text-muted-custom fs-6"></i>
+                        <!-- 3. Applications Filed -->
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                            <a href="report-details.php?metric=applications" class="metric report-metric-link h-100">
+                                <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="metric-lbl">Applications Filed</span>
+                                        <i class="bi bi-send-fill text-muted-custom fs-6"></i>
+                                    </div>
+                                    <div class="my-1">
+                                        <span class="metric-val"><?= (int)$total_apps ?></span>
+                                    </div>
+                                    <div class="metric-sub small text-muted-custom mt-auto">
+                                        <?php $unique_applicants = count(array_unique(array_column($all_apps, 'student_id'))); ?>
+                                        <span class="fw-semibold text-ink"><?= $unique_applicants ?></span> Unique Applicants
+                                    </div>
                                 </div>
-                                <div class="my-1">
-                                    <span class="metric-val"><?= (int)$total_apps ?></span>
-                                </div>
-                                <div class="metric-sub small text-muted-custom mt-auto">
-                                    <?php $unique_applicants = count(array_unique(array_column($all_apps, 'student_id'))); ?>
-                                    <span class="fw-semibold text-ink"><?= $unique_applicants ?></span> Unique Applicants
-                                </div>
-                            </div>
+                            <span class="report-metric-action">View details <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
                         </div>
-                    </div>
 
-                    <!-- 4. Interviews Held -->
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <div class="metric h-100 reveal-fade-rise">
-                            <div class="d-flex flex-column justify-content-between h-100 w-100">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="metric-lbl">Interviews Scheduled</span>
-                                    <i class="bi bi-calendar-check-fill text-muted-custom fs-6"></i>
+                        <!-- 4. Interviews Held -->
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                            <a href="report-details.php?metric=interviews" class="metric report-metric-link h-100">
+                                <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="metric-lbl">Interviews Scheduled</span>
+                                        <i class="bi bi-calendar-check-fill text-muted-custom fs-6"></i>
+                                    </div>
+                                    <div class="my-1">
+                                        <span class="metric-val"><?= (int)$total_interviews ?></span>
+                                    </div>
+                                    <div class="metric-sub small text-muted-custom mt-auto">
+                                        <?php $interview_rate = $total_apps > 0 ? round(($total_interviews / $total_apps) * 100) : 0; ?>
+                                        <span class="fw-semibold text-ink"><?= $interview_rate ?>%</span> Candidate Interview Rate
+                                    </div>
                                 </div>
-                                <div class="my-1">
-                                    <span class="metric-val"><?= (int)$total_interviews ?></span>
-                                </div>
-                                <div class="metric-sub small text-muted-custom mt-auto">
-                                    <?php $interview_rate = $total_apps > 0 ? round(($total_interviews / $total_apps) * 100) : 0; ?>
-                                    <span class="fw-semibold text-ink"><?= $interview_rate ?>%</span> Candidate Interview Rate
-                                </div>
-                            </div>
+                            <span class="report-metric-action">View details <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
                         </div>
-                    </div>
 
-                    <!-- 5. Officially Hired -->
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl">
-                        <div class="metric h-100 reveal-fade-rise">
-                            <div class="d-flex flex-column justify-content-between h-100 w-100">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="metric-lbl">Officially Hired</span>
-                                    <i class="bi bi-person-check-fill text-muted-custom fs-6"></i>
+                        <!-- 5. Officially Hired -->
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl">
+                            <a href="report-details.php?metric=hired" class="metric report-metric-link h-100">
+                                <div class="d-flex flex-column justify-content-between h-100 w-100">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="metric-lbl">Officially Hired</span>
+                                        <i class="bi bi-person-check-fill text-muted-custom fs-6"></i>
+                                    </div>
+                                    <div class="my-1">
+                                        <span class="metric-val"><?= (int)$total_hired ?></span>
+                                    </div>
+                                    <div class="metric-sub small text-muted-custom mt-auto">
+                                        <?php $placement_rate = $total_apps > 0 ? round(($total_hired / $total_apps) * 100) : 0; ?>
+                                        <span class="fw-semibold text-ink"><?= $placement_rate ?>%</span> Placement Success Rate
+                                    </div>
                                 </div>
-                                <div class="my-1">
-                                    <span class="metric-val"><?= (int)$total_hired ?></span>
-                                </div>
-                                <div class="metric-sub small text-muted-custom mt-auto">
-                                    <?php $placement_rate = $total_apps > 0 ? round(($total_hired / $total_apps) * 100) : 0; ?>
-                                    <span class="fw-semibold text-ink"><?= $placement_rate ?>%</span> Placement Success Rate
-                                </div>
-                            </div>
+                            <span class="report-metric-action">View details <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
                         </div>
                     </div>
-                </div>
 
                 <!-- 2-Tier Visual Analytics Grid (Editorial Warm Layout) -->
                 <div class="row g-4 mb-5">

@@ -24,7 +24,7 @@ require_once __DIR__ . '/../header.php';
                     render_page_head(
                         '',
                         'Apply for ' . $job['title'],
-                        $job['department'] . ' • ' . $job['pay_rate'] . ' • ' . ($job['work_setup'] ?? 'On-Campus')
+                        ($job['organization_name'] ?? $job['department']) . ' • ' . $job['pay_rate'] . ' • ' . ($job['work_setup'] ?? 'On-Campus')
                     );
                     ?>
                 </div>

@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/auth-check.php';
 
 $page_title = 'Meet the Development Team & Project Mission';
 
-// 6 Developer Profiles Configuration
+// Development team profiles
 $team_members = [
     [
         'name' => 'Bustamante, Alwinson',
@@ -53,17 +53,6 @@ $team_members = [
         'image_dark' => 'assets/img/developers/LAYCO_dark.jpg',
         'bio' => 'Crafts the student dashboard, job browsing with live filters, job application modal, and application status tracker.',
         'tasks' => ['Student Dashboard', 'Job Filter & Details', 'My Applications Tracker']
-    ],
-    [
-        'name' => 'Salognon, Joeven',
-        'role' => 'Department & Hiring Workflow Engineer',
-        'student_id' => '2025-2-000269',
-        'section' => 'BSIS201',
-        'email' => 'jsalognon@kld.edu.ph',
-        'image' => 'assets/img/developers/SOLOGNON.jpg',
-        'image_dark' => 'assets/img/developers/SOLOGNON_dark.jpg',
-        'bio' => 'Builds the campus office portal, vacancy posting forms, candidate evaluation drawers, and interview scheduling triggers.',
-        'tasks' => ['Employer Dashboard', 'Create & Edit Job Forms', 'Applicant Review Suite']
     ],
     [
         'name' => 'Jurado, Marl Jordan',

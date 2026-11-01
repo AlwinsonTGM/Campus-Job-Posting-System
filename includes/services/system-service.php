@@ -172,13 +172,58 @@ function get_latest_career_updates(int $limit = 3, int|string|null $exclude_id =
     }
 }
 
+/** Limit newly edited article HTML to content that is safe to display publicly. */
+function sanitize_dispatch_content(string $html): string {
+    $html = trim($html);
+    if ($html === '') return '';
+    if (!preg_match('/<\/?[a-z][^>]*>/i', $html)) {
+        return nl2br(htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    }
+    $allowed = ['p', 'br', 'div', 'span', 'strong', 'b', 'em', 'i', 'u', 's', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td'];
+    $discard = ['script', 'style', 'iframe', 'object', 'embed', 'svg', 'math', 'form', 'input', 'button', 'textarea'];
+    $previous = libxml_use_internal_errors(true);
+    $doc = new DOMDocument('1.0', 'UTF-8');
+    $doc->loadHTML('<?xml encoding="utf-8" ?><div id="dispatch-root">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NONET);
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous);
+    $root = $doc->getElementById('dispatch-root');
+    if (!$root) return '';
+    $clean = function (DOMNode $node) use (&$clean, $allowed, $discard): void {
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if (!$child instanceof DOMElement) continue;
+            $tag = strtolower($child->tagName);
+            if (in_array($tag, $discard, true)) { $node->removeChild($child); continue; }
+            $clean($child);
+            if (!in_array($tag, $allowed, true)) {
+                while ($child->firstChild) $node->insertBefore($child->firstChild, $child);
+                $node->removeChild($child);
+                continue;
+            }
+            foreach (iterator_to_array($child->attributes) as $attr) {
+                $name = strtolower($attr->name);
+                $keep = ($name === 'class' && (bool)preg_match('/^[a-z0-9_ -]{1,256}$/i', $attr->value)) || ($tag === 'a' && $name === 'href') || ($tag === 'img' && in_array($name, ['src', 'alt'], true));
+                if ($keep && in_array($name, ['href', 'src'], true)) {
+                    $url = trim($attr->value);
+                    $keep = $url !== '' && !preg_match('/[\x00-\x20\\\\]/', $url) && !str_starts_with($url, '//') && (!preg_match('/^[a-z][a-z0-9+.-]*:/i', $url) || preg_match('/^https?:/i', $url));
+                }
+                if (!$keep) $child->removeAttributeNode($attr);
+            }
+        }
+    };
+    $clean($root);
+    $result = '';
+    foreach ($root->childNodes as $child) $result .= $doc->saveHTML($child);
+    return trim($result);
+}
+
 function add_career_update(array $data): ?array {
     try {
         $pdo = get_db_connection();
         $title = trim($data['title'] ?? 'Campus Career Dispatch');
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title), '-'));
         
-        $content = trim($data['content'] ?? '');
+        $content = sanitize_dispatch_content((string)($data['content'] ?? ''));
+        if (trim(strip_tags($content)) === '') return null;
         $word_count = str_word_count(strip_tags($content));
         $read_time = max(1, ceil($word_count / 200)) . ' min read';
 
@@ -252,8 +297,11 @@ function update_career_update(int|string $id, array $data): bool {
         if (isset($data['content'])) {
             $updates[] = "`content` = :content";
             $updates[] = "`read_time` = :read_time";
-            $params[':content'] = trim($data['content']);
-            $word_count = str_word_count(strip_tags($data['content']));
+            $content = trim($data['content']);
+            if ($content !== trim((string)($existing['content'] ?? ''))) $content = sanitize_dispatch_content($content);
+            if (trim(strip_tags($content)) === '') return false;
+            $params[':content'] = $content;
+            $word_count = str_word_count(strip_tags($content));
             $params[':read_time'] = max(1, ceil($word_count / 200)) . ' min read';
         }
         if (isset($data['image']) && !empty($data['image'])) {
@@ -316,7 +364,18 @@ function get_devblogs(): array {
         $stmt = $pdo->query("SELECT * FROM `devblogs` ORDER BY CAST(`sprint_number` AS UNSIGNED) DESC");
         $rows = $stmt->fetchAll();
         if (!empty($rows)) {
-            return array_map('hydrate_devblog', $rows);
+            $blogs = array_map('hydrate_devblog', $rows);
+            // Include the final release entry when an existing database predates it.
+            $release = json_decode((string) @file_get_contents(DATA_DIR . '/devblogs.json'), true);
+            if (is_array($release)) {
+                foreach ($release as $entry) {
+                    if (($entry['id'] ?? '') === 'day-30' && !in_array('day-30', array_column($blogs, 'id'), true)) {
+                        array_unshift($blogs, $entry);
+                        break;
+                    }
+                }
+            }
+            return $blogs;
         }
     } catch (Exception $e) {
         error_log("get_devblogs error: " . $e->getMessage());

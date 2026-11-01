@@ -17,10 +17,12 @@ if (!$job || (!empty($job['is_archived']) && !in_array($user['role'] ?? '', ['ad
 }
 
 $eligibility = ApplicationService::checkEligibility($job, $user);
-$already_applied = ($eligibility->reason() === 'already_applied');
+$existing_application = (($user['role'] ?? '') === 'student' && !empty($user['id']))
+    ? ApplicationService::getStudentApplication((int)$job['id'], (int)$user['id']) : null;
+$already_applied = $existing_application && strtolower($existing_application['status'] ?? '') !== 'withdrawn';
 $already_employed = ($eligibility->reason() === 'already_employed');
 $active_placement = $already_employed ? $eligibility->existingApplication() : null;
-$app_status = $eligibility->applicationStatus() ?? 'pending';
+$app_status = $existing_application['status'] ?? $eligibility->applicationStatus() ?? 'pending';
 
 // Student schedule compatibility overview (read-only, never gates the Apply CTA).
 // Guests see a neutral signed-out state; closed/expired/filled jobs hide the panel in the view.

@@ -968,7 +968,7 @@
                     }
 
                     // Dynamically display which model answered the question
-                    let modelDisplayName = data.model_name || data.model || 'NVIDIA NIM';
+                    let modelDisplayName = data.model_name || data.model || 'Campus AI';
                     if (data.is_model_fallback) {
                         modelDisplayName += ' (Fallback)';
                         if (data.fallback_notice) {

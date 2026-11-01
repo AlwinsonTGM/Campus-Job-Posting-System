@@ -1,0 +1,193 @@
+.ai-settings .container-paper {
+  max-width: 1280px;
+}
+
+.ai-settings h1 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  letter-spacing: -.03em;
+}
+
+.ai-settings h1 .bi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-right: .8rem !important;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--ink) !important;
+  font-size: 1.15rem;
+  vertical-align: .15em;
+}
+
+.ai-settings .card {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-card) !important;
+  background: var(--white);
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+.ai-settings .card-header {
+  padding: 1.25rem 1.5rem !important;
+  background: transparent !important;
+  border-color: var(--line) !important;
+}
+
+.ai-settings .card-body {
+  padding: 1.5rem !important;
+}
+
+.ai-settings .card-title {
+  font-size: 1.05rem;
+}
+
+.ai-settings .form-control,
+.ai-settings .form-select {
+  min-height: 46px;
+  border-color: var(--line);
+  border-radius: var(--radius-input);
+}
+
+.ai-settings .input-group .form-control {
+  border-radius: var(--radius-input) 0 0 var(--radius-input);
+}
+
+.ai-settings .input-group .btn {
+  border-radius: 0 var(--radius-input) var(--radius-input) 0;
+}
+
+
+.ai-settings .ai-status {
+  background: var(--cream);
+}
+
+.ai-settings .ai-status--configured {
+  background: var(--accent-soft);
+}
+
+.ai-settings .ai-status-icon {
+  background: var(--accent);
+  color: var(--bs-pagination-active-color);
+}
+
+.ai-settings .ai-badge-accent,
+.ai-settings .ai-badge-neutral {
+  background: var(--cream);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.ai-settings .ai-badge-accent {
+  background: var(--accent-soft);
+}
+
+.ai-settings .ai-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+}
+
+.ai-settings .ai-btn-primary:hover,
+.ai-settings .ai-btn-primary:active {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #fff;
+}
+
+.ai-settings .ai-btn-outline {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.ai-settings .ai-btn-outline:hover,
+.ai-settings .ai-btn-outline:active {
+  background: var(--cream);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.ai-settings .text-secondary,
+.ai-settings .text-muted {
+  color: var(--muted) !important;
+}
+
+.ai-settings code,
+.ai-settings .text-dark {
+  color: var(--ink) !important;
+}
+
+.ai-settings .table {
+  --bs-table-bg: var(--white);
+  --bs-table-color: var(--ink);
+  --bs-table-border-color: var(--line);
+  --bs-table-hover-bg: var(--cream);
+  --bs-table-hover-color: var(--ink);
+}
+
+.ai-settings .table-light {
+  --bs-table-bg: var(--cream);
+  --bs-table-color: var(--ink);
+}
+
+.ai-settings .card-body.p-0 {
+  padding: 0 !important;
+}
+
+.ai-settings .btn:focus-visible,
+.ai-settings .form-control:focus-visible,
+.ai-settings .form-select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ai-settings-compatibility {
+  display: flex;
+  align-items: baseline;
+  gap: .65rem;
+  max-width: 75ch;
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+.ai-settings-compatibility .bi {
+  color: var(--ink);
+}
+
+.ai-settings .table td,
+.ai-settings .table th {
+  padding-top: .9rem;
+  padding-bottom: .9rem;
+  vertical-align: middle;
+}
+
+.ai-settings .table code {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+  .ai-settings .card-body {
+    padding: 1.1rem !important;
+  }
+
+  .ai-settings .card {
+    border-radius: 14px !important;
+  }
+
+  .ai-settings h1 .bi {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+.ai-settings .breadcrumb a {
+  color: var(--ink);
+  text-underline-offset: .18em;
+}
+
+.ai-settings .breadcrumb a:hover {
+  color: var(--accent-hover);
+}

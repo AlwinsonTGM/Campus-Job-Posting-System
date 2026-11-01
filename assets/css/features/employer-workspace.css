@@ -211,3 +211,60 @@
 @media (prefers-reduced-motion: reduce) {
   .employer-button { transition: none; }
 }
+
+/* Readable vacancy information and consistent controls across account types. */
+.job-openings { color: var(--ink); font-size: 0.95rem; }
+.job-openings .bi { color: var(--accent); }
+.small, small { font-size: max(.875em, 13px); }
+.job-summary > div:not(:last-child) { flex-direction: column; align-items: flex-start !important; gap: 4px; }
+.matrix-table th { font-size: 13px; letter-spacing: .04em; }
+.matrix-table td:first-child { font-size: 13px; }
+.description-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+[data-theme="dark"] .employer-accreditation-record .bg-white { background-color: var(--surface) !important; }
+button.btn-pill:disabled { opacity: .6; cursor: not-allowed; }
+
+@media (min-width: 992px) {
+  .paper-navbar > .container-fluid,
+  .paper-navbar.employer-navbar > .container-fluid,
+  .paper-navbar.admin-navbar > .container-fluid { grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: clamp(16px, 2vw, 32px); }
+  .paper-navbar .navbar-nav { justify-self: start; }
+}
+.employer-workspace .page-head-lead,
+.employer-panel-heading p,
+.employer-metric p,
+.employer-table small,
+.employer-table .employer-date,
+.employer-status,
+.employer-placement,
+.employer-table-foot,
+.employer-recent-item p,
+.employer-filter-field label,
+.employer-more-filters summary { font-size: 14px; }
+.employer-table th,
+.employer-table td::before { font-size: 12px; }
+@media (max-width: 767.98px) {
+  .form-control, .form-select { font-size: 16px; }
+}
+
+.dispatch-editor-toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.dispatch-editor-toolbar button { min-height: 38px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 14px; }
+.dispatch-editor-toolbar button:hover { border-color: var(--ink); }
+.dispatch-editor-area { min-height: 180px; max-height: min(45vh, 480px); overflow-y: auto; overflow-wrap: anywhere; line-height: 1.6; }
+.dispatch-editor-area:empty::before { content: attr(data-placeholder); color: var(--muted); pointer-events: none; }
+.dispatch-editor-area:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dispatch-editor-error { color: var(--st-declined); font-size: 14px; margin-top: 6px; }
+
+/* Use the original green accent with light labels in light mode. */
+[data-theme="light"] :is(.btn-pill:not(.btn-pill-outline):not([style*="background"]), .btn-paper-primary, .btn-accent, .btn-accent-pill, .btn-paper-nav-post, .btn-primary, .employer-button--primary, #btn-publish-job) {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+[data-theme="light"] :is(.btn-pill:not(.btn-pill-outline):not([style*="background"]), .btn-paper-primary, .btn-accent, .btn-accent-pill, .btn-paper-nav-post, .btn-primary, .employer-button--primary, #btn-publish-job):is(:hover, :focus-visible, :active) {
+  background-color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: #fff !important;
+}
+[data-theme="light"] :is(.btn-pill:not(.btn-pill-outline):not([style*="background"]), .btn-paper-primary, .btn-accent, .btn-accent-pill, .btn-paper-nav-post, .btn-primary, .employer-button--primary, #btn-publish-job) :is(i, .text-ink) {
+  color: inherit !important;
+}

@@ -848,13 +848,36 @@ function auto_withdraw_other_applications(
     }
 }
 
+function normalize_application_stage(string $status): string {
+    $status = strtolower(trim($status));
+    return match ($status) {
+        'pending review' => 'pending',
+        'under review', 'under evaluation' => 'under_review',
+        'interview scheduled' => 'interview_scheduled',
+        'accepted / hired', 'hired' => 'accepted',
+        'declined / position filled', 'declined / filled', 'rejected' => 'declined',
+        default => $status,
+    };
+}
+
+function can_advance_application_stage(string $current, string $next): bool {
+    $current = normalize_application_stage($current);
+    $next = normalize_application_stage($next);
+    $stages = ['pending' => 0, 'under_review' => 1, 'interview_scheduled' => 2, 'accepted' => 3, 'declined' => 3];
+    if (!isset($stages[$current], $stages[$next])) return false;
+    if (in_array($current, ['accepted', 'declined'], true)) return $current === $next;
+    return $stages[$next] >= $stages[$current];
+}
+
 function update_application_status(int|string $id, string $status, string $notes = '', array $interview_data = []): bool {
     try {
         $pdo = get_db_connection();
         $target_app = get_application_by_id($id);
         if (!$target_app) return false;
 
-        $old_status = $target_app['status'] ?? 'pending';
+        $old_status = normalize_application_stage($target_app['status'] ?? 'pending');
+        $status = normalize_application_stage($status);
+        if (!can_advance_application_stage($old_status, $status)) return false;
         $job_id = (int)($target_app['job_id'] ?? 0);
 
         $badge_map = [
@@ -890,6 +913,14 @@ function update_application_status(int|string $id, string $status, string $notes
         }
 
         $pdo->beginTransaction();
+
+        $stage_check = $pdo->prepare('SELECT `status` FROM `applications` WHERE `id` = :id FOR UPDATE');
+        $stage_check->execute([':id' => (int)$id]);
+        $locked_status = $stage_check->fetchColumn();
+        if ($locked_status === false || normalize_application_stage((string)$locked_status) !== $old_status || !can_advance_application_stage((string)$locked_status, $status)) {
+            $pdo->rollBack();
+            return false;
+        }
 
         if ($status === 'accepted' && $old_status !== 'accepted' && $job_id > 0) {
             $stmt_check = $pdo->prepare("SELECT `slots_filled`, `slots_total`, `vacancies` FROM `jobs` WHERE `id` = :job_id FOR UPDATE");

@@ -28,7 +28,7 @@ if (!defined('SITE_NAME')) {
                     })();
                     </script>
                     <noscript><img class="brand-logo-img" src="<?= $base_url ?>assets/img/logo-d4-light-64.png?v=d4" width="34" height="34" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" alt="Campus Hire logo"></noscript>
-                    <h5 class="fw-extrabold text-ink mb-0 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></h5>
+                    <p class="h5 fw-extrabold text-ink mb-0 tracking-tight"><?= htmlspecialchars(SITE_NAME) ?></p>
                 </div>
                 <p class="text-muted-custom small mb-4 pe-lg-3">
                     Dedicated campus employment network empowering undergraduate students to find flexible on-campus assistantships while supporting university departments and academic laboratories.
@@ -47,7 +47,7 @@ if (!defined('SITE_NAME')) {
 
             <!-- Quick Links -->
             <div class="col-lg-2 col-md-3 col-6">
-                <h6 class="fw-bold text-ink mb-3 small text-uppercase">Quick Links</h6>
+                <h2 class="h6 fw-bold text-ink mb-3 small text-uppercase">Quick Links</h2>
                 <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
                     <li><a href="<?= $base_url ?>student/jobs.php">Find Jobs</a></li>
                     <li><a href="<?= $base_url ?>employer/dashboard.php">For Employers</a></li>
@@ -61,7 +61,7 @@ if (!defined('SITE_NAME')) {
 
             <!-- Legal & Governance -->
             <div class="col-lg-3 col-md-3 col-6">
-                <h6 class="fw-bold text-ink mb-3 small text-uppercase">Legal & Guidelines</h6>
+                <h2 class="h6 fw-bold text-ink mb-3 small text-uppercase">Legal & Guidelines</h2>
                 <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
                     <li><a href="<?= $base_url ?>privacy.php">Data Privacy Policy (RA 10173)</a></li>
                     <li><a href="<?= $base_url ?>terms.php">Terms of Service</a></li>
@@ -72,7 +72,7 @@ if (!defined('SITE_NAME')) {
 
             <!-- Support & Office -->
             <div class="col-lg-3 col-md-6">
-                <h6 class="fw-bold text-ink mb-3 small text-uppercase">Campus Career Center</h6>
+                <h2 class="h6 fw-bold text-ink mb-3 small text-uppercase">Campus Career Center</h2>
                 <p class="text-muted-custom small mb-2">
                     <i class="bi bi-geo-alt me-2 text-accent"></i> Student Affairs & Career Services Office<br>
                     Main Academic Building, Room 201

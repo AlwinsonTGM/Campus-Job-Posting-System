@@ -53,7 +53,7 @@ require_once __DIR__ . '/../header.php';
                     </div>
                 </div>
 
-                <!-- 6 Developer Cards Grid -->
+                <!-- Development team -->
                 <div class="row g-4 mb-5" id="developers">
                     <?php foreach ($team_members as $dev): ?>
                         <div class="col-md-6 col-lg-4">

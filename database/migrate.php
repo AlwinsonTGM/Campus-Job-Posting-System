@@ -45,6 +45,8 @@ function execute_migration_and_seed($verbose = false, $source_dir = null, $run_d
 
             $log_fn("Executing schema.sql DDL statements...");
             $sql = file_get_contents($schema_file);
+            // Setup must never drop an existing database's tables.
+            $sql = preg_replace('/DROP TABLE IF EXISTS `[^`]+`;\s*/i', '', $sql);
             $statements = array_filter(array_map('trim', explode(';', $sql)));
             $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
             foreach ($statements as $stmt) {
@@ -488,7 +490,9 @@ if (realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'] ?? '')) {
     }
 
     $truncate = in_array('--truncate', $argv ?? []) || in_array('--clean', $argv ?? []) || in_array('-c', $argv ?? []);
-    execute_migration_and_seed(true, null, true, $truncate);
+    $source = in_array('--demo', $argv ?? [], true) ? dirname(__DIR__) . '/data/seeds/demo' : null;
+    $success = execute_migration_and_seed(true, $source, true, $truncate);
+    if ($is_cli && !$success) { exit(1); }
 
     if (!$is_cli) {
         echo '      </div>

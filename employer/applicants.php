@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
     if ($res) {
         set_flash('success', 'Applicant status has been updated successfully!');
     } else {
-        set_flash('danger', 'Unable to update applicant status. Please ensure the interview date is today or in the future.');
+        set_flash('danger', 'Unable to update the applicant. Stages must move forward, interview dates cannot be in the past, and a position must have an available slot.');
     }
     header('Location: applicants.php' . ($job_filter ? "?job_id={$job_filter}" : ''));
     exit;

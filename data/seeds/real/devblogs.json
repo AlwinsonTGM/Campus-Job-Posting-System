@@ -1,5 +1,37 @@
 [
     {
+        "id": "day-30",
+        "sprint_number": "30",
+        "sprint_badge": "FINAL ENTRY · A GOODBYE",
+        "title": "One Last Entry: Thank You for Being Part of Campus Hire",
+        "date": "November 2, 2026",
+        "read_time": "3 min read",
+        "author_name": "Alwinson Bustamante",
+        "author_role": "Lead Developer & System Architect",
+        "author_image": "assets/img/developers/BUSTAMANTE.jpg",
+        "summary_excerpt": "Our website has been defended, and our development journey has come to an end. Thank you to everyone who helped bring Campus Hire to life.",
+        "tags": [
+            "Final Defense",
+            "Thank You",
+            "Open Source",
+            "Goodbye"
+        ],
+        "cover_image": "assets/img/devblog/day-29.jpg",
+        "full_story": "<p class='lead text-ink fw-semibold'>Campus Hire has been defended, and this is the final entry in our development journal.</p><p>What began as a class project grew into a place where students could discover opportunities, employers could review applications, and administrators could support the process. Building it taught us far more than code: we learned to listen, solve problems together, and keep improving through every challenge.</p><h5 class='fw-bold text-ink mt-4 mb-2'>Thank you</h5><p>Thank you to Nico Baco, Julius Robert Cruzpe, Andrei Von Breydan Layco, and Marl Jordan Jurado for being part of this journey. Thank you as well to our professors, classmates, and everyone who gave their time, feedback, and encouragement along the way.</p><h5 class='fw-bold text-ink mt-4 mb-2'>The project lives on</h5><p>Active development has ended, but the source code is open for others to explore, learn from, and build upon. We hope it helps someone start a project of their own.</p><p>From all of us, thank you for following along. Goodbye, and see you in the next chapter.</p>",
+        "key_takeaways": [
+            "Campus Hire has completed its defense.",
+            "This is the final development journal entry.",
+            "The source code is available for others to learn from and build upon.",
+            "Thank you to the team, professors, classmates, and supporters."
+        ],
+        "tech_stack": [
+            "PHP",
+            "MySQL / MariaDB",
+            "Bootstrap",
+            "JavaScript"
+        ]
+    },
+    {
         "id": "day-29",
         "sprint_number": "29",
         "sprint_badge": "DAY 29 · THE EVE OF DEFENSE: GROUND-UP AUTH MODULARIZATION, UNIFIED WORKSPACE ARCHITECTURE, ZERO-JUMP FILTER PAGINATION & CRITICAL PRE-DEFENSE HARDENING",

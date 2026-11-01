@@ -9,7 +9,7 @@ require_once __DIR__ . '/../header.php';
             <div class="container-paper">
                 <?php
                 $head_actions = '<button type="button" class="employer-button employer-button--primary" data-bs-toggle="modal" data-bs-target="#newEmployerDispatchModal"><i class="bi bi-plus-lg" aria-hidden="true"></i> Post Announcement</button><a href="../updates.php" class="employer-button" target="_blank" rel="noopener"><i class="bi bi-eye" aria-hidden="true"></i> View Public Hub</a>';
-                render_page_head('', 'Department announcements', $org_name . ' • Publish hiring notices and office bulletins.', $head_actions);
+                render_page_head('', 'Announcements', $org_name . ' • Publish hiring notices and office bulletins.', $head_actions);
                 ?>
                 <?php if ($error): ?>
                     <div class="alert-paper alert-paper--danger mb-4" role="alert"><i class="bi bi-exclamation-octagon" aria-hidden="true"></i> <?= htmlspecialchars($error) ?></div>
@@ -99,10 +99,7 @@ require_once __DIR__ . '/../header.php';
                         <textarea name="summary" class="form-control rounded-3" rows="2" placeholder="Brief preview for the campus updates feed..." required></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-ink">Full Article Content (HTML allowed) *</label>
-                        <textarea name="content" class="form-control rounded-3" rows="6" placeholder="<p>Full announcement details, shift qualifications, and application instructions...</p>" required></textarea>
-                    </div>
+                    <?php $dispatch_editor_id = 'new_emp_content'; require __DIR__ . '/dispatch-editor.php'; ?>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-ink" for="dispatch-photo">Upload Featured Photo</label>
@@ -169,10 +166,7 @@ require_once __DIR__ . '/../header.php';
                         <textarea name="summary" id="edit_emp_summary" class="form-control rounded-3" rows="2" required></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-ink">Full Article Content (HTML allowed) *</label>
-                        <textarea name="content" id="edit_emp_content" class="form-control rounded-3" rows="6" required></textarea>
-                    </div>
+                    <?php $dispatch_editor_id = 'edit_emp_content'; require __DIR__ . '/dispatch-editor.php'; ?>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-ink" for="edit-dispatch-photo">Replace Featured Photo</label>
@@ -239,4 +233,5 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php endif; ?>
 });
 </script>
+<script src="../assets/js/dispatch-editor.js?v=<?= filemtime(__DIR__ . '/../../assets/js/dispatch-editor.js') ?>"></script>
 

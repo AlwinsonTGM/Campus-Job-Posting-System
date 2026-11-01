@@ -219,7 +219,12 @@ require_once __DIR__ . '/../header.php';
                                     <!-- Description -->
                                     <div class="mb-4">
                                         <label class="form-label" for="job-desc">Detailed Job Description <span class="text-danger">*</span></label>
+                                        <div class="description-toolbar" role="group" aria-label="Description formatting">
+                                            <button type="button" class="btn-pill-outline btn-pill-sm" data-format="bold" data-target="job-desc"><strong>Bold</strong></button>
+                                            <button type="button" class="btn-pill-outline btn-pill-sm" data-format="bullet" data-target="job-desc"><i class="bi bi-list-ul" aria-hidden="true"></i> Bullet</button>
+                                        </div>
                                         <textarea name="description" id="job-desc" rows="4" class="form-control" placeholder="Describe the overall purpose, daily duties, schedule flexibility, and office working environment..." required><?= htmlspecialchars($form['description'] ?? '') ?></textarea>
+                                        <div class="form-text">Select text to make it bold, or add bullets. HTML is displayed as text.</div>
                                     </div>
 
                                     <!-- Key Duties & Responsibilities (Addable Input Bar) -->
@@ -926,4 +931,5 @@ document.addEventListener('DOMContentLoaded', function() {
     goToStep(initialStep);
 });
 </script>
+<script src="../assets/js/job-description-editor.js"></script>
 

@@ -17,7 +17,7 @@ require_once __DIR__ . '/../header.php';
                 <!-- Page Head -->
                 <?php
                 $head_actions = '<a href="create-job.php" class="employer-button employer-button--primary"><i class="bi bi-plus-lg" aria-hidden="true"></i> Post Vacancy</a>';
-                render_page_head('', 'Student applicants', 'Review profiles, compare availability, and coordinate your next hiring decision.', $head_actions);
+                render_page_head('', 'Applicants', 'Review profiles, compare availability, and coordinate your next hiring decision.', $head_actions);
                 ?>
 
                 <div class="employer-panel">

@@ -721,13 +721,13 @@
    19. HERO SECTION
    -------------------------------------------------------------------------- */
 [data-theme="dark"] .hero-robot-canvas-container {
-  background: radial-gradient(circle at 50% 50%, rgba(52, 216, 101, 0.12) 0%, rgba(52, 216, 101, 0.04) 50%, transparent 72%);
+  background: transparent;
 }
 [data-theme="dark"] .hero-robot-hint-pill {
   background: rgba(24, 24, 27, 0.92);
   border-color: rgba(52, 211, 153, 0.35);
   color: #a7f3d0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 [data-theme="dark"] .hero-robot-hint-pill:hover {
   background: #18181b;
@@ -1333,9 +1333,7 @@
    Issue 3: Key Metrics Section ("Together, We're Building Careers")
    -------------------------------------------------------------------------- */
 [data-theme="dark"] .metrics-section {
-  background: radial-gradient(circle at 80% 20%, rgba(52, 216, 101, 0.12) 0%, transparent 50%),
-              radial-gradient(circle at 10% 90%, rgba(52, 216, 101, 0.05) 0%, transparent 60%),
-              #121215 !important;
+  background: #121215 !important;
   color: #E8E6E3 !important;
   border: 1px solid var(--line) !important;
 }
@@ -1499,7 +1497,7 @@
 }
 
 [data-theme="dark"] .campus-ai-fullscreen-modal .fullscreen-robot-stage {
-  background: radial-gradient(circle at 50% 50%, rgba(52, 216, 101, 0.12) 0%, rgba(52, 216, 101, 0.03) 55%, transparent 75%) !important;
+  background: var(--surface) !important;
 }
 
 [data-theme="dark"] .campus-ai-fullscreen-modal .fs-robot-hint {

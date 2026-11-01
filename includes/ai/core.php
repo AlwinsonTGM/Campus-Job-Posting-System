@@ -274,7 +274,7 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
     $user_role = $options['user_role'] ?? 'guest';
 
     if (empty($api_key) || str_contains($api_key, 'YOUR_API_KEY') || str_contains($api_key, 'YOUR_KEY')) {
-        $local_reply = get_curated_local_reply($messages, $model, 'Please add your free NVIDIA API Key in .env or Admin AI Settings to enable live AI reasoning!', $user_role);
+        $local_reply = get_curated_local_reply($messages, $model, 'Add an API key in AI & Robot Settings to enable cloud responses.', $user_role);
         $local_reply['is_model_fallback'] = false;
         $local_reply['is_local_fallback'] = true;
         return $local_reply;
@@ -375,7 +375,7 @@ function call_nvidia_nim_chat(array $messages, ?string $model = null, array $opt
         }
     }
 
-    $local_reply = get_curated_local_reply($messages, $target_model, "NVIDIA cloud status: $last_error. Displaying verified campus guidance.", $user_role);
+    $local_reply = get_curated_local_reply($messages, $target_model, "AI service status: $last_error. Displaying verified campus guidance.", $user_role);
     $local_reply['original_model'] = $target_model;
     $local_reply['is_fallback'] = true;
     $local_reply['is_model_fallback'] = false;

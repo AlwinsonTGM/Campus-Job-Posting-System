@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($res) {
         set_flash('success', "Candidate status for {$target_app['student_name']} updated to " . ucfirst(str_replace('_', ' ', $new_status)) . ".");
     } else {
-        set_flash('danger', "Unable to update candidate status. Please ensure the interview schedule date is today or in the future.");
+        set_flash('danger', "Unable to update the candidate. Stages must move forward, interview dates cannot be in the past, and a position must have an available slot.");
     }
     header("Location: review-app.php?id={$target_app['id']}");
     exit;

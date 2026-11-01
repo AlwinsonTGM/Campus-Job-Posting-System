@@ -307,7 +307,7 @@ require_once __DIR__ . '/../header.php';
 
                                 <?php if (($user['role'] ?? '') === 'employer'): ?>
                                     <!-- Company & Accreditation Identity Lock Section -->
-                                    <div class="p-3 bg-cream rounded-4 border border-line mb-4">
+                                    <div class="p-3 bg-cream rounded-4 border border-line mb-4 employer-accreditation-record">
                                         <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                                             <div class="d-flex align-items-center gap-2">
                                                 <i class="bi bi-shield-lock-fill text-accent fs-5"></i>

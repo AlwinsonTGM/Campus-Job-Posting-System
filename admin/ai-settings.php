@@ -11,7 +11,7 @@ require_once __DIR__ . '/../includes/ai-config.php';
 
 require_auth(['admin']);
 $user = get_logged_user();
-$page_title = 'NVIDIA NIM AI & 3D Robot Configuration';
+$page_title = 'AI & Robot Settings';
 
 $error = null;
 $test_result = null;
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             save_ai_env('AI_RATE_LIMIT_PER_MINUTE', (string)$rate_limit);
             save_ai_env('AI_TEMPERATURE', (string)$temperature);
 
-            set_flash('success', 'NVIDIA NIM AI configuration saved successfully to secure environment!');
+            set_flash('success', 'AI settings saved successfully.');
             header('Location: ai-settings.php');
             exit;
         } elseif ($action === 'test_connection') {

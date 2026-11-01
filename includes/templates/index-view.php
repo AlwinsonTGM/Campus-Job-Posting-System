@@ -115,7 +115,7 @@ require_once __DIR__ . '/../header.php';
                                         <div class="speech-bubble-footer d-flex align-items-center justify-content-between flex-wrap gap-2">
                                             <div class="d-flex align-items-center gap-1 text-muted-custom" style="font-size: 0.68rem;">
                                                 <i class="bi bi-cpu text-accent"></i>
-                                                <span>NVIDIA AI &bull; <a href="privacy.php#sec-4" target="_blank" class="text-ink text-decoration-underline">Privacy Notice</a></span>
+                                                <span>Campus AI &bull; <a href="privacy.php#sec-4" target="_blank" class="text-ink text-decoration-underline">Privacy Notice</a></span>
                                             </div>
                                             <div class="speech-footer-actions d-flex align-items-center gap-2 ms-auto">
                                                 <button type="button" id="speech-fullscreen-btn" class="speech-fullscreen-btn" title="Open Fullscreen Studio" aria-label="Expand Fullscreen Studio">
@@ -588,7 +588,6 @@ require_once __DIR__ . '/../header.php';
 
                         <div class="row align-items-center g-4 position-relative z-2">
                             <div class="col-lg-4">
-                                <span class="eyebrow-badge text-white-50">Our Impact</span>
                                 <h2 class="h1 fw-extrabold text-white mb-2">Together, We're Building Careers</h2>
                                 <p class="text-white-50 small mb-0">Live data synchronized from active university
                                     department requisitions.</p>
@@ -849,15 +848,6 @@ require_once __DIR__ . '/../header.php';
                                  data-dark-src="<?= $base_url ?>assets/img/developers/LAYCO_dark.jpg"
                                  alt="Andrei Von Breydan Layco" class="dev-photo-target">
                         </div>
-                        <div class="floating-photo-circle photo-pos-5 dev-photo-glitch-frame"
-                            title="Joeven Salognon - Department & Hiring Workflow Engineer"
-                            data-light-src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg"
-                            data-dark-src="<?= $base_url ?>assets/img/developers/SOLOGNON_dark.jpg">
-                            <img src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg" 
-                                 data-light-src="<?= $base_url ?>assets/img/developers/SOLOGNON.jpg"
-                                 data-dark-src="<?= $base_url ?>assets/img/developers/SOLOGNON_dark.jpg"
-                                 alt="Joeven Salognon" class="dev-photo-target">
-                        </div>
                         <div class="floating-photo-circle photo-pos-6 dev-photo-glitch-frame"
                             title="Marl Jordan Jurado - System Administration & QA Lead"
                             data-light-src="<?= $base_url ?>assets/img/developers/JURADO.jpg"
@@ -869,7 +859,6 @@ require_once __DIR__ . '/../header.php';
                         </div>
 
                         <div class="position-relative z-2 max-w-640 mx-auto" style="max-width: 620px;">
-                            <span class="eyebrow-badge text-muted-custom">Take Action</span>
                             <h2 class="h1 fw-extrabold text-ink mb-3">Join Us In Shaping Your Future</h2>
                             <p class="text-muted-custom mb-4">
                                 Gain practical on-campus workplace experience, earn tuition allowances, and expand your
@@ -891,7 +880,7 @@ require_once __DIR__ . '/../header.php';
         </main>
 
         <!-- Fullscreen Interactive 2-Column Campus AI Companion Studio Modal -->
-        <div id="campus-ai-fullscreen-modal" class="campus-ai-fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="fullscreen-modal-title">
+        <div id="campus-ai-fullscreen-modal" class="campus-ai-fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="fullscreen-modal-title" style="display: none;">
             <div class="fullscreen-modal-backdrop" id="fullscreen-backdrop"></div>
             <div class="fullscreen-modal-shell">
                 <!-- Top Navigation / Status Bar -->
@@ -903,7 +892,7 @@ require_once __DIR__ . '/../header.php';
                         </div>
                         <div>
                             <div class="d-flex align-items-center gap-2">
-                                <h5 id="fullscreen-modal-title" class="fs-bot-title mb-0">Campus AI Assistant</h5>
+                                <h2 id="fullscreen-modal-title" class="fs-bot-title mb-0">Campus AI Assistant</h2>
                             </div>
                         </div>
                     </div>
@@ -964,7 +953,7 @@ require_once __DIR__ . '/../header.php';
                                 </button>
                             </div>
                             <p class="text-center mt-2 mb-0 text-muted-custom" style="font-size: 0.73rem; line-height: 1.5;">
-                                <i class="bi bi-shield-check text-accent me-1" style="vertical-align: -1px;"></i>Powered by NVIDIA Cloud AI (Free Tier). Conversations may be used for AI model training. Do not submit sensitive data. <a href="privacy.php#sec-4" target="_blank" class="text-ink fw-bold text-decoration-underline text-nowrap ms-1">Privacy Notice</a>
+                                <i class="bi bi-shield-check text-accent me-1" style="vertical-align: -1px;"></i>Conversations may be processed by an AI provider and used for model training. Do not submit sensitive data. <a href="privacy.php#sec-4" target="_blank" class="text-ink fw-bold text-decoration-underline text-nowrap ms-1">Privacy Notice</a>
                             </p>
                         </form>
                     </div>

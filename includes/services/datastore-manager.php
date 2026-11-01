@@ -72,6 +72,7 @@ class DatastoreManager {
                 $schemaFile = dirname(__DIR__, 2) . '/database/schema.sql';
                 if (file_exists($schemaFile)) {
                     $sql = file_get_contents($schemaFile);
+                    $sql = preg_replace('/DROP TABLE IF EXISTS `[^`]+`;\s*/i', '', $sql);
                     $statements = array_filter(array_map('trim', explode(';', $sql)));
                     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
                     foreach ($statements as $stmt) {

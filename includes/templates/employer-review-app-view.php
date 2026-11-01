@@ -250,12 +250,11 @@ require_once __DIR__ . '/../header.php';
                                         <?php if ($target_app['status'] === 'withdrawn'): ?>
                                             <option value="withdrawn" selected>Candidate Withdrawn</option>
                                         <?php endif; ?>
-                                        <option value="pending" <?= in_array($target_app['status'], ['pending', 'Pending Review']) ? 'selected' : '' ?>>Pending Review</option>
-                                        <option value="under_review" <?= in_array($target_app['status'], ['under_review', 'under review', 'Under Evaluation']) ? 'selected' : '' ?>>Under Evaluation</option>
-                                        <option value="interview_scheduled" <?= in_array($target_app['status'], ['interview_scheduled', 'Interview Scheduled']) ? 'selected' : '' ?>>Shortlist & Schedule Interview</option>
-                                        <option value="accepted" <?= in_array($target_app['status'], ['accepted', 'Accepted / Hired']) ? 'selected' : '' ?>>Accept & Officially Hire</option>
-                                        <option value="declined" <?= in_array($target_app['status'], ['declined', 'Declined / Position Filled']) ? 'selected' : '' ?>>Decline / Position Filled</option>
+                                        <?php foreach (['pending' => 'Pending Review', 'under_review' => 'Under Evaluation', 'interview_scheduled' => 'Shortlist & Schedule Interview', 'accepted' => 'Accept & Officially Hire', 'declined' => 'Decline / Position Filled'] as $stage => $label): ?>
+                                            <option value="<?= $stage ?>" <?= normalize_application_stage($target_app['status']) === $stage ? 'selected' : '' ?> <?= !can_advance_application_stage($target_app['status'], $stage) ? 'disabled' : '' ?>><?= htmlspecialchars($label) ?></option>
+                                        <?php endforeach; ?>
                                     </select>
+                                    <div class="form-text">Stages move forward; completed decisions cannot be reversed here.</div>
                                 </div>
 
                                 <!-- Dynamic Interview Details Box -->

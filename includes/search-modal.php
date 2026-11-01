@@ -102,7 +102,7 @@ if (!defined('SITE_NAME')) {
                     <div class="d-inline-flex align-items-center justify-content-center bg-surface rounded-circle p-3 mb-2 shadow-sm" style="width: 52px; height: 52px;">
                         <i class="bi bi-search text-muted-custom fs-4"></i>
                     </div>
-                    <h6 class="fw-bold text-ink mb-1">No vacancies found</h6>
+                    <p class="h6 fw-bold text-ink mb-1">No vacancies found</p>
                     <p class="text-muted-custom small mb-3">Try different keywords or clear the active filter chip.</p>
                     <a href="<?= $base_url ?>student/jobs.php" class="btn-soft-pill py-1 px-3 small">
                         Browse All Campus Jobs

@@ -180,10 +180,7 @@ require_once __DIR__ . '/../header.php';
                         <textarea name="summary" class="form-control rounded-3" rows="2" placeholder="Brief 1-2 sentence preview for cards..." required></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-ink">Full Article Content (HTML allowed) *</label>
-                        <textarea name="content" class="form-control rounded-3" rows="6" placeholder="<p>Full announcement paragraphs and details...</p>" required></textarea>
-                    </div>
+                    <?php $dispatch_editor_id = 'new_content'; require __DIR__ . '/dispatch-editor.php'; ?>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
@@ -251,10 +248,7 @@ require_once __DIR__ . '/../header.php';
                         <textarea name="summary" id="edit_summary" class="form-control rounded-3" rows="2" required></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-ink">Full Article Content (HTML allowed) *</label>
-                        <textarea name="content" id="edit_content" class="form-control rounded-3" rows="6" required></textarea>
-                    </div>
+                    <?php $dispatch_editor_id = 'edit_content'; require __DIR__ . '/dispatch-editor.php'; ?>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
@@ -331,4 +325,5 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php endif; ?>
 });
 </script>
+<script src="../assets/js/dispatch-editor.js?v=<?= filemtime(__DIR__ . '/../../assets/js/dispatch-editor.js') ?>"></script>
 

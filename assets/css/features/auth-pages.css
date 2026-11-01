@@ -102,6 +102,9 @@ h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.035
 .partner .story-foot { border-color: #515b50; }
 .partner .primary { background: var(--accent); color: #122416; }
 .partner .primary:hover { background: var(--accent-hover); }
+[data-theme="light"] .partner .primary { background: var(--accent); color: #fff; }
+[data-theme="light"] .partner .primary:hover,
+[data-theme="light"] .partner .primary:focus-visible { background: var(--accent-hover); color: #fff; }
 .register .form-area { align-self: start; padding-top: 10px; }
 .register .story { min-height: 560px; }
 .register .story-copy { padding-top: 48px; }

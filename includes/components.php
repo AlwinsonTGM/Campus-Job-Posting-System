@@ -4,6 +4,11 @@
  * Blueprint & Design Law Single Source of Truth (COAL101)
  */
 
+function format_job_description(string $description): string {
+    $safe = htmlspecialchars($description, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return nl2br(preg_replace('/\*\*([^\r\n*]+)\*\*/u', '<strong>$1</strong>', $safe));
+}
+
 if (!function_exists('render_page_head')) {
     /**
      * Renders standardized inner-page header
@@ -326,11 +331,12 @@ if (!function_exists('render_job_card')) {
 
                 <!-- Slots, Progress, Deadline, Actions -->
                 <div class="mt-auto pt-3 border-top border-line">
-                    <div class="d-flex justify-content-end mb-1">
+                    <div class="d-flex justify-content-start mb-1">
                         <span class="fw-bold text-ink small d-inline-flex align-items-center gap-1">
                             <i class="bi bi-cash-coin"></i><?= htmlspecialchars($pay_raw) ?>
                         </span>
                     </div>
+                    <div class="job-openings mb-2"><i class="bi bi-person-plus" aria-hidden="true"></i> <strong><?= max(0, $slots_total - $slots_filled) ?> <?= max(0, $slots_total - $slots_filled) === 1 ? 'opening' : 'openings' ?> available</strong></div>
                     <div class="d-flex justify-content-between small text-muted-custom mb-1">
                         <span><?= $slots_filled ?> of <?= $slots_total ?> slots filled</span>
                         <span class="fw-bold text-ink"><?= $pct ?>%</span>
@@ -597,6 +603,7 @@ if (!function_exists('render_availability_matrix')) {
                                         name="<?= htmlspecialchars($name) ?>" 
                                         value="<?= htmlspecialchars($key) ?>" 
                                         class="matrix-check form-check-input"
+                                        aria-label="<?= htmlspecialchars($key, ENT_QUOTES) ?>"
                                         <?= $is_checked ? 'checked' : '' ?>
                                         <?= $readonly ? 'disabled' : '' ?>
                                     >

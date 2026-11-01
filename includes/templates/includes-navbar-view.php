@@ -198,30 +198,31 @@ $workspace_navigation = $employer_navigation || $admin_navigation;
                     <?php
                     $user_initial = strtoupper(substr($current_user['name'] ?? 'U', 0, 1));
                     ?>
+                    <button class="nav-theme-toggle" type="button" data-theme-toggle aria-label="Switch theme"><i class="bi bi-moon-fill" data-theme-toggle-icon aria-hidden="true"></i></button>
                     <div class="dropdown nav-user-mobile-wrap">
-                        <a href="#" class="user-avatar-chip dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="avatar-circle"><?= htmlspecialchars($user_initial) ?></span>
-                            <span class="user-chip-name"><?= htmlspecialchars($current_user['name']) ?></span>
-                            <span class="badge bg-cream text-ink border border-line ms-auto small d-inline-block d-lg-none" style="font-size: 10px;"><?= htmlspecialchars(ucfirst($current_user['role'])) ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-line p-2 rounded-4">
-                            <li><h6 class="dropdown-header small text-muted-custom"><?= htmlspecialchars($current_user['email']) ?> (<?= htmlspecialchars(ucfirst($current_user['role'])) ?>)</h6></li>
-                            <li><a class="dropdown-item rounded-3" href="<?= $dashboard_link ?>"><i class="bi bi-speedometer2 me-2 text-accent"></i> My Dashboard</a></li>
-                            <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>notifications.php"><i class="bi bi-bell me-2 text-accent"></i> Notifications Center</a></li>
-                            <?php if ($current_user['role'] === 'employer'): ?>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/create-job.php"><i class="bi bi-plus-circle me-2 text-accent"></i> Post a Vacancy</a></li>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/updates.php"><i class="bi bi-megaphone me-2 text-accent"></i> Post Dispatch</a></li>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/applicants.php"><i class="bi bi-people me-2"></i> View Applicants</a></li>
-                            <?php elseif ($current_user['role'] === 'student'): ?>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-folder-check me-2"></i> My Applications</a></li>
-                            <?php elseif ($current_user['role'] === 'admin'): ?>
-                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/ai-settings.php"><i class="bi bi-cpu-fill me-2 text-success"></i> NVIDIA AI &amp; Robot</a></li>
-                            <?php endif; ?>
-                            <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2"></i> Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item rounded-3 text-danger" href="<?= $base_url ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
-                        </ul>
-                    </div>
+                            <a href="#" class="user-avatar-chip dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="avatar-circle"><?= htmlspecialchars($user_initial) ?></span>
+                                <span class="user-chip-name"><?= htmlspecialchars($current_user['name']) ?></span>
+                                <span class="badge bg-cream text-ink border border-line ms-auto small d-inline-block d-lg-none" style="font-size: 10px;"><?= htmlspecialchars(ucfirst($current_user['role'])) ?></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-line p-2 rounded-4">
+                                <li><h6 class="dropdown-header small text-muted-custom"><?= htmlspecialchars($current_user['email']) ?> (<?= htmlspecialchars(ucfirst($current_user['role'])) ?>)</h6></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $dashboard_link ?>"><i class="bi bi-speedometer2 me-2 text-accent"></i> My Dashboard</a></li>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>notifications.php"><i class="bi bi-bell me-2 text-accent"></i> Notifications Center</a></li>
+                                <?php if ($current_user['role'] === 'employer'): ?>
+                                    <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/create-job.php"><i class="bi bi-plus-circle me-2 text-accent"></i> Post a Vacancy</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/updates.php"><i class="bi bi-megaphone me-2 text-accent"></i> Announcements</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>employer/applicants.php"><i class="bi bi-people me-2"></i> View Applicants</a></li>
+                                <?php elseif ($current_user['role'] === 'student'): ?>
+                                    <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>student/my-applications.php"><i class="bi bi-folder-check me-2"></i> My Applications</a></li>
+                                <?php elseif ($current_user['role'] === 'admin'): ?>
+                                    <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>admin/ai-settings.php"><i class="bi bi-cpu-fill me-2 text-success"></i> AI &amp; Robot</a></li>
+                                <?php endif; ?>
+                                <li><a class="dropdown-item rounded-3" href="<?= $base_url ?>settings.php"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item rounded-3 text-danger" href="<?= $base_url ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
+                            </ul>
+                        </div>
                 <?php else: ?>
                     <!-- Guest: LOG IN + POST A VACANCY action buttons -->
                     <div class="paper-nav-btn-group">
