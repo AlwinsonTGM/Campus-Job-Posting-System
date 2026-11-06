@@ -442,15 +442,22 @@ function create_notification(int|string $user_id, string $type, string $title, s
 function notify_all_admins(string $type, string $title, string $message, ?string $link = null, string $icon = 'bi-shield-check', string $badge_color = 'warning'): int {
     try {
         $pdo = get_db_connection();
-        $stmt = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'");
-        $admin_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        $count = 0;
-        foreach ($admin_ids as $aid) {
-            if (create_notification($aid, $type, $title, $message, $link, $icon, $badge_color)) {
-                $count++;
-            }
-        }
-        return $count;
+        // ⚡ Bolt: Use a single INSERT ... SELECT statement to prevent N+1 query overhead for admin notifications
+        $stmt = $pdo->prepare("
+            INSERT INTO `notifications` (`user_id`, `type`, `title`, `message`, `link`, `icon`, `badge_color`, `is_read`, `created_at`)
+            SELECT `id`, :type, :title, :message, :link, :icon, :badge_color, 0, NOW()
+            FROM `users`
+            WHERE `role` = 'admin'
+        ");
+        $stmt->execute([
+            ':type'        => substr($type, 0, 50),
+            ':title'       => substr($title, 0, 255),
+            ':message'     => $message,
+            ':link'        => $link ? substr($link, 0, 255) : null,
+            ':icon'        => substr($icon, 0, 100),
+            ':badge_color' => substr($badge_color, 0, 50)
+        ]);
+        return $stmt->rowCount();
     } catch (Exception $e) {
         error_log("notify_all_admins error: " . $e->getMessage());
         return 0;
