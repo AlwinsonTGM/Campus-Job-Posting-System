@@ -1639,22 +1639,17 @@ function resubmit_employer_accreditation(int $user_id, array $data, ?string $per
         $stmt_verify->execute([':id' => $user_id]);
 
         // 4. Notify administrators of resubmitted accreditation
-        $stmt_admins = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'");
-        $admin_ids = $stmt_admins->fetchAll(PDO::FETCH_COLUMN);
         $display_org = !empty($req_org) ? $req_org : ($emp['organization_name'] ?? 'Employer');
         $display_name = !empty($req_name) ? $req_name : ($emp['name'] ?? 'Representative');
         $note_text = !empty($reason) ? " Reason: {$reason}" : '';
-        foreach ($admin_ids as $adm_id) {
-            create_notification(
-                (int)$adm_id,
-                'system',
-                "Employer Accreditation Resubmitted: {$display_org}",
-                "Employer '{$display_org}' (Rep: {$display_name}) resubmitted updated accreditation documents for verification.{$note_text}",
-                "admin/users.php?ver_status=pending_approval&highlight=user-row-{$user_id}#user-row-{$user_id}",
-                "bi-patch-check",
-                "warning"
-            );
-        }
+        notify_all_admins(
+            'system',
+            "Employer Accreditation Resubmitted: {$display_org}",
+            "Employer '{$display_org}' (Rep: {$display_name}) resubmitted updated accreditation documents for verification.{$note_text}",
+            "admin/users.php?ver_status=pending_approval&highlight=user-row-{$user_id}#user-row-{$user_id}",
+            "bi-patch-check",
+            "warning"
+        );
 
         $pdo->commit();
         return ['success' => true, 'message' => 'Accreditation credentials and documents submitted successfully.'];
@@ -1732,18 +1727,14 @@ function resubmit_student_registration(int $user_id, ?string $proof_path = null,
 
         $display_name = $student['name'] ?? 'Student';
         $note_text = trim($note) !== '' ? " Note: " . trim($note) : '';
-        $admin_ids = $pdo->query("SELECT `id` FROM `users` WHERE `role` = 'admin'")->fetchAll(PDO::FETCH_COLUMN);
-        foreach ($admin_ids as $adm_id) {
-            create_notification(
-                (int)$adm_id,
-                'system',
-                "Student Registration Resubmitted: {$display_name}",
-                "Student '{$display_name}' resubmitted updated registration proof for verification.{$note_text}",
-                "admin/users.php?ver_status=pending_approval&highlight=user-row-{$user_id}#user-row-{$user_id}",
-                "bi-patch-check",
-                "warning"
-            );
-        }
+        notify_all_admins(
+            'system',
+            "Student Registration Resubmitted: {$display_name}",
+            "Student '{$display_name}' resubmitted updated registration proof for verification.{$note_text}",
+            "admin/users.php?ver_status=pending_approval&highlight=user-row-{$user_id}#user-row-{$user_id}",
+            "bi-patch-check",
+            "warning"
+        );
 
         $pdo->commit();
         return ['success' => true, 'message' => 'Your updated registration proof has been submitted for administrative review.'];
