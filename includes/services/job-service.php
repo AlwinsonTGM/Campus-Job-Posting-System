@@ -1000,33 +1000,26 @@ function get_categories(bool $include_archived = false, bool $only_archived = fa
         $pdo = get_db_connection();
         $where = "WHERE 1=1";
         if ($only_archived) {
-            $where .= " AND (`is_archived` = 1)";
+            $where .= " AND (c.`is_archived` = 1)";
         } elseif (!$include_archived) {
-            $where .= " AND (`is_archived` = 0 OR `is_archived` IS NULL)";
-        }
-        $stmt_cat = $pdo->query("SELECT * FROM `categories` {$where} ORDER BY `id` ASC");
-        $cats = array_map('hydrate_category', $stmt_cat->fetchAll());
-
-        // Dynamic active job counts
-        $stmt_counts = $pdo->query("
-            SELECT j.`category_id`, c.`name` AS category_name, COUNT(*) AS cnt 
-            FROM `jobs` j
-            JOIN `categories` c ON j.`category_id` = c.`id`
-            WHERE j.`status` = 'active' 
-            GROUP BY j.`category_id`, c.`name`
-        ");
-        $counts_by_id = [];
-        $counts_by_name = [];
-        while ($row = $stmt_counts->fetch()) {
-            $counts_by_id[(int)$row['category_id']] = (int)$row['cnt'];
-            $counts_by_name[$row['category_name']] = (int)$row['cnt'];
+            $where .= " AND (c.`is_archived` = 0 OR c.`is_archived` IS NULL)";
         }
 
-        foreach ($cats as &$cat) {
-            $cat['job_count'] = $counts_by_id[(int)$cat['id']] ?? ($counts_by_name[$cat['name']] ?? 0);
-        }
+        // ⚡ Bolt: Consolidated categories and active job count into a single query using LEFT JOIN to fix N+1 issue
+        // This removes the need for a separate query that aggregates jobs and avoids having to map counts manually
+        $sql = "
+            SELECT
+                c.*,
+                COUNT(j.`id`) AS `job_count`
+            FROM `categories` c
+            LEFT JOIN `jobs` j ON c.`id` = j.`category_id` AND j.`status` = 'active'
+            {$where}
+            GROUP BY c.`id`
+            ORDER BY c.`id` ASC
+        ";
 
-        return $cats;
+        $stmt_cat = $pdo->query($sql);
+        return array_map('hydrate_category', $stmt_cat->fetchAll());
     } catch (Exception $e) {
         error_log("get_categories error: " . $e->getMessage());
         return [];
