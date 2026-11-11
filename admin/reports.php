@@ -15,30 +15,36 @@ $all_apps = get_applications();
 $categories = get_categories();
 $all_users = get_all_users();
 
-$total_jobs = count($all_jobs);
-$total_apps = count($all_apps);
-$total_hired = count(array_filter($all_apps, function($a) {
-    $st = strtolower($a['status'] ?? '');
-    return in_array($st, ['accepted', 'accepted / hired', 'hired'], true);
-}));
-$total_interviews = count(array_filter($all_apps, function($a) {
-    $st = strtolower($a['status'] ?? '');
-    return in_array($st, ['interview_scheduled', 'interview scheduled', 'interview'], true);
-}));
-
-// User population & verification pipeline analytics
+// ⚡ Bolt: Single-pass aggregations for analytics
+// Replaced 5x array_filter on users with a single O(N) loop
 $total_users = count($all_users);
-$total_students = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student'));
-$total_employers = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer'));
-$total_admins = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'admin'));
+$total_students = 0;
+$total_employers = 0;
+$total_admins = 0;
+$pending_students_count = 0;
+$pending_employers_count = 0;
 
-$pending_students_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'student' && ($u['verification_status'] ?? '') === 'pending_approval'));
-$pending_employers_count = count(array_filter($all_users, fn($u) => ($u['role'] ?? '') === 'employer' && ($u['verification_status'] ?? '') === 'pending_approval'));
+foreach ($all_users as $u) {
+    $role = $u['role'] ?? '';
+    $status = $u['verification_status'] ?? '';
+
+    if ($role === 'student') {
+        $total_students++;
+        if ($status === 'pending_approval') $pending_students_count++;
+    } elseif ($role === 'employer') {
+        $total_employers++;
+        if ($status === 'pending_approval') $pending_employers_count++;
+    } elseif ($role === 'admin') {
+        $total_admins++;
+    }
+}
 $total_pending_verifications = $pending_students_count + $pending_employers_count;
 
 $all_profile_requests = get_profile_requests();
-$pending_profile_requests = array_filter($all_profile_requests, fn($r) => ($r['status'] ?? '') === 'pending');
-$pending_profile_count = count($pending_profile_requests);
+$pending_profile_count = 0;
+foreach ($all_profile_requests as $r) {
+    if (($r['status'] ?? '') === 'pending') $pending_profile_count++;
+}
 $total_pending_actions = $total_pending_verifications + $pending_profile_count;
 
 // Department aggregations (real activity from jobs & applications)
@@ -51,6 +57,10 @@ $departments = [
     'Institute of Engineering' => ['jobs' => 0, 'apps' => 0, 'hired' => 0],
 ];
 
+// ⚡ Bolt: Single-pass job category counts to avoid O(N²) nested loops below
+$total_jobs = count($all_jobs);
+$category_counts = [];
+
 foreach ($all_jobs as $j) {
     $dept_name = trim($j['department'] ?? 'General');
     if ($dept_name === '') $dept_name = 'General';
@@ -58,9 +68,14 @@ foreach ($all_jobs as $j) {
         $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0];
     }
     $departments[$dept_name]['jobs']++;
+
+    $cat_name = $j['category'] ?? '';
+    $category_counts[$cat_name] = ($category_counts[$cat_name] ?? 0) + 1;
 }
 
-// Application status breakdown and departmental application count
+// ⚡ Bolt: Single-pass over applications
+// Combined status_counts, total_hired, total_interviews, and department mappings
+$total_apps = count($all_apps);
 $status_counts = [
     'pending'             => 0,
     'under_review'        => 0,
@@ -76,6 +91,7 @@ foreach ($all_apps as $a) {
         $departments[$dept_name] = ['jobs' => 0, 'apps' => 0, 'hired' => 0];
     }
     $departments[$dept_name]['apps']++;
+
     $st = strtolower($a['status'] ?? 'pending');
     if (in_array($st, ['accepted', 'accepted / hired', 'hired'], true)) {
         $departments[$dept_name]['hired']++;
@@ -91,11 +107,14 @@ foreach ($all_apps as $a) {
     }
 }
 
+$total_hired = $status_counts['accepted'];
+$total_interviews = $status_counts['interview_scheduled'];
+
 // 1. Categories Chart Data (sorted descending by active job demand)
 $category_data = [];
 foreach ($categories as $c) {
     $cat_name = $c['name'];
-    $cat_job_count = count(array_filter($all_jobs, fn($j) => ($j['category'] ?? '') === $cat_name));
+    $cat_job_count = $category_counts[$cat_name] ?? 0;
     $pct = $total_jobs > 0 ? round(($cat_job_count / $total_jobs) * 100) : 0;
     $category_data[] = [
         'name'  => $cat_name,
