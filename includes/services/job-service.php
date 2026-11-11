@@ -126,6 +126,36 @@ function get_jobs(string|array|null $category = null, ?string $keyword = null, ?
     }
 }
 
+function get_featured_jobs(int $limit = 8): array {
+    try {
+        $pdo = get_db_connection();
+        $stmt = $pdo->prepare("
+            SELECT
+                j.*,
+                c.`name` AS `category`,
+                COALESCE(ep.`organization_name`, j.`department`) AS `organization_name`,
+                u.`name` AS `employer_name`,
+                COALESCE(ep.`employer_type`, 'university_office') AS `employer_type`,
+                CASE WHEN ep.`verification_status` = 'verified' OR u.`role` = 'admin' THEN 1 ELSE 0 END AS `verified_employer`
+            FROM `jobs` j
+            LEFT JOIN `categories` c ON j.`category_id` = c.`id`
+            LEFT JOIN `users` u ON j.`employer_id` = u.`id`
+            LEFT JOIN `employer_profiles` ep ON j.`employer_id` = ep.`user_id`
+            WHERE j.`status` IN ('active', 'open')
+              AND (j.`is_archived` = 0 OR j.`is_archived` IS NULL)
+            ORDER BY (CASE WHEN j.`image` IS NOT NULL AND j.`image` != '' THEN 1 ELSE 0 END) DESC, j.`id` DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':limit', max(1, $limit), PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        return array_map('hydrate_job', $rows);
+    } catch (Exception $e) {
+        error_log("get_featured_jobs error: " . $e->getMessage());
+        return [];
+    }
+}
+
 function get_job_by_id(mixed $id): ?array {
     if (!is_scalar($id) || $id === null || $id === '' || (int)$id <= 0) { return null; }
     try {
